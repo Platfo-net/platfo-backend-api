@@ -1,11 +1,11 @@
 from pydantic import UUID4
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from app import models, schemas
 from sqlalchemy.orm import Session
 
 
-class InstagramPageService(
-        BaseService[
+class InstagramPageServices(
+        BaseServices[
             models.InstagramPage,
             schemas.InstagramPageCreate,
             schemas.InstagramPageUpdate
@@ -43,4 +43,4 @@ class InstagramPageService(
             .filter(self.model.facebook_page_id == page_id).first()
 
 
-instagram_page = InstagramPageService(models.InstagramPage)
+instagram_page = InstagramPageServices(models.InstagramPage)

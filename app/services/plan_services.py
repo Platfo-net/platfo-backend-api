@@ -1,9 +1,9 @@
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from app import models, schemas
 
 
-class PlanService(
-    BaseService
+class PlanServices(
+    BaseServices
     [
         models.Plan,
         schemas.PlanCreate,
@@ -13,4 +13,4 @@ class PlanService(
     pass
 
 
-plan = PlanService(models.Plan)
+plan = PlanServices(models.Plan)

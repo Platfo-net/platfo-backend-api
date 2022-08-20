@@ -16,13 +16,13 @@ class NodeCreate(BaseModel):
     chatflow_id: UUID4
     is_head: Optional[bool] = False
 
+
 class FullNodeCreate(BaseModel):
     title: Optional[str] = None
     chatflow_id: UUID4
     widget: dict = None
     widget_type: str = None
     is_head: Optional[bool] = False
-
 
 
 class NodeUpdate(BaseModel):
@@ -36,7 +36,6 @@ class Node(NodeBase):
 
     class Config:
         orm_mode = True
-
 
 
 class MessageWidgetCreate(BaseModel):

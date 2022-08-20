@@ -1,13 +1,13 @@
 from typing import List
 from pydantic import UUID4
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from app import models, schemas
 from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
 
 
-class NodeService(
-        BaseService[
+class NodeServices(
+        BaseServices[
             models.Node,
             schemas.NodeCreate,
             schemas.NodeUpdate
@@ -67,8 +67,8 @@ class NodeService(
     def get_chatflow_head_node(self, db: Session, *, chatflow_id):
         return db.query(models.Node).filter(
             models.Node.chatflow_id == chatflow_id,
-            models.Node.is_head == True
+            models.Node.is_head is True
         ).first()
 
 
-node = NodeService(models.Node)
+node = NodeServices(models.Node)

@@ -21,6 +21,7 @@ def send_message_to_contact_management(from_page_id,
         "user_id": user_id,
         "direction": direction
     })
+    return res
 
 
 @celery_app.task()

@@ -98,7 +98,8 @@ def create_full_node(
     node = services.node.create(db, obj_in=node_in)
     print(obj_in.widget_type)
     if obj_in.widget_type == WidgetType.MESSAGE["name"]:
-        obj_in = dict(id=str(uuid.uuid4()), widget_type=WidgetType.MESSAGE["name"],
+        obj_in = dict(id=str(uuid.uuid4()),
+                      widget_type=WidgetType.MESSAGE["name"],
                       **jsonable_encoder(obj_in.widget))
 
     elif obj_in.widget_type == WidgetType.MENU["name"]:

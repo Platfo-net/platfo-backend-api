@@ -1,11 +1,11 @@
 from pydantic import UUID4
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from app import models, schemas
 from sqlalchemy.orm import Session
 
 
-class ConnectionService(
-    BaseService
+class ConnectionServices(
+    BaseServices
     [
         models.Connection,
         schemas.ConnectionCreate,
@@ -72,4 +72,4 @@ class ConnectionService(
         ).all()
 
 
-connection = ConnectionService(models.Connection)
+connection = ConnectionServices(models.Connection)
