@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, Security, statu
 from sqlalchemy.orm import Session
 
 
-router = APIRouter(prefix="/connection", tags=["connections"])
+router = APIRouter(prefix="/connection", tags=["Connection"])
 
 
 @router.get("/all", response_model=List[schemas.Connection])

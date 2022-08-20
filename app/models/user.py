@@ -45,3 +45,4 @@ class User(Base):
     credit = relationship("Credit", back_populates="user")
 
     connection = relationship("Connection", back_populates="user")
+    chatflow = relationship("Chatflow", back_populates="user")

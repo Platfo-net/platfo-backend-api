@@ -17,11 +17,18 @@ from .transaction import TransactionCreate,\
     Transaction, TransactionUpdate
 
 
-from .account import Account 
+from .account import Account
 
-from .connection import Connection , ConnectionCreate , \
-    ConnectionUpdate,ConnectionInDB
-from .trigger import TriggerCreate, TriggerUpdate , Trigger
+from .connection import Connection, ConnectionCreate, \
+    ConnectionUpdate, ConnectionInDB
+from .trigger import TriggerCreate, TriggerUpdate, Trigger
 
 
-from .connection_chatflow import ConnectionChatflow , ConnectionChatflowCreate
+from .connection_chatflow import ConnectionChatflow, ConnectionChatflowCreate
+
+
+from .chatflow import Chatflow, ChatflowCreate, ChatflowUpdate
+
+
+from .node import NodeCreate, NodeUpdate,\
+    Node, MessageWidgetCreate, MenuWidgetCreate, FullNodeCreate

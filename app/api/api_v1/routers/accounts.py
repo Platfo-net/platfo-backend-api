@@ -6,12 +6,13 @@ from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 
-router = APIRouter(prefix="/account", tags=["accounts"])
+router = APIRouter(prefix="/account", tags=["Account"])
 
-@router.get("", response_model=List[schemas.Account])
+@router.get("/all", response_model=List[schemas.Account])
 def get_accounts_list(
         *,
         db: Session = Depends(deps.get_db),
+        platform: str = None,
         current_user: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -23,8 +24,6 @@ def get_accounts_list(
     """
         Get list of accounts from different platforms
     """
-    
-
     instagram_pages = services.instagram_page.get_multi_by_user_id(
         db, user_id=current_user.id)
 

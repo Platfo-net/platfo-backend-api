@@ -8,3 +8,6 @@ from .transaction_service import transaction
 from .connection_service import connection
 from .trigger_service import trigger
 from .connection_chatflow_service import connection_chatflow
+
+from .chatflow_service import chatflow
+from .node_service import node

@@ -4,12 +4,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.api_v1.api import api_router
 from app.core.config import settings
 
+from debug_toolbar.middleware import DebugToolbarMiddleware
+
+settings.ENVIRONMENT
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    debug=False if settings.ENVIRONMENT == "prod" else True
 )
-
+app.add_middleware(
+    DebugToolbarMiddleware,
+    panels=["debug_toolbar.panels.sqlalchemy.SQLAlchemyPanel"],
+    )
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
