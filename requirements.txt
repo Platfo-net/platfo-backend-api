@@ -1,3 +1,4 @@
+aiofiles==0.8.0
 aioredis==2.0.1
 aiosmtplib==1.1.6
 alembic==1.8.1
@@ -18,6 +19,7 @@ ecdsa==0.18.0
 email-validator==1.2.1
 fakeredis==1.8.2
 fastapi==0.79.0
+fastapi-debug-toolbar==0.2.1
 fastapi-mail==1.0.9
 flake8==4.0.1
 greenlet==1.1.2
@@ -42,6 +44,7 @@ pycodestyle==2.8.0
 pycparser==2.21
 pydantic==1.9.1
 pyflakes==2.4.0
+pyinstrument==4.2.0
 pyparsing==3.0.9
 pytest==7.1.2
 pytest-cov==3.0.0
@@ -57,6 +60,7 @@ six==1.16.0
 sniffio==1.2.0
 sortedcontainers==2.4.0
 SQLAlchemy==1.4.39
+sqlparse==0.4.2
 starlette==0.19.1
 tenacity==8.0.1
 toml==0.10.2

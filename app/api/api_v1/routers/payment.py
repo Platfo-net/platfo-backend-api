@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.constants.transaction_status import TransactionStatus
 
 
-router = APIRouter(prefix="/payment", tags=["payment"])
+router = APIRouter(prefix="/payment", tags=["Payment"])
 
 
 @router.post("/transaction", status_code=status.HTTP_201_CREATED)
@@ -25,7 +25,7 @@ def create_transaction(
         ],
     ),
 ) -> Any:
-
+    
     if obj_in not in TransactionStatus.VALID_STATUS:
         raise HTTPException(
             status_code=Error.INVALID_TRANSACTION_STATUS['status_code'],

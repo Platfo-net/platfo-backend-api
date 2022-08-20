@@ -3,37 +3,37 @@ class Error:
     Constants for the errors
     """
     USER_EXIST_ERROR = {
-        "text": "کاربری با این ایمیل در سیستم موجود است.",
+        "text": "There is a user with this email",
         "status_code": 409,
         "code": 1
     }
     PERMISSION_DENIED_ERROR = {
-        "text": "خطای دسترسی",
+        "text": "Permission denied",
         "status_code": 401,
         "code": 2
     }
     USER_NOT_FOUND = {
-        "text": "کاربری با این ایمیل در سیستم وجود ندارد.",
+        "text": "There is no user with this email",
         "status_code": 404,
         "code": 3
     }
     CODE_EXPIRATION_OR_NOT_EXIST_ERROR = {
-        "text": "کد اشتباه است یا منقضی شده است.",
+        "text": "Wrong or expired code",
         "status_code": 404,
         "code": 4
     }
     USER_PASS_WRONG_ERROR = {
-        "text": "نام کاربری یا رمز عبور اشتباه است.",
+        "text": "Wrong username or password",
         "status_code": 401,
         "code": 5
     }
     TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR = {
-        "text": "توکن منقضی شده است یا وجود ندارد.",
+        "text": "Invalid token",
         "status_code": 403,
         "code": 6
     }
     INACTIVE_USER = {
-        "text": "کاربر غیر فعال است.",
+        "text": "Inactive user",
         "status_code": 400,
         "code": 7
     }
@@ -66,4 +66,35 @@ class Error:
         "text": "There is no account with the given id.",
         "status_code": 404,
         "code": 13
+    }
+
+    NO_CHATFLOW_WITH_THE_GIVEN_ID = {
+        "text": "There is no chatflow with the given id.",
+        "status_code": 409,
+        "code": 14
+    }
+    NO_NODE_WITH_THE_GIVEN_ID = {
+        "text": "There is no node with the given id.",
+        "status_code": 404,
+        "code": 15
+    }
+    NO_CHATFLOW_RELATED_TO_THIS_NODE = {
+        "text": "There is no chatflow related to this node.",
+        "status_code": 404,
+        "code": 16
+    }
+    NO_NEXT_MOVE = {
+        "text": "There is no next move.",
+        "status_code": 404,
+        "code": 17
+    }
+    NOT_AUTHENTICATED = {
+        "text": "not authenticated.",
+        "status_code": 401,
+        "code": 18
+    }
+    NOT_AUTHORIZED = {
+        "text": "not authorized.",
+        "status_code": 401,
+        "code": 19
     }

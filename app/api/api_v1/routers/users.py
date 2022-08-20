@@ -9,7 +9,7 @@ from pydantic.types import UUID4
 from app.core import cache
 from app.core.cache import get_data_from_cache
 
-router = APIRouter(prefix="/user", tags=["user"])
+router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)

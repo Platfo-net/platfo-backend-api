@@ -10,10 +10,10 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 import requests
 
-router = APIRouter(prefix="/instagram", tags=["instagram"])
+router = APIRouter(prefix="/instagram", tags=["Instagram"])
 
 
-@router.post("", status_code=status.HTTP_200_OK)
+@router.post("")
 def connect_instagram_page(
         *,
         db: Session = Depends(deps.get_db),

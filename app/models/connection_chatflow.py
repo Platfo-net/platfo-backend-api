@@ -27,8 +27,11 @@ class ConnectionChatflow(Base):
 
     chatflow_id = Column(
         UUID(as_uuid=True),
+        ForeignKey("chatflows.id"),
+        nullable=True,
     )
 
     connection = relationship(
         "Connection", back_populates="connection_chatflow")
     trigger = relationship("Trigger", back_populates="connection_chatflow")
+    chatflow = relationship("Chatflow", back_populates="connection_chatflow")
