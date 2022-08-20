@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from typing import Any, Dict, Optional
 from pydantic import BaseSettings, PostgresDsn, validator
@@ -25,20 +26,29 @@ class Settings(BaseSettings):
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
+    FACEBOOK_APP_ID: str
+    FACEBOOK_APP_SECRET: str
 
-    FACEBOOK_APP_ID:str
-    FACEBOOK_APP_SECRET:str
+    FACEBOOK_GRAPH_BASE_URL: str
+    FACEBOOK_GRAPH_VERSION: str
 
+    FACEBOOK_WEBHOOK_VERIFY_TOKEN: str
 
-    FACEBOOK_GRAPH_BASE_URL:str
-    FACEBOOK_GRAPH_VERSION:str
+    REDIS_HOST: str
+    REDIS_PORT: int
 
-    FACEBOOK_WEBHOOK_VERIFY_TOKEN:str
+    CELERY_BROKER_URL = "redis://{}:{}".format(
+        os.environ.get('REDIS_HOST'),
+        os.environ.get('REDIS_PORT')
+    )
 
+    CELERY_BACKEND_URL = "redis://{}".format(
+        os.environ.get('REDIS_HOST'),
+    )
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
-        cls, v: Optional[str], values: Dict[str, Any]
+            cls, v: Optional[str], values: Dict[str, Any]
     ) -> Any:
         if isinstance(v, str):
             return v
@@ -47,7 +57,7 @@ class Settings(BaseSettings):
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("DB_HOST"),
-            path=f"/{values.get('POSTGRES_DB') or  ''}",
+            path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
     class Config:

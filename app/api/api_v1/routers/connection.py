@@ -7,7 +7,7 @@ from app import services, models, schemas
 from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, HTTPException, Response, Security, status
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 from sqlalchemy.orm import Session
 
 
@@ -38,7 +38,8 @@ def get_list_of_connections(
 
         limit (int, optional): Defaults to 20.
 
-        account_id (UUID4, optional): id of account in our system. Defaults to None.
+        account_id (UUID4, optional): id of account in our system.
+        Defaults to None.
 
     Returns:
 
@@ -82,11 +83,8 @@ def create_connection(
 ):
     """
     Endpoint for creating connection
-
     Args:
-        
         -
-
     """
     connection = services.connection.create(
         db, obj_in=obj_in, user_id=current_user.id)
@@ -120,16 +118,10 @@ def get_connection_by_id(
 
     """
         Get a connection and it's detail by connecion id.
-
             all connection chatflows will return in this API
-
         Be Careful: Send all of connection chatflows in this endpoint
-
         Args:
-
         connection_id (UUID4, optional): Id of a connection
-        
-
     """
 
     connection = services.connection.get(db, id=connection_id)
@@ -174,13 +166,11 @@ def delete_connection(
 ):
     """
     Endpoint for delete a user connection
-
     Args:
-        
         connection_id (UUID4): Id of a connection related to a user
     """
-    connection = services.connection.get(db , id = connection_id)
-    if connection.user_id != current_user.id: 
+    connection = services.connection.get(db, id=connection_id)
+    if connection.user_id != current_user.id:
         raise HTTPException(
             status_code=Error.CONNECTION_NOT_FOUND["status_code"],
             detail=Error.CONNECTION_NOT_FOUND["detail"]
@@ -210,9 +200,7 @@ def update_connection(
 
     """
     Endpoint for update a connection
-
     Args:
-        
         connection_id (UUID4): Id of a connection related to a user
     """
 
@@ -220,13 +208,13 @@ def update_connection(
 
     if old_connection.user_id != current_user.id:
         raise HTTPException(
-            status_code= Error.CONNECTION_NOT_FOUND["status_code"],
+            status_code=Error.CONNECTION_NOT_FOUND["status_code"],
             detail=Error.CONNECTION_NOT_FOUND["detail"]
-        ) 
-
+        )
     if not old_connection:
         raise HTTPException(
-            status_code=Error.CONNECTION_NOT_FOUND['status_code'], detail=Error.CONNECTION_NOT_FOUND['text'])
+            status_code=Error.CONNECTION_NOT_FOUND['status_code'],
+            detail=Error.CONNECTION_NOT_FOUND['text'])
 
     connection = services.connection.update(
         db, db_obj=old_connection, obj_in=obj_in, user_id=current_user.id)

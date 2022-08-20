@@ -26,17 +26,14 @@ def get_accounts_list(
     """
     instagram_pages = services.instagram_page.get_multi_by_user_id(
         db, user_id=current_user.id)
-
-    
     accounts = [
         schemas.Account(
             id=item.id,
             username=item.instagram_username,
             profile_image_url=item.instagram_profile_picture_url,
             platform="instagram",
-            page_id = item.facebook_page_id
+            page_id=item.facebook_page_id
         )
         for item in instagram_pages if len(instagram_pages) > 0
     ]
-
     return accounts

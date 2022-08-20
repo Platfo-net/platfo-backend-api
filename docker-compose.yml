@@ -87,14 +87,49 @@ services:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
 
-
   redis-insight:
-    container_name:  "${APP_NAME}-redis-insight"
+    container_name: "${APP_NAME}-redis-insight"
     image: redislabs/redisinsight:1.12.1
     ports:
       - "${REDIS_INSIGHT_PORT}:8001"
     networks:
       - redis-insight-network
+
+  celery-worker:
+    build: .
+    image: botinow-backend-app
+    container_name: "${APP_NAME}-celery-worker"
+    restart: unless-stopped
+    command: celery -A facebook worker --loglevel=info  # todo
+    depends_on:
+      - api-1
+      - api-2
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - celery-redis-network
+      - api-celery-network
+      - global-api-network
+
+  flower:
+    build: .
+    image: botinow-backend-app
+    container_name: "${APP_NAME}-celery-flower"
+    restart: unless-stopped
+    command: celery -A facebook flower --loglevel=info
+    ports:
+      - "5555:5555"
+    depends_on:
+      - api-1
+      - api-2
+      - redis
+      - celery-worker
+    volumes:
+      - .:/app
+    networks:
+      - celery-redis-network
+      - api-celery-network
 
   haproxy:
     container_name: "${APP_NAME}-ha-proxy"
@@ -108,7 +143,7 @@ services:
       - api-1
       - api-2
 
-volumes:
+volumes: # todo celery?
   postgres-data:
   redis-data:
 
@@ -119,5 +154,7 @@ networks:
   redis-insight-network:
   api-1-redis-network:
   api-2-redis-network:
+  celery-redis-network:
+  api-celery-network:
   api-1-haproxy-network:
   api-2-haproxy-network:

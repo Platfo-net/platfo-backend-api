@@ -59,4 +59,3 @@ def init_db(db: Session) -> None:
                 platform=Trigger.Message["platform"]
             )
         )
-    

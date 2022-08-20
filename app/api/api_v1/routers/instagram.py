@@ -95,8 +95,6 @@ def connect_instagram_page(
             page_details = res.json()
             print(page_details)
 
-            
-
             instagram_page_in = schemas.InstagramPageCreate(
                 facebook_account_id=facebook_account.id,
                 facebook_page_id=page["id"],
@@ -108,7 +106,7 @@ def connect_instagram_page(
 
             services.instagram_page.create(db, obj_in=instagram_page_in)
 
-        except Exception as e:
+        except Exception:
             # raise HTTPException(
             #     status_code=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['status_code'],
             #     detail=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['text']
@@ -139,13 +137,15 @@ def facebook_disconnect_page(
             ],
         ),
 ):
-    facebook_account = services.facebook_account.get_by_user_id(db ,user_id = current_user.id)
+    facebook_account = services.facebook_account\
+        .get_by_user_id(db, user_id=current_user.id)
     if not facebook_account:
         raise HTTPException(
-            detail = Error.ACCOUNT_NOT_FOUND["detail"],
-            status_code= Error.ACCOUNT_NOT_FOUND["statis_code"]
+            detail=Error.ACCOUNT_NOT_FOUND["detail"],
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"]
         )
-    services.instagram_page.delete_by_facebook_account_id(db,account_id = facebook_account.id )
+    services.instagram_page.\
+        delete_by_facebook_account_id(db, account_id=facebook_account.id)
     services.facebook_account.delete_by_user_id(db, user_id=current_user.id)
 
     return
@@ -159,7 +159,6 @@ def get_page_data_by_ig_id(
 ):
     obj_instagram = services.instagram_page.get_page_by_ig_id(db, ig_id=ig_id)
     return obj_instagram
-
 
 
 @router.get('/get_by_page_id/{page_id}', response_model=schemas.InstagramPage)
