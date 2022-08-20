@@ -63,7 +63,9 @@ class ConnectionService(
         db.refresh(db_obj)
         return db_obj
 
-    def get_page_connection(self, db: Session, *, account_id: str  , application_name:str):
+    def get_page_connection(self, db: Session, *,
+                            account_id: str, application_name: str
+                            ):
         return db.query(self.model).filter(
             self.model.account_id == account_id,
             self.model.application_name == application_name

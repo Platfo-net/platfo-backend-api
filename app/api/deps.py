@@ -57,8 +57,10 @@ def get_current_user(
     except (jwt.JWTError, ValidationError):
         logger.error("Error Decoding Token", exc_info=True)
         raise HTTPException(
-            status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["status_code"],
-            detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["text"],
+            status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR
+            ["status_code"],
+            detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR
+            ["text"],
         )
     user = services.user.get(db, id=token_data.id)
     if not user:
