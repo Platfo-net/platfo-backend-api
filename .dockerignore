@@ -1,0 +1,11 @@
+.git*
+./media
+./media*
+media
+media*
+venv
+.git
+.mypy_cache
+.pytest_cache
+.cache
+__pycache__
