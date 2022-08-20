@@ -11,7 +11,7 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+class BaseServices(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         """Base class that can be extend by other action classes.
 

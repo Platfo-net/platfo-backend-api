@@ -6,7 +6,6 @@ from app.constants.errors import Error
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
-from app.core import cache
 from app.core.cache import get_data_from_cache
 
 router = APIRouter(prefix="/user", tags=["User"])

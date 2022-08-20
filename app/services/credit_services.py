@@ -4,7 +4,7 @@ from app import models
 from pydantic import UUID4
 
 
-class CreditService:
+class CreditServices:
     def __init__(self, model):
         self.model = model
 
@@ -40,4 +40,4 @@ class CreditService:
         return credit
 
 
-credit = CreditService(models.Credit)
+credit = CreditServices(models.Credit)

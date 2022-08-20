@@ -2,7 +2,7 @@ from uuid import uuid4
 from app.db.base_class import Base
 from sqlalchemy import Column, String,\
     ForeignKey, JSON, Boolean
-from sqlalchemy.dialects.postgresql import UUID , ARRAY
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 
 

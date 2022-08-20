@@ -1,11 +1,11 @@
 from app import models, schemas
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from sqlalchemy.orm import Session
 from pydantic import UUID4
 
 
-class TransactionService(
-        BaseService[
+class TransactionServices(
+        BaseServices[
             models.Transaction,
             schemas.TransactionCreate,
             schemas.TransactionUpdate
@@ -28,4 +28,4 @@ class TransactionService(
         return db_obj
 
 
-transaction = TransactionService(models.Transaction)
+transaction = TransactionServices(models.Transaction)

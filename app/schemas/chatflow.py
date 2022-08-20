@@ -21,12 +21,10 @@ class ChatflowUpdate(ChatflowBase):
 class Chatflow(ChatflowBase):
     id: UUID4
     user_id: Optional[UUID4] = None
-    user : User
+    user: User
 
     created_at: datetime
     updated_at: datetime
 
     class Config:
         orm_mode = True
-
-

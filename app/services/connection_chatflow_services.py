@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
 
 
-class ConnectionChatflowService:
+class ConnectionChatflowServices:
     def __init__(self, model):
         self.model = model
 
@@ -44,4 +44,4 @@ class ConnectionChatflowService:
         ).first()
 
 
-connection_chatflow = ConnectionChatflowService(models.ConnectionChatflow)
+connection_chatflow = ConnectionChatflowServices(models.ConnectionChatflow)

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/account", tags=["Account"])
 
+
 @router.get("/all", response_model=List[schemas.Account])
 def get_accounts_list(
         *,

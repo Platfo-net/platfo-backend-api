@@ -33,4 +33,5 @@ class Chatflow(Base):
     node = relationship("Node", back_populates="chatflow")
     user = relationship("User", back_populates="chatflow")
 
-    connection_chatflow = relationship("ConnectionChatflow", back_populates="chatflow")
+    connection_chatflow = relationship(
+        "ConnectionChatflow", back_populates="chatflow")

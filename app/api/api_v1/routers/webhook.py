@@ -1,15 +1,16 @@
-import requests
 
-from datetime import timedelta
+# noqa
+
+# from datetime import timedelta
 from fastapi import APIRouter, HTTPException, Response, Request
-from app.core.tasks import send_message_to_contact_management,\
-                           send_widget, send_menu,\
-                           send_text_message, send_batch_text_message
-from app.core.cache import commence_redis
+# from app.core.tasks import send_message_to_contact_management,\
+#     send_widget, send_menu,\
+#     send_text_message, send_batch_text_message
+# from app.core.cache import commence_redis
 from app.core.config import settings
 
 
-router = APIRouter(prefix="/webhook", tags=["webhooks"])
+router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
 
 class InstagramData:
@@ -105,7 +106,6 @@ async def instagram_listener_webhook(request: dict):
     #     direction="IN"
     # )
     #
-    # ###################### manteghe node grftne va send data to chatflow ######################
     # if instagram_data.payload:
     #     url = "{}/chatflow-services/api/v1/node/{}/next".format(
     #         settings.CHATFLOW_MANAGEMENT_BASE_URL,

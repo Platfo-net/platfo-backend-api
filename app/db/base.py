@@ -12,4 +12,3 @@ from app.models.trigger import Trigger  # noqa
 from app.models.connection_chatflow import ConnectionChatflow  # noqa
 from app.models.chatflow import Chatflow  # noqa
 from app.models.node import Node  # noqa
-

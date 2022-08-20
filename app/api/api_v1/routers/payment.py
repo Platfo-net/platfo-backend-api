@@ -25,7 +25,7 @@ def create_transaction(
         ],
     ),
 ) -> Any:
-    
+
     if obj_in not in TransactionStatus.VALID_STATUS:
         raise HTTPException(
             status_code=Error.INVALID_TRANSACTION_STATUS['status_code'],

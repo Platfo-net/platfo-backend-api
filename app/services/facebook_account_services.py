@@ -1,11 +1,11 @@
 from pydantic import UUID4
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from app import models, schemas
 from sqlalchemy.orm import Session
 
 
-class FacebookAccountService(
-        BaseService[
+class FacebookAccountServices(
+        BaseServices[
             models.FacebookAccount,
             schemas.FacebookAccountCreate,
             schemas.FacebookAccountUpdate
@@ -22,4 +22,4 @@ class FacebookAccountService(
             .first()
 
 
-facebook_account = FacebookAccountService(models.FacebookAccount)
+facebook_account = FacebookAccountServices(models.FacebookAccount)

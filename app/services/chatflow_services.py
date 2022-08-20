@@ -1,15 +1,15 @@
 # from typing import Optional
 
 from typing import List
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from sqlalchemy.orm import Session
 from app import models, schemas
 from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
 
 
-class ChatflowService(
-    BaseService
+class ChatflowServices(
+    BaseServices
     [
         models.Chatflow,
         schemas.ChatflowCreate,
@@ -54,4 +54,4 @@ class ChatflowService(
         ).offset(skip).limit(limit).all()
 
 
-chatflow = ChatflowService(models.Chatflow)
+chatflow = ChatflowServices(models.Chatflow)

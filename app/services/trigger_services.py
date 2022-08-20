@@ -1,10 +1,10 @@
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from app import models, schemas
 from sqlalchemy.orm import Session
 
 
-class TriggerService(
-        BaseService[
+class TriggerServices(
+        BaseServices[
             schemas.Trigger,
             schemas.TriggerCreate,
             schemas.TriggerUpdate
@@ -13,4 +13,4 @@ class TriggerService(
         return db.query(self.model).filter(self.model.name == name).first()
 
 
-trigger = TriggerService(models.Trigger)
+trigger = TriggerServices(models.Trigger)
