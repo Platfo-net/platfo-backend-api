@@ -5,8 +5,8 @@ from pathlib import Path
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Botinow User Management Api"
-    API_V1_STR: str = "/user-services/api/v1"
+    PROJECT_NAME: str = "Botinow Backend Api"
+    API_V1_STR: str = "/api/v1"
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     USERS_OPEN_REGISTRATION: str
