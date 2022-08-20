@@ -19,10 +19,9 @@ class InstagramPageService(
         account = db.query(models.FacebookAccount).filter(
             models.FacebookAccount.user_id == user_id).first()
 
-
         if not account:
             return []
-        pages =  db.query(self.model).filter(
+        pages = db.query(self.model).filter(
             self.model.facebook_account_id == account.id
         ).all()
         return pages
@@ -39,8 +38,9 @@ class InstagramPageService(
             self.model.instagram_page_id == ig_id
         ).delete()
 
-    def get_by_page_id(self , db: Session , * , page_id: str):
-        return db.query(self.model).filter(self.model.facebook_page_id == page_id).first()
+    def get_by_page_id(self, db: Session, *, page_id: str):
+        return db.query(self.model)\
+            .filter(self.model.facebook_page_id == page_id).first()
 
 
 instagram_page = InstagramPageService(models.InstagramPage)

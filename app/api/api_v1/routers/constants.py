@@ -2,7 +2,7 @@ from typing import Any, List
 
 from app import models, services, schemas
 from app.api import deps
-from fastapi import APIRouter, Depends , Security
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 from app.constants.role import Role
 from app.constants.platform import Platform
@@ -32,17 +32,13 @@ def get_roles(
 @router.get("/platforms")
 def get_platforms(
     db: Session = Depends(deps.get_db)
-) -> Any:   
-    
+) -> Any:
 
-    
-    return [{"name":Platform.INSTAGRAM["name"]}]
-
+    return [{"name": Platform.INSTAGRAM["name"]}]
 
 
 @router.get("/applications")
 def get_applications(
     db: Session = Depends(deps.get_db)
 ) -> Any:
-    return [{"name" :Application.BOT_BUILDER["name"] }]
-
+    return [{"name": Application.BOT_BUILDER["name"]}]
