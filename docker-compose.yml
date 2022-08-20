@@ -1,21 +1,22 @@
 services:
   api-1:
+    container_name: "${APP_NAME}-api-1"
     build:
       context: .
       args:
         - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-user-management-app"
+    image: "botinow-backend-app"
     volumes:
       - .:/app
     command: /app/startup.sh
-    container_name: "${APP_NAME}-api-1"
     ports:
       - "${API_PORT_1}:8000"
     env_file:
       - .env
     networks:
       - api-1-db-network
-      - global-api-network
+      - api-1-redis-network
+      - api-1-haproxy-network
     depends_on:
       - db
     healthcheck:
@@ -25,22 +26,23 @@ services:
       retries: 5
 
   api-2:
+    container_name: "${APP_NAME}-api-2"
     build:
       context: .
       args:
         - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-user-management-app"
+    image: "botinow-backend-app"
     volumes:
       - .:/app
     command: /app/startup.sh
-    container_name: "${APP_NAME}-api-2"
     ports:
       - "${API_PORT_2}:8000"
     env_file:
       - .env
     networks:
       - api-2-db-network
-      - global-api-network
+      - api-2-redis-network
+      - api-2-haproxy-network
     depends_on:
       - db
     healthcheck:
@@ -68,12 +70,54 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    container_name: "${APP_NAME}-redis"
+    restart: unless-stopped
+    image: redis:6.2.7
+    command: "redis-server /usr/local/etc/redis/redis.conf"
+    ports:
+      - "63793:63793"
+    networks:
+      - redis-insight-network
+      - api-1-redis-network
+      - api-2-redis-network
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+
+  redis-insight:
+    container_name:  "${APP_NAME}-redis-insight"
+    image: redislabs/redisinsight:1.12.1
+    ports:
+      - "${REDIS_INSIGHT_PORT}:8001"
+    networks:
+      - redis-insight-network
+
+  haproxy:
+    container_name: "${APP_NAME}-ha-proxy"
+    image: haproxy:2.6.3
+    volumes:
+    - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      - api-1-haproxy-network
+      - api-2-haproxy-network
+    depends_on:
+      - api-1
+      - api-2
+
 volumes:
   postgres-data:
+  redis-data:
 
 
 networks:
   api-1-db-network:
   api-2-db-network:
-  global-api-network:
-    external: true
+  redis-insight-network:
+  api-1-redis-network:
+  api-2-redis-network:
+  api-1-haproxy-network:
+  api-2-haproxy-network:

@@ -40,11 +40,6 @@ def connect_instagram_page(
     )
 
     res = requests.get(get_long_lived_token_url, params=params)
-    print("-------------------------")
-    print("-------------------------")
-    print(res.json())
-    print("-------------------------")
-    print("-------------------------")
     long_lived_user_access_token = res.json()['access_token']
     print(long_lived_user_access_token)
 
