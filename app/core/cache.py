@@ -1,9 +1,15 @@
-import requests
 import redis
 import sys
 import json
+
 from datetime import timedelta
+from fastapi.encoders import jsonable_encoder
+from app import services
 from app.core.config import settings
+from app.db.session import SessionLocal
+
+
+db = SessionLocal()
 
 
 def redis_connect() -> redis.client.Redis:
@@ -33,32 +39,28 @@ def set_data_to_cache(key: str, value: str) -> bool:
     return state
 
 
-def commence_redis(id_recipient) -> dict:
-
+def commence_redis(id_recipient,
+                   ):
     data = get_data_from_cache(key=id_recipient)
     if data is not None:
         data = json.loads(data)
         data["cache"] = True
-        print('cacheeeeeeeeeeee   shodeeeeeee', data)
+        print('cacheeeeeeeeeeee shodeeeeeee', data)
         return data
     else:
-        url = "{}/user-services/api/v1/instagram/get/{}".format(
-                    settings.USER_MANAGEMENT_BASE_URL,
-                    id_recipient
-                )
-        user_service_response = requests.get(url=url)
-        if user_service_response.status_code == 200:
-            user_service_response = user_service_response.json()
-            data = dict(user_id=user_service_response['facebook_account']
-                        ["user_id"],
-                        facebook_page_token=user_service_response
-                        ['facebook_page_token'],
-                        facebook_page_id=user_service_response
-                        ['facebook_page_id'],
-                        facebook_account_id=user_service_response
-                        ['facebook_account_id'],
-                        account_id=user_service_response['id'])
-            print('taze cache mikiineeeeeeeeeeeeeee', data)
+        obj_from_db = services.instagram_page.get_page_by_ig_id(
+            db, ig_id=id_recipient)
+        facebook_data_from_db = jsonable_encoder(obj_from_db.facebook_account)
+        instagram_data_from_db = jsonable_encoder(obj_from_db)
+        data = dict(
+            user_id=facebook_data_from_db['user_id'],
+            facebook_account_id=instagram_data_from_db['facebook_account_id'],
+            facebook_page_token=instagram_data_from_db['facebook_page_token'],
+            facebook_page_id=instagram_data_from_db['facebook_page_id'],
+            account_id=instagram_data_from_db['id']
+            )
+        if data:
+            print('taze cache mikoneeeeeeeeee')
             data["cache"] = False
             data = json.dumps(data)
             state = set_data_to_cache(key=id_recipient, value=data)

@@ -1,14 +1,18 @@
-
 # noqa
 
 # from datetime import timedelta
-from fastapi import APIRouter, HTTPException, Response, Request
-# from app.core.tasks import send_message_to_contact_management,\
-#     send_widget, send_menu,\
-#     send_text_message, send_batch_text_message
-# from app.core.cache import commence_redis
-from app.core.config import settings
+from fastapi import APIRouter, HTTPException, Response, Request, Depends
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
 
+from app import services, models
+from app.api import deps
+from app.core.tasks import send_message_to_contact_management,\
+    send_widget, send_menu,\
+    send_text_message, send_batch_text_message
+from app.core.cache import commence_redis
+from app.core.config import settings
+from app.db.session import engine
 
 router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
@@ -82,6 +86,8 @@ async def instagram_subscription_webhook(request: Request):
 
     return int(challenge)
 
+session = Session(bind=engine)
+
 
 @router.post("/instagram")
 async def instagram_listener_webhook(request: dict):
@@ -89,12 +95,11 @@ async def instagram_listener_webhook(request: dict):
     print(facebook_webhook_body)
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
-
-    # try:
-    #     user_page_data = commence_redis(
-    #         id_recipient=instagram_data.id_recipient)
-    # except:
-    #     return Response({"error": "Request failed"}, status_code=400)
+    try:
+        user_page_data = commence_redis(
+            id_recipient=instagram_data.id_recipient)
+    except:
+        return Response({"error": "Request failed"}, status_code=400)
 
     # send_message_to_contact_management.delay(
     #     from_page_id=instagram_data.id_sender,
@@ -152,7 +157,7 @@ async def instagram_listener_webhook(request: dict):
     #         user_page_data
     #     )
     #
-    # return Response()
+    return Response()
 
 
 @router.get("/page-subs")

@@ -30,7 +30,7 @@ def create_chatflow(
     chatflow = services.chatflow.create(
         db,
         obj_in=obj_in,
-        user_id=current_user["id"]
+        user_id=current_user.id
     )
     return chatflow
 
@@ -51,7 +51,7 @@ def delete_chatflow(
     chatflow = services.chatflow.get(
         db,
         id=chatflow_id,
-        user_id=current_user["id"]
+        user_id=current_user.id
     )
     if not chatflow:
         raise HTTPException(
@@ -80,7 +80,7 @@ def get_user_chatflows(
 
     return services.chatflow.get_multi(
         db,
-        user_id=current_user["id"],
+        user_id=current_user.id,
         skip=skip,
         limit=limit
     )
