@@ -32,3 +32,9 @@ from .chatflow import Chatflow, ChatflowCreate, ChatflowUpdate
 
 from .node import NodeCreate, NodeUpdate,\
     Node, MessageWidgetCreate, MenuWidgetCreate, FullNodeCreate
+
+
+
+from .contact import Contact , ContactCreate
+
+from .message import MessageCreate , Message

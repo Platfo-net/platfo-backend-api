@@ -1,0 +1,88 @@
+from typing import List
+from uuid import uuid4
+
+from pydantic import UUID4
+from app import schemas
+from fastapi.encoders import jsonable_encoder
+from datetime import datetime
+from app import models
+from sqlalchemy.orm import Session
+from datetime import datetime
+
+
+class ContactServices:
+    def __init__(self, model):
+        self.model = model
+
+    def create(self, db: Session, *, obj_in: schemas.ContactCreate):
+        obj_in = jsonable_encoder(obj_in)
+        contact = self.model(
+            **obj_in,
+            information={},
+            last_message_at=datetime.now()
+        )
+        db.add(contact)
+        db.commit()
+        db.refresh(contact)
+
+        return contact
+
+    def get(self, db: Session, *, id: UUID4):
+        return db.query(self.model).filter(self.model.id == id).first()
+
+    def get_contact_by_igs_id(self, db: Session, *, contact_igs_id: str):
+        return db.query(self.model).filter(
+            self.model.contact_igs_id == contact_igs_id
+        ).first()
+
+    def set_information(
+        self,
+        db: Session,
+        *,
+        contact_igs_id: str,
+        information: dict,
+    ):
+        db_obj = db.query(self.model).filter(
+            self.model.contact_igs_id == contact_igs_id)
+        db_obj.information = information
+        db.add(db_obj)
+        db.commit(db_obj)
+        db.add(db_obj)
+        return db_obj
+
+    def get_pages_contacts(
+        self,
+        db: Session,
+        *,
+        page_id: str,
+        skip: int = 0,
+        limit: int = 100
+    ) -> List[schemas.Contact]:
+        """Return an specific instagram page's contacts
+
+        Args:
+            page_id (str): Id of a instagram's facebook page
+            skip (int, optional):
+            limit (int, optional):
+
+        Returns:
+            List of contacts
+        """
+        return db.query(self.model).filter(
+            self.model.user_page_id == page_id
+        ).offset(skip).limit(limit).all()
+
+    def update_last_message(self, db: Session, *, contact_igs_id: str, last_message: dict):
+
+        db_obj: models.Contact = db.query(self.model).filter(
+            self.model.contact_igs_id == contact_igs_id
+        ).first()
+        
+        db_obj.last_message = last_message
+        db_obj.last_message_at = datetime.now()
+
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+
+contact = ContactServices(models.Contact)
