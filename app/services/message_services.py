@@ -1,11 +1,7 @@
 from typing import List
 from app import models, schemas
-from uuid import uuid4
-
 from pydantic import UUID4
-from app import schemas
 from fastapi.encoders import jsonable_encoder
-from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 

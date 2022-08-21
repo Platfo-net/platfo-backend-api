@@ -1,4 +1,3 @@
-import os
 from functools import lru_cache
 from typing import Any, Dict, Optional
 from pydantic import BaseSettings, PostgresDsn, validator
@@ -36,7 +35,6 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str
     REDIS_PORT: int
-
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
