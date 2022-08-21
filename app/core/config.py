@@ -3,6 +3,9 @@ from functools import lru_cache
 from typing import Any, Dict, Optional
 from pydantic import BaseSettings, PostgresDsn, validator
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Settings(BaseSettings):

@@ -100,7 +100,8 @@ services:
     image: botinow-backend-app
     container_name: "${APP_NAME}-celery-worker"
     restart: unless-stopped
-    command: celery -A facebook worker --loglevel=info  # todo
+    command: celery -A app.core.celery_config worker --loglevel=info
+
     depends_on:
       - api-1
       - api-2
@@ -117,7 +118,7 @@ services:
     image: botinow-backend-app
     container_name: "${APP_NAME}-celery-flower"
     restart: unless-stopped
-    command: celery -A facebook flower --loglevel=info
+    command: celery -A app.core.celery_config flower --loglevel=info
     ports:
       - "5555:5555"
     depends_on:
