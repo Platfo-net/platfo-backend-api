@@ -7,8 +7,9 @@ from sqlalchemy.orm import Session
 
 def init_db(db: Session) -> None:
 
-    # Create 1st Superuser
-    # Create Role If They Don't Exist
+    print(settings.CELERY_BROKER_URL)
+    # print("heeey")
+
 
     # Admin role
     admin_role = services.role.get_by_name(
