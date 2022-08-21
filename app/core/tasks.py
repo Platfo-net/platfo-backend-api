@@ -1,11 +1,9 @@
 import time
 import requests
 
-from app.core.celery_config import celery_app
 from app.core.config import settings
 
 
-@celery_app.task()
 def send_message_to_contact_management(from_page_id,
                                        to_page_id,
                                        content,
@@ -24,7 +22,6 @@ def send_message_to_contact_management(from_page_id,
     return res
 
 
-@celery_app.task()
 def send_text_message(
         text: str,
         from_id: str,
@@ -56,7 +53,6 @@ def send_text_message(
     return res.json()
 
 
-@celery_app.task()
 def send_batch_text_message(messages):
     for message in messages:
         url = "{}/{}/{}/messages".format(
@@ -83,7 +79,6 @@ def send_batch_text_message(messages):
     return 1
 
 
-@celery_app.task()
 def send_menu(data, from_id: str, to_id: str, page_access_token: str):
     body = {
         "template_type": "generic",
@@ -132,7 +127,6 @@ def send_menu(data, from_id: str, to_id: str, page_access_token: str):
     return res.status_code
 
 
-@celery_app.task()
 def send_widget(widget, id_sender, payload, user_page_data):
     # print(user)
     while widget["widget_type"] == "MESSAGE":

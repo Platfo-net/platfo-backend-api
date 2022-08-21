@@ -43,6 +43,7 @@ services:
       - api-2-db-network
       - api-2-redis-network
       - api-2-haproxy-network
+
     depends_on:
       - db
     healthcheck:
@@ -95,56 +96,19 @@ services:
     networks:
       - redis-insight-network
 
-  celery-worker:
-    build: .
-    image: botinow-backend-app
-    container_name: "${APP_NAME}-celery-worker"
-    restart: unless-stopped
-    command: celery -A app.core.celery_config worker --loglevel=info
+  # haproxy:
+  #   container_name: "${APP_NAME}-ha-proxy"
+  #   image: haproxy:2.6.3
+  #   volumes:
+  #   - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+  #   networks:
+  #     - api-1-haproxy-network
+  #     - api-2-haproxy-network
+  #   depends_on:
+  #     - api-1
+  #     - api-2
 
-    depends_on:
-      - api-1
-      - api-2
-      - redis
-    volumes:
-      - .:/app
-    networks:
-      - celery-redis-network
-      - api-celery-network
-      - global-api-network
-
-  flower:
-    build: .
-    image: botinow-backend-app
-    container_name: "${APP_NAME}-celery-flower"
-    restart: unless-stopped
-    command: celery -A app.core.celery_config flower --loglevel=info
-    ports:
-      - "5555:5555"
-    depends_on:
-      - api-1
-      - api-2
-      - redis
-      - celery-worker
-    volumes:
-      - .:/app
-    networks:
-      - celery-redis-network
-      - api-celery-network
-
-  haproxy:
-    container_name: "${APP_NAME}-ha-proxy"
-    image: haproxy:2.6.3
-    volumes:
-    - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-    networks:
-      - api-1-haproxy-network
-      - api-2-haproxy-network
-    depends_on:
-      - api-1
-      - api-2
-
-volumes: # todo celery?
+volumes:
   postgres-data:
   redis-data:
 
@@ -155,7 +119,5 @@ networks:
   redis-insight-network:
   api-1-redis-network:
   api-2-redis-network:
-  celery-redis-network:
-  api-celery-network:
   api-1-haproxy-network:
   api-2-haproxy-network:

@@ -1,12 +1,12 @@
 #!/bin/bash
 
- Let the DB start
-python ./app/pre_start.py
-
-# Run migrations
+# Let the DB start
+#python ./app/pre_start.py
+#
+## Run migrations
 alembic upgrade head
 
- Create initial data in DB
+# Create initial data in DB
 python ./app/initial_data.py
 
 #Start app

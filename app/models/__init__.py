@@ -10,3 +10,6 @@ from .connection_chatflow import ConnectionChatflow
 from .trigger import Trigger
 from .chatflow import Chatflow
 from .node import Node
+
+from .message import Message
+from .contact import Contact

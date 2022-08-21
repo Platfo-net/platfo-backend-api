@@ -18,12 +18,12 @@ def create_chatflow(
     db: Session = Depends(deps.get_db),
     obj_in: schemas.ChatflowCreate,
     current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 
 ) -> Any:
 
@@ -41,12 +41,12 @@ def delete_chatflow(
     db: Session = Depends(deps.get_db),
     chatflow_id: UUID4,
     current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     chatflow = services.chatflow.get(
         db,
@@ -70,12 +70,12 @@ def get_user_chatflows(
     skip: int = 0,
     limit: int = 100,
     current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
 
     return services.chatflow.get_multi(
