@@ -17,4 +17,3 @@ class MessageCreate(MessageBase):
 class Message(MessageBase):
     id: UUID4
     send_at: datetime
-

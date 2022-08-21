@@ -1,11 +1,7 @@
 from typing import List
-from uuid import uuid4
-
 from pydantic import UUID4
-from app import schemas
 from fastapi.encoders import jsonable_encoder
-from datetime import datetime
-from app import models
+from app import models, schemas
 from sqlalchemy.orm import Session
 from datetime import datetime
 
@@ -72,17 +68,24 @@ class ContactServices:
             self.model.user_page_id == page_id
         ).offset(skip).limit(limit).all()
 
-    def update_last_message(self, db: Session, *, contact_igs_id: str, last_message: dict):
+    def update_last_message(
+        self,
+        db: Session,
+        *,
+        contact_igs_id: str,
+        last_message: dict
+    ):
 
         db_obj: models.Contact = db.query(self.model).filter(
             self.model.contact_igs_id == contact_igs_id
         ).first()
-        
+
         db_obj.last_message = last_message
         db_obj.last_message_at = datetime.now()
 
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+
 
 contact = ContactServices(models.Contact)

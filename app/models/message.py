@@ -2,9 +2,8 @@ import datetime
 from uuid import uuid4
 
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, UniqueConstraint,JSON, DateTime
+from sqlalchemy import Column, ForeignKey, String, JSON, DateTime
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 
 
 class Message(Base):
@@ -20,12 +19,8 @@ class Message(Base):
     content = Column(JSON, nullable=True)
     send_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-
     user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id"),
         nullable=True,
     )
-
-
-

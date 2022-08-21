@@ -7,10 +7,6 @@ from sqlalchemy.orm import Session
 
 def init_db(db: Session) -> None:
 
-    print(settings.CELERY_BROKER_URL)
-    # print("heeey")
-
-
     # Admin role
     admin_role = services.role.get_by_name(
         db, name=Role.ADMIN["name"]

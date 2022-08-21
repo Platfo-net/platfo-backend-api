@@ -9,12 +9,12 @@ router = APIRouter(prefix="/message", tags=["Messages"])
 
 
 # @router.post("/", response_model=schemas.Message)
-async def create_message(
+def create_message(
     *,
     obj_in: schemas.MessageCreate,
 ):
     if obj_in.direction == "In":
-        contact = await services.contact.get_by_page_id(
+        contact = services.contact.get_by_page_id(
             page_id=obj_in.from_page_id
         )
         if not contact:
@@ -22,7 +22,7 @@ async def create_message(
                 contact_igs_id=obj_in.from_page_id,
                 user_page_id=obj_in.to_page_id,
                 user_id=obj_in.user_id)
-            await services.contact.create(obj_in=contact_in)
+            services.contact.create(obj_in=contact_in)
 
             try:
                 facebook_page_token = commence_redis(
@@ -46,7 +46,7 @@ async def create_message(
                 profile_image = res.json()['profile_pic']
                 information = dict(username=username,
                                    profile_image=profile_image)
-                await services.contact.set_information(
+                services.contact.set_information(
                     information=information,
                     contact_igs_id=obj_in.from_page_id
                 )
@@ -54,14 +54,14 @@ async def create_message(
                 pass
 
     if obj_in.direction == "IN":
-        await services.contact.update_last_message_at(
+        services.contact.update_last_message_at(
             contact_igs_id=obj_in.from_page_id)
 
     else:
-        await services.contact.update_last_message_at(
+        services.contact.update_last_message_at(
             contact_igs_id=obj_in.to_page_id)
 
-    return await services.message.create(obj_in=obj_in)
+    return services.message.create(obj_in=obj_in)
 
 
 @router.get("/archive/{page_id}/{contact_igs_id}",
