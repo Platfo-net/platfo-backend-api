@@ -35,7 +35,7 @@ def create_chatflow(
     return chatflow
 
 
-@router.delete("/{chatflow_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{chatflow_id}")
 def delete_chatflow(
     *,
     db: Session = Depends(deps.get_db),

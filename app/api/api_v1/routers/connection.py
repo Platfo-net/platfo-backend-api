@@ -115,12 +115,14 @@ def get_connection_by_id(
         ],
     ),
 ):
-
     """
         Get a connection and it's detail by connecion id.
             all connection chatflows will return in this API
+
         Be Careful: Send all of connection chatflows in this endpoint
+
         Args:
+
         connection_id (UUID4, optional): Id of a connection
     """
 
@@ -132,12 +134,17 @@ def get_connection_by_id(
         )
     connection_chatflows = services.connection_chatflow.\
         get_by_connection_id(db, connection_id=connection.id)
+
     new_connection_chatflows = [
         schemas.ConnectionChatflow(
             id=connection_chatflow.id,
             chatflow_id=connection_chatflow.chatflow_id,
             trigger_id=connection_chatflow.trigger_id,
-            trigger=connection_chatflow.trigger,
+            chatflow=services.chatflow.get(
+                db,
+                id=connection_chatflow.chatflow_id,
+                user_id=current_user.id
+            )
         )
         for connection_chatflow in connection_chatflows
     ]
@@ -197,7 +204,6 @@ def update_connection(
         ],
     ),
 ):
-
     """
     Endpoint for update a connection
     Args:

@@ -10,7 +10,7 @@ class ContactServices:
     def __init__(self, model):
         self.model = model
 
-    def create(self, db: Session, *, obj_in: schemas.ContactCreate):
+    def create(self, db: Session, *, obj_in: schemas.ContactCreate)-> models.Contact:
         obj_in = jsonable_encoder(obj_in)
         contact = self.model(
             **obj_in,
@@ -39,11 +39,12 @@ class ContactServices:
         information: dict,
     ):
         db_obj = db.query(self.model).filter(
-            self.model.contact_igs_id == contact_igs_id)
+            self.model.contact_igs_id == contact_igs_id).first()
         db_obj.information = information
         db.add(db_obj)
-        db.commit(db_obj)
-        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+
         return db_obj
 
     def get_pages_contacts(

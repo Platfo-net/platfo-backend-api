@@ -16,7 +16,7 @@ class ConnectionChatflowCreate(ConnectionChatflowBase):
 
 class ConnectionChatflow(ConnectionChatflowBase):
     id: UUID4
-    chatflow: Chatflow
+    chatflow: Optional[Chatflow]
 
     class Config:
         orm_mode = True

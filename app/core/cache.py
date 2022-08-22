@@ -1,71 +1,52 @@
-import redis
-import sys
+from sqlalchemy.orm import Session
 import json
 
 from datetime import timedelta
-from fastapi.encoders import jsonable_encoder
 from app import services
-from app.core.config import settings
-from app.db.session import SessionLocal
+from redis.client import Redis
+from app.core.extra_classes import UserData
 
 
-db = SessionLocal()
-
-
-def redis_connect() -> redis.client.Redis:
-    try:
-        client = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=1,
-        )
-        ping = client.ping()
-        if ping is True:
-            return client
-    except redis.AuthenticationError:
-        print("AuthenticationError")
-        sys.exit(1)
-
-
-def get_data_from_cache(key: str) -> str:
-    client = redis_connect()
+def get_data_from_cache(client: Redis, key: str = None) -> str:
     val = client.get(key)
     return val
 
 
-def set_data_to_cache(key: str, value: str) -> bool:
-    client = redis_connect()
+def set_data_to_cache(client: Redis, key: str = None, value: str = None) -> bool:
     state = client.setex(key, timedelta(seconds=3600), value=value)
     return state
 
 
-def commence_redis(id_recipient,
-                   ):
-    data = get_data_from_cache(key=id_recipient)
-    if data is not None:
-        data = json.loads(data)
-        data["cache"] = True
-        print('cacheeeeeeeeeeee shodeeeeeee', data)
-        return data
-    else:
-        obj_from_db = services.instagram_page.get_page_by_ig_id(
-            db, ig_id=id_recipient)
-        facebook_data_from_db = jsonable_encoder(obj_from_db.facebook_account)
-        instagram_data_from_db = jsonable_encoder(obj_from_db)
+def get_user_data(client: Redis, db: Session, *,  instagram_page_id: str = None) -> UserData:
+    data = get_data_from_cache(client, key=instagram_page_id)
+
+    if data is None:
+        print("----------------------------")
+        print(instagram_page_id)
+        print("----------------------------")
+        print("----------------------------")
+
+        instagram_page = services.instagram_page.get_page_by_instagram_page_id(
+            db, instagram_page_id = instagram_page_id)
+
         data = dict(
-            user_id=facebook_data_from_db['user_id'],
-            facebook_account_id=instagram_data_from_db['facebook_account_id'],
-            facebook_page_token=instagram_data_from_db['facebook_page_token'],
-            facebook_page_id=instagram_data_from_db['facebook_page_id'],
-            account_id=instagram_data_from_db['id']
-            )
-        if data:
-            print('taze cache mikoneeeeeeeeee')
-            data["cache"] = False
-            data = json.dumps(data)
-            state = set_data_to_cache(key=id_recipient, value=data)
-            if state is True:
-                return json.loads(data)
-            return data  # noqa
-        else:
-            return Exception("No Redis Connection!") # noqa
+            user_id=str(instagram_page.facebook_account.user_id),
+            facebook_account_id=str(instagram_page.facebook_account_id),
+            facebook_page_token=instagram_page.facebook_page_token,
+            facebook_page_id=instagram_page.facebook_page_id,
+            account_id=str(instagram_page.id)
+        )
+        data = json.dumps(data)
+        state = set_data_to_cache(client , key=instagram_page_id, value=data)
+        if state is True:
+            data = get_data_from_cache(client, key = instagram_page_id )
+
+    data = json.loads(data)
+
+    return UserData(
+        user_id=data["user_id"],
+        facebook_account_id=data["facebook_account_id"],
+        facebook_page_token=data["facebook_page_token"],
+        facebook_page_id=data["facebook_page_id"],
+        account_id=data["account_id"],
+    )
