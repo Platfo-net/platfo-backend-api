@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 from pydantic import UUID4, BaseModel
 
 
@@ -17,6 +17,7 @@ class Contact(ContactBase):
     id: UUID4
     last_message_at: datetime
     information: dict
+    last_message: dict
 
 
 class ProfileCreate(BaseModel):
