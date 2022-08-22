@@ -11,13 +11,15 @@ class MessageServices:
         self.model = model
 
     def create(self, db: Session, *, obj_in: schemas.MessageCreate):
-        obj_in = jsonable_encoder(obj_in)
         if type(obj_in.content) == str:
             obj_in.content = {
                 "text": obj_in.content
             }
         message = self.model(
-            **obj_in,
+            from_page_id=obj_in.from_page_id,
+            to_page_id=obj_in.to_page_id,
+            content=obj_in.content,
+            user_id=obj_in.user_id
         )
         db.add(message)
         db.commit()

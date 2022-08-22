@@ -92,3 +92,20 @@ def get_current_active_user(
             detail=Error.INACTIVE_USER["text"]
         )
     return current_user
+
+
+import redis
+import sys
+def get_redis_client():
+    try:
+        client = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=1,
+        )
+        ping = client.ping()
+        if ping is True:
+            return client
+    except redis.AuthenticationError:
+        print("AuthenticationError")
+        sys.exit(1)

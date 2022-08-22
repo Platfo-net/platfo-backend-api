@@ -26,11 +26,11 @@ class InstagramPageServices(
         ).all()
         return pages
 
-    def get_page_by_ig_id(
-        self, db: Session, *, ig_id
+    def get_page_by_instagram_page_id(
+        self, db: Session, *, instagram_page_id: str = None
     ) -> schemas.InstagramPage:
         return db.query(self.model).filter(
-            self.model.instagram_page_id == ig_id
+            self.model.instagram_page_id == instagram_page_id
         ).first()
 
     def delete_by_page_id(self, db: Session, *, ig_id):

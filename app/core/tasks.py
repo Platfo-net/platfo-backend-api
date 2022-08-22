@@ -1,171 +1,119 @@
+from sqlalchemy.orm import Session
+from fastapi.exceptions import HTTPException
 import time
 import requests
 
 from app.core.config import settings
+from app import schemas, services
+from app.constants.message_direction import MessageDirection
+from redis.client import Redis
+from app.core import cache
+from app.core.instagram_graph_api import graph_api
 
+from app.core.extra_classes import UserData
 
-def send_message_to_contact_management(from_page_id,
-                                       to_page_id,
-                                       content,
-                                       user_id,
-                                       direction):
-    url = "{}/contact-services/api/v1/message/".format(
-        settings.CONTACT_MANAGEMENT_BASE_URL
-    )
-    res = requests.post(url, json={
-        "from_page_id": from_page_id,
-        "to_page_id": to_page_id,
-        "content": content,
-        "user_id": user_id,
-        "direction": direction
-    })
-    return res
+def save_message(db, client: Redis, obj_in: schemas.MessageCreate , instagram_page_id:str= None):
 
+    if obj_in.direction == MessageDirection.IN["name"]:
+        contact = services.contact.get_contact_by_igs_id(
+            db,
+            contact_igs_id=obj_in.from_page_id
+        )
+        if not contact:
+            contact_in = schemas.ContactCreate(
+                contact_igs_id=obj_in.from_page_id,
+                user_page_id=obj_in.to_page_id,
+                user_id=obj_in.user_id)
+            new_contact = services.contact.create(db , obj_in=contact_in)
 
-def send_text_message(
-        text: str,
-        from_id: str,
-        to_id: str,
-        page_access_token: str,
-):
-    url = "{}/{}/{}/messages".format(
-        settings.FACEBOOK_GRAPH_BASE_URL,
-        settings.FACEBOOK_GRAPH_VERSION,
-        from_id)
+            try:
+                user_data = cache.get_user_data(
+                    client,
+                    db,
+                    instagram_page_id=instagram_page_id
+                )
+                
+            except Exception:
+                raise HTTPException(status_code=400)
 
-    payload = {
-        "recipient": {
-            'id': to_id,
-        },
-        "message": {
-            "text": text
-        }
-    }
+            information = graph_api.get_contact_information_from_facebook(
+                contact_igs_id=new_contact.contact_igs_id,
+                page_access_token=user_data.facebook_page_token
+            )
+            services.contact.set_information(
+                db,
+                contact_igs_id=obj_in.from_page_id,
+                information=information,
+            )
 
-    params = {
-        "access_token": page_access_token
-    }
-
-    res = requests.post(url, params=params, json=payload)
-    print(res)
-    print('javab isssssssssssss', res.json())
-
-    return res.json()
-
-
-def send_batch_text_message(messages):
-    for message in messages:
-        url = "{}/{}/{}/messages".format(
-            settings.FACEBOOK_GRAPH_BASE_URL,
-            settings.FACEBOOK_GRAPH_VERSION,
-            message["from_id"])
-
-        payload = {
-            "recipient": {
-                'id': message["to_id"],
-            },
-            "message": {
-                "text": message["text"]
-            }
-        }
-
-        params = {
-            "access_token": message["page_access_token"]
-        }
-
-        res = requests.post(url, params=params, json=payload)
-        print(res)
-
-    return 1
-
-
-def send_menu(data, from_id: str, to_id: str, page_access_token: str):
-    body = {
-        "template_type": "generic",
-        "elements": [
-            {
-                "title": data["title"],
-                # "default_action": {
-                #   "type": "web_url",
-                #   "url": "https://www.chatbot.aimedic.co/"
-                # },
-                "buttons": [
-                    {
-                        "type": "postback",
-                        "title": choice["text"],
-                        "payload": choice["id"]
-                    } for choice in data["choices"]
-                ]
-            }
-        ]
-    }
-
-    url = "{}/{}/{}/messages".format(
-        settings.FACEBOOK_GRAPH_BASE_URL,
-        settings.FACEBOOK_GRAPH_VERSION,
-        from_id)
-
-    params = {
-        "access_token": page_access_token,
-    }
-
-    payload = {
-        "recipient": {
-            'id': to_id,
-        },
-        "message": {
-            "attachment": {
-                "type": "template",
-                "payload": body
-            }
-        }
-    }
-
-    res = requests.post(url=url, params=params, json=payload)
-    # print(res)
-    print('javabe 2 v0mi isssssssss', res.json())
-    return res.status_code
-
-
-def send_widget(widget, id_sender, payload, user_page_data):
-    # print(user)
-    while widget["widget_type"] == "MESSAGE":
-        send_text_message.delay(
-            text=widget["message"],
-            from_id=user_page_data["facebook_page_id"],
-            to_id=id_sender,
-            page_access_token=user_page_data["facebook_page_token"]
+    if obj_in.direction == MessageDirection.IN["name"]:
+        services.contact.update_last_message(
+            db,
+            contact_igs_id=obj_in.from_page_id,
+            last_message=obj_in.content
         )
 
-        send_message_to_contact_management.delay(
-            from_page_id=user_page_data["facebook_page_id"],
-            to_page_id=id_sender,
-            content=widget,
-            user_id=user_page_data["user_id"],
-            direction="OUT"
+    else:
+        services.contact.update_last_message(
+            db,
+            contact_igs_id=obj_in.to_page_id,
+            last_message=obj_in.content
+        )
+
+    return services.message.create(db, obj_in=obj_in)
+
+
+def send_widget(
+    db: Session,
+    client: Redis,
+    *,
+    widget: dict,
+    contact_igs_id: str,
+    payload: str,
+    user_page_data: UserData,
+):
+    # print(user)
+    print(widget)
+    while widget["widget_type"] == "MESSAGE":
+        graph_api.send_text_message(
+            text=widget["message"],
+            from_id=user_page_data.facebook_page_id,
+            to_id=contact_igs_id,
+            page_access_token=user_page_data.facebook_page_token
+        )
+
+        save_message(
+            db,
+            client,
+            obj_in=schemas.MessageCreate(
+                from_page_id=user_page_data.facebook_page_id,
+                to_page_id=contact_igs_id,
+                content=widget,
+                user_id=user_page_data.user_id,
+                direction=MessageDirection.OUT["name"]
+            )
         )
 
         payload = widget["id"]
-        url = "{}/chatflow-services/api/v1/node/{}/next".format(
-            settings.CHATFLOW_MANAGEMENT_BASE_URL,
-            payload
-        )
-        time.sleep(0.5)
-        res = requests.get(url=url)
-        if res.status_code != 200:
+        node = services.node.get_next_node(db, from_id=payload)
+        if node is None:
             break
-        widget = res.json()
+        widget = node.widget
 
     if widget["widget_type"] == "MENU":
-        send_menu.delay(widget,
-                        from_id=user_page_data["facebook_page_id"],
-                        to_id=id_sender,
-                        page_access_token=user_page_data["facebook_page_token"]
-                        )
-        send_message_to_contact_management.delay(
-            from_page_id=user_page_data["facebook_page_id"],
-            to_page_id=id_sender,
-            content=widget,
-            user_id=user_page_data["user_id"],
-            direction="OUT"
+        graph_api.send_menu(widget,
+                            from_id=user_page_data.facebook_page_id,
+                            to_id=contact_igs_id,
+                            page_access_token=user_page_data.facebook_page_token
+                            )
+        save_message(
+            db,
+            client,
+            obj_in=schemas.MessageCreate(
+                from_page_id=user_page_data.facebook_page_id,
+                to_page_id=contact_igs_id,
+                content=widget,
+                user_id=user_page_data.user_id,
+                direction="OUT"
+            )
         )

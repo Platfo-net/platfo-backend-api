@@ -1,59 +1,26 @@
 # noqa
 
 # from datetime import timedelta
-from fastapi import APIRouter, HTTPException, Response, Request, Depends
+from redis.client import Redis
+from fastapi import APIRouter, HTTPException, Response, Request, Depends, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from app import services, models
+from app import services, models, schemas
 from app.api import deps
-from app.core.tasks import send_message_to_contact_management,\
-    send_widget, send_menu,\
-    send_text_message, send_batch_text_message
-from app.core.cache import commence_redis
+from app.core import cache, tasks
 from app.core.config import settings
-from app.db.session import engine
+from app.constants.message_direction import MessageDirection
+
+
+from app.core.extra_classes import InstagramData
+
 
 router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
 
-class InstagramData:
-    def __init__(self,
-                 id_sender: str = None,
-                 id_recipient: str = None,
-                 message_detail: str = None,
-                 message_id: str = None,
-                 postback: dict = {},
-                 payload: dict = {}):
-
-        self.id_sender = id_sender
-        self.id_recipient = id_recipient
-        self.message_detail = message_detail
-        self.message_id = message_id
-        self.postback = postback
-        self.payload = payload
-
-    def parse(self, body):
-        for element in body:
-            messaging_list = element['messaging']
-            for item in messaging_list:
-                self.id_sender = item['sender']['id']
-                self.id_recipient = item['recipient']['id']
-                try:
-                    if item['message']:
-                        self.message_id = item['message']['mid']
-                        try:
-                            self.message_detail = item['message']['text']
-                        except Exception:
-                            pass
-                except Exception:
-                    self.message_detail = item['postback']["title"]
-                    # print(self.postback)
-                    self.payload = item['postback']['payload']
-
-
-@router.get("/user-subs")
-async def user_subscription_webhook(request: Request):
+@router.get("/user")
+def user_webhook_subscription(request: Request):
     try:
         _ = request.query_params["hub.mode"]
         challenge = request.query_params["hub.challenge"]
@@ -67,13 +34,13 @@ async def user_subscription_webhook(request: Request):
     return int(challenge)
 
 
-@router.post("/user-subs")
-async def user_listener_webhook(request: Request):
+@router.post("/user")
+def user_webhook_listener(request: Request):
     return Response(status_code=200)
 
 
 @router.get("/instagram")
-async def instagram_subscription_webhook(request: Request):
+def instagram_subscription_webhook(request: Request):
     try:
         _ = request.query_params["hub.mode"]
         challenge = request.query_params["hub.challenge"]
@@ -85,83 +52,97 @@ async def instagram_subscription_webhook(request: Request):
         raise HTTPException(status_code=400, detail="Invalid request")
 
     return int(challenge)
-
-session = Session(bind=engine)
 
 
 @router.post("/instagram")
-async def instagram_listener_webhook(request: dict):
+def webhook_instagram_listener(
+    *,
+    db: Session = Depends(deps.get_db),
+    redis_client: Redis = Depends(deps.get_redis_client),
+    request: dict,
+    background_tasks: BackgroundTasks
+):
     facebook_webhook_body = request['entry']
-    print(facebook_webhook_body)
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
-    try:
-        user_page_data = commence_redis(
-            id_recipient=instagram_data.id_recipient)
-    except:
-        return Response({"error": "Request failed"}, status_code=400)
+    # try:
+    user_page_data = cache.get_user_data(
+            redis_client,
+            db,
+            instagram_page_id=instagram_data.id_recipient)
+    # except:
+        # raise HTTPException(status_code=400, detail="Error getting user data")
 
-    # send_message_to_contact_management.delay(
-    #     from_page_id=instagram_data.id_sender,
-    #     to_page_id=user_page_data["facebook_page_id"],
-    #     content={
-    #         "message": instagram_data.message_detail
-    #     },
-    #     user_id=user_page_data["user_id"],
-    #     direction="IN"
-    # )
-    #
-    # if instagram_data.payload:
-    #     url = "{}/chatflow-services/api/v1/node/{}/next".format(
-    #         settings.CHATFLOW_MANAGEMENT_BASE_URL,
-    #         instagram_data.payload
-    #     )
-    #
-    #     # get next node
-    #     res = requests.get(url=url)
-    #
-    #     widget = res.json()
-    #
-    #     send_widget.delay(
-    #         widget,
-    #         instagram_data.id_sender,
-    #         instagram_data.payload,
-    #         user_page_data
-    #     )
-    #
-    # else:
-    #     # get chatflow from a connection
-    #     url = "{}/user-services/api/v1/connection/related_chatflow/{}/{}/{}".format(
-    #         settings.USER_MANAGEMENT_BASE_URL,
-    #         "BOT_BUILDER",
-    #         user_page_data["account_id"],
-    #         "MESSAGE"
-    #     )
-    #     # get chatflow_id
-    #     res = requests.get(url)
-    #     if res.status_code != 200:
-    #         return Response()
-    #
-    #     chatflow_id = res.json()["chatflow_id"]
-    #
-    #     res = requests.get("{}/chatflow-services/api/v1/node/{}/head".format(
-    #         settings.CHATFLOW_MANAGEMENT_BASE_URL,
-    #         chatflow_id
-    #     ))
-    #
-    #     widget = res.json()
-    #     send_widget.delay(
-    #         widget,
-    #         instagram_data.id_sender,
-    #         instagram_data.payload,
-    #         user_page_data
-    #     )
-    #
-    return Response()
+    message_in = schemas.MessageCreate(
+        from_page_id=instagram_data.id_sender,
+        to_page_id=user_page_data.facebook_page_id,
+        content={
+            "message": instagram_data.message_detail
+        },
+        user_id=user_page_data.user_id,
+        direction=MessageDirection.IN["name"]
+    )
+    print("--------------------------------")
+    print("--------------------------------")
+    print(message_in)
+    print("--------------------------------")
+    background_tasks.add_task(tasks.save_message,
+                              db,
+                              redis_client,
+                              obj_in=message_in,
+                              instagram_page_id = instagram_data.id_recipient)
+    if instagram_data.payload:
+
+        node = services.node.get_next_node(db, from_id=instagram_data.payload)
+
+        background_tasks.add_task(tasks.send_widget,
+                                  db,
+                                  redis_client,
+                                  widget=node.widget,
+                                  contact_igs_id=instagram_data.id_sender,
+                                  payload=instagram_data.payload,
+                                  user_page_data=user_page_data
+                                  )
+
+    else:
+        # get chatflow from a connection
+
+        chatflow_id = None
+        trigger = services.trigger.get_by_name(db, name="MESSAGE")
+        connections = services.connection.get_page_connection(
+            db,
+            account_id=user_page_data.account_id,
+            application_name="BOT_BUILDER"
+        )
+
+        if connections is None:
+            return None
+        
+        for connection in connections:
+            connection_chatflow = services.connection_chatflow\
+                .get_connection_chatflow_by_connection_and_trigger(
+                    db, connection_id=connection.id, trigger_id=trigger.id)
+            if connection_chatflow:
+                chatflow_id = connection_chatflow.chatflow_id
+
+        if chatflow_id is None:
+            return None
+
+        print(chatflow_id)
+        node = services.node.get_chatflow_head_node(db , chatflow_id = chatflow_id)
+        background_tasks.add_task(tasks.send_widget,
+                                  db,
+                                  redis_client,
+                                  widget=node.widget,
+                                  contact_igs_id=instagram_data.id_sender,
+                                  payload=instagram_data.payload,
+                                  user_page_data=user_page_data
+                                  )
+    return Response(status_code = 200)
 
 
-@router.get("/page-subs")
-async def page_subscription(request: Request):
+@router.get("/page")
+def page_subscription(request: Request):
     try:
         _ = request.query_params["hub.mode"]
         challenge = request.query_params["hub.challenge"]
@@ -175,6 +156,6 @@ async def page_subscription(request: Request):
     return int(challenge)
 
 
-@router.post("/page-subs")
-async def page_subscription(request: Request):
+@router.post("/page")
+def page_subscription(request: Request):
     return Response(status_code=200)

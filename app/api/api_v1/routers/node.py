@@ -32,7 +32,7 @@ def get_all_nodes(
 ) -> Any:
 
     chatflow = services.chatflow.get(
-        db, id=chatflow_id, user_id=current_user["id"])
+        db, id=chatflow_id, user_id=current_user.id)
 
     if not chatflow:
         raise HTTPException(
@@ -59,7 +59,7 @@ def create_node(
 ) -> Any:
 
     chatflow = services.chatflow.get(
-        db, id=obj_in.chatflow_id, user_id=current_user["id"])
+        db, id=obj_in.chatflow_id, user_id=current_user.id)
 
     if not chatflow:
         raise HTTPException(
@@ -86,7 +86,7 @@ def create_full_node(
 ) -> Any:
 
     chatflow = services.chatflow.get(
-        db, id=obj_in.chatflow_id, user_id=current_user["id"])
+        db, id=obj_in.chatflow_id, user_id=current_user.id)
 
     if not chatflow:
         raise HTTPException(
@@ -136,14 +136,14 @@ def add_message_widget(
         )
 
     chatflow = services.chatflow.get(
-        db, id=node.chatflow_id, user_id=current_user["id"])
+        db, id=node.chatflow_id, user_id=current_user.id)
 
     if not chatflow:
         raise HTTPException(
             status_code=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE['status_code'],
             detail=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE['text'],
         )
-    obj_in = dict(id=str(uuid.uuid4()), widget_type="message",
+    obj_in = dict(id=str(uuid.uuid4()), widget_type=WidgetType.MESSAGE["name"],
                   **jsonable_encoder(obj_in))
 
     node = services.node.add_widget(db, obj_in=obj_in, node_id=node_id)
@@ -174,7 +174,7 @@ def add_menu_widget(
         )
 
     chatflow = services.chatflow.get(
-        db, id=node.chatflow_id, user_id=current_user["id"])
+        db, id=node.chatflow_id, user_id=current_user.id)
 
     if not chatflow:
         raise HTTPException(
@@ -182,7 +182,7 @@ def add_menu_widget(
             detail=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE['text'],
         )
     obj_in = jsonable_encoder(obj_in)
-    obj_in["widget_type"] = "menu"
+    obj_in["widget_type"] = WidgetType.MENU["name"]
     obj_in["choices"] = [dict(id=str(uuid.uuid4()), text=ch["text"])
                          for ch in obj_in["choices"]]
     node = services.node.add_widget(db, obj_in=obj_in, node_id=node_id)
@@ -213,7 +213,7 @@ def connect_widget_to_node(
         )
 
     chatflow = services.chatflow.get(
-        db, id=node.chatflow_id, user_id=current_user["id"])
+        db, id=node.chatflow_id, user_id=current_user.id)
 
     if not chatflow:
         raise HTTPException(

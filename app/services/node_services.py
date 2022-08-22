@@ -65,9 +65,9 @@ class NodeServices(
         pass
 
     def get_chatflow_head_node(self, db: Session, *, chatflow_id):
-        return db.query(models.Node).filter(
+        return  db.query(models.Node).filter(
             models.Node.chatflow_id == chatflow_id,
-            models.Node.is_head is True
+            models.Node.is_head == True
         ).first()
 
 

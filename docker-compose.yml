@@ -16,34 +16,6 @@ services:
     networks:
       - api-1-db-network
       - api-1-redis-network
-      - api-1-haproxy-network
-    depends_on:
-      - db
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  api-2:
-    container_name: "${APP_NAME}-api-2"
-    build:
-      context: .
-      args:
-        - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app"
-    volumes:
-      - .:/app
-    command: /app/startup.sh
-    ports:
-      - "${API_PORT_2}:8000"
-    env_file:
-      - .env
-    networks:
-      - api-2-db-network
-      - api-2-redis-network
-      - api-2-haproxy-network
-
     depends_on:
       - db
     healthcheck:
@@ -64,12 +36,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - api-1-db-network
-      - api-2-db-network
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "--username", "postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: [ "CMD-SHELL", "pg_isready", "--username", "postgres" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
   redis:
     container_name: "${APP_NAME}-redis"
@@ -81,32 +52,12 @@ services:
     networks:
       - redis-insight-network
       - api-1-redis-network
-      - api-2-redis-network
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
 
-  redis-insight:
-    container_name: "${APP_NAME}-redis-insight"
-    image: redislabs/redisinsight:1.12.1
-    ports:
-      - "${REDIS_INSIGHT_PORT}:8001"
-    networks:
-      - redis-insight-network
-
-  # haproxy:
-  #   container_name: "${APP_NAME}-ha-proxy"
-  #   image: haproxy:2.6.3
-  #   volumes:
-  #   - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-  #   networks:
-  #     - api-1-haproxy-network
-  #     - api-2-haproxy-network
-  #   depends_on:
-  #     - api-1
-  #     - api-2
 
 volumes:
   postgres-data:
@@ -115,9 +66,5 @@ volumes:
 
 networks:
   api-1-db-network:
-  api-2-db-network:
   redis-insight-network:
   api-1-redis-network:
-  api-2-redis-network:
-  api-1-haproxy-network:
-  api-2-haproxy-network:
