@@ -94,7 +94,7 @@ def create_full_node(
             detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['text'],
         )
     node_in = schemas.NodeCreate(
-        title=obj_in.title, chatflow_id=obj_in.chatflow_id)
+        title=obj_in.title, chatflow_id=obj_in.chatflow_id, is_head=obj_in.is_head)
     node = services.node.create(db, obj_in=node_in)
     print(obj_in.widget_type)
     if obj_in.widget_type == WidgetType.MESSAGE["name"]:

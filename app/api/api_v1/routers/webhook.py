@@ -138,7 +138,7 @@ def webhook_instagram_listener(
                                   payload=instagram_data.payload,
                                   user_page_data=user_page_data
                                   )
-    return Response(status_code = 200)
+    return Response(status_code=200)
 
 
 @router.get("/page")

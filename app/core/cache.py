@@ -13,7 +13,7 @@ def get_data_from_cache(client: Redis, key: str = None) -> str:
 
 
 def set_data_to_cache(client: Redis, key: str = None, value: str = None) -> bool:
-    state = client.setex(key, timedelta(seconds=3600), value=value)
+    state = client.setex(key, timedelta(seconds=3600), value=value)  # todo time
     return state
 
 
@@ -21,11 +21,6 @@ def get_user_data(client: Redis, db: Session, *,  instagram_page_id: str = None)
     data = get_data_from_cache(client, key=instagram_page_id)
 
     if data is None:
-        print("----------------------------")
-        print(instagram_page_id)
-        print("----------------------------")
-        print("----------------------------")
-
         instagram_page = services.instagram_page.get_page_by_instagram_page_id(
             db, instagram_page_id = instagram_page_id)
 
@@ -50,3 +45,14 @@ def get_user_data(client: Redis, db: Session, *,  instagram_page_id: str = None)
         facebook_page_id=data["facebook_page_id"],
         account_id=data["account_id"],
     )
+
+
+def get_password_data(client: Redis, *, code: str = None):
+
+    data = get_data_from_cache(client, key='code')
+
+    if data is None:
+        state = set_data_to_cache(client, key='code', value=code)
+        if state is True:
+            data = get_data_from_cache(client, key='code')
+    return data
