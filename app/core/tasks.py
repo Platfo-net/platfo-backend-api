@@ -63,6 +63,63 @@ def save_message(db, client: Redis, obj_in: schemas.MessageCreate , instagram_pa
     return services.message.create(db, obj_in=obj_in)
 
 
+# def send_widget(
+#     db: Session,
+#     client: Redis,
+#     *,
+#     widget: dict,
+#     contact_igs_id: str,
+#     payload: str,
+#     user_page_data: UserData,
+# ):
+#     # print(user)
+#     print(widget)
+#     while widget["widget_type"] == "MESSAGE":
+#         graph_api.send_text_message(
+#             text=widget["message"],
+#             from_id=user_page_data.facebook_page_id,
+#             to_id=contact_igs_id,
+#             page_access_token=user_page_data.facebook_page_token
+#         )
+
+#         save_message(
+#             db,
+#             client,
+#             obj_in=schemas.MessageCreate(
+#                 from_page_id=user_page_data.facebook_page_id,
+#                 to_page_id=contact_igs_id,
+#                 content=widget,
+#                 user_id=user_page_data.user_id,
+#                 direction=MessageDirection.OUT["name"]
+#             )
+#         )
+
+#         payload = widget["id"]
+#         node = services.node.get_next_node(db, from_id=payload)
+#         if node is None:
+#             break
+#         widget = node.widget
+
+#     if widget["widget_type"] == "MENU":
+#         graph_api.send_menu(widget,
+#                             from_id=user_page_data.facebook_page_id,
+#                             to_id=contact_igs_id,
+#                             page_access_token=user_page_data.facebook_page_token
+#                             )
+#         save_message(
+#             db,
+#             client,
+#             obj_in=schemas.MessageCreate(
+#                 from_page_id=user_page_data.facebook_page_id,
+#                 to_page_id=contact_igs_id,
+#                 content=widget,
+#                 user_id=user_page_data.user_id,
+#                 direction="OUT"
+#             )
+#         )
+
+
+
 def send_widget(
     db: Session,
     client: Redis,
@@ -72,15 +129,13 @@ def send_widget(
     payload: str,
     user_page_data: UserData,
 ):
-    # print(user)
-    print(widget)
     while widget["widget_type"] == "MESSAGE":
-        graph_api.send_text_message(
-            text=widget["message"],
-            from_id=user_page_data.facebook_page_id,
-            to_id=contact_igs_id,
-            page_access_token=user_page_data.facebook_page_token
-        )
+        # graph_api.send_text_message(
+        #     text=widget["message"],
+        #     from_id=user_page_data.facebook_page_id,
+        #     to_id=contact_igs_id,
+        #     page_access_token=user_page_data.facebook_page_token
+        # )
 
         save_message(
             db,
@@ -101,11 +156,11 @@ def send_widget(
         widget = node.widget
 
     if widget["widget_type"] == "MENU":
-        graph_api.send_menu(widget,
-                            from_id=user_page_data.facebook_page_id,
-                            to_id=contact_igs_id,
-                            page_access_token=user_page_data.facebook_page_token
-                            )
+        # graph_api.send_menu(widget,
+        #                     from_id=user_page_data.facebook_page_id,
+        #                     to_id=contact_igs_id,
+        #                     page_access_token=user_page_data.facebook_page_token
+        #                     )
         save_message(
             db,
             client,

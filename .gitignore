@@ -153,3 +153,5 @@ mnt*
 .idea
 
 .db.env
+
+report.txt

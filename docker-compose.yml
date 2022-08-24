@@ -18,11 +18,11 @@ services:
       - api-1-redis-network
     depends_on:
       - db
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
   db:
     container_name: "${APP_NAME}-database"
@@ -57,7 +57,7 @@ services:
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
-
+ 
 
 volumes:
   postgres-data:
