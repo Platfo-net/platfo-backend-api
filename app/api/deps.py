@@ -1,6 +1,8 @@
 import logging
-from typing import Generator
+import redis
+import sys
 
+from typing import Generator
 from app import services, models, schemas
 from app.constants.role import Role
 from app.core import security
@@ -94,8 +96,6 @@ def get_current_active_user(
     return current_user
 
 
-import redis
-import sys
 def get_redis_client():
     try:
         client = redis.Redis(
