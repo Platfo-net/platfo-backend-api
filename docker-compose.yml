@@ -13,9 +13,6 @@ services:
       - "${API_PORT_1}:8000"
     env_file:
       - .env
-    networks:
-      - api-1-db-network
-      - api-1-redis-network
     depends_on:
       - db
     restart: unless-stopped
@@ -34,9 +31,6 @@ services:
       - "${API_PORT_2}:8000"
     env_file:
       - .env
-    networks:
-      - api-2-db-network
-      - api-2-redis-network
     depends_on:
       - db
     restart: unless-stopped
@@ -55,9 +49,6 @@ services:
       - "${API_PORT_3}:8000"
     env_file:
       - .env
-    networks:
-      - api-3-db-network
-      - api-3-redis-network
     depends_on:
       - db
     restart: unless-stopped
@@ -71,15 +62,6 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    networks:
-      - api-1-db-network
-      - api-2-db-network
-      - api-3-db-network
-    # healthcheck:
-    #   test: [ "CMD-SHELL", "pg_isready", "--username", "postgres" ]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
 
   redis:
     container_name: "${APP_NAME}-redis"
@@ -87,29 +69,46 @@ services:
     image: redis:6.2.7
     command: "redis-server /usr/local/etc/redis/redis.conf"
     ports:
-      - "63793:63793"
-    networks:
-      - redis-insight-network
-      - api-1-redis-network
-      - api-2-redis-network
-      - api-3-redis-network
+      - "6379:6379"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
- 
+
+  celery-worker:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-worker"
+    command: celery -A app.core.celery.celery worker --loglevel=info
+    volumes:
+     - .:/app
+    depends_on:
+      - db
+      - api-1
+      - api-2
+      - api-3
+      - redis
+    
+      
+
+  celery-flower:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-flowe"
+    command: celery -A app.core.celery.celery flower --port=5555
+    volumes:
+     - .:/app
+    ports:
+      - "5555:5555"
+    depends_on:
+      - db
+      - api-1
+      - api-2
+      - api-3
+      - redis
+    
 
 volumes:
   postgres-data:
   redis-data:
-
-
-networks:
-  api-1-db-network:
-  api-2-db-network:
-  api-3-db-network:
-  redis-insight-network:
-  api-1-redis-network:
-  api-2-redis-network:
-  api-3-redis-network:

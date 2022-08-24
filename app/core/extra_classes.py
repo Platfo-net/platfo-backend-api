@@ -39,6 +39,16 @@ class InstagramData:
                     # print(self.postback)
                     self.payload = item['postback']['payload']
 
+    def to_dict(self):
+        return dict(
+            id_sender=self.id_sender,
+            id_recipient=self.id_recipient,
+            message_detail=self.message_detail,
+            message_id=self.message_id,
+            postback=self.postback,
+            payload=self.payload,
+            is_echo=self.is_echo
+        )
 
 
 class UserData:
@@ -52,3 +62,12 @@ class UserData:
         self.facebook_page_token = facebook_page_token
         self.facebook_page_id = facebook_page_id
         self.account_id = account_id
+
+    def to_dict(self):
+        return dict(
+            user_id=self.user_id,
+            facebook_account_id=self.facebook_account_id,
+            facebook_page_token=self.facebook_page_token,
+            facebook_page_id=self.facebook_page_id,
+            account_id=self.account_id,
+        )

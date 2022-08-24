@@ -60,11 +60,9 @@ def webhook_instagram_listener(
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client),
     request: dict,
-    background_tasks: BackgroundTasks
 ):
     facebook_webhook_body = request['entry']
 
-    print(facebook_webhook_body)
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
 
@@ -79,7 +77,7 @@ def webhook_instagram_listener(
     except:
         raise HTTPException(status_code=400, detail="Error getting user data")
 
-    message_in = schemas.MessageCreate(
+    message_in = dict(
         from_page_id=instagram_data.id_sender,
         to_page_id=user_page_data.facebook_page_id,
         content={
@@ -88,23 +86,19 @@ def webhook_instagram_listener(
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"]
     )
-    background_tasks.add_task(tasks.save_message,
-                              db,
-                              redis_client,
-                              obj_in=message_in,
-                              instagram_page_id=instagram_data.id_recipient)
+    tasks.save_message.delay(
+        obj_in=message_in,
+        instagram_page_id=instagram_data.id_recipient)
     if instagram_data.payload:
 
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
 
-        background_tasks.add_task(tasks.send_widget,
-                                  db,
-                                  redis_client,
-                                  widget=node.widget,
-                                  contact_igs_id=instagram_data.id_sender,
-                                  payload=instagram_data.payload,
-                                  user_page_data=user_page_data
-                                  )
+        tasks.send_widget.delay(
+            widget=node.widget,
+            contact_igs_id=instagram_data.id_sender,
+            payload=instagram_data.payload,
+            user_page_data=user_page_data.to_dict()
+        )
 
     else:
         # get chatflow from a connection
@@ -130,17 +124,14 @@ def webhook_instagram_listener(
         if chatflow_id is None:
             return None
 
-        print(chatflow_id)
         node = services.node.get_chatflow_head_node(
             db, chatflow_id=chatflow_id)
-        background_tasks.add_task(tasks.send_widget,
-                                  db,
-                                  redis_client,
-                                  widget=node.widget,
-                                  contact_igs_id=instagram_data.id_sender,
-                                  payload=instagram_data.payload,
-                                  user_page_data=user_page_data
-                                  )
+        tasks.send_widget.delay(
+            widget=node.widget,
+            contact_igs_id=instagram_data.id_sender,
+            payload=instagram_data.payload,
+            user_page_data=user_page_data.to_dict()
+        )
     return Response(status_code=200)
 
 
