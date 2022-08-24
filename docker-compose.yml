@@ -63,6 +63,20 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  pgbouncer:
+    image: edoburu/pgbouncer
+    environment:
+       - DB_USER="${POSTGRES_USER}"
+       - DB_PASSWORD="${POSTGRES_PASSWORD}"
+       - DB_HOST="${DB_HOST}"
+       - DB_NAME=botinow-docker-local
+       - POOL_MODE=transaction
+       - ADMIN_USERS="${POSTGRES_USER}"
+    ports:
+      - "6432:6432"
+    depends_on:
+      - db
+
   redis:
     container_name: "${APP_NAME}-redis"
     restart: unless-stopped
