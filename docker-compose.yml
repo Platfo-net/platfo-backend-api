@@ -66,12 +66,12 @@ services:
   pgbouncer:
     image: edoburu/pgbouncer
     environment:
-       - DB_USER="${POSTGRES_USER}"
-       - DB_PASSWORD="${POSTGRES_PASSWORD}"
-       - DB_HOST="${DB_HOST}"
-       - DB_NAME=botinow-docker-local
-       - POOL_MODE=transaction
-       - ADMIN_USERS="${POSTGRES_USER}"
+      - DB_USER="${POSTGRES_USER}"
+      - DB_PASSWORD="${POSTGRES_PASSWORD}"
+      - DB_HOST="${DB_HOST}"
+      - DB_NAME="${POSTGRES_DB}"
+      - POOL_MODE=transaction
+      - ADMIN_USERS="${POSTGRES_USER}"
     ports:
       - "6432:6432"
     depends_on:
@@ -96,13 +96,13 @@ services:
     container_name: "${APP_NAME}-celery-worker-1"
     command: celery -A app.core.celery.celery worker --loglevel=info -n w1
     volumes:
-     - .:/app
+      - .:/app
     depends_on:
       - db
       - api-1
       - api-2
       - api-3
-      - redis    
+      - redis
 
   celery-worker-2:
     image: "botinow-backend-app"
@@ -110,13 +110,13 @@ services:
     container_name: "${APP_NAME}-celery-worker-2"
     command: celery -A app.core.celery.celery worker --loglevel=info -n w2
     volumes:
-     - .:/app
+      - .:/app
     depends_on:
       - db
       - api-1
       - api-2
       - api-3
-      - redis    
+      - redis
 
   celery-worker-3:
     image: "botinow-backend-app"
@@ -124,13 +124,13 @@ services:
     container_name: "${APP_NAME}-celery-worker-3"
     command: celery -A app.core.celery.celery worker --loglevel=info -n w3
     volumes:
-     - .:/app
+      - .:/app
     depends_on:
       - db
       - api-1
       - api-2
       - api-3
-      - redis      
+      - redis
 
   celery-flower:
     image: "botinow-backend-app"
@@ -138,7 +138,7 @@ services:
     container_name: "${APP_NAME}-celery-flower"
     command: celery -A app.core.celery.celery flower --port=5555
     volumes:
-     - .:/app
+      - .:/app
     ports:
       - "5555:5555"
     depends_on:
@@ -147,7 +147,6 @@ services:
       - api-2
       - api-3
       - redis
-    
 
 volumes:
   postgres-data:
