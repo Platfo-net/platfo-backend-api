@@ -18,12 +18,46 @@ services:
       - api-1-redis-network
     depends_on:
       - db
-    # healthcheck:
-    #   test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
 
+  api-2:
+    container_name: "${APP_NAME}-api-2"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "${API_PORT_2}:8000"
+    env_file:
+      - .env
+    networks:
+      - api-2-db-network
+      - api-2-redis-network
+    depends_on:
+      - db
+
+  api-3:
+    container_name: "${APP_NAME}-api-3"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "${API_PORT_3}:8000"
+    env_file:
+      - .env
+    networks:
+      - api-3-db-network
+      - api-3-redis-network
+    depends_on:
+      - db
   db:
     container_name: "${APP_NAME}-database"
     image: postgres:14
@@ -36,6 +70,8 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - api-1-db-network
+      - api-2-db-network
+      - api-3-db-network
     # healthcheck:
     #   test: [ "CMD-SHELL", "pg_isready", "--username", "postgres" ]
     #   interval: 10s
@@ -52,6 +88,8 @@ services:
     networks:
       - redis-insight-network
       - api-1-redis-network
+      - api-2-redis-network
+      - api-3-redis-network
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
@@ -66,5 +104,9 @@ volumes:
 
 networks:
   api-1-db-network:
+  api-2-db-network:
+  api-3-db-network:
   redis-insight-network:
   api-1-redis-network:
+  api-2-redis-network:
+  api-3-redis-network:
