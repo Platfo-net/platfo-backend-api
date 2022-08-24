@@ -76,11 +76,11 @@ services:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
 
-  celery-worker:
+  celery-worker-1:
     image: "botinow-backend-app"
     build: .
-    container_name: "${APP_NAME}-celery-worker"
-    command: celery -A app.core.celery.celery worker --loglevel=info
+    container_name: "${APP_NAME}-celery-worker-1"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n w1
     volumes:
      - .:/app
     depends_on:
@@ -88,14 +88,40 @@ services:
       - api-1
       - api-2
       - api-3
-      - redis
-    
-      
+      - redis    
+
+  celery-worker-2:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-worker-2"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n w2
+    volumes:
+     - .:/app
+    depends_on:
+      - db
+      - api-1
+      - api-2
+      - api-3
+      - redis    
+
+  celery-worker-3:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-worker-3"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n w3
+    volumes:
+     - .:/app
+    depends_on:
+      - db
+      - api-1
+      - api-2
+      - api-3
+      - redis      
 
   celery-flower:
     image: "botinow-backend-app"
     build: .
-    container_name: "${APP_NAME}-celery-flowe"
+    container_name: "${APP_NAME}-celery-flower"
     command: celery -A app.core.celery.celery flower --port=5555
     volumes:
      - .:/app
