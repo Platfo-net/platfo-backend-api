@@ -73,60 +73,6 @@ def save_message(obj_in: dict, instagram_page_id: str = None):
     ))
 
 
-# def send_widget(
-#     db: Session,
-#     client: Redis,
-#     *,
-#     widget: dict,
-#     contact_igs_id: str,
-#     payload: str,
-#     user_page_data: UserData,
-# ):
-#     # print(user)
-#     print(widget)
-#     while widget["widget_type"] == "MESSAGE":
-#         graph_api.send_text_message(
-#             text=widget["message"],
-#             from_id=user_page_data.facebook_page_id,
-#             to_id=contact_igs_id,
-#             page_access_token=user_page_data.facebook_page_token
-#         )
-
-#         save_message(
-#             db,
-#             client,
-#             obj_in=schemas.MessageCreate(
-#                 from_page_id=user_page_data.facebook_page_id,
-#                 to_page_id=contact_igs_id,
-#                 content=widget,
-#                 user_id=user_page_data.user_id,
-#                 direction=MessageDirection.OUT["name"]
-#             )
-#         )
-
-#         payload = widget["id"]
-#         node = services.node.get_next_node(db, from_id=payload)
-#         if node is None:
-#             break
-#         widget = node.widget
-
-#     if widget["widget_type"] == "MENU":
-#         graph_api.send_menu(widget,
-#                             from_id=user_page_data.facebook_page_id,
-#                             to_id=contact_igs_id,
-#                             page_access_token=user_page_data.facebook_page_token
-#                             )
-#         save_message(
-#             db,
-#             client,
-#             obj_in=schemas.MessageCreate(
-#                 from_page_id=user_page_data.facebook_page_id,
-#                 to_page_id=contact_igs_id,
-#                 content=widget,
-#                 user_id=user_page_data.user_id,
-#                 direction="OUT"
-#             )
-#         )
 
 
 @celery.task
