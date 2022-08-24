@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int
 
+    CELERY_BROKER_URL = "redis://redis:6379/2"
+    CELERY_RESULT_BACKEND = "redis://redis:6379/2"
+
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
             cls, v: Optional[str], values: Dict[str, Any]
