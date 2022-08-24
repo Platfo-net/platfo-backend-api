@@ -10,7 +10,7 @@ class ContactServices:
     def __init__(self, model):
         self.model = model
 
-    def create(self, db: Session, *, obj_in: schemas.ContactCreate)-> models.Contact:
+    def create(self, db: Session, *, obj_in: schemas.ContactCreate) -> models.Contact:
         obj_in = jsonable_encoder(obj_in)
         contact = self.model(
             **obj_in,
@@ -54,7 +54,8 @@ class ContactServices:
         page_id: str,
         skip: int = 0,
         limit: int = 100
-    ) -> List[schemas.Contact]:
+    ):
+    # -> List[schemas.Contact]:
         """Return an specific instagram page's contacts
 
         Args:
