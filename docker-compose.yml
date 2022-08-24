@@ -104,33 +104,33 @@ services:
       - api-3
       - redis
 
-  celery-worker-2:
-    image: "botinow-backend-app"
-    build: .
-    container_name: "${APP_NAME}-celery-worker-2"
-    command: celery -A app.core.celery.celery worker --loglevel=info -n w2
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-      - api-1
-      - api-2
-      - api-3
-      - redis
+  # celery-worker-2:
+  #   image: "botinow-backend-app"
+  #   build: .
+  #   container_name: "${APP_NAME}-celery-worker-2"
+  #   command: celery -A app.core.celery.celery worker --loglevel=info -n w2
+  #   volumes:
+  #     - .:/app
+  #   depends_on:
+  #     - db
+  #     - api-1
+  #     - api-2
+  #     - api-3
+  #     - redis
 
-  celery-worker-3:
-    image: "botinow-backend-app"
-    build: .
-    container_name: "${APP_NAME}-celery-worker-3"
-    command: celery -A app.core.celery.celery worker --loglevel=info -n w3
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-      - api-1
-      - api-2
-      - api-3
-      - redis
+  # celery-worker-3:
+  #   image: "botinow-backend-app"
+  #   build: .
+  #   container_name: "${APP_NAME}-celery-worker-3"
+  #   command: celery -A app.core.celery.celery worker --loglevel=info -n w3
+  #   volumes:
+  #     - .:/app
+  #   depends_on:
+  #     - db
+  #     - api-1
+  #     - api-2
+  #     - api-3
+  #     - redis
 
   celery-flower:
     image: "botinow-backend-app"
