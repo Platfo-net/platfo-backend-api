@@ -63,6 +63,8 @@ def webhook_instagram_listener(
     background_tasks: BackgroundTasks
 ):
     facebook_webhook_body = request['entry']
+
+    print(facebook_webhook_body)
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
     # try:
@@ -82,10 +84,6 @@ def webhook_instagram_listener(
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"]
     )
-    print("--------------------------------")
-    print("--------------------------------")
-    print(message_in)
-    print("--------------------------------")
     background_tasks.add_task(tasks.save_message,
                               db,
                               redis_client,
