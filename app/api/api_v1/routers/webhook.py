@@ -68,12 +68,16 @@ def webhook_instagram_listener(
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
     # try:
+
+    if instagram_data.is_echo:
+        return None
+
     user_page_data = cache.get_user_data(
-            redis_client,
-            db,
-            instagram_page_id=instagram_data.id_recipient)
+        redis_client,
+        db,
+        instagram_page_id=instagram_data.id_recipient)
     # except:
-        # raise HTTPException(status_code=400, detail="Error getting user data")
+    # raise HTTPException(status_code=400, detail="Error getting user data")
 
     message_in = schemas.MessageCreate(
         from_page_id=instagram_data.id_sender,
@@ -88,7 +92,7 @@ def webhook_instagram_listener(
                               db,
                               redis_client,
                               obj_in=message_in,
-                              instagram_page_id = instagram_data.id_recipient)
+                              instagram_page_id=instagram_data.id_recipient)
     if instagram_data.payload:
 
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
@@ -115,7 +119,7 @@ def webhook_instagram_listener(
 
         if connections is None:
             return None
-        
+
         for connection in connections:
             connection_chatflow = services.connection_chatflow\
                 .get_connection_chatflow_by_connection_and_trigger(
@@ -127,7 +131,8 @@ def webhook_instagram_listener(
             return None
 
         print(chatflow_id)
-        node = services.node.get_chatflow_head_node(db , chatflow_id = chatflow_id)
+        node = services.node.get_chatflow_head_node(
+            db, chatflow_id=chatflow_id)
         background_tasks.add_task(tasks.send_widget,
                                   db,
                                   redis_client,

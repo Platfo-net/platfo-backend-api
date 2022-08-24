@@ -15,6 +15,7 @@ class InstagramData:
         self.message_id = message_id
         self.postback = postback
         self.payload = payload
+        self.is_echo = False
 
     def parse(self, body):
         for element in body:
@@ -28,6 +29,10 @@ class InstagramData:
                         try:
                             self.message_detail = item['message']['text']
                         except Exception:
+                            pass
+                        try:
+                            self.is_echo = item["message"]["is_echo"]
+                        except:
                             pass
                 except Exception:
                     self.message_detail = item['postback']["title"]
