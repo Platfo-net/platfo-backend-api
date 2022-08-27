@@ -10,5 +10,11 @@ from app.models.plan import Plan  # noqa
 from app.models.connection import Connection  # noqa
 from app.models.trigger import Trigger  # noqa
 from app.models.connection_chatflow import ConnectionChatflow  # noqa
+
 from app.models.chatflow import Chatflow  # noqa
 from app.models.node import Node  # noqa
+
+from app.models.contact import Contact  # noqa
+from app.models.message import Message  # noqa
+
+from app.models.notification import Notification  # noqa
