@@ -15,3 +15,4 @@ from .message import Message
 from .contact import Contact
 
 from .notification import Notification
+from .notification_user import NotificationUser

@@ -18,3 +18,4 @@ from app.models.contact import Contact  # noqa
 from app.models.message import Message  # noqa
 
 from app.models.notification import Notification  # noqa
+from app.models.notification_user import NotificationUser  # noqa
