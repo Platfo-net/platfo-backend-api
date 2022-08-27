@@ -14,5 +14,4 @@ from .node import Node
 from .message import Message
 from .contact import Contact
 
-from .notification import Notification
-from .notification_user import NotificationUser
+from .notification import Notification, NotificationUser

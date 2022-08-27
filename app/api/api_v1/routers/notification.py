@@ -9,7 +9,7 @@ from pydantic.types import UUID4
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.models.notification import Notification
-from app.models.notification_user import NotificationUser
+from app.models.notification import NotificationUser
 
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/notification", tags=["Notification"])
 def get_notifications_list(
     *,
     db: Session = Depends(deps.get_db),
-    page: int = 0,
+    page: int = 1,
     page_size: int = 20,
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -30,12 +30,16 @@ def get_notifications_list(
     ),
 ) -> Any:
 
-    notifications = services.notification.get_by_multi(
+    notifications, pagination = services.notification.get_by_multi(
         db,
-        skip=page,
-        limit=page_size
+        page=page,
+        page_size=page_size,
     )
-    return notifications
+    notification_list = schemas.NotificationListApi(
+        items=notifications,
+        pagination=pagination
+    )
+    return notification_list
 
 
 @router.post("", response_model=schemas.Notification)
@@ -51,7 +55,6 @@ def create_notification(
     ),
 
 ) -> Any:
-
     notification = services.notification.create(
         db,
         obj_in=obj_in,
@@ -72,15 +75,12 @@ def update_connection(
         ],
     ),
 ):
-
     old_notification = services.notification.get(db, id=notification_id)
-
     if old_notification.id != notification_id:
         raise HTTPException(
             status_code=400,
         )
-
-    if not old_notification:  # todo
+    if not old_notification:  # todo dynamic error handling
         raise HTTPException(
             status_code=404)
 
@@ -119,28 +119,18 @@ def delete_notification(
     return
 
 
-@router.get("/test-get-all")
-def delete_notification(
+@router.get("/all", response_model=List[schemas.NotificationList])
+def get_all_notifications(
     *,
     db: Session = Depends(deps.get_db),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+    ),
 ) -> Any:
-    notification_user = db.query(models.NotificationUser
-                                 ).filter(
-        models.NotificationUser.user_id == "a862d48c-c69a-429b-9ea7-8922fb12a3fb"
-    ).with_entities(models.NotificationUser.notification_id).all()
+    list_notifications = services.notification.get_by_multi_special(db, user_id=current_user.id)
+    return list_notifications
 
-    readed_notifications = [
-        n.notification_id for n in notification_user if len(notification_user)]
-
-    notifications = db.query(models.Notification).filter(
-        models.Notification.is_visible == True).all()
-
-    return [schemas.NotificationList(
-        id = notification.id,
-        title=notification.title,
-        description=notification.description,
-        created_at=notification.created_at,
-        is_readed=True if notification.id in readed_notifications else False
-    )
-        for notification in notifications
-    ]

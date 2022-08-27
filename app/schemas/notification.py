@@ -14,7 +14,7 @@ class NotificationCreate(NotificationBase):
 
 
 class NotificationUpdate(NotificationBase):
-    pass
+    is_visible: Optional[bool] = False
 
 
 class Notification(NotificationBase):
@@ -24,6 +24,7 @@ class Notification(NotificationBase):
     class Config:
         orm_mode = True
 
+
 class NotificationList(NotificationBase):
     id: UUID4
     created_at: Optional[datetime] = None
@@ -31,10 +32,11 @@ class NotificationList(NotificationBase):
 
     class Config:
         orm_mode = True
+
+
 class NotificationListApi(BaseModel):
     items: List[NotificationList]
-    # pagination: Pagination
+    pagination: Pagination
 
     class Config:
         orm_mode = True
-
