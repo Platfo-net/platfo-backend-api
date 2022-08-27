@@ -13,3 +13,10 @@ from .chatflow_services import chatflow
 from .node_services import node
 from .contact_services import contact
 from .message_services import message
+
+
+
+
+# modules import
+
+import academy

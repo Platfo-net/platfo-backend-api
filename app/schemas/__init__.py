@@ -38,3 +38,5 @@ from .node import NodeCreate, NodeUpdate,\
 from .contact import Contact , ContactCreate
 
 from .message import MessageCreate , Message
+
+from .academy import Category , CategoryCreate , CategoryUpdate

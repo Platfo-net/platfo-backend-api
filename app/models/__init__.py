@@ -13,3 +13,6 @@ from .node import Node
 
 from .message import Message
 from .contact import Contact
+
+from .academy import Category, Content, \
+    ContentAttachment, ContentCategory
