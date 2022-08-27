@@ -1,15 +1,12 @@
-from typing import Any, List
+from typing import Any
 from app import models, services, schemas
 from app.api import deps
 from fastapi import APIRouter, Depends, \
-    HTTPException, Security, status
+    HTTPException, Security
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
 
-from app.constants.errors import Error
 from app.constants.role import Role
-from app.models.notification import Notification
-from app.models.notification import NotificationUser
 
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
@@ -30,16 +27,27 @@ def get_notifications_list(
     ),
 ) -> Any:
 
-    notifications, pagination = services.notification.get_by_multi(
-        db,
-        page=page,
-        page_size=page_size,
-    )
-    notification_list = schemas.NotificationListApi(
+    if current_user.role.name == Role.ADMIN["name"]:
+
+        notifications, pagination = services.notification.get_by_multi(
+            db,
+            page=page,
+            page_size=page_size,
+        )
+        notification_list = schemas.NotificationListApi(
+            items=notifications,
+            pagination=pagination
+        )
+        return notification_list
+
+    notifications, pagination = services.notification.\
+        get_by_multi_for_user(
+            db, page=page, page_size=page_size, user_id=current_user.id
+        )
+    return schemas.NotificationListApi(
         items=notifications,
         pagination=pagination
     )
-    return notification_list
 
 
 @router.post("", response_model=schemas.Notification)
@@ -119,18 +127,37 @@ def delete_notification(
     return
 
 
-@router.get("/all", response_model=List[schemas.NotificationList])
-def get_all_notifications(
+@router.put("/read/{notification_id}")
+def read_notification(
     *,
     db: Session = Depends(deps.get_db),
+    notification_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
             Role.USER["name"],
         ],
     ),
 ) -> Any:
-    list_notifications = services.notification.get_by_multi_special(db, user_id=current_user.id)
-    return list_notifications
+    if not services.notification.get(
+        db,
+        id=notification_id,
+    ):
 
+        raise HTTPException(
+            status_code=404
+        )
+    if services.notification_user.get(db,
+                                      notification_id=notification_id,
+                                      user_id=current_user.id
+                                      ):
+        raise HTTPException(
+            status_code=400,
+            detail="Notification already readed"
+        )
+
+    return services.notification.read(
+        db,
+        id=notification_id,
+        user_id=current_user.id
+    )

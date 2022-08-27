@@ -98,3 +98,8 @@ class Error:
         "status_code": 401,
         "code": 19
     }
+
+
+    # Notification errors
+
+    

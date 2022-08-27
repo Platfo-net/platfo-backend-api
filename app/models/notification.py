@@ -2,7 +2,8 @@ import datetime
 from uuid import uuid4
 
 from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, DateTime, String, Text, ForeignKey
+from sqlalchemy import Boolean, Column, \
+    DateTime, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -21,11 +22,14 @@ class Notification(Base):
     is_visible = Column(Boolean(), default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    notification_user = relationship("NotificationUser" , back_populates = "notification")
+    notification_user = relationship(
+        "NotificationUser", back_populates="notification")
 
 
 class NotificationUser(Base):
-
+    """
+        Model for saving users readed notifications
+    """
     __tablename__ = "notification_users"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4

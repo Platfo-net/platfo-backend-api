@@ -25,17 +25,17 @@ class Notification(NotificationBase):
         orm_mode = True
 
 
-class NotificationList(NotificationBase):
+class NotificationListItem(NotificationBase):
     id: UUID4
     created_at: Optional[datetime] = None
-    is_readed: Optional[bool] = False
+    is_readed: Optional[bool] = True
 
     class Config:
         orm_mode = True
 
 
 class NotificationListApi(BaseModel):
-    items: List[NotificationList]
+    items: List[NotificationListItem]
     pagination: Pagination
 
     class Config:
