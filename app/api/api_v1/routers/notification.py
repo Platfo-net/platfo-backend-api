@@ -26,6 +26,18 @@ def get_notifications_list(
         ],
     ),
 ) -> Any:
+    """
+    Get list of notifications based on role, 
+    if role is user, it will return status of notification
+    else status will be always is_readed=true
+
+    Args:
+        page (int, optional): current page. Defaults to 1.
+        page_size (int, optional): count of items in a page. Defaults to 20.
+
+    Returns:
+        List of notifications and pagination data
+    """
 
     if current_user.role.name == Role.ADMIN["name"]:
 
@@ -63,6 +75,12 @@ def create_notification(
     ),
 
 ) -> Any:
+    """
+    Create a notification by admin.
+
+    Returns:
+        Created notification
+    """
     notification = services.notification.create(
         db,
         obj_in=obj_in,
@@ -70,12 +88,12 @@ def create_notification(
     return notification
 
 
-@router.put("/{notification_id}", response_model=schemas.Notification)
-def update_connection(
+@router.put("/{id}", response_model=schemas.Notification)
+def update_notification(
     *,
     db: Session = Depends(deps.get_db),
     obj_in: schemas.NotificationUpdate,
-    notification_id: UUID4,
+    id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -83,26 +101,31 @@ def update_connection(
         ],
     ),
 ):
-    old_notification = services.notification.get(db, id=notification_id)
-    if old_notification.id != notification_id:
-        raise HTTPException(
-            status_code=400,
-        )
-    if not old_notification:  # todo dynamic error handling
-        raise HTTPException(
-            status_code=404)
+    """
+    Update existed notification by admin
 
+    Raises:
+        404: if notificatin not found.
+
+    Returns:
+        _type_: _description_
+    """
+    notification = services.notification.get(db, id=id)
+    if not notification:
+        raise HTTPException(
+            status_code=404,
+        )
     notification = services.notification.update(
-        db, db_obj=old_notification, obj_in=obj_in)
+        db, db_obj=notification, obj_in=obj_in)
 
     return notification
 
 
-@router.delete("/{notification_id}")
+@router.delete("/{id}")
 def delete_notification(
     *,
     db: Session = Depends(deps.get_db),
-    notification_id: UUID4,
+    id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -110,28 +133,35 @@ def delete_notification(
         ],
     ),
 ) -> Any:
-    old_notification = services.notification.get(
+    """
+    Delete Notification by id
+
+    Args:
+        id (UUID4): id of notification in our system
+
+    Raises:
+        404: if notificatin not found
+
+    Returns:
+        Any: _description_
+    """
+    if not services.notification.get(
         db,
-        id=notification_id,
-    )
-    if old_notification.id != notification_id:
-        raise HTTPException(
-            status_code=400,
-        )
-    if not old_notification:
+        id,
+    ):
         raise HTTPException(
             status_code=404
         )
 
-    services.notification.remove(db, id=notification_id)
+    services.notification.remove(db, id=id)
     return
 
 
-@router.put("/read/{notification_id}")
+@router.put("/read/{id}")
 def read_notification(
     *,
     db: Session = Depends(deps.get_db),
-    notification_id: UUID4,
+    id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -139,16 +169,26 @@ def read_notification(
         ],
     ),
 ) -> Any:
+    """
+
+    Args:
+        id (UUID4): Notification id
+
+    Raises:
+        404: if notificatin not found 
+        400: if notificatin readed before
+
+    """
+
     if not services.notification.get(
         db,
-        id=notification_id,
+        id=id,
     ):
-
         raise HTTPException(
             status_code=404
         )
     if services.notification_user.get(db,
-                                      notification_id=notification_id,
+                                      notification_id=id,
                                       user_id=current_user.id
                                       ):
         raise HTTPException(
@@ -158,6 +198,6 @@ def read_notification(
 
     return services.notification.read(
         db,
-        id=notification_id,
+        id=id,
         user_id=current_user.id
     )
