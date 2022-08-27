@@ -1,6 +1,8 @@
 import logging
-from typing import Generator
+import redis
+import sys
 
+from typing import Generator
 from app import services, models, schemas
 from app.constants.role import Role
 from app.core import security
@@ -57,8 +59,10 @@ def get_current_user(
     except (jwt.JWTError, ValidationError):
         logger.error("Error Decoding Token", exc_info=True)
         raise HTTPException(
-            status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["status_code"],
-            detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["text"],
+            status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR
+            ["status_code"],
+            detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR
+            ["text"],
         )
     user = services.user.get(db, id=token_data.id)
     if not user:
@@ -90,3 +94,18 @@ def get_current_active_user(
             detail=Error.INACTIVE_USER["text"]
         )
     return current_user
+
+
+def get_redis_client():
+    try:
+        client = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=1,
+        )
+        ping = client.ping()
+        if ping is True:
+            return client
+    except redis.AuthenticationError:
+        print("AuthenticationError")
+        sys.exit(1)

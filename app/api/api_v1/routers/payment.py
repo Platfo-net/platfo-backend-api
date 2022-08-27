@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.constants.transaction_status import TransactionStatus
 
 
-router = APIRouter(prefix="/payment", tags=["payment"])
+router = APIRouter(prefix="/payment", tags=["Payment"])
 
 
 @router.post("/transaction", status_code=status.HTTP_201_CREATED)

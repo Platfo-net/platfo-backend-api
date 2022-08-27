@@ -1,15 +1,15 @@
 from typing import Optional
 
 from app.core.security import get_password_hash, verify_password
-from app.services.base import BaseService
+from app.services.base import BaseServices
 from app.constants.role import Role
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
 from app import models, schemas, services
 
 
-class UserService(
-    BaseService
+class UserServices(
+    BaseServices
     [
         models.User,
         schemas.UserCreate,
@@ -104,4 +104,4 @@ class UserService(
         return user
 
 
-user = UserService(models.User)
+user = UserServices(models.User)

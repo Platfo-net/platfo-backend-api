@@ -6,10 +6,10 @@ from app.constants.errors import Error
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
-from app.core import cache
+from app.core.cache import get_data_from_cache, set_data_to_cache, get_password_data
+from redis.client import Redis
 
-
-router = APIRouter(prefix="/user", tags=["user"])
+router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -167,19 +167,24 @@ async def forget_password(
 def recovery_password(
     *,
     db: Session = Depends(deps.get_db),
-    user_in: schemas.ChangePassword
+    user_in: schemas.ChangePassword,
+    redis_client: Redis = Depends(deps.get_redis_client)
 ):
-    client = cache.get_redis_connection()
-    code = client.get(user_in.email)
+
+    code = get_password_data(client=redis_client, code=user_in.code)
     if code is None:
         raise HTTPException(
-            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["status_code"],
-            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["text"],
+            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
+            ["status_code"],
+            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
+            ["text"],
         )
     if str(code.decode('utf-8')) != str(user_in.code):
         raise HTTPException(
-            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["status_code"],
-            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["text"],
+            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
+            ["status_code"],
+            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
+            ["text"],
         )
     user = services.user.get_by_email(db, email=user_in.email)
     services.user.change_password(

@@ -14,7 +14,7 @@ RUN apt-get install -y curl
 ARG ENVIRONMENT=dev
 
 COPY . /app/
-
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY ./startup.sh /app/

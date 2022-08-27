@@ -1,6 +1,6 @@
 from app.api.api_v1.routers import auth, connection, \
-    instagram, trigger, \
-    users, accounts,constants
+    instagram, trigger, chatflow, node, \
+    users, accounts, constants, webhook, contact , message
 from fastapi import APIRouter
 
 
@@ -11,5 +11,10 @@ api_router.include_router(users.router)
 api_router.include_router(instagram.router)
 api_router.include_router(accounts.router)
 api_router.include_router(connection.router)
+api_router.include_router(chatflow.router)
+api_router.include_router(node.router)
 api_router.include_router(trigger.router)
+api_router.include_router(contact.router)
+api_router.include_router(message.router)
 api_router.include_router(constants.router)
+api_router.include_router(webhook.router)

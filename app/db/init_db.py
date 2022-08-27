@@ -7,9 +7,6 @@ from sqlalchemy.orm import Session
 
 def init_db(db: Session) -> None:
 
-    # Create 1st Superuser
-    # Create Role If They Don't Exist
-
     # Admin role
     admin_role = services.role.get_by_name(
         db, name=Role.ADMIN["name"]
@@ -59,4 +56,3 @@ def init_db(db: Session) -> None:
                 platform=Trigger.Message["platform"]
             )
         )
-    

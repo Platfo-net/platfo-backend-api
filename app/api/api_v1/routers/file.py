@@ -7,7 +7,7 @@ from app.core import storage
 from app.core.config import settings
 
 
-router = APIRouter(prefix="/file", tags=["file"])
+router = APIRouter(prefix="/file", tags=["File"])
 
 
 @router.post("/upload/profile")
