@@ -7,11 +7,10 @@ from datetime import datetime
 class NotificationBase(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
-    is_visible: Optional[bool] = False
 
 
 class NotificationCreate(NotificationBase):
-    pass
+    is_visible: Optional[bool] = False
 
 
 class NotificationUpdate(NotificationBase):
@@ -25,9 +24,15 @@ class Notification(NotificationBase):
     class Config:
         orm_mode = True
 
+class NotificationList(NotificationBase):
+    id: UUID4
+    created_at: Optional[datetime] = None
+    is_readed: Optional[bool] = False
 
+    class Config:
+        orm_mode = True
 class NotificationListApi(BaseModel):
-    items: List[Notification]
+    items: List[NotificationList]
     # pagination: Pagination
 
     class Config:

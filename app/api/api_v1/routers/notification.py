@@ -8,6 +8,8 @@ from pydantic.types import UUID4
 
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.models.notification import Notification
+from app.models.notification_user import NotificationUser
 
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
@@ -115,3 +117,30 @@ def delete_notification(
 
     services.notification.remove(db, id=notification_id)
     return
+
+
+@router.get("/test-get-all")
+def delete_notification(
+    *,
+    db: Session = Depends(deps.get_db),
+) -> Any:
+    notification_user = db.query(models.NotificationUser
+                                 ).filter(
+        models.NotificationUser.user_id == "a862d48c-c69a-429b-9ea7-8922fb12a3fb"
+    ).with_entities(models.NotificationUser.notification_id).all()
+
+    readed_notifications = [
+        n.notification_id for n in notification_user if len(notification_user)]
+
+    notifications = db.query(models.Notification).filter(
+        models.Notification.is_visible == True).all()
+
+    return [schemas.NotificationList(
+        id = notification.id,
+        title=notification.title,
+        description=notification.description,
+        created_at=notification.created_at,
+        is_readed=True if notification.id in readed_notifications else False
+    )
+        for notification in notifications
+    ]
