@@ -20,7 +20,8 @@ class NotificationServices(
     ):
 
         notifications = db.query(self.model).offset(skip).limit(limit).all()
-        return notifications
+        n = jsonable_encoder(notifications)
+        return n
 
 
 notification = NotificationServices(models.Notification)
