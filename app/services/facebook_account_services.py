@@ -21,5 +21,8 @@ class FacebookAccountServices(
         return db.query(self.model).filter(self.model.user_id == user_id)\
             .first()
 
+    def get_by_facebook_user_id(self , db: Session, *, facebook_user_id: str):
+        return db.query(self.model).filter(self.model.facebook_user_id == facebook_user_id)\
+            .first()
 
 facebook_account = FacebookAccountServices(models.FacebookAccount)
