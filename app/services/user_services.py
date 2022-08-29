@@ -28,7 +28,7 @@ class UserServices(
         obj_in: schemas.UserRegister
     ) -> models.User:
 
-        user_role = services.role.get_by_name(db, name=Role.ADMIN["name"])
+        user_role = services.role.get_by_name(db, name=Role.USER["name"])
 
         db_obj = models.User(
             email=obj_in.email,

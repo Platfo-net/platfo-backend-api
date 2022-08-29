@@ -24,7 +24,8 @@ from .connection import Connection, ConnectionCreate, \
 from .trigger import TriggerCreate, TriggerUpdate, Trigger
 
 
-from .connection_chatflow import ConnectionChatflow, ConnectionChatflowCreate
+from .connection_chatflow import ConnectionChatflow,\
+    ConnectionChatflowCreate
 
 
 from .chatflow import Chatflow, ChatflowCreate, ChatflowUpdate
@@ -34,7 +35,11 @@ from .node import NodeCreate, NodeUpdate,\
     Node, MessageWidgetCreate, MenuWidgetCreate, FullNodeCreate
 
 
+from .contact import Contact, ContactCreate
 
-from .contact import Contact , ContactCreate
+from .message import MessageCreate, Message
 
-from .message import MessageCreate , Message
+
+from .pagination import Pagination
+from .notification import Notification, NotificationCreate,\
+    NotificationUpdate, NotificationListApi, NotificationListItem
