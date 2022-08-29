@@ -3,7 +3,10 @@ from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
 from fastapi import APIRouter, Depends, Security
+from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
+from pydantic import UUID4
+from app.constants.errors import Error
 
 
 router = APIRouter(prefix="/account", tags=["Account"])
@@ -38,3 +41,85 @@ def get_accounts_list(
         for item in instagram_pages if len(instagram_pages) > 0
     ]
     return accounts
+
+
+@router.get("/{id}", response_model=schemas.Account)
+def get_account(
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
+) -> Any:
+    """
+        Get list of accounts from different platforms
+    """
+    instagram_page = services.instagram_page.get(db, id)
+    if not instagram_page:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
+
+    facebook_account = services.facebook_account.get(
+        db,
+        instagram_page.facebook_account_id
+    )
+
+    if not facebook_account.user_id == current_user.id:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND_PERMISSION_DENIED["status_code"],  # noqa
+            detail=Error.ACCOUNT_NOT_FOUND_PERMISSION_DENIED["text"],
+        )
+
+    return schemas.Account(
+        id=instagram_page.id,
+        username=instagram_page.instagram_username,
+        profile_image_url=instagram_page.instagram_profile_picture_url,
+        platform="INSTAGRAM",
+        page_id=instagram_page.facebook_page_id
+    )
+
+
+@router.delete("/{id}")
+def delete_account(
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
+) -> Any:
+    """
+        Get list of accounts from different platforms
+    """
+    instagram_page = services.instagram_page.get(db, id)
+    if not instagram_page:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
+
+    facebook_account = services.facebook_account.get(
+        db,
+        instagram_page.facebook_account_id
+    )
+
+    if not facebook_account.user_id == current_user.id:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND_PERMISSION_DENIED["status_code"],  # noqa
+            detail=Error.ACCOUNT_NOT_FOUND_PERMISSION_DENIED["text"],
+        )
+
+    services.instagram_page.remove(db, id)
+
+    return

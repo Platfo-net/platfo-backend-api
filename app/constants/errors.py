@@ -98,19 +98,21 @@ class Error:
         "status_code": 401,
         "code": 19
     }
-
+    ACCOUNT_NOT_FOUND_PERMISSION_DENIED = {
+        "text": "There is no account with the given id.",
+        "status_code": 404,
+        "code": 20
+    }
 
     # Notification errors
 
     NOTIFICATON_NOT_FOUND = {
-        "text" : "Notification not found",
-        "status_code" : 404,
+        "text": "Notification not found",
+        "status_code": 404,
         "code": 50
     }
     NOTIFICATION_ALREADY_READED = {
-        "text" : "Notification already readed",
+        "text": "Notification already readed",
         "status_code": 400,
         "code": 51
     }
-
-    

@@ -41,15 +41,28 @@ def connect_instagram_page(
 
     res = requests.get(get_long_lived_token_url, params=params)
     long_lived_user_access_token = res.json()['access_token']
-    print(long_lived_user_access_token)
 
-    facebook_account_in = schemas.FacebookAccountCreate(
-        facebook_user_long_lived_token=long_lived_user_access_token,
-        facebook_user_id=obj_in.facebook_user_id,
-        user_id=current_user.id
+    facebook_account = services.facebook_account.get_by_facebook_user_id(
+        db,
+        facebook_user_id=obj_in.facebook_user_id
     )
-    facebook_account = services.facebook_account.create(
-                db, obj_in=facebook_account_in)
+
+    if facebook_account:
+        facebook_account_in = schemas.FacebookAccountUpdate(
+            facebook_user_long_lived_token=long_lived_user_access_token,
+            facebook_user_id=obj_in.facebook_user_id,
+            user_id=current_user.id
+        )
+        facebook_account = services.facebook_account.update(
+            db, db_obj=facebook_account, obj_in=facebook_account_in)
+    else:
+        facebook_account_in = schemas.FacebookAccountCreate(
+            facebook_user_long_lived_token=long_lived_user_access_token,
+            facebook_user_id=obj_in.facebook_user_id,
+            user_id=current_user.id
+        )
+        facebook_account = services.facebook_account.create(
+            db, obj_in=facebook_account_in)
 
     # get pages long lived token
 
@@ -71,13 +84,13 @@ def connect_instagram_page(
                 access_token=page["access_token"],
                 fields='connected_instagram_account',
             )
-            ig_id_url = "{}/{}/{}/".format(
+            get_instagram_page_id_url = "{}/{}/{}/".format(
                 settings.FACEBOOK_GRAPH_BASE_URL,
                 settings.FACEBOOK_GRAPH_VERSION,
                 page['id'],
             )
-            res = requests.get(ig_id_url, params=params)
-            ig_id = res.json()['connected_instagram_account']['id']
+            res = requests.get(get_instagram_page_id_url, params=params)
+            instagram_page_id = res.json()['connected_instagram_account']['id']
 
             params = dict(
                 fields="username,profile_picture_url",
@@ -87,33 +100,46 @@ def connect_instagram_page(
             get_page_info_url = "{}/{}/{}".format(
                 settings.FACEBOOK_GRAPH_BASE_URL,
                 settings.FACEBOOK_GRAPH_VERSION,
-                ig_id
+                instagram_page_id
             )
 
             res = requests.get(get_page_info_url, params=params)
 
             page_details = res.json()
-            print(page_details)
 
-            instagram_page_in = schemas.InstagramPageCreate(
+            instagram_page = services.instagram_page.get_page_by_instagram_page_id(
+                db, instagram_page_id=instagram_page_id)
+
+            if instagram_page:
+                instagram_page_in = schemas.InstagramPageUpdate(
+                    facebook_account_id=facebook_account.id,
+                    facebook_page_id=page["id"],
+                    facebook_page_token=page["access_token"],
+                    instagram_page_id=instagram_page_id,
+                    instagram_username=page_details["username"],
+                    instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
+                )
+                services.instagram_page.update(
+                    db, db_obj=instagram_page, obj_in=instagram_page_in)
+            else:
+                instagram_page_in = schemas.InstagramPageCreate(
                 facebook_account_id=facebook_account.id,
                 facebook_page_id=page["id"],
                 facebook_page_token=page["access_token"],
-                instagram_page_id=ig_id,
+                instagram_page_id=instagram_page_id,
                 instagram_username=page_details["username"],
                 instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
             )
 
-            services.instagram_page.create(db, obj_in=instagram_page_in)
+                services.instagram_page.create(db, obj_in=instagram_page_in)
 
         except Exception:
-            # raise HTTPException(
-            #     status_code=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['status_code'],
-            #     detail=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['text']
-            # )
-            pass
+            raise HTTPException(
+                status_code=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['status_code'],
+                detail=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['text']
+            )
 
-    return Response(status_code=200)
+    return
 
     #   res = requests.post(f"{BASE_URL}/v14.0/{p['id']}/
     #   subscribed_apps?subscribed_fields=feed,messages
@@ -151,13 +177,13 @@ def facebook_disconnect_page(
     return
 
 
-@router.get('/get/{ig_id}', response_model=schemas.InstagramPage)
-def get_page_data_by_ig_id(
+@router.get('/get/{instagram_page_id}', response_model=schemas.InstagramPage)
+def get_page_data_by_instagram_page_id(
         *,
         db: Session = Depends(deps.get_db),
-        ig_id: str
+        instagram_page_id: str
 ):
-    obj_instagram = services.instagram_page.get_page_by_ig_id(db, ig_id=ig_id)
+    obj_instagram = services.instagram_page.get_page_by_ig_id(db, ig_id=instagram_page_id)
     return obj_instagram
 
 
