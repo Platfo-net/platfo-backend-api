@@ -102,4 +102,15 @@ class Error:
 
     # Notification errors
 
+    NOTIFICATON_NOT_FOUND = {
+        "text" : "Notification not found",
+        "status_code" : 404,
+        "code": 50
+    }
+    NOTIFICATION_ALREADY_READED = {
+        "text" : "Notification already readed",
+        "status_code": 400,
+        "code": 51
+    }
+
     

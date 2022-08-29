@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, \
     HTTPException, Security
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
+from app.constants.errors import Error
 
 from app.constants.role import Role
 
@@ -113,7 +114,8 @@ def update_notification(
     notification = services.notification.get(db, id=id)
     if not notification:
         raise HTTPException(
-            status_code=404,
+            status_code=Error.NOTIFICATON_NOT_FOUND['status_code'],
+            detail=Error.NOTIFICATON_NOT_FOUND['text'],
         )
     notification = services.notification.update(
         db, db_obj=notification, obj_in=obj_in)
@@ -150,7 +152,8 @@ def delete_notification(
         id,
     ):
         raise HTTPException(
-            status_code=404
+            status_code=Error.NOTIFICATON_NOT_FOUND['status_code'],
+            detail=Error.NOTIFICATON_NOT_FOUND['text'],
         )
 
     services.notification.remove(db, id=id)
@@ -185,15 +188,16 @@ def read_notification(
         id=id,
     ):
         raise HTTPException(
-            status_code=404
+            status_code=Error.NOTIFICATON_NOT_FOUND['status_code'],
+            detail=Error.NOTIFICATON_NOT_FOUND['text'],
         )
     if services.notification_user.get(db,
                                       notification_id=id,
                                       user_id=current_user.id
                                       ):
         raise HTTPException(
-            status_code=400,
-            detail="Notification already readed"
+            status_code=Error.NOTIFICATION_ALREADY_READED["status_code"],
+            detail=Error.NOTIFICATION_ALREADY_READED["text"]
         )
 
     return services.notification.read(

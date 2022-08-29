@@ -4,7 +4,6 @@ from app.services.base import BaseServices
 from app import models, schemas
 from sqlalchemy.orm import Session
 from pydantic import UUID4
-from app import models
 
 
 class NotificationServices(
