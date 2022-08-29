@@ -43,3 +43,5 @@ from .message import MessageCreate, Message
 from .pagination import Pagination
 from .notification import Notification, NotificationCreate,\
     NotificationUpdate, NotificationListApi, NotificationListItem
+
+import academy
