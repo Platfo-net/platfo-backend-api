@@ -14,4 +14,4 @@ from .node import Node
 from .message import Message
 from .contact import Contact
 
-import academy
+from .notification import Notification, NotificationUser

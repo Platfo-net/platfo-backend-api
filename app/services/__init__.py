@@ -13,10 +13,4 @@ from .chatflow_services import chatflow
 from .node_services import node
 from .contact_services import contact
 from .message_services import message
-
-
-
-
-# modules import
-
-import academy
+from .notification_services import notification, notification_user
