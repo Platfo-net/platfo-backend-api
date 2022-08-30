@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from app import models, schemas
 from sqlalchemy.orm import Session
 from datetime import datetime
+from sqlalchemy.orm.attributes import flag_modified
 
 
 class ContactServices:
@@ -40,11 +41,28 @@ class ContactServices:
     ):
         db_obj = db.query(self.model).filter(
             self.model.contact_igs_id == contact_igs_id).first()
+
         db_obj.information = information
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
 
+        return db_obj
+
+    def update_information(
+        self,
+        db: Session,
+        *,
+        contact_igs_id: str,
+        data: dict,
+    ):
+        db_obj = db.query(self.model).filter(
+            self.model.contact_igs_id == contact_igs_id).first()
+        db_obj.information.update(data)
+        flag_modified(db_obj, 'information')
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
         return db_obj
 
     def get_pages_contacts(
@@ -91,3 +109,8 @@ class ContactServices:
 
 
 contact = ContactServices(models.Contact)
+
+
+"""
+{"username": "botinow_", "profile_image": "https://scontent-frx5-2.cdninstagram.com/v/t51.2885-15/299208044_147311657929724_7054774886703011347_n.jpg?stp=dst-jpg_s200x200&_nc_cat=109&ccb=1-7&_nc_sid=8ae9d6&_nc_ohc=ZdgjAUxR1_QAX-Ev2Lm&_nc_ht=scontent-frx5-2.cdninstagram.com&edm=ALmAK4EEAAAA&oh=00_AT_IXk8QlCv-LFv9XjzxlpFRqT7fAO7tmibKR2fjxdPzzQ&oe=6311C48F"}
+"""

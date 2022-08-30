@@ -84,9 +84,6 @@ def get_pages_contacts(
         skip=skip,
         limit=limit)
 
-
-
-
     return [
             schemas.Contact(
                 contact_igs_id=contact.contact_igs_id,
@@ -98,3 +95,28 @@ def get_pages_contacts(
                 user_id = contact.user_id
             ) for contact in contacts if len(contacts)
         ]
+
+
+@router.put("/{page_id}")
+def update_page_contacts_information(
+    *,
+    db: Session = Depends(deps.get_db),
+    contact_igs_id: str,
+    obj_in: schemas.ProfileUpdate,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
+):
+    data = dict()
+    data[obj_in.key] = obj_in.value
+    print(data)
+    contacts = services.contact.update_information(
+        db,
+        contact_igs_id=contact_igs_id,
+        data=data)
+
+    return contacts

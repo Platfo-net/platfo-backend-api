@@ -35,7 +35,7 @@ from .node import NodeCreate, NodeUpdate,\
     Node, MessageWidgetCreate, MenuWidgetCreate, FullNodeCreate
 
 
-from .contact import Contact, ContactCreate
+from .contact import Contact, ContactCreate, ProfileUpdate
 
 from .message import MessageCreate, Message
 
