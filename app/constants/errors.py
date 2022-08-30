@@ -116,3 +116,19 @@ class Error:
         "status_code": 400,
         "code": 51
     }
+
+    # Category errors
+
+    CATEGORY_NOT_FOUND = {
+        "text": "Category not found",
+        "status_code": 404,
+        "code": 60
+    }
+
+    # Content errors
+
+    CONTENT_NOT_FOUND = {
+        "text": "Content not found",
+        "status_code": 404,
+        "code": 70
+    }

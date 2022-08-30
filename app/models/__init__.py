@@ -1,3 +1,4 @@
+from app.models import academy
 from .user import User
 from .role import Role
 from .facebook_account import FacebookAccount

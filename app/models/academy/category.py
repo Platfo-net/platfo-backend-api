@@ -7,8 +7,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 
-
-
 class Category(Base):
 
     __tablename__ = "categories"
@@ -23,5 +21,4 @@ class Category(Base):
         nullable=True,
     )
 
-
-    content_category = relationship("ContentCategory" , back_populates="category")
+    content_category = relationship("ContentCategory", back_populates="category")

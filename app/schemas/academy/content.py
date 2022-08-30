@@ -5,35 +5,35 @@ from pydantic import UUID4, BaseModel
 from app.schemas.pagination import Pagination
 
 
-class CategoryBase(BaseModel):
+class ContentBase(BaseModel):
     title: Optional[str] = None
-    parrent_id: Optional[UUID4] = None
+    detail: Optional[str] = None
 
 
-class CategoryCreate(CategoryBase):
+class ContentCreate(ContentBase):
     pass
 
 
-class CategoryUpdate(CategoryBase):
+class ContentUpdate(ContentBase):
     pass
 
 
-class Category(BaseModel):
+class Content(BaseModel):
     id: UUID4
 
     class Config:
         orm_mode = True
 
 
-class CategoryListItem(CategoryBase):
+class ContentListItem(ContentBase):
     id: UUID4
 
     class Config:
         orm_mode = True
 
 
-class CategoryListApi(BaseModel):
-    items: List[CategoryListItem]
+class ContentListApi(BaseModel):
+    items: List[ContentListItem]
     pagination: Pagination
 
     class Config:
