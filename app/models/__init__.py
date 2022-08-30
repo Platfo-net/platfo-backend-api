@@ -15,4 +15,3 @@ from .message import Message
 from .contact import Contact
 
 from .notification import Notification, NotificationUser
-import academy

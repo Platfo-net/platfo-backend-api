@@ -14,5 +14,3 @@ from .node_services import node
 from .contact_services import contact
 from .message_services import message
 from .notification_services import notification, notification_user
-
-import academy

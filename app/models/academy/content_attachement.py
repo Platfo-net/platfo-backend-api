@@ -13,7 +13,7 @@ import math
 
 class ContentAttachment(Base):
 
-    __tablename__ = "content_attachements"
+    __tablename__ = "content_attachments"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
@@ -26,4 +26,4 @@ class ContentAttachment(Base):
         nullable=True,
     )
 
-    content = relationship("Content", back_populates="content_attachements")
+    content = relationship("Content", back_populates="content_attachment")
