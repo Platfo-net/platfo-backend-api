@@ -23,4 +23,5 @@ class Category(Base):
         nullable=True,
     )
 
-    category = relationship("Category")
+
+    content_category = relationship("ContentCategory" , back_populates="category")

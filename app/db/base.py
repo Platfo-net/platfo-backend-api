@@ -18,3 +18,7 @@ from app.models.contact import Contact  # noqa
 from app.models.message import Message  # noqa
 
 from app.models.notification import Notification, NotificationUser  # noqa
+
+
+from app.models.academy import Category, Content,\
+     ContentAttachment, ContentCategory  # noqa

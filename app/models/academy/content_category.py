@@ -1,10 +1,17 @@
+import datetime
+from uuid import uuid4
+
+from app.db.base_class import Base
+from sqlalchemy import Column, String, ForeignKey, Text
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 
 
 
 
 
-class ContentCategory():
+class ContentCategory(Base):
     __tablename__ = "content_categories"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
@@ -22,5 +29,5 @@ class ContentCategory():
         nullable=True,
     )
 
-    category = relationship("Category", back_populates="content_categories")
-    Content = relationship("Content", back_populates="content_categories")
+    category = relationship("Category", back_populates="content_category")
+    content = relationship("Content", back_populates="content_category")
