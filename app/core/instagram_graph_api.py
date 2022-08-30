@@ -6,6 +6,46 @@ import requests
 
 class InstagramGraphApi:
 
+    def send_quick_reply(self,
+                         text: str,
+                         from_id: str,
+                         to_id: str,
+                         page_access_token: str):
+        url = "{}/{}/{}/messages".format(
+            settings.FACEBOOK_GRAPH_BASE_URL,
+            settings.FACEBOOK_GRAPH_VERSION,
+            from_id)
+
+        payload = {
+            "recipient": {
+                'id': to_id,
+            },
+            "message": {
+                "text": text,
+                "quick_replies":
+                [
+                    {
+                        "content_type": "text",
+                        "title": "mikhy",
+                        "payload": "<>"
+                    },
+                    {
+                        "content_type": "text",
+                        "title": "nemikhy",
+                        "payload": "<>"
+                    }
+                ]
+            }
+        }
+        params = {
+            "access_token": page_access_token
+        }
+        res = requests.post(url, params=params, json=payload)
+        print(res)
+        print('javab quick issssssssssssssss', res.json())
+
+        return res.json()
+
     def send_text_message(
         self,
         text: str,
