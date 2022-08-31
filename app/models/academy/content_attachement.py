@@ -1,18 +1,13 @@
-
-import datetime
 from uuid import uuid4
 
-from app.db.base_class import Base
-from sqlalchemy import Column, String, ForeignKey, Text
+from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-import math
-
+from app.db.base_class import Base
 
 
 class ContentAttachment(Base):
-
     __tablename__ = "content_attachments"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4

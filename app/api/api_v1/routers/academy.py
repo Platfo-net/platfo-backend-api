@@ -1,5 +1,6 @@
 
 from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -121,6 +122,42 @@ def get_all_contents(*,
         pagination=pagination
     )
     return content_list
+
+
+@router.get('/{id}', response_model=schemas.academy.ContentDetail)
+def get_content_by_id(*,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.ADMIN["name"],
+            ],
+        ),
+):
+    content = services.content.get(db, id=id)
+    if not content:
+        raise HTTPException(
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text']
+        )
+    content_attachments = services.content_attachment.\
+        get_by_content_id(db, content_id=content.id)
+
+    new_content_attachment = [
+        schemas.academy.ContentAttachment(
+            id=item.id,
+            attachment_id=item.attachment_id
+        )
+        for item in content_attachments
+    ]
+
+    return schemas.academy.ContentDetail(
+        id=content.id,
+        title=content.title,
+        detail=content.detail,
+        content_attachments=new_content_attachment
+    )
 
 
 @router.post('/', response_model=schemas.academy.Content)
