@@ -23,3 +23,8 @@ class Contact(ContactBase):
 class ProfileCreate(BaseModel):
     username: Optional[str] = None
     profile_image: Optional[str] = None
+
+
+class ProfileUpdate(BaseModel):
+    key: Optional[str] = None
+    value: Optional[str] = None
