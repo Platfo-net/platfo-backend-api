@@ -134,10 +134,11 @@ def connect_instagram_page(
                 services.instagram_page.create(db, obj_in=instagram_page_in)
 
         except Exception:
-            raise HTTPException(
-                status_code=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['status_code'],
-                detail=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['text']
-            )
+            # raise HTTPException(
+            #     status_code=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['status_code'],
+            #     detail=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['text']
+            # )
+            pass
 
     return
 

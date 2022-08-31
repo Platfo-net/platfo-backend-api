@@ -63,7 +63,20 @@ class InstagramGraphApi:
                 'id': to_id,
             },
             "message": {
-                "text": text
+                "text": text,
+                 "quick_replies":
+                    [
+                        {
+                            "content_type": "text",
+                            "title": "mikhy",
+                            "payload": "<>"
+                        },
+                        {
+                            "content_type": "text",
+                            "title": "nemikhy",
+                            "payload": "<>"
+                        }
+                    ]
             }
         }
 
@@ -78,11 +91,11 @@ class InstagramGraphApi:
         return res.json()
 
     def send_menu(
-        self,
-        data, 
-        from_id: str, 
-        to_id: str, 
-        page_access_token: str):
+            self,
+            data,
+            from_id: str,
+            to_id: str,
+            page_access_token: str):
         body = {
             "template_type": "generic",
             "elements": [
@@ -94,6 +107,19 @@ class InstagramGraphApi:
                             "title": choice["text"],
                             "payload": choice["id"]
                         } for choice in data["choices"]
+                    ],
+                    "quick_replies":
+                    [
+                        {
+                            "content_type": "text",
+                            "title": "mikhy",
+                            "payload": "<>"
+                        },
+                        {
+                            "content_type": "text",
+                            "title": "nemikhy",
+                            "payload": "<>"
+                        }
                     ]
                 }
             ]
@@ -143,10 +169,9 @@ class InstagramGraphApi:
         if res.status_code == 200:
             username = res.json()['username']
             profile_image = res.json()['profile_pic']
-            return dict(username = username, profile_image = profile_image)
+            return dict(username=username, profile_image=profile_image)
 
         return None
-
 
 
 graph_api = InstagramGraphApi()

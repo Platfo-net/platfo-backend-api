@@ -21,6 +21,7 @@ class Node(Base):
     )
     from_widget = Column(ARRAY(UUID), nullable=True)
     widget = Column(JSON, nullable=True)
+    quick_replies = Column(ARRAY(JSON), nullable=True)
     is_head = Column(Boolean, default=False)
     chatflow = relationship(
         "Chatflow", back_populates="node")

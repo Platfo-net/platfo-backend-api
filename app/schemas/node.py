@@ -49,3 +49,7 @@ class MenuWidgetChoices(BaseModel):
 class MenuWidgetCreate(BaseModel):
     title: Optional[str] = None
     choices: List[MenuWidgetChoices]
+
+
+class QuickReply(BaseModel):
+    title: Optional[str] = None
