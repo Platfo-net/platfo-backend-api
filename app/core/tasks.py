@@ -111,6 +111,7 @@ def send_widget(
         quick_replies = node.quick_replies
 
     if widget["widget_type"] == "MENU":
+        print(quick_replies)
         graph_api.send_menu(widget,
                             quick_replies,
                             from_id=user_page_data["facebook_page_id"],

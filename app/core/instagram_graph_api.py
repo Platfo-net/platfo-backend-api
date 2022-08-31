@@ -6,10 +6,49 @@ import requests
 
 class InstagramGraphApi:
 
+    def send_quick_replies(
+        self,
+        quick_replies,
+        from_id: str,
+        to_id: str,
+        page_access_token: str
+    ):
+
+        url = "{}/{}/{}/messages".format(
+            settings.FACEBOOK_GRAPH_BASE_URL,
+            settings.FACEBOOK_GRAPH_VERSION,
+            from_id)
+
+        payload = {
+            "recipient": {
+                'id': to_id,
+            },
+            "message": {
+                "text": "...",
+                "quick_replies":
+                [
+                    {
+                        "content_type": "text",
+                        "title": quick_reply["text"],
+                        "payload": quick_reply["id"]
+                    }
+                    for quick_reply in quick_replies
+                ]
+            }
+        }
+        params = {
+            "access_token": page_access_token
+        }
+        res = requests.post(url, params=params, json=payload)
+        print(res)
+        print('javab quick issssssssssssssss', res.json())
+
+        return res.json()
+
     def send_text_message(
         self,
         text: str,
-        quick_replies: List[dict],
+        quick_replies: Union[List[dict], None],
         from_id: str,
         to_id: str,
         page_access_token: str,
@@ -25,15 +64,6 @@ class InstagramGraphApi:
             },
             "message": {
                 "text": text,
-                "quick_replies":
-                [
-                    {
-                        "content_type": "text",
-                        "title": quick_reply["text"],
-                        "payload": quick_reply["id"]
-                    }
-                    for quick_reply in quick_replies
-                ] if len(quick_replies) else None
             }
         }
 
@@ -42,10 +72,8 @@ class InstagramGraphApi:
         }
 
         res = requests.post(url, params=params, json=payload)
-        print(res)
-        print('javab isssssssssssss', res.json())
 
-        return res.json()
+        
 
     def send_menu(
             self,
@@ -72,13 +100,6 @@ class InstagramGraphApi:
             ]
         }
 
-        quick_replies = [
-            {
-                "content_type": "text",
-                "title": quick_reply["text"],
-                "payload": quick_reply["id"]
-            } for quick_reply in quick_replies
-        ] if len(quick_replies) else None
         url = "{}/{}/{}/messages".format(
             settings.FACEBOOK_GRAPH_BASE_URL,
             settings.FACEBOOK_GRAPH_VERSION,
@@ -93,7 +114,6 @@ class InstagramGraphApi:
                 'id': to_id,
             },
             "message": {
-                "quick_replies": quick_replies,
                 "attachment": {
                     "type": "template",
                     "payload": body
@@ -101,8 +121,18 @@ class InstagramGraphApi:
             }
         }
 
+
+
         res = requests.post(url=url, params=params, json=payload)
-        print('javabe 2 v0mi isssssssss', res.json())
+        if quick_replies:
+            self.send_quick_replies(
+                quick_replies,
+                from_id,
+                to_id,
+                page_access_token)
+
+        return res.json()
+        
         return res.status_code
 
     def get_contact_information_from_facebook(
