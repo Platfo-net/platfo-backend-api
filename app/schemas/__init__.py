@@ -1,3 +1,4 @@
+from app.schemas import academy
 from .role import Role, RoleCreate, RoleInDB, RoleUpdate
 from .token import Token, TokenPayload, Login, LoginForm
 from .user import User, UserCreate, \

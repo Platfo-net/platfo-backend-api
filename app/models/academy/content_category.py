@@ -7,10 +7,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 
-
-
-
-
 class ContentCategory(Base):
     __tablename__ = "content_categories"
     id = Column(
