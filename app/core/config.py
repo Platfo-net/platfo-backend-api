@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    
+    S3_ACADEMY_ATTACHMENT_BUCKET: str
 
     FACEBOOK_APP_ID: str
     FACEBOOK_APP_SECRET: str
@@ -41,6 +43,10 @@ class Settings(BaseSettings):
 
     CELERY_BROKER_URL = "redis://redis:6379/2"
     CELERY_RESULT_BACKEND = "redis://redis:6379/2"
+
+    S3_ROOT_USER: str
+
+    S3_ROOT_PASSWORD: str
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(

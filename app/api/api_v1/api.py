@@ -1,6 +1,7 @@
-from app.api.api_v1.routers import auth, connection, \
+from app.api.api_v1.routers import auth, connection, file, \
     instagram, trigger, chatflow, node, \
-    users, accounts, constants, webhook, contact, message, notification, academy
+    users, accounts, constants, webhook, \
+    contact, message, notification, academy
 from fastapi import APIRouter
 
 
@@ -20,4 +21,4 @@ api_router.include_router(constants.router)
 api_router.include_router(webhook.router)
 api_router.include_router(notification.router)
 api_router.include_router(academy.router)
-
+api_router.include_router(file.router)
