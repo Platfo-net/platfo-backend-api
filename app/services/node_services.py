@@ -54,7 +54,16 @@ class NodeServices(
         db.add(node)
         db.commit()
         db.refresh(node)
-        return(node)
+        return node
+
+    def add_quick_reply(self , db:Session , * , obj_in: List[dict] , node_id: UUID4):
+        node = db.query(models.Node).filter(models.Node.id == node_id).first()
+        node.quick_replies = obj_in
+        db.add(node)
+        db.commit()
+        db.refresh(node)
+        return node
+
 
     def get_next_node(self, db: Session, *, from_id: UUID4):
         return db.query(models.Node).filter(

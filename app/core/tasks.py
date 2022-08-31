@@ -1,3 +1,4 @@
+from typing import List
 from fastapi.exceptions import HTTPException
 
 from app import schemas, services
@@ -73,11 +74,10 @@ def save_message(obj_in: dict, instagram_page_id: str = None):
     ))
 
 
-
-
 @celery.task
 def send_widget(
     widget: dict,
+    quick_replies: List[dict],
     contact_igs_id: str,
     payload: str,
     user_page_data: dict,
@@ -87,6 +87,7 @@ def send_widget(
     while widget["widget_type"] == "MESSAGE":
         graph_api.send_text_message(
             text=widget["message"],
+            quick_replies=quick_replies,
             from_id=user_page_data["facebook_page_id"],
             to_id=contact_igs_id,
             page_access_token=user_page_data["facebook_page_token"]
@@ -107,9 +108,11 @@ def send_widget(
         if node is None:
             break
         widget = node.widget
+        quick_replies = node.quick_replies
 
     if widget["widget_type"] == "MENU":
         graph_api.send_menu(widget,
+                            quick_replies,
                             from_id=user_page_data["facebook_page_id"],
                             to_id=contact_igs_id,
                             page_access_token=user_page_data["facebook_page_token"]

@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, List, Union
 from app.core.config import settings
 
 import requests
@@ -6,49 +6,10 @@ import requests
 
 class InstagramGraphApi:
 
-    def send_quick_reply(self,
-                         text: str,
-                         from_id: str,
-                         to_id: str,
-                         page_access_token: str):
-        url = "{}/{}/{}/messages".format(
-            settings.FACEBOOK_GRAPH_BASE_URL,
-            settings.FACEBOOK_GRAPH_VERSION,
-            from_id)
-
-        payload = {
-            "recipient": {
-                'id': to_id,
-            },
-            "message": {
-                "text": text,
-                "quick_replies":
-                [
-                    {
-                        "content_type": "text",
-                        "title": "mikhy",
-                        "payload": "<>"
-                    },
-                    {
-                        "content_type": "text",
-                        "title": "nemikhy",
-                        "payload": "<>"
-                    }
-                ]
-            }
-        }
-        params = {
-            "access_token": page_access_token
-        }
-        res = requests.post(url, params=params, json=payload)
-        print(res)
-        print('javab quick issssssssssssssss', res.json())
-
-        return res.json()
-
     def send_text_message(
         self,
         text: str,
+        quick_replies: List[dict],
         from_id: str,
         to_id: str,
         page_access_token: str,
@@ -64,19 +25,15 @@ class InstagramGraphApi:
             },
             "message": {
                 "text": text,
-                 "quick_replies":
-                    [
-                        {
-                            "content_type": "text",
-                            "title": "mikhy",
-                            "payload": "<>"
-                        },
-                        {
-                            "content_type": "text",
-                            "title": "nemikhy",
-                            "payload": "<>"
-                        }
-                    ]
+                "quick_replies":
+                [
+                    {
+                        "content_type": "text",
+                        "title": quick_reply["text"],
+                        "payload": quick_reply["id"]
+                    }
+                    for quick_reply in quick_replies
+                ] if len(quick_replies) else None
             }
         }
 
@@ -93,9 +50,11 @@ class InstagramGraphApi:
     def send_menu(
             self,
             data,
+            quick_replies,
             from_id: str,
             to_id: str,
             page_access_token: str):
+        print(quick_replies)
         body = {
             "template_type": "generic",
             "elements": [
@@ -108,23 +67,18 @@ class InstagramGraphApi:
                             "payload": choice["id"]
                         } for choice in data["choices"]
                     ],
-                    "quick_replies":
-                    [
-                        {
-                            "content_type": "text",
-                            "title": "mikhy",
-                            "payload": "<>"
-                        },
-                        {
-                            "content_type": "text",
-                            "title": "nemikhy",
-                            "payload": "<>"
-                        }
-                    ]
+
                 }
             ]
         }
 
+        quick_replies = [
+            {
+                "content_type": "text",
+                "title": quick_reply["text"],
+                "payload": quick_reply["id"]
+            } for quick_reply in quick_replies
+        ] if len(quick_replies) else None
         url = "{}/{}/{}/messages".format(
             settings.FACEBOOK_GRAPH_BASE_URL,
             settings.FACEBOOK_GRAPH_VERSION,
@@ -139,6 +93,7 @@ class InstagramGraphApi:
                 'id': to_id,
             },
             "message": {
+                "quick_replies": quick_replies,
                 "attachment": {
                     "type": "template",
                     "payload": body

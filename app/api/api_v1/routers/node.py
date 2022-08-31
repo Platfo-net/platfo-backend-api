@@ -95,8 +95,8 @@ def create_full_node(
         )
     node_in = schemas.NodeCreate(
         title=obj_in.title, chatflow_id=obj_in.chatflow_id, is_head=obj_in.is_head)
+    quick_replies = jsonable_encoder(obj_in.quick_replies)
     node = services.node.create(db, obj_in=node_in)
-    print(obj_in.widget_type)
     if obj_in.widget_type == WidgetType.MESSAGE["name"]:
         obj_in = dict(id=str(uuid.uuid4()),
                       widget_type=WidgetType.MESSAGE["name"],
@@ -109,6 +109,9 @@ def create_full_node(
                              for ch in obj_in["choices"]]
 
     node = services.node.add_widget(db, obj_in=obj_in, node_id=node.id)
+    print(obj_in)
+    node = services.node.add_quick_reply(
+        db, obj_in=quick_replies , node_id=node.id)
     return node
 
 
