@@ -1,6 +1,5 @@
 
 from fastapi import APIRouter, Depends, Security, HTTPException
-from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -132,10 +131,12 @@ def get_content_by_id(*,
             deps.get_current_active_user,
             scopes=[
                 Role.ADMIN["name"],
+                Role.USER["name"],
             ],
         ),
 ):
-    content = services.content.get(db, id=id)
+    content, categories = services.content.get_by_detail(db, id=id)
+
     if not content:
         raise HTTPException(
             status_code=Error.CONTENT_NOT_FOUND['status_code'],
@@ -151,12 +152,16 @@ def get_content_by_id(*,
         )
         for item in content_attachments
     ]
-
-    return schemas.academy.ContentDetail(
+    content_detail = [schemas.academy.ContentDetailList(
         id=content.id,
         title=content.title,
         detail=content.detail,
+        categories=categories,
         content_attachments=new_content_attachment
+    )]
+
+    return schemas.academy.ContentDetail(
+        content_detail=content_detail
     )
 
 
@@ -171,12 +176,69 @@ def create_content(*, obj_in: schemas.academy.ContentCreate,
         ),
 ):
     content = services.content.create(db=db, obj_in=obj_in)
+    for category in obj_in.categories:
+        services.category_content.create(
+            db,
+            category_id=category.category_id,
+            content_id=content.id
+        )
+    for content_attachment in obj_in.content_attachments:
+        services.content_attachment.create(
+            db,
+            obj_in=schemas.academy.ContentAttachmentCreate(
+                attachment_id=content_attachment.attachment_id
+            ),
+            content_id=content.id
+        )
+
     return content
 
 
-@router.put('/')
-def update_content():
-    pass
+@router.put('/{id}', response_model=schemas.academy.Content)
+def update_content(*,
+        db: Session = Depends(deps.get_db),
+        id: str,
+        obj_in: schemas.academy.ContentCreate,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.ADMIN["name"],
+            ],
+        ),
+):
+
+    old_content = services.content.get(db, id=id)
+
+    if not old_content:
+        raise HTTPException(
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text'])
+
+    content = services.content.update(
+        db, db_obj=old_content, obj_in=obj_in)
+
+    services.academy.content_attachment.remove_by_content_id(db, content_id=id)
+
+    for content_attachment in obj_in.content_attachments:
+        services.content_attachment.create(
+            db,
+            obj_in=schemas.academy.ContentAttachmentCreate(
+                attachment_id=content_attachment.attachment_id
+            ),
+            content_id=old_content.id
+        )
+    services.academy.category_content.remove_by_content_id(
+        db,
+        content_id=id,
+    )
+    for category in obj_in.categories:
+        services.category_content.create(
+            db,
+            content_id=old_content.id,
+            category_id=category.category_id
+        )
+
+    return content
 
 
 @router.delete('/{id}')
@@ -198,6 +260,3 @@ def delete_content(*,
         )
     services.content.remove(db, id=id)
     return
-
-
-

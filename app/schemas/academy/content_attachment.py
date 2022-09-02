@@ -7,6 +7,10 @@ class ContentAttachmentBase(BaseModel):
     attachment_id: Optional[str] = None
 
 
+class ContentAttachmentCreate(ContentAttachmentBase):
+    pass
+
+
 class ContentAttachment(ContentAttachmentBase):
     id: UUID4
 

@@ -70,7 +70,7 @@ services:
       - DB_USER="${POSTGRES_USER}"
       - DB_PASSWORD="${POSTGRES_PASSWORD}"
       - DB_HOST="${DB_HOST}"
-      - DB_NAME="${POSTGRES_DB}"
+      - DB_NAME="${POSTGRES_DB}"  # todo
       - POOL_MODE=transaction
       - ADMIN_USERS="${POSTGRES_USER}"
     ports:
