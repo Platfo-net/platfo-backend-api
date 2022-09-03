@@ -53,9 +53,18 @@ class ContentDetail(BaseModel):
         orm_mode = True
 
 
+class ContentCategory(BaseModel):
+    category_id: UUID4
+    category: CategoryListItem
+
+    class Config:
+        orm_mode = True
+
+
 class ContentListItem(ContentBase):
     id: UUID4
-    categories: List[CategoryListItem]
+    # categories: List[CategoryListItem]
+    content_categories: List[ContentCategory]
 
     class Config:
         orm_mode = True

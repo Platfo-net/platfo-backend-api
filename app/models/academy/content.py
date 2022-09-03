@@ -18,6 +18,6 @@ class Content(Base):
     detail = Column(Text(), nullable=True)
 
     content_attachment = relationship(
-        "ContentAttachment", back_populates="content")  # todo add cascade
-    content_category = relationship(
-        "ContentCategory", back_populates="content")
+        "ContentAttachment", back_populates="content" , cascade="all, delete-orphan")  # todo add cascade
+    content_categories = relationship(
+        "ContentCategory", back_populates="content",cascade="all, delete-orphan")

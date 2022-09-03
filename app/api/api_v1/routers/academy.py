@@ -120,7 +120,8 @@ def get_all_contents(*,
         items=contents,
         pagination=pagination
     )
-    return content_list
+    return content_list   
+
 
 
 @router.get('/{id}', response_model=schemas.academy.ContentDetail)
