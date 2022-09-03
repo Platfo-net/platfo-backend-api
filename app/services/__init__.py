@@ -17,3 +17,4 @@ from .notification_services import notification, notification_user
 from .academy.category import category
 from .academy.content import content
 from .academy.content_attachment import content_attachment
+from .academy.content_category import category_content

@@ -1,0 +1,91 @@
+services:
+  api-1:
+    container_name: "${APP_NAME}-api-1"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped
+
+
+  db:
+    container_name: "${APP_NAME}-database"
+    image: postgres:14
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  pgbouncer:
+    image: edoburu/pgbouncer
+    environment:
+      - DB_USER="${POSTGRES_USER}"
+      - DB_PASSWORD="${POSTGRES_PASSWORD}"
+      - DB_HOST="${DB_HOST}"
+      - DB_NAME="${POSTGRES_DB}"  # todo
+      - POOL_MODE=transaction
+      - ADMIN_USERS="${POSTGRES_USER}"
+    ports:
+      - "6432:6432"
+    depends_on:
+      - db
+
+  redis:
+    container_name: "${APP_NAME}-redis"
+    restart: unless-stopped
+    image: redis:6.2.7
+    command: "redis-server /usr/local/etc/redis/redis.conf"
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+  # celery-worker:
+  #   image: "botinow-backend-app"
+  #   build: .
+  #   container_name: "${APP_NAME}-celery-worker-1"
+  #   command: celery -A app.core.celery.celery worker --loglevel=info -n w1
+  #   volumes:
+  #     - .:/app
+  #   depends_on:
+  #     - db
+  #     - api-1
+  #     - api-2
+  #     - api-3
+  #     - redis
+
+  # celery-flower:
+  #   image: "botinow-backend-app"
+  #   build: .
+  #   container_name: "${APP_NAME}-celery-flower"
+  #   command: celery -A app.core.celery.celery flower --port=5555
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "5555:5555"
+  #   depends_on:
+  #     - db
+  #     - api-1
+  #     - api-2
+  #     - api-3
+  #     - redis
+
+volumes:
+  postgres-data:
+  redis-data:
