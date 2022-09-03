@@ -39,6 +39,8 @@ class NodeUpdate(BaseModel):
 
 class Node(NodeBase):
     id: UUID4
+    chatflow: Optional[Chatflow]
+    is_head : Optional[bool] = False
 
     class Config:
         orm_mode = True
