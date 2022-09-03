@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     S3_ROOT_USER: str
 
     S3_ROOT_PASSWORD: str
+    S3_PORT: str
+    S3_HOST: str
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
