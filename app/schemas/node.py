@@ -11,7 +11,7 @@ class NodeBase(BaseModel):
     chatflow_id: Optional[UUID4] = None
     from_widget: List[UUID4] = None
     widget: dict = None
-    quick_replies: List[QuickReply]
+    quick_replies: List[QuickReply] = []
 
 
 
