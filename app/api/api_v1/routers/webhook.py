@@ -92,9 +92,9 @@ def webhook_instagram_listener(
     if instagram_data.payload:
 
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
-
         tasks.send_widget.delay(
             widget=node.widget,
+            quick_replies = node.quick_replies,
             contact_igs_id=instagram_data.id_sender,
             payload=instagram_data.payload,
             user_page_data=user_page_data.to_dict()
@@ -128,6 +128,7 @@ def webhook_instagram_listener(
             db, chatflow_id=chatflow_id)
         tasks.send_widget.delay(
             widget=node.widget,
+            quick_replies = node.quick_replies,
             contact_igs_id=instagram_data.id_sender,
             payload=instagram_data.payload,
             user_page_data=user_page_data.to_dict()
