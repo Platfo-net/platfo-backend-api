@@ -1,5 +1,5 @@
 
-from typing import Optional, List, Union
+from typing import Optional, List
 from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
@@ -30,13 +30,6 @@ class Content(BaseModel):
         orm_mode = True
 
 
-class ContentInDB(ContentBase):
-    id: UUID4
-
-    class Config:
-        orm_mode = True
-
-
 class ContentDetailList(ContentBase):
     id: UUID4
     categories: List[CategoryListItem]
@@ -53,6 +46,13 @@ class ContentDetail(BaseModel):
         orm_mode = True
 
 
+class ContentInDB(ContentBase):
+    id: UUID4
+
+    class Config:
+        orm_mode = True
+
+
 class ContentCategory(BaseModel):
     category_id: UUID4
     category: CategoryListItem
@@ -63,7 +63,6 @@ class ContentCategory(BaseModel):
 
 class ContentListItem(ContentBase):
     id: UUID4
-    # categories: List[CategoryListItem]
     content_categories: List[ContentCategory]
 
     class Config:

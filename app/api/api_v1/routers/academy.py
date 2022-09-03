@@ -123,7 +123,6 @@ def get_all_contents(*,
     return content_list   
 
 
-
 @router.get('/{id}', response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*,
         db: Session = Depends(deps.get_db),

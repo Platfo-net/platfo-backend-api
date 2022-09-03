@@ -1,6 +1,6 @@
 from functools import lru_cache
 from typing import Any, Dict, Optional
-from pydantic import BaseSettings, PostgresDsn, validator
+from pydantic import BaseSettings, PostgresDsn, validator, RedisDsn
 from pathlib import Path
 from dotenv import load_dotenv
 

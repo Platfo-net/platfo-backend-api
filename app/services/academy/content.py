@@ -34,27 +34,7 @@ class ContentServices(
             options(joinedload(self.model.content_categories)
                     ).offset(page_size * (page - 1)).limit(page_size).all()
 
-
         return contents, pagination
-        content_list = []
-        for content in contents:
-            # content_categories = content.content_category
-
-            # categories = []
-            # for content_category in content_categories:
-            #     categories.append(db.query(models.academy.Category).filter
-            #         (models.academy.Category.id == content_category.category_id).first())
-
-            content_list.append(schemas.academy.ContentListItem(
-                id=content.id,
-                title=content.title,
-                detail=content.detail,
-                content_categories=content.content_category             
-                ))
-            
-            print(content_list)
-
-        return content_list, pagination
 
     def get_by_detail(
             self,
@@ -66,10 +46,10 @@ class ContentServices(
     ):
 
         content = db.query(self.model).\
-            options(joinedload(self.model.content_category)
+            options(joinedload(self.model.content_categories)
                     ).offset(page_size * (page - 1)).limit(page_size).first()
 
-        content_categories = content.content_category
+        content_categories = content.content_categories
 
         categories = []
         for content_category in content_categories:
