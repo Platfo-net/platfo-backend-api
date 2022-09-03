@@ -15,6 +15,7 @@ ARG ENVIRONMENT=dev
 
 COPY . /app/
 RUN pip install --upgrade pip
+RUN pip install wheel
 RUN pip install -r requirements.txt
 
 COPY ./startup.sh /app/

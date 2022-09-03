@@ -1,11 +1,9 @@
 
 import math
-from typing import List
+
 from app.services.base import BaseServices
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app import models, schemas
-from fastapi.encoders import jsonable_encoder
-from pydantic import UUID4
 
 
 class ContentServices(
@@ -16,10 +14,14 @@ class ContentServices(
         schemas.academy.ContentUpdate
     ]
 ):
-    def get_multi(self, db: Session, *, page: int = 1, page_size: int = 20):
+    def get_multi(
+            self,
+            db: Session,
+            *,
+            page: int = 1,
+            page_size: int = 20
+    ):
 
-        contents = db.query(self.model).offset(
-            page_size * (page - 1)).limit(page_size).all()
         total_count = db.query(self.model).count()
         total_pages = math.ceil(total_count/page_size)
         pagination = schemas.Pagination(
@@ -28,8 +30,53 @@ class ContentServices(
             total_pages=total_pages,
             total_count=total_count
         )
+        contents = db.query(self.model).\
+            options(joinedload(self.model.content_categories)
+                    ).offset(page_size * (page - 1)).limit(page_size).all()
+
 
         return contents, pagination
+        content_list = []
+        for content in contents:
+            # content_categories = content.content_category
+
+            # categories = []
+            # for content_category in content_categories:
+            #     categories.append(db.query(models.academy.Category).filter
+            #         (models.academy.Category.id == content_category.category_id).first())
+
+            content_list.append(schemas.academy.ContentListItem(
+                id=content.id,
+                title=content.title,
+                detail=content.detail,
+                content_categories=content.content_category             
+                ))
+            
+            print(content_list)
+
+        return content_list, pagination
+
+    def get_by_detail(
+            self,
+            db: Session,
+            *,
+            id: str,
+            page: int = 1,
+            page_size: int = 20
+    ):
+
+        content = db.query(self.model).\
+            options(joinedload(self.model.content_category)
+                    ).offset(page_size * (page - 1)).limit(page_size).first()
+
+        content_categories = content.content_category
+
+        categories = []
+        for content_category in content_categories:
+            categories.append(db.query(models.academy.Category).\
+                filter(models.academy.Category.id == content_category.category_id).first())
+
+        return content, categories
 
     def create(
         self,
@@ -41,6 +88,19 @@ class ContentServices(
             title=obj_in.title,
             detail=obj_in.detail
         )
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+    def update(
+            self, db: Session, *,
+            db_obj: models.academy.Content,
+            obj_in: schemas.academy.ContentCreate
+    ):
+        db_obj.title = obj_in.title
+        db_obj.detail = obj_in.detail
+
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

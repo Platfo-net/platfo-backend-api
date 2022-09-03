@@ -38,3 +38,10 @@ class CategoryListApi(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CategoryContent(BaseModel):
+    category_id: Optional[UUID4] = None
+
+    class Config:
+        orm_mode = True

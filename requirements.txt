@@ -53,6 +53,7 @@ locust==2.11.0
 Mako==1.2.1
 MarkupSafe==2.1.1
 mccabe==0.6.1
+minio==7.1.11
 msgpack==1.0.4
 packaging==21.3
 passlib==1.7.4

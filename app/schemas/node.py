@@ -3,18 +3,23 @@ from typing import List, Optional
 from .chatflow import Chatflow
 from pydantic import UUID4, BaseModel
 
-
+class QuickReply(BaseModel):
+    id: UUID4
+    text: Optional[str] = None
 class NodeBase(BaseModel):
     title: Optional[str] = None
     chatflow_id: Optional[UUID4] = None
     from_widget: List[UUID4] = None
     widget: dict = None
+    quick_replies: List[QuickReply]
+
 
 
 class NodeCreate(BaseModel):
     title: Optional[str] = None
     chatflow_id: UUID4
     is_head: Optional[bool] = False
+    quick_replies: List[QuickReply]
 
 
 class FullNodeCreate(BaseModel):
@@ -23,6 +28,8 @@ class FullNodeCreate(BaseModel):
     widget: dict = None
     widget_type: str = None
     is_head: Optional[bool] = False
+    quick_replies: List[QuickReply]
+
 
 
 class NodeUpdate(BaseModel):
