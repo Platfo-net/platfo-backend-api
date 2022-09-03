@@ -40,14 +40,6 @@ def get_object_url(object_name, bucket_name):
         raise Exception(f"Error happen on getting object: {exc}")
 
 
-def get_object_file_from_s3(object_name, bucket_name):
-    try:
-        client = create_client()
-        file = client.get_object(bucket_name, object_name)
-        return file
-    except S3Error as exc:
-        raise Exception(f"Error happen on getting object: {exc}")
-
 
 def create_client():
     try:
