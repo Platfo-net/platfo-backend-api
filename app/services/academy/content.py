@@ -2,7 +2,7 @@
 import math
 
 from app.services.base import BaseServices
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app import models, schemas
 
 
@@ -14,11 +14,13 @@ class ContentServices(
         schemas.academy.ContentUpdate
     ]
 ):
-    def get_multi(self,
-                  db: Session,
-                  *,
-                  page: int = 1,
-                  page_size: int = 20):
+    def get_multi(
+            self,
+            db: Session,
+            *,
+            page: int = 1,
+            page_size: int = 20
+    ):
 
         total_count = db.query(self.model).count()
         total_pages = math.ceil(total_count/page_size)
@@ -28,40 +30,41 @@ class ContentServices(
             total_pages=total_pages,
             total_count=total_count
         )
-        contents = db.query(self.model).offset(
-            page_size * (page - 1)).limit(page_size).all()
+        contents = db.query(self.model).\
+            options(joinedload(self.model.content_category)
+                    ).offset(page_size * (page - 1)).limit(page_size).all()
 
         content_list = []
-        for ele in contents:
-            content_categories = db.query(models.academy.ContentCategory).\
-                with_entities(models.academy.ContentCategory.category_id).\
-                filter(models.academy.ContentCategory.content_id == ele.id).all()
+        for content in contents:
+            content_categories = content.content_category
 
             categories = []
             for content_category in content_categories:
-                categories.append(db.query(models.academy.Category).\
-                    filter(models.academy.Category.id == content_category.category_id).first())
+                categories.append(db.query(models.academy.Category).filter
+                    (models.academy.Category.id == content_category.category_id).first())
 
             content_list.append(schemas.academy.ContentListItem(
-                id=ele.id,
-                title=ele.title,
-                detail=ele.detail,
+                id=content.id,
+                title=content.title,
+                detail=content.detail,
                 categories=categories))
 
         return content_list, pagination
 
-    def get_by_detail(self,
-                      db: Session,
-                      *,
-                      id: str,
-                      page: int = 1,
-                      page_size: int = 20):
+    def get_by_detail(
+            self,
+            db: Session,
+            *,
+            id: str,
+            page: int = 1,
+            page_size: int = 20
+    ):
 
-        content = db.query(self.model).filter(self.model.id == id).first()
+        content = db.query(self.model).\
+            options(joinedload(self.model.content_category)
+                    ).offset(page_size * (page - 1)).limit(page_size).first()
 
-        content_categories = db.query(models.academy.ContentCategory).\
-            with_entities(models.academy.ContentCategory.category_id).\
-            filter(models.academy.ContentCategory.content_id == content.id).all()
+        content_categories = content.content_category
 
         categories = []
         for content_category in content_categories:
@@ -85,8 +88,11 @@ class ContentServices(
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: Session, *,
-               db_obj: models.academy.Content, obj_in: schemas.academy.ContentCreate):
+    def update(
+            self, db: Session, *,
+            db_obj: models.academy.Content,
+            obj_in: schemas.academy.ContentCreate
+    ):
         db_obj.title = obj_in.title
         db_obj.detail = obj_in.detail
 

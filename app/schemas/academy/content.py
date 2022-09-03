@@ -15,8 +15,8 @@ class ContentBase(BaseModel):
 
 
 class ContentCreate(ContentBase):
-    content_attachments: List[ContentAttachmentCreate] = []
-    categories: List[CategoryContent] = []
+    content_attachments: List[ContentAttachmentCreate]
+    categories: List[CategoryContent]
 
 
 class ContentUpdate(ContentBase):
