@@ -1,5 +1,5 @@
 
-from typing import Optional, List
+from typing import Optional, List, Any
 from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
@@ -25,7 +25,12 @@ class Category(BaseModel):
         orm_mode = True
 
 
-class CategoryListItem(CategoryBase):
+class CategoryBaseNew(BaseModel):
+    title: Optional[str] = None
+    children: Optional[List[dict]] = None
+
+
+class CategoryListItem(CategoryBaseNew):
     id: UUID4
 
     class Config:

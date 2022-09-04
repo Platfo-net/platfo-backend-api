@@ -31,11 +31,23 @@ def get_categories_list(
              page=page,
              page_size=page_size,
         )
-    category_list = schemas.academy.CategoryListApi(
-        items=categories,
+
+    def categories_to_child_categories(n=None):
+
+        categories_list = [{
+            "id": category.id,
+            "title": category.title,
+            "children": categories_to_child_categories(category.id)
+        }
+            for category in categories if category.parrent_id == n
+        ]
+        return categories_list
+
+    categories_tree = schemas.academy.CategoryListApi(
+        items=categories_to_child_categories(),
         pagination=pagination
     )
-    return category_list
+    return categories_tree
 
 
 @router.post('/category/create', response_model=schemas.academy.Category)
@@ -75,27 +87,6 @@ def update_category(
         db, db_obj=category, obj_in=obj_in)
 
     return category
-
-
-@router.delete('/category/{id}')
-def delete_category(*,
-           db: Session = Depends(deps.get_db),
-           id: UUID4,
-           current_user: models.User = Security(
-               deps.get_current_active_user,
-               scopes=[
-                   Role.ADMIN["name"],
-               ],
-           ),
-):
-    category = services.category.get(db, id=id)
-    if not category:
-        raise HTTPException(
-            status_code=Error.CATEGORY_NOT_FOUND['status_code'],
-            detail=Error.CATEGORY_NOT_FOUND['text']
-        )
-    services.category.remove(db, id=id)
-    return
 
 
 @router.get('/', response_model=schemas.academy.ContentListApi)
@@ -260,3 +251,51 @@ def delete_content(*,
         )
     services.content.remove(db, id=id)
     return
+
+
+
+
+
+
+    #
+    # category_list = schemas.academy.CategoryListApi(
+    #     items=categories,
+    #     pagination=pagination
+    # )
+    # categories_tree = []
+    #
+    # def compact_to_verbose(n=None):
+    #     for ele in category_listt:
+    #         cat_obj = ele[1]
+    #     #     for ele in cat_obj:
+    #     #         if ele.parrent_id == n:
+    #     #             a = {
+    #     #                 "id": ele.id,
+    #     #                 "name": ele.title,
+    #     #                 "children": compact_to_verbose(ele.id)
+    #     #             }
+    #     #             print(a)
+    #         b = [{
+    #             "id": item.id,
+    #             "name": item.title,
+    #             "children": compact_to_verbose(item.id)
+    #         }
+    #             for item in cat_obj if item.parrent_id == n
+    #         ]
+    #         # print('bbbbbbbbbb', b)
+    #         # print('---------', cat_obj)
+    #         categories_tree.append(b)
+    #         print('bbbbbbbbb', b)
+    #         print(compact_to_verbose())
+    #         return b
+    # print(categories_tree)
+    # for ele in categories_tree:
+    #     print('eleeeeeeeeeeeeeee', ele)
+    #     print(type('tttttttttttttt', ele))
+    #     # category_list = schemas.academy.CategoryListApi(
+    #     #     items=ele,
+    #     #     pagination=pagination
+    #     # )
+    #     # print('vvvvvvvvvvvvvvvvvvvvvvvvv', category_list)
+    #     # return category_list
+    #

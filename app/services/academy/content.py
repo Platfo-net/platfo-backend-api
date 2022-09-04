@@ -1,9 +1,11 @@
 
 import math
 
-from app.services.base import BaseServices
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import desc
+
 from app import models, schemas
+from app.services.base import BaseServices
 
 
 class ContentServices(
@@ -30,9 +32,9 @@ class ContentServices(
             total_pages=total_pages,
             total_count=total_count
         )
-        contents = db.query(self.model).\
-            options(joinedload(self.model.content_categories)
-                    ).offset(page_size * (page - 1)).limit(page_size).all()
+        contents = db.query(self.model).order_by(desc(self.model.created_at))\
+            .options(joinedload(self.model.content_categories)
+            ).offset(page_size * (page - 1)).limit(page_size).all()
 
         return contents, pagination
 

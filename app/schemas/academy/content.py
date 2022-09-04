@@ -1,4 +1,4 @@
-
+from datetime import datetime
 from typing import Optional, List
 from pydantic import UUID4, BaseModel
 
@@ -12,6 +12,7 @@ from app.schemas.academy.category import CategoryContent,\
 class ContentBase(BaseModel):
     title: Optional[str] = None
     detail: Optional[str] = None
+    created_at:  Optional[datetime] = None
 
 
 class ContentCreate(ContentBase):
