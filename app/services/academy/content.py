@@ -1,9 +1,11 @@
 
 import math
 
-from app.services.base import BaseServices
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import desc
+
 from app import models, schemas
+from app.services.base import BaseServices
 
 
 class ContentServices(
@@ -30,31 +32,11 @@ class ContentServices(
             total_pages=total_pages,
             total_count=total_count
         )
-        contents = db.query(self.model).\
-            options(joinedload(self.model.content_categories)
-                    ).offset(page_size * (page - 1)).limit(page_size).all()
-
+        contents = db.query(self.model).order_by(desc(self.model.created_at))\
+            .options(joinedload(self.model.content_categories)
+            ).offset(page_size * (page - 1)).limit(page_size).all()
 
         return contents, pagination
-        content_list = []
-        for content in contents:
-            # content_categories = content.content_category
-
-            # categories = []
-            # for content_category in content_categories:
-            #     categories.append(db.query(models.academy.Category).filter
-            #         (models.academy.Category.id == content_category.category_id).first())
-
-            content_list.append(schemas.academy.ContentListItem(
-                id=content.id,
-                title=content.title,
-                detail=content.detail,
-                content_categories=content.content_category             
-                ))
-            
-            print(content_list)
-
-        return content_list, pagination
 
     def get_by_detail(
             self,
@@ -66,10 +48,10 @@ class ContentServices(
     ):
 
         content = db.query(self.model).\
-            options(joinedload(self.model.content_category)
+            options(joinedload(self.model.content_categories)
                     ).offset(page_size * (page - 1)).limit(page_size).first()
 
-        content_categories = content.content_category
+        content_categories = content.content_categories
 
         categories = []
         for content_category in content_categories:

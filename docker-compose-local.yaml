@@ -55,6 +55,19 @@ services:
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
+  
+
+  minio:
+    image: bitnami/minio:2022.8.26
+    ports:
+      - '${S3_PORT}:9000'
+      - '${MINIO_ADMIN_PANEL_PORT}:9001'
+    volumes:
+      - minio-data:/data
+
+    environment:
+      MINIO_ROOT_USER: "${S3_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
 
   # celery-worker:
   #   image: "botinow-backend-app"
@@ -89,3 +102,4 @@ services:
 volumes:
   postgres-data:
   redis-data:
+  minio-data:

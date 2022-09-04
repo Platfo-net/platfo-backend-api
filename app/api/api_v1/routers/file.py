@@ -55,3 +55,25 @@ async def upload_academy_content_attachment(
     url = storage.get_object_url(
         uploaded_file_name, settings.S3_ACADEMY_ATTACHMENT_BUCKET)
     return {"file_name": uploaded_file_name, "url": url}
+
+
+
+@router.get("/upload/academy/attachment/{attachment_id}")
+async def upload_academy_content_attachment(
+        *,
+        attachment_id:str,
+        current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+        ),
+):
+    """
+        Service for uploading file for academy 
+        content attachements and return url
+    """
+    url = storage.get_object_url(attachment_id , settings.S3_ACADEMY_ATTACHMENT_BUCKET)
+
+    return {"file_name": attachment_id, "url": url}
