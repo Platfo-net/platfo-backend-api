@@ -16,3 +16,8 @@ from .message import Message
 from .contact import Contact
 
 from .notification import Notification, NotificationUser
+
+
+from .edge import Edge
+
+from .node_ui import NodeUI

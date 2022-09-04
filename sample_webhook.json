@@ -1,22 +1,226 @@
-[
-    {
-        "time": 1661325863224,
-        "id": "17841452052058552",
-        "messaging": [
-            {
-                "sender": {
-                    "id": "17841452052058552"
+{
+    "chatflow_id": "1",
+    "name": "test",
+    "nodes": [
+        {
+            "id": "9f732cc7-4511-4ecd-bb66-f3a95fc488d1",
+            "text": "start",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "start"
+            },
+            "ports": [
+                {
+                    "id": "089da717-0170-434e-a0c1-f8f2407616aa",
+                    "width": 8,
+                    "height": 8,
+                    "side": "EAST",
+                    "disabled": true
                 },
-                "recipient": {
-                    "id": "6035299409832542"
-                },
-                "timestamp": 1661325862936,
-                "message": {
-                    "mid": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDUyMDUyMDU4NTUyOjM0MDI4MjM2Njg0MTcxMDMwMDk0OTEyODE2NzY0MzU5Mjg5MDM5NzozMDY0NjA1MzAxNjYxNzk5Nzg2MTM4NDU1MzEyMzI4Mjk0NAZDZD",
-                    "text": "سلا",
-                    "is_echo": True
+                {
+                    "id": "a480d1b9-34ed-451b-8a71-ce03ca9a9ec9",
+                    "width": 20,
+                    "height": 20,
+                    "side": "WEST",
+                    "className": "active-port"
                 }
-            }
-        ]
-    }
-]
+            ]
+        },
+        {
+            "id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "text": "text1",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "text",
+                "value": "salam",
+                "quickReplies": []
+            },
+            "ports": [
+                {
+                    "id": "b9fb99bb-6017-4a3e-ba86-122543eba23c",
+                    "width": 8,
+                    "height": 8,
+                    "side": "EAST",
+                    "disabled": true
+                },
+                {
+                    "id": "c29ed000-c6af-4f63-bdba-b0b7aab0da5a",
+                    "width": 20,
+                    "height": 20,
+                    "side": "WEST",
+                    "className": "active-port"
+                }
+            ],
+            "hasDeleteAction": true,
+            "hasEditAction": true
+        },
+        {
+            "id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "text": "menu1",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "menu",
+                "question": "hi",
+                "choices": [
+                    {
+                        "value": "8bf62b93-d085-4525-8db3-ec0730db26aa",
+                        "label": "goto text1",
+                        "action": {
+                            "type": "GOTO",
+                            "data": "06e30e0c-f057-4e38-adc6-7e2e47697a68"
+                        }
+                    }
+                ],
+                "quickReplies": [
+                    {
+                        "value": "5e7abc10-82ad-4f11-9ff1-a53281ee4ef9",
+                        "label": "goto text 2",
+                        "action": {
+                            "type": "GOTO",
+                            "data": "85e56335-d62a-4cfb-809c-84be004ed39f"
+                        }
+                    }
+                ]
+            },
+            "ports": [
+                {
+                    "id": "a3922d36-7bf9-48e4-8c95-3957338e2eb2",
+                    "width": 8,
+                    "height": 8,
+                    "side": "EAST",
+                    "disabled": true
+                },
+                {
+                    "id": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
+                    "width": 20,
+                    "height": 20,
+                    "side": "WEST",
+                    "className": "active-port"
+                }
+            ],
+            "hasDeleteAction": true,
+            "hasEditAction": true
+        },
+        {
+            "id": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
+            "text": "text2",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "text",
+                "value": "",
+                "quickReplies": []
+            },
+            "ports": [
+                {
+                    "id": "cd09385c-c379-419f-a372-16f72f19d454",
+                    "width": 8,
+                    "height": 8,
+                    "side": "EAST",
+                    "disabled": true
+                },
+                {
+                    "id": "dc739e08-452c-4c7c-b0cd-c6e5987dac36",
+                    "width": 20,
+                    "height": 20,
+                    "side": "WEST",
+                    "className": "active-port"
+                }
+            ],
+            "hasDeleteAction": true,
+            "hasEditAction": true
+        },
+        {
+            "id": "85e56335-d62a-4cfb-809c-84be004ed39f",
+            "text": "text3",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "text",
+                "value": "hi",
+                "quickReplies": [
+                    {
+                        "value": "5c1c3980-4c03-4bc6-b6b1-0ccba4f2dd60",
+                        "label": "gotot1",
+                        "action": {
+                            "type": "GOTO",
+                            "data": "06e30e0c-f057-4e38-adc6-7e2e47697a68"
+                        }
+                    }
+                ]
+            },
+            "ports": [
+                {
+                    "id": "edab7109-c38b-4edd-9209-0058a16c4f4e",
+                    "width": 8,
+                    "height": 8,
+                    "side": "EAST",
+                    "disabled": true
+                },
+                {
+                    "id": "358f42dc-84d0-4cda-bc24-5ff0177d7015",
+                    "width": 20,
+                    "height": 20,
+                    "side": "WEST",
+                    "className": "active-port"
+                }
+            ],
+            "hasDeleteAction": true,
+            "hasEditAction": true
+        }
+    ],
+    "edges": [
+        {
+            "id": "db7e594d-a0c4-4285-81e3-ddd296cb27ae",
+            "from": "9f732cc7-4511-4ecd-bb66-f3a95fc488d1",
+            "to": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "fromPort": "a480d1b9-34ed-451b-8a71-ce03ca9a9ec9",
+            "toPort": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+        },
+        {
+            "id": "98e70a9e-2f7f-4899-b3e9-9d13fb4c4a0f",
+            "from": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "to": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "fromPort": "c29ed000-c6af-4f63-bdba-b0b7aab0da5a",
+            "toPort": "a3922d36-7bf9-48e4-8c95-3957338e2eb2"
+        },
+        {
+            "id": "99f167f4-1f6a-4017-84df-98288b56950a",
+            "from": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "to": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
+            "fromPort": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
+            "toPort": "cd09385c-c379-419f-a372-16f72f19d454"
+        },
+        {
+            "id": "46097ca7-6ff2-4817-9949-a1a2426e67d3",
+            "from": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "to": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "fromPort": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
+            "toPort": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+        },
+        {
+            "id": "1348f85c-18a2-4f05-bd86-721f0620bf34",
+            "from": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
+            "to": "85e56335-d62a-4cfb-809c-84be004ed39f",
+            "fromPort": "dc739e08-452c-4c7c-b0cd-c6e5987dac36",
+            "toPort": "edab7109-c38b-4edd-9209-0058a16c4f4e"
+        },
+        {
+            "id": "e6c1c3ac-8354-41a4-9f36-f3b6493faddc",
+            "from": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "to": "85e56335-d62a-4cfb-809c-84be004ed39f",
+            "fromPort": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
+            "toPort": "edab7109-c38b-4edd-9209-0058a16c4f4e"
+        },
+        {
+            "id": "463d2e21-1a73-4345-986b-f946ab76bb7a",
+            "from": "85e56335-d62a-4cfb-809c-84be004ed39f",
+            "to": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "fromPort": "358f42dc-84d0-4cda-bc24-5ff0177d7015",
+            "toPort": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+        }
+    ]
+}
