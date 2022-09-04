@@ -31,6 +31,8 @@ class Chatflow(Base):
     )
 
     node = relationship("Node", back_populates="chatflow")
+    nodeui = relationship("NodeUI", back_populates="chatflow")
+    edge = relationship("Edge", back_populates="chatflow")
     user = relationship("User", back_populates="chatflow")
 
     connection_chatflow = relationship(

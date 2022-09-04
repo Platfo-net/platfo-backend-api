@@ -32,13 +32,13 @@ def create_chatflow(
         obj_in=obj_in,
         user_id=current_user.id
     )
-    node = services.node.create(db, obj_in=schemas.NodeCreate(
-        title="Start",
-        chatflow_id=chatflow.id,
-        is_head=True
-    ))
-    services.node.add_widget(db, obj_in=dict(
-        widget_type="START"), node_id=node.id)
+    # node = services.node.create(db, obj_in=schemas.NodeCreate(
+    #     title="Start",
+    #     chatflow_id=chatflow.id,
+    #     is_head=True
+    # ))
+    # services.node.add_widget(db, obj_in=dict(
+    #     widget_type="START"), node_id=node.id)
     return chatflow
 
 

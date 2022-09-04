@@ -1,4 +1,4 @@
-from app.api.api_v1.routers import auth, connection, file, \
+from app.api.api_v1.routers import auth, chatflow_ui, connection, file, \
     instagram, trigger, chatflow, node, \
     users, accounts, constants, webhook, \
     contact, message, notification, academy
@@ -14,6 +14,7 @@ api_router.include_router(accounts.router)
 api_router.include_router(connection.router)
 api_router.include_router(chatflow.router)
 api_router.include_router(node.router)
+api_router.include_router(chatflow_ui.router)
 api_router.include_router(trigger.router)
 api_router.include_router(contact.router)
 api_router.include_router(message.router)
