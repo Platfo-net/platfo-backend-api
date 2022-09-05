@@ -1,5 +1,6 @@
 
 import math
+from typing import List
 
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc
@@ -59,6 +60,21 @@ class ContentServices(
                 filter(models.academy.Category.id == content_category.category_id).first())
 
         return content, categories
+
+    def search(self,
+               db: Session,
+               *,
+               categories_list: List,
+               ):
+        try:
+            contents = []
+            for category in categories_list:
+                contents.append(db.query(models.academy.Content)\
+                        .filter(models.academy.Content.content_categories.
+                                any(category_id=category)).all())
+            return contents
+        except (Exception,):
+            pass
 
     def create(
         self,

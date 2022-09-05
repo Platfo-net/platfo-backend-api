@@ -19,6 +19,6 @@ class Content(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     content_attachment = relationship(
-        "ContentAttachment", back_populates="content" , cascade="all, delete-orphan")
+        "ContentAttachment", back_populates="content" , cascade="all, delete-orphan", uselist=False)
     content_categories = relationship(
         "ContentCategory", back_populates="content",cascade="all, delete-orphan")
