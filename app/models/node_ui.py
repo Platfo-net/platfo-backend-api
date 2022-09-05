@@ -14,7 +14,7 @@ class NodeUI(Base):
 
     text = Column(String(255), nullable=True)
     width = Column(Integer(), nullable=True)
-    heigth = Column(Integer(), nullable=True)
+    height = Column(Integer(), nullable=True)
 
     data = Column(JSON, nullable=True)
     ports = Column(ARRAY(JSON), nullable=True)

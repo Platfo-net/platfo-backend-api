@@ -6,7 +6,7 @@ class NodeUI(BaseModel):
     id: Optional[UUID4]
     text: Optional[str] = None
     width: Optional[int] = None
-    heigth: Optional[int] = None
+    height: Optional[int] = None
     data: Optional[dict] = None
     ports: List[dict]
     has_delete_action: Optional[bool] = None
