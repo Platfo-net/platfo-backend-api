@@ -7,21 +7,22 @@ class NodeUI(BaseModel):
     text: Optional[str] = None
     width: Optional[int] = None
     heigth: Optional[int] = None
-    data: Optional[dict]
+    data: Optional[dict] = None
     ports: List[dict]
-    hasDeleteAction: Optional[bool] = None
-    hasEditAction: Optional[bool] = None
+    has_delete_action: Optional[bool] = None
+    has_edit_action: Optional[bool] = None
 
 
 class Edge(BaseModel):
     id: Optional[UUID4]
     from_id: Optional[UUID4]
     to_id: Optional[UUID4]
-    fromPort: Optional[UUID4]
-    toPort: Optional[UUID4]
+    from_port: Optional[UUID4]
+    to_port: Optional[UUID4]
 
 
 class ChatflowUI(BaseModel):
-
+    name: Optional[str] = None
+    chatflow_id: Optional[UUID4] = None
     nodes: List[NodeUI]
     edges: List[Edge]

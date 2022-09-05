@@ -17,10 +17,10 @@ class Edge(Base):
     to_id = Column(
         UUID(as_uuid=True)
     )
-    fromPort = Column(
+    from_port = Column(
         UUID(as_uuid=True)
     )
-    toPort= Column(
+    to_port= Column(
         UUID(as_uuid=True)
     )
 

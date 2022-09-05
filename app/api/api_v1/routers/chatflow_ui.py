@@ -11,7 +11,7 @@ from app.constants.role import Role
 router = APIRouter(prefix="/chatflow-ui", tags=["ChatflowUI"])
 
 
-@router.get("/ndoes/all/{chatflow_id}")
+@router.get("/nodes/all/{chatflow_id}")
 def get_chatflow_nodes_edges(
         *,
         db: Session = Depends(deps.get_db),
@@ -24,6 +24,8 @@ def get_chatflow_nodes_edges(
             ],
         ),
 ):
+    chatflow = db.query(models.Chatflow).filter(
+        models.Chatflow.id == chatflow_id).first()
 
     nodes = db.query(models.NodeUI).filter(
         models.NodeUI.chatflow_id == chatflow_id).all()
@@ -33,13 +35,13 @@ def get_chatflow_nodes_edges(
     nodes = [
         schemas.NodeUI(
             id=node.id,
-            text=node.name,
+            text=node.text,
             width=node.width,
             heigth=node.heigth,
             data=node.data,
             ports=node.ports,
-            hasDeleteAction=node.hasDeleteAction,
-            hasEditAction=node.hasEditAction
+            has_delete_action=node.has_delete_action,
+            has_edit_action=node.has_edit_action
 
         )for node in nodes
     ]
@@ -49,12 +51,14 @@ def get_chatflow_nodes_edges(
             id=edge.id,
             from_id=edge.from_id,
             to_id=edge.to_id,
-            fromPort=edge.fromPort,
-            toPort=edge.toPort
+            from_port=edge.from_port,
+            to_port=edge.to_port
         ) for edge in edges
     ]
 
     return schemas.ChatflowUI(
+        chatflow_id=chatflow_id,
+        name=chatflow.name,
         nodes=nodes,
         edges=edges,
     )
@@ -80,6 +84,10 @@ def create_chatflow_nodes_edges(
     db.query(models.Edge).filter(
         models.Edge.chatflow_id == chatflow_id).delete()
 
+    chatflow = db.query(models.Chatflow).filter(models.Chatflow.id == chatflow_id).first()
+    chatflow.name = obj_in.name
+    db.add(chatflow)
+
     for node in obj_in.nodes:
         db_obj = models.NodeUI(
             id=node.id,
@@ -88,26 +96,24 @@ def create_chatflow_nodes_edges(
             heigth=node.heigth,
             data=node.data,
             ports=node.ports,
-            hasDeleteAction=node.hasDeleteAction,
-            hasEditAction=node.hasEditAction,
+            has_delete_action=node.has_delete_action,
+            has_edit_action=node.has_edit_action,
             chatflow_id=chatflow_id
         )
 
         db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
 
     for edge in obj_in.edges:
         db_obj = models.Edge(
             id=edge.id,
             from_id=edge.from_id,
             to_id=edge.to_id,
-            fromPort=edge.fromPort,
-            toPort=edge.toPort,
+            from_port=edge.from_port,
+            to_port=edge.to_port,
             chatflow_id=chatflow_id
         )
         db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
 
+
+    db.commit()
     return obj_in

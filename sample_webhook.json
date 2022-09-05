@@ -53,8 +53,8 @@
                     "className": "active-port"
                 }
             ],
-            "hasDeleteAction": true,
-            "hasEditAction": true
+            "has_delete_action": true,
+            "has_edit_action": true
         },
         {
             "id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
@@ -101,8 +101,8 @@
                     "className": "active-port"
                 }
             ],
-            "hasDeleteAction": true,
-            "hasEditAction": true
+            "has_delete_action": true,
+            "has_edit_action": true
         },
         {
             "id": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
@@ -130,8 +130,8 @@
                     "className": "active-port"
                 }
             ],
-            "hasDeleteAction": true,
-            "hasEditAction": true
+            "has_delete_action": true,
+            "has_edit_action": true
         },
         {
             "id": "85e56335-d62a-4cfb-809c-84be004ed39f",
@@ -168,59 +168,59 @@
                     "className": "active-port"
                 }
             ],
-            "hasDeleteAction": true,
-            "hasEditAction": true
+            "has_delete_action": true,
+            "has_edit_action": true
         }
     ],
     "edges": [
         {
             "id": "db7e594d-a0c4-4285-81e3-ddd296cb27ae",
-            "from": "9f732cc7-4511-4ecd-bb66-f3a95fc488d1",
-            "to": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "fromPort": "a480d1b9-34ed-451b-8a71-ce03ca9a9ec9",
-            "toPort": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+            "from_id": "9f732cc7-4511-4ecd-bb66-f3a95fc488d1",
+            "to_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "from_port": "a480d1b9-34ed-451b-8a71-ce03ca9a9ec9",
+            "to_port": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
         },
         {
             "id": "98e70a9e-2f7f-4899-b3e9-9d13fb4c4a0f",
-            "from": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "to": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "fromPort": "c29ed000-c6af-4f63-bdba-b0b7aab0da5a",
-            "toPort": "a3922d36-7bf9-48e4-8c95-3957338e2eb2"
+            "from_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "to_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "from_port": "c29ed000-c6af-4f63-bdba-b0b7aab0da5a",
+            "to_port": "a3922d36-7bf9-48e4-8c95-3957338e2eb2"
         },
         {
             "id": "99f167f4-1f6a-4017-84df-98288b56950a",
-            "from": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "to": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
-            "fromPort": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
-            "toPort": "cd09385c-c379-419f-a372-16f72f19d454"
+            "from_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "to_id": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
+            "from_port": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
+            "to_port": "cd09385c-c379-419f-a372-16f72f19d454"
         },
         {
             "id": "46097ca7-6ff2-4817-9949-a1a2426e67d3",
-            "from": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "to": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "fromPort": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
-            "toPort": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+            "from_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "to_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "from_port": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
+            "to_port": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
         },
         {
             "id": "1348f85c-18a2-4f05-bd86-721f0620bf34",
-            "from": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
-            "to": "85e56335-d62a-4cfb-809c-84be004ed39f",
-            "fromPort": "dc739e08-452c-4c7c-b0cd-c6e5987dac36",
-            "toPort": "edab7109-c38b-4edd-9209-0058a16c4f4e"
+            "from_id": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
+            "to_id": "85e56335-d62a-4cfb-809c-84be004ed39f",
+            "from_port": "dc739e08-452c-4c7c-b0cd-c6e5987dac36",
+            "to_port": "edab7109-c38b-4edd-9209-0058a16c4f4e"
         },
         {
             "id": "e6c1c3ac-8354-41a4-9f36-f3b6493faddc",
-            "from": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "to": "85e56335-d62a-4cfb-809c-84be004ed39f",
-            "fromPort": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
-            "toPort": "edab7109-c38b-4edd-9209-0058a16c4f4e"
+            "from_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "to_id": "85e56335-d62a-4cfb-809c-84be004ed39f",
+            "from_port": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
+            "to_port": "edab7109-c38b-4edd-9209-0058a16c4f4e"
         },
         {
             "id": "463d2e21-1a73-4345-986b-f946ab76bb7a",
-            "from": "85e56335-d62a-4cfb-809c-84be004ed39f",
-            "to": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "fromPort": "358f42dc-84d0-4cda-bc24-5ff0177d7015",
-            "toPort": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+            "from_id": "85e56335-d62a-4cfb-809c-84be004ed39f",
+            "to_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "from_port": "358f42dc-84d0-4cda-bc24-5ff0177d7015",
+            "to_port": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
         }
     ]
 }
