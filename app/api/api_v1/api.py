@@ -1,13 +1,14 @@
 from app.api.api_v1.routers import auth, chatflow_ui, connection, file, \
     instagram, trigger, chatflow, node, \
     users, accounts, constants, webhook, \
-    contact, message, notification, academy
+    contact, message, notification, academy, websocket
 from fastapi import APIRouter
 
 
 api_router = APIRouter()
 
 api_router.include_router(auth.router)
+api_router.include_router(websocket.router)
 api_router.include_router(users.router)
 api_router.include_router(instagram.router)
 api_router.include_router(accounts.router)

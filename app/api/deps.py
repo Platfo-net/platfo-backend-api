@@ -3,6 +3,7 @@ import redis
 import sys
 
 from typing import Generator
+
 from app import services, models, schemas
 from app.constants.role import Role
 from app.core import security
@@ -14,14 +15,22 @@ from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from app.constants.errors import Error
+from fastapi import WebSocket, Request
 
-reusable_oauth2 = OAuth2PasswordBearer(
+
+class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
+    async def __call__(self, request: Request = None, websocket: WebSocket = None):
+        return await super().__call__(websocket or request)
+
+
+reusable_oauth2 = CustomOAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/auth/token-swagger",
     scopes={
         Role.ADMIN["name"]: Role.ADMIN["description"],
         Role.USER["name"]: Role.USER["description"],
     },
 )
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
