@@ -1,7 +1,9 @@
+from typing import List
 
-from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi import APIRouter, Depends, Security, HTTPException, Query
 from pydantic import UUID4
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from starlette.requests import Request
 
 from app import services, models, schemas
 from app.api import deps
@@ -89,6 +91,33 @@ def update_category(
     return category
 
 
+@router.get('/search')
+def search_content_by_category(
+        *,
+        categories_list: List[str] = Query(None),
+        db: Session = Depends(deps.get_db),
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.ADMIN["name"],
+                Role.USER["name"],
+            ],
+        ),
+):
+
+    contents = services.content.search(
+                        db,
+                        categories_list=categories_list
+                       )
+    if not contents:
+        raise HTTPException(
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text']
+        )
+
+    return contents
+
+
 @router.get('/', response_model=schemas.academy.ContentListApi)
 def get_all_contents(*,
         db: Session = Depends(deps.get_db),
@@ -111,7 +140,7 @@ def get_all_contents(*,
         items=contents,
         pagination=pagination
     )
-    return content_list   
+    return content_list
 
 
 @router.get('/{id}', response_model=schemas.academy.ContentDetail)
