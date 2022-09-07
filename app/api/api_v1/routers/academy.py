@@ -2,8 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Security, HTTPException, Query
 from pydantic import UUID4
-from sqlalchemy.orm import Session, joinedload
-from starlette.requests import Request
+from sqlalchemy.orm import Session
 
 from app import services, models, schemas
 from app.api import deps
@@ -28,7 +27,7 @@ def get_categories_list(
         ),
 ):
 
-    categories, pagination = services.category.get_multi(
+    categories, pagination = services.academy.category.get_multi(
              db,
              page=page,
              page_size=page_size,
@@ -63,7 +62,7 @@ def create_category(
             ],
         ),
 ):
-    category = services.category.create(obj_in=obj_in, db=db)
+    category = services.academy.category.create(obj_in=obj_in, db=db)
     return category
 
 
@@ -79,13 +78,13 @@ def update_category(
             ],
         ),
 ):
-    category = services.category.get(db, id)
+    category = services.academy.category.get(db, id)
     if not category:
         raise HTTPException(
             status_code=Error.CATEGORY_NOT_FOUND['status_code'],
             detail=Error.CATEGORY_NOT_FOUND['text']
         )
-    category = services.category.update(
+    category = services.academy.category.update(
         db, db_obj=category, obj_in=obj_in)
 
     return category
@@ -105,7 +104,7 @@ def search_content_by_category(
         ),
 ):
 
-    contents = services.content.search(
+    contents = services.academy.content.search(
                         db,
                         categories_list=categories_list
                        )
@@ -131,7 +130,7 @@ def get_all_contents(*,
             ],
         ),
 ):
-    contents, pagination = services.content.get_multi(
+    contents, pagination = services.academy.content.get_multi(
         db,
         page=page,
         page_size=page_size,
@@ -155,14 +154,14 @@ def get_content_by_id(*,
             ],
         ),
 ):
-    content, categories = services.content.get_by_detail(db, id=id)
+    content, categories = services.academy.content.get_by_detail(db, id=id)
 
     if not content:
         raise HTTPException(
             status_code=Error.CONTENT_NOT_FOUND['status_code'],
             detail=Error.CONTENT_NOT_FOUND['text']
         )
-    content_attachments = services.content_attachment.\
+    content_attachments = services.academy.content_attachment.\
         get_by_content_id(db, content_id=content.id)
 
     new_content_attachment = [
@@ -195,15 +194,15 @@ def create_content(*, obj_in: schemas.academy.ContentCreate,
             ],
         ),
 ):
-    content = services.content.create(db=db, obj_in=obj_in)
+    content = services.academy.content.create(db=db, obj_in=obj_in)
     for category in obj_in.categories:
-        services.category_content.create(
+        services.academy.category_content.create(
             db,
             category_id=category.category_id,
             content_id=content.id
         )
     for content_attachment in obj_in.content_attachments:
-        services.content_attachment.create(
+        services.academy.content_attachment.create(
             db,
             obj_in=schemas.academy.ContentAttachmentCreate(
                 attachment_id=content_attachment.attachment_id
@@ -227,20 +226,20 @@ def update_content(*,
         ),
 ):
 
-    old_content = services.content.get(db, id=id)
+    old_content = services.academy.content.get(db, id=id)
 
     if not old_content:
         raise HTTPException(
             status_code=Error.CONTENT_NOT_FOUND['status_code'],
             detail=Error.CONTENT_NOT_FOUND['text'])
 
-    content = services.content.update(
+    content = services.academy.content.update(
         db, db_obj=old_content, obj_in=obj_in)
 
     services.academy.content_attachment.remove_by_content_id(db, content_id=id)
 
     for content_attachment in obj_in.content_attachments:
-        services.content_attachment.create(
+        services.academy.content_attachment.create(
             db,
             obj_in=schemas.academy.ContentAttachmentCreate(
                 attachment_id=content_attachment.attachment_id
@@ -252,7 +251,7 @@ def update_content(*,
         content_id=id,
     )
     for category in obj_in.categories:
-        services.category_content.create(
+        services.academy.category_content.create(
             db,
             content_id=old_content.id,
             category_id=category.category_id
@@ -272,59 +271,11 @@ def delete_content(*,
             ],
         ),
 ):
-    content = services.content.get(db, id=id)
+    content = services.academy.content.get(db, id=id)
     if not content:
         raise HTTPException(
             status_code=Error.CONTENT_NOT_FOUND['status_code'],
             detail=Error.CONTENT_NOT_FOUND['text']
         )
-    services.content.remove(db, id=id)
+    services.academy.content.remove(db, id=id)
     return
-
-
-
-
-
-
-    #
-    # category_list = schemas.academy.CategoryListApi(
-    #     items=categories,
-    #     pagination=pagination
-    # )
-    # categories_tree = []
-    #
-    # def compact_to_verbose(n=None):
-    #     for ele in category_listt:
-    #         cat_obj = ele[1]
-    #     #     for ele in cat_obj:
-    #     #         if ele.parrent_id == n:
-    #     #             a = {
-    #     #                 "id": ele.id,
-    #     #                 "name": ele.title,
-    #     #                 "children": compact_to_verbose(ele.id)
-    #     #             }
-    #     #             print(a)
-    #         b = [{
-    #             "id": item.id,
-    #             "name": item.title,
-    #             "children": compact_to_verbose(item.id)
-    #         }
-    #             for item in cat_obj if item.parrent_id == n
-    #         ]
-    #         # print('bbbbbbbbbb', b)
-    #         # print('---------', cat_obj)
-    #         categories_tree.append(b)
-    #         print('bbbbbbbbb', b)
-    #         print(compact_to_verbose())
-    #         return b
-    # print(categories_tree)
-    # for ele in categories_tree:
-    #     print('eleeeeeeeeeeeeeee', ele)
-    #     print(type('tttttttttttttt', ele))
-    #     # category_list = schemas.academy.CategoryListApi(
-    #     #     items=ele,
-    #     #     pagination=pagination
-    #     # )
-    #     # print('vvvvvvvvvvvvvvvvvvvvvvvvv', category_list)
-    #     # return category_list
-    #
