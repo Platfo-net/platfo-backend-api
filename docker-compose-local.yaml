@@ -69,22 +69,20 @@ services:
       MINIO_ROOT_USER: "${S3_ROOT_USER}"
       MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
 
-  # celery-worker:
-  #   image: "botinow-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-worker-1"
-  #   command: celery -A app.core.celery.celery worker --loglevel=info -n w1
-  #   volumes:
-  #     - .:/app
-  #   depends_on:
-  #     - db
-  #     - api-1
-  #     - api-2
-  #     - api-3
-  #     - redis
+  celery-worker:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-worker-1"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n w1
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - api-1
+      - redis
 
   # celery-flower:
-  #   image: "botinow-backend-app"
+    # image: "botinow-backend-app"
   #   build: .
   #   container_name: "${APP_NAME}-celery-flower"
   #   command: celery -A app.core.celery.celery flower --port=5555
