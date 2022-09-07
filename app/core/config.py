@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from typing import Any, Dict, Optional
 from pydantic import BaseSettings, PostgresDsn, validator, RedisDsn
@@ -39,10 +40,10 @@ class Settings(BaseSettings):
     FACEBOOK_WEBHOOK_VERIFY_TOKEN: str
 
     REDIS_HOST: str
-    REDIS_PORT: int
+    REDIS_PORT: str
+    REDIS_DB: str
 
-    CELERY_BROKER_URL = "redis://redis:6379/2"
-    CELERY_RESULT_BACKEND = "redis://redis:6379/2"
+    CELERY_URI: Optional[RedisDsn] = None
 
     S3_ROOT_USER: str
 
@@ -62,6 +63,19 @@ class Settings(BaseSettings):
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("DB_HOST"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
+        )
+
+    @validator("CELERY_URI", pre=True)
+    def assemble_celery_connection(
+            cls, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:
+        if isinstance(v, str):
+            return v
+        return RedisDsn.build(
+            scheme="redis",
+            host=values.get("REDIS_HOST"),
+            port=values.get("REDIS_PORT"),
+            path=f"/{values.get('REDIS_DB') or ''}",
         )
 
     class Config:
