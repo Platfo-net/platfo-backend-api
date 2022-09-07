@@ -57,11 +57,10 @@ async def upload_academy_content_attachment(
     return {"file_name": uploaded_file_name, "url": url}
 
 
-
 @router.get("/upload/academy/attachment/{attachment_id}")
 async def upload_academy_content_attachment(
         *,
-        attachment_id:str,
+        attachment_id: str,
         current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -74,6 +73,44 @@ async def upload_academy_content_attachment(
         Service for uploading file for academy 
         content attachements and return url
     """
-    url = storage.get_object_url(attachment_id , settings.S3_ACADEMY_ATTACHMENT_BUCKET)
+    url = storage.get_object_url(
+        attachment_id, settings.S3_ACADEMY_ATTACHMENT_BUCKET)
 
     return {"file_name": attachment_id, "url": url}
+
+
+@router.post("/chatflow/media")
+async def upload_chatflow_media(
+        file: UploadFile = File(...),
+        current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+        ),
+):
+    filename = f'{uuid.uuid4()}-{file.filename}'
+    uploaded_file_name = storage.add_file_to_s3(
+        filename, file.file.fileno(), settings.S3_CHATFLOW_MEDIA_BUCKET)
+
+    url = storage.get_object_url(
+        uploaded_file_name, settings.S3_CHATFLOW_MEDIA_BUCKET)
+    return {"file_name": uploaded_file_name, "url": url}
+
+
+@router.get("/chatflow/media/{media_id}")
+async def get_chatflow_media_url(
+        *,
+        media_id: str,
+        current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+        ),
+):
+    url = storage.get_object_url(media_id, settings.S3_CHATFLOW_MEDIA_BUCKET)
+
+    return {"file_name": media_id, "url": url}

@@ -12,6 +12,8 @@ from app.db.session import SessionLocal
 
 from app.api import deps
 
+from app.constants.widget_type import WidgetType
+
 
 @celery.task
 def save_message(obj_in: dict, instagram_page_id: str = None):
@@ -84,14 +86,24 @@ def send_widget(
 ):
     db = SessionLocal()
 
-    while widget["widget_type"] == "MESSAGE":
-        graph_api.send_text_message(
-            text=widget["message"],
-            quick_replies=quick_replies,
-            from_id=user_page_data["facebook_page_id"],
-            to_id=contact_igs_id,
-            page_access_token=user_page_data["facebook_page_token"]
-        )
+    while widget["widget_type"] in (
+        WidgetType.MESSAGE["name"], WidgetType.MEDIA["name"]
+    ):
+        if widget["widget_type"] == WidgetType.MEDIA["name"]:
+            graph_api.send_media(
+                widget["title"],
+                widget["image"],
+                from_id=user_page_data["facebook_page_id"],
+                to_id=contact_igs_id,
+                page_access_token=user_page_data["facebook_page_token"]
+            )
+        if widget["widget_type"] == WidgetType.MESSAGE["name"]:
+            graph_api.send_text_message(
+                text=widget["message"],
+                from_id=user_page_data["facebook_page_id"],
+                to_id=contact_igs_id,
+                page_access_token=user_page_data["facebook_page_token"]
+            )
 
         save_message.delay(
             obj_in=dict(
@@ -111,7 +123,6 @@ def send_widget(
         quick_replies = node.quick_replies
 
     if widget["widget_type"] == "MENU":
-        print(quick_replies)
         graph_api.send_menu(widget,
                             quick_replies,
                             from_id=user_page_data["facebook_page_id"],

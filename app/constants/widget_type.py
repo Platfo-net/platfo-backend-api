@@ -5,3 +5,7 @@ class WidgetType:
     MESSAGE = {
         "name": "MESSAGE",
     }
+
+    MEDIA = {
+        "name": "MEDIA",
+    }
