@@ -41,7 +41,7 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str
     REDIS_PORT: str
-    REDIS_DB: str
+    REDIS_DB_CELERY: str
 
     CELERY_URI: Optional[RedisDsn] = None
 
@@ -75,7 +75,7 @@ class Settings(BaseSettings):
             scheme="redis",
             host=values.get("REDIS_HOST"),
             port=values.get("REDIS_PORT"),
-            path=f"/{values.get('REDIS_DB') or ''}",
+            path=f"/{values.get('REDIS_DB_CELERY') or ''}",
         )
 
     class Config:
