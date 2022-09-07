@@ -1,3 +1,5 @@
+from app.services import academy
+
 from .role_services import role
 from .user_services import user
 from .facebook_account_services import facebook_account
@@ -14,7 +16,7 @@ from .node_services import node
 from .contact_services import contact
 from .message_services import message
 from .notification_services import notification, notification_user
-from .academy.category import category
-from .academy.content import content
-from .academy.content_attachment import content_attachment
-from .academy.content_category import category_content
+# from .academy.category import category
+# from .academy.content import content
+# from .academy.content_attachment import content_attachment
+# from .academy.content_category import category_content
