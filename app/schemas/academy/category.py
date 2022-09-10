@@ -25,24 +25,54 @@ class Category(BaseModel):
         orm_mode = True
 
 
-class CategoryBaseNew(BaseModel):
+class CategoryListItem(BaseModel):
+    id: UUID4
     title: Optional[str] = None
+    parrent_id: Optional[UUID4] = None
     children: Optional[List[dict]] = None
 
+    class Config:
+        orm_mode = True
 
-class CategoryListItem(CategoryBaseNew):
+
+class CategoryListItemContent(BaseModel):
     id: UUID4
+    title: Optional[str] = None
+    parrent_id: Optional[UUID4] = None
 
     class Config:
         orm_mode = True
 
 
 class CategoryListApi(BaseModel):
-    items: List[CategoryListItem]
+    categories: List[CategoryListItem]
     pagination: Pagination
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "example": {
+                "categories": [
+                {
+                    "title": "guide",
+                    "parrent_id": "null",
+                    "children": [
+                        {"id": "0cabbc9b-bed2-4d83-924b-748c4c4394af",
+                         "title": "guide instagram",
+                         "children": [],
+                         "parrent_id": "0244e0b0-e498-407a-95e1-25fd486fa527"}
+                    ],
+                    "id": "e744f7eb-3529-4562-bcf3-e8e4eaad0267"
+                }
+            ],
+                "pagination": {
+                    "page": 1,
+                    "total_pages": 1,
+                    "page_size": 20,
+                    "total_count": 4
+                }
+        }
+    }
 
 
 class CategoryContent(BaseModel):
@@ -50,5 +80,3 @@ class CategoryContent(BaseModel):
 
     class Config:
         orm_mode = True
-
-

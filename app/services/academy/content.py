@@ -1,4 +1,3 @@
-
 import math
 from typing import List
 
@@ -26,16 +25,16 @@ class ContentServices(
     ):
 
         total_count = db.query(self.model).count()
-        total_pages = math.ceil(total_count/page_size)
+        total_pages = math.ceil(total_count / page_size)
         pagination = schemas.Pagination(
             page=page,
             page_size=page_size,
             total_pages=total_pages,
             total_count=total_count
         )
-        contents = db.query(self.model).order_by(desc(self.model.created_at))\
+        contents = db.query(self.model).order_by(desc(self.model.created_at)) \
             .options(joinedload(self.model.content_categories)
-            ).offset(page_size * (page - 1)).limit(page_size).all()
+                     ).offset(page_size * (page - 1)).limit(page_size).all()
 
         return contents, pagination
 
@@ -48,16 +47,16 @@ class ContentServices(
             page_size: int = 20
     ):
 
-        content = db.query(self.model).\
-            options(joinedload(self.model.content_categories)
-                    ).offset(page_size * (page - 1)).limit(page_size).first()
+        content = db.query(self.model). \
+            options(joinedload(self.model.content_categories))\
+            .filter(self.model.id == id).offset(page_size * (page - 1)).limit(page_size).first()
 
         content_categories = content.content_categories
 
         categories = []
         for content_category in content_categories:
-            categories.append(db.query(models.academy.Category).\
-                filter(models.academy.Category.id == content_category.category_id).first())
+            categories.append(db.query(models.academy.Category). \
+                              filter(models.academy.Category.id == content_category.category_id).first())
 
         return content, categories
 
@@ -65,26 +64,38 @@ class ContentServices(
                db: Session,
                *,
                categories_list: List,
+               page: int = 1,
+               page_size: int = 20
                ):
+        total_count = db.query(self.model).count()
+        total_pages = math.ceil(total_count / page_size)
+        pagination = schemas.Pagination(
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            total_count=total_count
+        )
         try:
             contents = []
             for category in categories_list:
-                contents.append(db.query(models.academy.Content)\
-                        .filter(models.academy.Content.content_categories.
-                                any(category_id=category)).all())
-            return contents
+                contents.append(db.query(models.academy.Content) \
+                                .filter(models.academy.Content.content_categories.
+                                        any(category_id=category))
+                                .offset(page_size * (page - 1)).limit(page_size).all())
+            return contents, pagination
         except (Exception,):
             pass
 
     def create(
-        self,
-        db: Session,
-        *,
-        obj_in: schemas.academy.ContentCreate,
+            self,
+            db: Session,
+            *,
+            obj_in: schemas.academy.ContentCreate,
     ):
         db_obj = self.model(
             title=obj_in.title,
-            detail=obj_in.detail
+            detail=obj_in.detail,
+            caption=obj_in.caption
         )
         db.add(db_obj)
         db.commit()
@@ -98,6 +109,7 @@ class ContentServices(
     ):
         db_obj.title = obj_in.title
         db_obj.detail = obj_in.detail
+        db_obj.caption = obj_in.caption
 
         db.add(db_obj)
         db.commit()
