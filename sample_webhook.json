@@ -1,112 +1,112 @@
 {
-    "chatflow_id": "1",
-    "name": "test",
+    "name": "test mamad",
+    "chatflow_id": "9f3d7603-0265-442b-afa0-c6b6d234008d",
     "nodes": [
         {
-            "id": "9f732cc7-4511-4ecd-bb66-f3a95fc488d1",
+            "id": "8fba09c1-2b62-49b8-aaf9-d0e90e6a7d72",
             "text": "start",
             "width": 90,
             "height": 90,
             "data": {
                 "type": "start"
             },
-            "ports": [
-                {
-                    "id": "089da717-0170-434e-a0c1-f8f2407616aa",
-                    "width": 8,
-                    "height": 8,
-                    "side": "EAST",
-                    "disabled": true
-                },
-                {
-                    "id": "a480d1b9-34ed-451b-8a71-ce03ca9a9ec9",
-                    "width": 20,
-                    "height": 20,
-                    "side": "WEST",
-                    "className": "active-port"
-                }
-            ]
+            "has_delete_action": null,
+            "has_edit_action": null
         },
         {
-            "id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
+            "id": "973ece41-e9f3-4d38-b19b-8adda8f8c5c1",
             "text": "text1",
             "width": 90,
             "height": 90,
             "data": {
                 "type": "text",
-                "value": "salam",
+                "value": "Hello",
                 "quickReplies": []
             },
-            "ports": [
-                {
-                    "id": "b9fb99bb-6017-4a3e-ba86-122543eba23c",
-                    "width": 8,
-                    "height": 8,
-                    "side": "EAST",
-                    "disabled": true
-                },
-                {
-                    "id": "c29ed000-c6af-4f63-bdba-b0b7aab0da5a",
-                    "width": 20,
-                    "height": 20,
-                    "side": "WEST",
-                    "className": "active-port"
-                }
-            ],
             "has_delete_action": true,
             "has_edit_action": true
         },
         {
-            "id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
+            "id": "6b7bec75-e890-44e9-90af-a4119db02040",
+            "text": "text2",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "text",
+                "value": "How Are You?",
+                "quickReplies": []
+            },
+            "has_delete_action": true,
+            "has_edit_action": true
+        },
+        {
+            "id": "c5d37d92-9646-477c-a655-e9b9fd5ab950",
             "text": "menu1",
             "width": 90,
             "height": 90,
             "data": {
                 "type": "menu",
-                "question": "hi",
+                "question": "Hos is your feeling?",
                 "choices": [
                     {
-                        "value": "8bf62b93-d085-4525-8db3-ec0730db26aa",
-                        "label": "goto text1",
+                        "value": "ad1b81b8-ca49-4038-a6c9-0c0f783e4721",
+                        "label": "Not Bad",
                         "action": {
                             "type": "GOTO",
-                            "data": "06e30e0c-f057-4e38-adc6-7e2e47697a68"
+                            "data": "aaf71ab8-6dc3-4145-b24a-fe6f66250bc1"
+                        }
+                    },
+                    {
+                        "value": "eb9dffe5-8023-48a4-9ddb-dc444e0e71c2",
+                        "label": "Bad",
+                        "action": {
+                            "type": "GOTO",
+                            "data": "ac3e09d8-e5aa-44b4-87e6-ccefb530dfc7"
+                        }
+                    },
+                    {
+                        "value": "c3582635-d8cc-4138-acc8-a1cda1e74c33",
+                        "label": "Good",
+                        "action": {
+                            "type": "GOTO",
+                            "data": "3a0840ac-3145-44bf-b9ee-52587a029461"
                         }
                     }
                 ],
-                "quickReplies": [
-                    {
-                        "value": "5e7abc10-82ad-4f11-9ff1-a53281ee4ef9",
-                        "label": "goto text 2",
-                        "action": {
-                            "type": "GOTO",
-                            "data": "85e56335-d62a-4cfb-809c-84be004ed39f"
-                        }
-                    }
-                ]
+                "quickReplies": []
             },
-            "ports": [
-                {
-                    "id": "a3922d36-7bf9-48e4-8c95-3957338e2eb2",
-                    "width": 8,
-                    "height": 8,
-                    "side": "EAST",
-                    "disabled": true
-                },
-                {
-                    "id": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
-                    "width": 20,
-                    "height": 20,
-                    "side": "WEST",
-                    "className": "active-port"
-                }
-            ],
             "has_delete_action": true,
             "has_edit_action": true
         },
         {
-            "id": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
-            "text": "text2",
+            "id": "aaf71ab8-6dc3-4145-b24a-fe6f66250bc1",
+            "text": "text3",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "text",
+                "value": "",
+                "quickReplies": []
+            },
+            "has_delete_action": true,
+            "has_edit_action": true
+        },
+        {
+            "id": "ac3e09d8-e5aa-44b4-87e6-ccefb530dfc7",
+            "text": "text4",
+            "width": 90,
+            "height": 90,
+            "data": {
+                "type": "text",
+                "value": "",
+                "quickReplies": []
+            },
+            "has_delete_action": true,
+            "has_edit_action": true
+        },
+        {
+            "id": "3a0840ac-3145-44bf-b9ee-52587a029461",
+            "text": "text5",
             "width": 90,
             "height": 90,
             "data": {
@@ -116,52 +116,14 @@
             },
             "ports": [
                 {
-                    "id": "cd09385c-c379-419f-a372-16f72f19d454",
+                    "id": "1b0ff8f0-91a4-4cf6-a0d9-14728b144f65",
                     "width": 8,
                     "height": 8,
                     "side": "EAST",
                     "disabled": true
                 },
                 {
-                    "id": "dc739e08-452c-4c7c-b0cd-c6e5987dac36",
-                    "width": 20,
-                    "height": 20,
-                    "side": "WEST",
-                    "className": "active-port"
-                }
-            ],
-            "has_delete_action": true,
-            "has_edit_action": true
-        },
-        {
-            "id": "85e56335-d62a-4cfb-809c-84be004ed39f",
-            "text": "text3",
-            "width": 90,
-            "height": 90,
-            "data": {
-                "type": "text",
-                "value": "hi",
-                "quickReplies": [
-                    {
-                        "value": "5c1c3980-4c03-4bc6-b6b1-0ccba4f2dd60",
-                        "label": "gotot1",
-                        "action": {
-                            "type": "GOTO",
-                            "data": "06e30e0c-f057-4e38-adc6-7e2e47697a68"
-                        }
-                    }
-                ]
-            },
-            "ports": [
-                {
-                    "id": "edab7109-c38b-4edd-9209-0058a16c4f4e",
-                    "width": 8,
-                    "height": 8,
-                    "side": "EAST",
-                    "disabled": true
-                },
-                {
-                    "id": "358f42dc-84d0-4cda-bc24-5ff0177d7015",
+                    "id": "1cd9fe7b-9090-4627-97b5-8505fcbbe33a",
                     "width": 20,
                     "height": 20,
                     "side": "WEST",
@@ -174,53 +136,58 @@
     ],
     "edges": [
         {
-            "id": "db7e594d-a0c4-4285-81e3-ddd296cb27ae",
-            "from_id": "9f732cc7-4511-4ecd-bb66-f3a95fc488d1",
-            "to_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "from_port": "a480d1b9-34ed-451b-8a71-ce03ca9a9ec9",
-            "to_port": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+            "id": "aade2613-448a-4444-8ff5-67fe107a5014",
+            "from_id": "8fba09c1-2b62-49b8-aaf9-d0e90e6a7d72",
+            "to_id": "973ece41-e9f3-4d38-b19b-8adda8f8c5c1",
+            "from_port": "ea4d78e2-e346-443f-9993-ba8bf97f2df5",
+            "to_port": "ee0b0769-14da-4b29-85c1-6aabe457a770",
+            "from_widget": "8fba09c1-2b62-49b8-aaf9-d0e90e6a7d72",
+            "text": " "
         },
         {
-            "id": "98e70a9e-2f7f-4899-b3e9-9d13fb4c4a0f",
-            "from_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "to_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "from_port": "c29ed000-c6af-4f63-bdba-b0b7aab0da5a",
-            "to_port": "a3922d36-7bf9-48e4-8c95-3957338e2eb2"
+            "id": "e7abc337-c2ed-4d7b-97a7-d592886f4d8a",
+            "from_id": "973ece41-e9f3-4d38-b19b-8adda8f8c5c1",
+            "to_id": "6b7bec75-e890-44e9-90af-a4119db02040",
+            "from_port": "fdb28363-b4d6-4025-b044-c2e61c6027eb",
+            "to_port": "0c9e3149-d301-4993-9775-e4084efc7451",
+            "from_widget": "973ece41-e9f3-4d38-b19b-8adda8f8c5c1",
+            "text": " "
         },
         {
-            "id": "99f167f4-1f6a-4017-84df-98288b56950a",
-            "from_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "to_id": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
-            "from_port": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
-            "to_port": "cd09385c-c379-419f-a372-16f72f19d454"
+            "id": "1b56ef2e-f85b-4f96-9593-ddfdaccb75d5",
+            "from_id": "6b7bec75-e890-44e9-90af-a4119db02040",
+            "to_id": "c5d37d92-9646-477c-a655-e9b9fd5ab950",
+            "from_port": "0b7f1615-c207-4c76-8a78-0b6dae1c8451",
+            "to_port": "752474fc-aa3e-415c-b37f-90d369a10aff",
+            "from_widget": "6b7bec75-e890-44e9-90af-a4119db02040",
+            "text": " "
         },
         {
-            "id": "46097ca7-6ff2-4817-9949-a1a2426e67d3",
-            "from_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "to_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "from_port": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
-            "to_port": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+            "id": "83312991-c63b-4a83-95c3-b2e5a8d4b09f",
+            "from_id": "c5d37d92-9646-477c-a655-e9b9fd5ab950",
+            "to_id": "aaf71ab8-6dc3-4145-b24a-fe6f66250bc1",
+            "from_port": "32f1c71b-ead5-43e3-ab2b-29c8f8d55ecd",
+            "to_port": "475663ac-195f-4128-9297-5704df9e53ef",
+            "from_widget": "ad1b81b8-ca49-4038-a6c9-0c0f783e4721",
+            "text": "Not Bad"
         },
         {
-            "id": "1348f85c-18a2-4f05-bd86-721f0620bf34",
-            "from_id": "64c4a7b5-2a03-40eb-bbce-adc3982d6996",
-            "to_id": "85e56335-d62a-4cfb-809c-84be004ed39f",
-            "from_port": "dc739e08-452c-4c7c-b0cd-c6e5987dac36",
-            "to_port": "edab7109-c38b-4edd-9209-0058a16c4f4e"
+            "id": "30cf5424-ff2b-46bc-92a4-718d3cedfa14",
+            "from_id": "c5d37d92-9646-477c-a655-e9b9fd5ab950",
+            "to_id": "ac3e09d8-e5aa-44b4-87e6-ccefb530dfc7",
+            "from_port": "32f1c71b-ead5-43e3-ab2b-29c8f8d55ecd",
+            "to_port": "8ba83415-2851-46b5-89c0-3b8ffd1493e5",
+            "from_widget": "eb9dffe5-8023-48a4-9ddb-dc444e0e71c2",
+            "text": "Bad"
         },
         {
-            "id": "e6c1c3ac-8354-41a4-9f36-f3b6493faddc",
-            "from_id": "bd152429-2920-4527-89f0-5f7ee436bd3f",
-            "to_id": "85e56335-d62a-4cfb-809c-84be004ed39f",
-            "from_port": "1f03e007-ccd6-404b-9dd2-f10fffc91852",
-            "to_port": "edab7109-c38b-4edd-9209-0058a16c4f4e"
-        },
-        {
-            "id": "463d2e21-1a73-4345-986b-f946ab76bb7a",
-            "from_id": "85e56335-d62a-4cfb-809c-84be004ed39f",
-            "to_id": "06e30e0c-f057-4e38-adc6-7e2e47697a68",
-            "from_port": "358f42dc-84d0-4cda-bc24-5ff0177d7015",
-            "to_port": "b9fb99bb-6017-4a3e-ba86-122543eba23c"
+            "id": "abbf6c37-74a1-454b-b7dd-9ac853bba3f2",
+            "from_id": "c5d37d92-9646-477c-a655-e9b9fd5ab950",
+            "to_id": "3a0840ac-3145-44bf-b9ee-52587a029461",
+            "from_port": "32f1c71b-ead5-43e3-ab2b-29c8f8d55ecd",
+            "to_port": "1b0ff8f0-91a4-4cf6-a0d9-14728b144f65",
+            "from_widget": "c3582635-d8cc-4138-acc8-a1cda1e74c33",
+            "text": "Good"
         }
     ]
 }

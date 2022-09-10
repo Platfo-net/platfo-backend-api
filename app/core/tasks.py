@@ -87,7 +87,7 @@ def send_widget(
     db = SessionLocal()
 
     while widget["widget_type"] in (
-        WidgetType.MESSAGE["name"], WidgetType.MEDIA["name"]
+        WidgetType.TEXT["name"], WidgetType.MEDIA["name"]
     ):
         if widget["widget_type"] == WidgetType.MEDIA["name"]:
             graph_api.send_media(
@@ -97,7 +97,7 @@ def send_widget(
                 to_id=contact_igs_id,
                 page_access_token=user_page_data["facebook_page_token"]
             )
-        if widget["widget_type"] == WidgetType.MESSAGE["name"]:
+        if widget["widget_type"] == WidgetType.TEXT["name"]:
             graph_api.send_text_message(
                 text=widget["message"],
                 from_id=user_page_data["facebook_page_id"],

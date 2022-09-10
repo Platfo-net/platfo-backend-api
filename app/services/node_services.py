@@ -56,14 +56,13 @@ class NodeServices(
         db.refresh(node)
         return node
 
-    def add_quick_reply(self , db:Session , * , obj_in: List[dict] , node_id: UUID4):
+    def add_quick_reply(self, db: Session, *, obj_in: List[dict], node_id: UUID4):
         node = db.query(models.Node).filter(models.Node.id == node_id).first()
         node.quick_replies = obj_in
         db.add(node)
         db.commit()
         db.refresh(node)
         return node
-
 
     def get_next_node(self, db: Session, *, from_id: UUID4):
         return db.query(models.Node).filter(
@@ -74,10 +73,21 @@ class NodeServices(
         pass
 
     def get_chatflow_head_node(self, db: Session, *, chatflow_id):
-        return  db.query(models.Node).filter(
+        return db.query(models.Node).filter(
             models.Node.chatflow_id == chatflow_id,
             models.Node.is_head == True
         ).first()
+
+    def create_bulk_nodes(self, db: Session, *, nodes: List[models.Node]):
+        for node in nodes:
+            db.add(node)
+        db.commit()
+        return
+
+    def delete_chatflow_nodes(self, db: Session, *, chatflow_id: UUID4):
+        return db.query(self.model).filter(
+            self.model.chatflow_id == chatflow_id
+        ).delete()
 
 
 node = NodeServices(models.Node)

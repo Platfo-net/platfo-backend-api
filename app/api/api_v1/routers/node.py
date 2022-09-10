@@ -75,9 +75,9 @@ def create_full_node(
     
     
     
-    if obj_in.widget_type == WidgetType.MESSAGE["name"]:
+    if obj_in.widget_type == WidgetType.TEXT["name"]:
         obj_in = dict(id=str(uuid.uuid4()),
-                      widget_type=WidgetType.MESSAGE["name"],
+                      widget_type=WidgetType.TEXT["name"],
                       **jsonable_encoder(obj_in.widget))
 
     
