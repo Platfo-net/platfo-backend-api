@@ -12,17 +12,27 @@ class Edge(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
     from_id = Column(
-        UUID(as_uuid=True)
+        UUID(as_uuid=True),
+        nullable=True,
     )
     to_id = Column(
-        UUID(as_uuid=True)
+        UUID(as_uuid=True),
+        nullable=True,
     )
     from_port = Column(
-        UUID(as_uuid=True)
+        UUID(as_uuid=True),
+        nullable=True,
     )
     to_port= Column(
-        UUID(as_uuid=True)
+        UUID(as_uuid=True),
+        nullable=True,
     )
+
+    from_widget = Column(
+        UUID(as_uuid=True),
+        nullable=True,
+    )
+    text = Column(String(255) , nullable=True)
 
     chatflow_id = Column(
         UUID(as_uuid=True),

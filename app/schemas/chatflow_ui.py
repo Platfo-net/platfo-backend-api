@@ -19,6 +19,8 @@ class Edge(BaseModel):
     to_id: Optional[UUID4]
     from_port: Optional[UUID4]
     to_port: Optional[UUID4]
+    from_widget: Optional[UUID4]
+    text: Optional[str] = None
 
 
 class ChatflowUI(BaseModel):

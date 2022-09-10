@@ -52,7 +52,9 @@ def get_chatflow_nodes_edges(
             from_id=edge.from_id,
             to_id=edge.to_id,
             from_port=edge.from_port,
-            to_port=edge.to_port
+            to_port=edge.to_port,
+            from_widget=edge.from_widget,
+            text=edge.text,
         ) for edge in edges
     ]
 
@@ -84,7 +86,8 @@ def create_chatflow_nodes_edges(
     db.query(models.Edge).filter(
         models.Edge.chatflow_id == chatflow_id).delete()
 
-    chatflow = db.query(models.Chatflow).filter(models.Chatflow.id == chatflow_id).first()
+    chatflow = db.query(models.Chatflow).filter(
+        models.Chatflow.id == chatflow_id).first()
     chatflow.name = obj_in.name
     db.add(chatflow)
 
@@ -110,10 +113,11 @@ def create_chatflow_nodes_edges(
             to_id=edge.to_id,
             from_port=edge.from_port,
             to_port=edge.to_port,
-            chatflow_id=chatflow_id
+            chatflow_id=chatflow_id,
+            from_widget=edge.from_widget,
+            text=edge.text
         )
         db.add(db_obj)
-
 
     db.commit()
     return obj_in
