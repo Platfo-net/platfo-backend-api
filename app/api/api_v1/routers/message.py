@@ -1,9 +1,12 @@
 from typing import List
 from app import services, models, schemas
 from app.api import deps
+from app.constants.message_direction import MessageDirection
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, BackgroundTasks
 from sqlalchemy.orm import Session
+from app.core.instagram_graph_api import graph_api
+from app.core import tasks
 
 router = APIRouter(prefix="/message", tags=["Messages"])
 
@@ -45,3 +48,44 @@ def get_archive(
             send_at=message.send_at
         ) for message in messages if len(messages) > 0
     ]
+
+
+@router.post("/send/{from_page_id}/{to_contact_igs_id}")
+def send_message(
+    *,
+    db: Session = Depends(deps.get_db),
+    from_page_id: str,
+    to_contact_igs_id: str,
+    obj_in: schemas.SendMessage,
+    backgroud: BackgroundTasks,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
+):
+
+    instagram_page = services.instagram_page.get_by_page_id(
+        db,
+        page_id=from_page_id
+    )
+    backgroud.add_task(graph_api.send_text_message,
+                       obj_in.text,
+                       from_page_id,
+                       to_contact_igs_id,
+                       instagram_page.facebook_page_token
+                       )
+    tasks.save_message.delay(
+        obj_in=dict(
+            from_page_id=from_page_id,
+            to_page_id=to_contact_igs_id,
+            content={
+                "message": obj_in.text
+            },
+            user_id=current_user.id,
+            direction=MessageDirection.OUT["name"]
+        )
+    )
+    return
