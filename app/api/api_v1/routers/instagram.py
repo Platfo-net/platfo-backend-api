@@ -1,3 +1,5 @@
+import requests
+
 from typing import Any
 
 from app import services, models, schemas
@@ -8,7 +10,6 @@ from fastapi import APIRouter, Depends, \
     HTTPException, Security, status
 from sqlalchemy.orm import Session
 from app.core.config import settings
-import requests
 
 router = APIRouter(prefix="/instagram", tags=["Instagram"])
 
@@ -93,7 +94,9 @@ def connect_instagram_page(
             instagram_page_id = res.json()['connected_instagram_account']['id']
 
             params = dict(
-                fields="username,profile_picture_url",
+                fields="username,profile_picture_url,"
+                       "followers_count,follows_count,biography,"
+                       "website,ig_id,name",
                 access_token=page["access_token"],
             )
 
@@ -120,6 +123,14 @@ def connect_instagram_page(
                     instagram_page_id=instagram_page_id,
                     instagram_username=page_details["username"],
                     instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
+                    information=dict(
+                         website=page_details['website'],
+                         ig_id=page_details['ig_id'],
+                         followers_count=page_details['followers_count'],
+                         follows_count=page_details['follows_count'],
+                         biography=page_details['biography'],
+                         name=page_details['name']
+                                     )
                 )
                 services.instagram_page.update(
                     db,
@@ -134,6 +145,14 @@ def connect_instagram_page(
                     instagram_page_id=instagram_page_id,
                     instagram_username=page_details["username"],
                     instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
+                    information=dict(
+                         website=page_details['website'],
+                         ig_id=page_details['ig_id'],
+                         followers_count=page_details['followers_count'],
+                         follows_count=page_details['follows_count'],
+                         biography=page_details['biography'],
+                         name=page_details['name']
+                                     )
                     )
 
                 services.instagram_page.create(db, obj_in=instagram_page_in)

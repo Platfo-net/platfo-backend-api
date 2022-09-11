@@ -11,6 +11,7 @@ class InstagramPageBase(BaseModel):
     instagram_page_id: Optional[str] = None
     instagram_username: Optional[str] = None
     instagram_profile_picture_url: Optional[str] = None
+    information: Optional[dict] = None
 
 
 class InstagramPageCreate(InstagramPageBase):

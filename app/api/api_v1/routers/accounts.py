@@ -1,13 +1,14 @@
 from typing import Any, List
-from app import services, models, schemas
-from app.api import deps
-from app.constants.role import Role
+
 from fastapi import APIRouter, Depends, Security
 from fastapi.exceptions import HTTPException
-from sqlalchemy.orm import Session
 from pydantic import UUID4
-from app.constants.errors import Error
+from sqlalchemy.orm import Session
 
+from app import services, models, schemas
+from app.api import deps
+from app.constants.errors import Error
+from app.constants.role import Role
 
 router = APIRouter(prefix="/account", tags=["Account"])
 
@@ -30,20 +31,21 @@ def get_accounts_list(
     """
     instagram_pages = services.instagram_page.get_multi_by_user_id(
         db, user_id=current_user.id)
+
     accounts = [
         schemas.Account(
             id=item.id,
             username=item.instagram_username,
             profile_image_url=item.instagram_profile_picture_url,
             platform="instagram",
-            page_id=item.facebook_page_id
+            page_id=item.facebook_page_id,
         )
         for item in instagram_pages if len(instagram_pages) > 0
     ]
     return accounts
 
 
-@router.get("/{id}", response_model=schemas.Account)
+@router.get("/{id}", response_model=schemas.AccountDetail)
 def get_account(
         *,
         db: Session = Depends(deps.get_db),
@@ -77,12 +79,13 @@ def get_account(
             detail=Error.ACCOUNT_NOT_FOUND_PERMISSION_DENIED["text"],
         )
 
-    return schemas.Account(
+    return schemas.AccountDetail(
         id=instagram_page.id,
         username=instagram_page.instagram_username,
         profile_image_url=instagram_page.instagram_profile_picture_url,
         platform="INSTAGRAM",
-        page_id=instagram_page.facebook_page_id
+        page_id=instagram_page.facebook_page_id,
+        information=instagram_page.information
     )
 
 
