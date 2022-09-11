@@ -39,14 +39,13 @@ def get_accounts_list(
             profile_image_url=item.instagram_profile_picture_url,
             platform="instagram",
             page_id=item.facebook_page_id,
-            information=item.information
         )
         for item in instagram_pages if len(instagram_pages) > 0
     ]
     return accounts
 
 
-@router.get("/{id}", response_model=schemas.Account)
+@router.get("/{id}", response_model=schemas.AccountDetail)
 def get_account(
         *,
         db: Session = Depends(deps.get_db),
@@ -80,7 +79,7 @@ def get_account(
             detail=Error.ACCOUNT_NOT_FOUND_PERMISSION_DENIED["text"],
         )
 
-    return schemas.Account(
+    return schemas.AccountDetail(
         id=instagram_page.id,
         username=instagram_page.instagram_username,
         profile_image_url=instagram_page.instagram_profile_picture_url,

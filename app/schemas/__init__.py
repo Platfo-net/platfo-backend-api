@@ -18,7 +18,7 @@ from .transaction import TransactionCreate,\
     Transaction, TransactionUpdate
 
 
-from .account import Account
+from .account import Account, AccountDetail
 
 from .connection import Connection, ConnectionCreate, \
     ConnectionUpdate, ConnectionInDB
