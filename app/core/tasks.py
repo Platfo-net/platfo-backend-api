@@ -123,12 +123,13 @@ def send_widget(
         quick_replies = node.quick_replies
 
     if widget["widget_type"] == "MENU":
-        graph_api.send_menu(widget,
-                            quick_replies,
-                            from_id=user_page_data["facebook_page_id"],
-                            to_id=contact_igs_id,
-                            page_access_token=user_page_data["facebook_page_token"]
-                            )
+        graph_api.send_menu(
+            widget,
+            quick_replies,
+            from_id=user_page_data["facebook_page_id"],
+            to_id=contact_igs_id,
+            page_access_token=user_page_data["facebook_page_token"]
+        )
         save_message.delay(
             obj_in=dict(
                 from_page_id=user_page_data["facebook_page_id"],

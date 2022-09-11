@@ -1,4 +1,3 @@
-from typing import List
 from pydantic import UUID4
 from fastapi.encoders import jsonable_encoder
 from app import models, schemas
@@ -11,7 +10,12 @@ class ContactServices:
     def __init__(self, model):
         self.model = model
 
-    def create(self, db: Session, *, obj_in: schemas.ContactCreate) -> models.Contact:
+    def create(
+        self,
+        db: Session,
+        *,
+        obj_in: schemas.ContactCreate
+    ) -> models.Contact:
         obj_in = jsonable_encoder(obj_in)
         contact = self.model(
             **obj_in,
@@ -73,7 +77,7 @@ class ContactServices:
         skip: int = 0,
         limit: int = 100
     ):
-    # -> List[schemas.Contact]:
+        # -> List[schemas.Contact]:
         """Return an specific instagram page's contacts
 
         Args:
@@ -109,8 +113,3 @@ class ContactServices:
 
 
 contact = ContactServices(models.Contact)
-
-
-"""
-{"username": "botinow_", "profile_image": "https://scontent-frx5-2.cdninstagram.com/v/t51.2885-15/299208044_147311657929724_7054774886703011347_n.jpg?stp=dst-jpg_s200x200&_nc_cat=109&ccb=1-7&_nc_sid=8ae9d6&_nc_ohc=ZdgjAUxR1_QAX-Ev2Lm&_nc_ht=scontent-frx5-2.cdninstagram.com&edm=ALmAK4EEAAAA&oh=00_AT_IXk8QlCv-LFv9XjzxlpFRqT7fAO7tmibKR2fjxdPzzQ&oe=6311C48F"}
-"""

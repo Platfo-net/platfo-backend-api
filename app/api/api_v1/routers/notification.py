@@ -28,7 +28,7 @@ def get_notifications_list(
     ),
 ) -> Any:
     """
-    Get list of notifications based on role, 
+    Get list of notifications based on role,
     if role is user, it will return status of notification
     else status will be always is_readed=true
 
@@ -178,7 +178,7 @@ def read_notification(
         id (UUID4): Notification id
 
     Raises:
-        404: if notificatin not found 
+        404: if notificatin not found
         400: if notificatin readed before
 
     """

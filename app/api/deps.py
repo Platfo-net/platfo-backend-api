@@ -19,7 +19,11 @@ from fastapi import WebSocket, Request
 
 
 class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
-    async def __call__(self, request: Request = None, websocket: WebSocket = None):
+    async def __call__(
+        self,
+        request: Request = None,
+        websocket: WebSocket = None
+    ):
         return await super().__call__(websocket or request)
 
 

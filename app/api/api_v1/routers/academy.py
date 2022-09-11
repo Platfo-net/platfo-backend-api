@@ -21,10 +21,10 @@ def get_categories_list(
 ):
 
     categories, pagination = services.academy.category.get_multi(
-             db,
-             page=page,
-             page_size=page_size,
-        )
+        db,
+        page=page,
+        page_size=page_size,
+    )
 
     def categories_to_child_categories(n=None):
 
@@ -94,11 +94,11 @@ def search_content_by_category(
 ):
 
     contents, pagination = services.academy.content.search(
-                        db,
-                        categories_list=categories_list_id,
-                        page=page,
-                        page_size=page_size
-                       )
+        db,
+        categories_list=categories_list_id,
+        page=page,
+        page_size=page_size
+    )
     if not contents:
         raise HTTPException(
             status_code=Error.CONTENT_NOT_FOUND['status_code'],
@@ -114,10 +114,10 @@ def search_content_by_category(
 
 @router.get('/', response_model=schemas.academy.ContentListApi)
 def get_all_contents(*,
-        db: Session = Depends(deps.get_db),
-        page: int = 1,
-        page_size: int = 20
-):
+                     db: Session = Depends(deps.get_db),
+                     page: int = 1,
+                     page_size: int = 20
+                     ):
     contents, pagination = services.academy.content.get_multi(
         db,
         page=page,
@@ -145,9 +145,9 @@ def get_all_contents(*,
 
 @router.get('/{id}', response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*,
-        db: Session = Depends(deps.get_db),
-        id: UUID4
-):
+                      db: Session = Depends(deps.get_db),
+                      id: UUID4
+                      ):
     content, categories = services.academy.content.get_by_detail(db, id=id)
 
     if not content:
@@ -183,14 +183,14 @@ def get_content_by_id(*,
 
 @router.post('/', response_model=schemas.academy.Content)
 def create_content(*, obj_in: schemas.academy.ContentCreate,
-        db: Session = Depends(deps.get_db),
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-            ],
-        ),
-):
+                   db: Session = Depends(deps.get_db),
+                   current_user: models.User = Security(
+                       deps.get_current_active_user,
+                       scopes=[
+                           Role.ADMIN["name"],
+                       ],
+                   ),
+                   ):
     content = services.academy.content.create(db=db, obj_in=obj_in)
     for category in obj_in.categories:
         services.academy.category_content.create(
@@ -213,16 +213,16 @@ def create_content(*, obj_in: schemas.academy.ContentCreate,
 
 @router.put('/{id}', response_model=schemas.academy.Content)
 def update_content(*,
-        db: Session = Depends(deps.get_db),
-        id: str,
-        obj_in: schemas.academy.ContentCreate,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-            ],
-        ),
-):
+                   db: Session = Depends(deps.get_db),
+                   id: str,
+                   obj_in: schemas.academy.ContentCreate,
+                   current_user: models.User = Security(
+                       deps.get_current_active_user,
+                       scopes=[
+                           Role.ADMIN["name"],
+                       ],
+                   ),
+                   ):
 
     old_content = services.academy.content.get(db, id=id)
 
@@ -261,15 +261,15 @@ def update_content(*,
 
 @router.delete('/{id}')
 def delete_content(*,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-            ],
-        ),
-):
+                   db: Session = Depends(deps.get_db),
+                   id: UUID4,
+                   current_user: models.User = Security(
+                       deps.get_current_active_user,
+                       scopes=[
+                           Role.ADMIN["name"],
+                       ],
+                   ),
+                   ):
     content = services.academy.content.get(db, id=id)
     if not content:
         raise HTTPException(

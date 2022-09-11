@@ -32,7 +32,7 @@ class InstagramData:
                             pass
                         try:
                             self.is_echo = item["message"]["is_echo"]
-                        except:
+                        except Exception:
                             pass
                 except Exception:
                     self.message_detail = item['postback']["title"]

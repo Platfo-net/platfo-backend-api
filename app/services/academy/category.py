@@ -1,11 +1,9 @@
 import math
 
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.services.base import BaseServices
-from app.models.academy.content_category import ContentCategory
 
 
 class CategoryServices(

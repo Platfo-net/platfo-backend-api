@@ -1,8 +1,8 @@
 class MessageDirection:
     IN = {
-        "name" : "IN",
+        "name": "IN",
     }
 
     OUT = {
-        "name" : "OUT",
+        "name": "OUT",
     }

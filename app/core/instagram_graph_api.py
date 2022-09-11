@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Union
 from app.core.config import settings
 
 import requests
@@ -86,7 +86,6 @@ class InstagramGraphApi:
         from app.core import storage
         image_url = storage.get_object_url(data["image"],
                                            settings.S3_CHATFLOW_MEDIA_BUCKET)
-        image_url = "https://mayvers.com.au/wp-content/uploads/2017/09/test-image.jpg"
 
         body = {
             "template_type": "generic",
@@ -146,9 +145,10 @@ class InstagramGraphApi:
         to_id: str,
         page_access_token: str
     ):
-        image_url = storage.get_object_url(image,
-                                           settings.S3_CHATFLOW_MEDIA_BUCKET)
-        image_url = "https://mayvers.com.au/wp-content/uploads/2017/09/test-image.jpg"
+        image_url = storage.get_object_url(
+            image,
+            settings.S3_CHATFLOW_MEDIA_BUCKET
+        )
         body = {
             "template_type": "generic",
             "elements": [
@@ -159,7 +159,6 @@ class InstagramGraphApi:
             ]
         }
 
-        print(body)
         url = "{}/{}/{}/messages".format(
             settings.FACEBOOK_GRAPH_BASE_URL,
             settings.FACEBOOK_GRAPH_VERSION,
@@ -209,8 +208,11 @@ class InstagramGraphApi:
             is_verified_user = res.json()['is_verified_user']
             is_user_follow_business = res.json()['is_user_follow_business']
             is_business_follow_user = res.json()['is_business_follow_user']
-            return dict(username=username, profile_image=profile_image, name=name,
-                        follower_count=follower_count, is_verified_user=is_verified_user,
+            return dict(username=username,
+                        profile_image=profile_image,
+                        name=name,
+                        follower_count=follower_count,
+                        is_verified_user=is_verified_user,
                         is_user_follow_business=is_user_follow_business,
                         is_business_follow_user=is_business_follow_user)
 

@@ -45,29 +45,36 @@ async def upload_academy_content_attachment(
         ),
 ):
     """
-        Service for uploading file for academy 
+        Service for uploading file for academy
         content attachements and return url
     """
     filename = f'{uuid.uuid4()}-{file.filename}'
     uploaded_file_name = storage.add_file_to_s3(
-        filename, file.file.fileno(), settings.S3_ACADEMY_ATTACHMENT_BUCKET)
+        filename,
+        file.file.fileno(),
+        settings.S3_ACADEMY_ATTACHMENT_BUCKET
+    )
 
     url = storage.get_object_url(
-        uploaded_file_name, settings.S3_ACADEMY_ATTACHMENT_BUCKET)
+        uploaded_file_name,
+        settings.S3_ACADEMY_ATTACHMENT_BUCKET
+    )
     return {"file_name": uploaded_file_name, "url": url}
 
 
 @router.get("/upload/academy/attachment/{attachment_id}")
-async def upload_academy_content_attachment(
+async def get_academy_content_attachment(
         *,
         attachment_id: str
 ):
     """
-        Service for uploading file for academy 
+        Service for uploading file for academy
         content attachements and return url
     """
     url = storage.get_object_url(
-        attachment_id, settings.S3_ACADEMY_ATTACHMENT_BUCKET)
+        attachment_id,
+        settings.S3_ACADEMY_ATTACHMENT_BUCKET
+    )
 
     return {"file_name": attachment_id, "url": url}
 

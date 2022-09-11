@@ -40,7 +40,6 @@ def get_object_url(object_name, bucket_name):
         raise Exception(f"Error happen on getting object: {exc}")
 
 
-
 def create_client():
     try:
         client = Minio(

@@ -4,9 +4,9 @@ from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
 from app.schemas.academy.content_attachment import ContentAttachment,\
-    ContentAttachmentCreate, ContentAttachmentList
+    ContentAttachmentCreate
 from app.schemas.academy.category import CategoryContent,\
-    CategoryListItem, CategoryListItemContent
+    CategoryListItemContent
 
 
 class ContentBase(BaseModel):
@@ -167,7 +167,7 @@ class ContentSearch(BaseModel):
     class Config:
         orm_mode = True
         schema_extra = {
-           "example": {
+            "example": {
                 "contents": [
                     {
                         "title": "instagram",

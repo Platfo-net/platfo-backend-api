@@ -19,6 +19,7 @@ def get_list_of_triggers(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN["name"],
+            Role.USER["name"],
         ],
     ),
 ) -> Any:

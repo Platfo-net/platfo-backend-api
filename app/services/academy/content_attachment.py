@@ -32,4 +32,5 @@ class ContentAttachmentServices:
         ).delete()
 
 
-content_attachment = ContentAttachmentServices(models.academy.ContentAttachment)
+content_attachment = ContentAttachmentServices(
+    models.academy.ContentAttachment)

@@ -56,7 +56,13 @@ class NodeServices(
         db.refresh(node)
         return node
 
-    def add_quick_reply(self, db: Session, *, obj_in: List[dict], node_id: UUID4):
+    def add_quick_reply(
+        self,
+        db: Session,
+        *,
+        obj_in: List[dict],
+        node_id: UUID4
+    ):
         node = db.query(models.Node).filter(models.Node.id == node_id).first()
         node.quick_replies = obj_in
         db.add(node)
@@ -69,13 +75,10 @@ class NodeServices(
             models.Node.from_widget.contains([str(from_id)])
         ).first()
 
-    def get_node(self, db: Session, *, payload: str):
-        pass
-
     def get_chatflow_head_node(self, db: Session, *, chatflow_id):
         return db.query(models.Node).filter(
             models.Node.chatflow_id == chatflow_id,
-            models.Node.is_head == True
+            models.Node.is_head == True  # noqa
         ).first()
 
     def create_bulk_nodes(self, db: Session, *, nodes: List[models.Node]):

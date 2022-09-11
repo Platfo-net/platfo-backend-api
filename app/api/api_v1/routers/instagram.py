@@ -5,7 +5,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from fastapi import APIRouter, Depends, \
-    HTTPException, Response, Security, status
+    HTTPException, Security, status
 from sqlalchemy.orm import Session
 from app.core.config import settings
 import requests
@@ -107,8 +107,10 @@ def connect_instagram_page(
 
             page_details = res.json()
 
-            instagram_page = services.instagram_page.get_page_by_instagram_page_id(
-                db, instagram_page_id=instagram_page_id)
+            instagram_page = services.instagram_page\
+                .get_page_by_instagram_page_id(
+                    db, instagram_page_id=instagram_page_id
+                )
 
             if instagram_page:
                 instagram_page_in = schemas.InstagramPageUpdate(
@@ -120,36 +122,26 @@ def connect_instagram_page(
                     instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
                 )
                 services.instagram_page.update(
-                    db, db_obj=instagram_page, obj_in=instagram_page_in)
+                    db,
+                    db_obj=instagram_page,
+                    obj_in=instagram_page_in
+                )
             else:
                 instagram_page_in = schemas.InstagramPageCreate(
-                facebook_account_id=facebook_account.id,
-                facebook_page_id=page["id"],
-                facebook_page_token=page["access_token"],
-                instagram_page_id=instagram_page_id,
-                instagram_username=page_details["username"],
-                instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
-            )
+                    facebook_account_id=facebook_account.id,
+                    facebook_page_id=page["id"],
+                    facebook_page_token=page["access_token"],
+                    instagram_page_id=instagram_page_id,
+                    instagram_username=page_details["username"],
+                    instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
+                    )
 
                 services.instagram_page.create(db, obj_in=instagram_page_in)
 
         except Exception:
-            # raise HTTPException(
-            #     status_code=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['status_code'],
-            #     detail=Error.PROBLEM_WITH_INSTAGRAM_CONNECTION['text']
-            # )
             pass
 
     return
-
-    #   res = requests.post(f"{BASE_URL}/v14.0/{p['id']}/
-    #   subscribed_apps?subscribed_fields=feed,messages
-    #   &access_token={page['access_token']}")
-    #
-    #   res = requests.get(f"{BASE_URL}/v14.0/
-    #   {p['id']}/subscribed_apps?access_token={page['access_token']}")
-
-    #   page_tokens.append(p)
 
 
 @router.delete("", status_code=status.HTTP_200_OK)
@@ -184,7 +176,8 @@ def get_page_data_by_instagram_page_id(
         db: Session = Depends(deps.get_db),
         instagram_page_id: str
 ):
-    obj_instagram = services.instagram_page.get_page_by_ig_id(db, ig_id=instagram_page_id)
+    obj_instagram = services.instagram_page.get_page_by_ig_id(
+        db, ig_id=instagram_page_id)
     return obj_instagram
 
 

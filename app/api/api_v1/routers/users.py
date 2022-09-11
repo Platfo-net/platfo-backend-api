@@ -6,7 +6,7 @@ from app.constants.errors import Error
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
-from app.core.cache import get_data_from_cache, set_data_to_cache, get_password_data
+from app.core.cache import get_password_data
 from redis.client import Redis
 
 router = APIRouter(prefix="/user", tags=["User"])

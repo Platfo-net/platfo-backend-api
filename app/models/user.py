@@ -47,5 +47,4 @@ class User(Base):
     connection = relationship("Connection", back_populates="user")
     chatflow = relationship("Chatflow", back_populates="user")
 
-
     notification_user = relationship("NotificationUser", back_populates="user")

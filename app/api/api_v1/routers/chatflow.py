@@ -2,7 +2,7 @@ from typing import Any, List
 from app import models, services, schemas
 from app.api import deps
 from fastapi import APIRouter, Depends, \
-    HTTPException, Security, status
+    HTTPException, Security
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
 
