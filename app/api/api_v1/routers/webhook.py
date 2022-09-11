@@ -2,11 +2,10 @@
 
 # from datetime import timedelta
 from redis.client import Redis
-from fastapi import APIRouter, HTTPException, Response, Request, Depends, BackgroundTasks
-from fastapi.encoders import jsonable_encoder
+from fastapi import APIRouter, HTTPException, Response, Request, Depends
 from sqlalchemy.orm import Session
 
-from app import services, models, schemas
+from app import services
 from app.api import deps
 from app.core import cache, tasks
 from app.core.config import settings
@@ -94,7 +93,7 @@ def webhook_instagram_listener(
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
         tasks.send_widget.delay(
             widget=node.widget,
-            quick_replies = node.quick_replies,
+            quick_replies=node.quick_replies,
             contact_igs_id=instagram_data.id_sender,
             payload=instagram_data.payload,
             user_page_data=user_page_data.to_dict()
@@ -128,7 +127,7 @@ def webhook_instagram_listener(
             db, chatflow_id=chatflow_id)
         tasks.send_widget.delay(
             widget=node.widget,
-            quick_replies = node.quick_replies,
+            quick_replies=node.quick_replies,
             contact_igs_id=instagram_data.id_sender,
             payload=instagram_data.payload,
             user_page_data=user_page_data.to_dict()

@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 router = APIRouter(prefix="/contact", tags=["Contacts"])
 
 
-@router.get("/{id}", response_model = schemas.Contact)
+@router.get("/{id}", response_model=schemas.Contact)
 def get_contact(
     *,
     db: Session = Depends(deps.get_db),
@@ -51,13 +51,13 @@ def get_contact(
         )
 
     return schemas.Contact(
-        contact_igs_id= contact.contact_igs_id, 
+        contact_igs_id=contact.contact_igs_id,
         user_page_id=contact.user_page_id,
-        user_id= contact.user_id,
-        id= contact.id,
-        last_message_at = contact.last_message_at, 
-        information  = contact.information,
-        last_message = contact.last_message
+        user_id=contact.user_id,
+        id=contact.id,
+        last_message_at=contact.last_message_at,
+        information=contact.information,
+        last_message=contact.last_message
     )
 
 
@@ -85,16 +85,16 @@ def get_pages_contacts(
         limit=limit)
 
     return [
-            schemas.Contact(
-                contact_igs_id=contact.contact_igs_id,
-                user_page_id=contact.user_page_id,
-                id=contact.id,
-                last_message_at=contact.last_message_at,
-                information=contact.information,
-                last_message=contact.last_message,
-                user_id = contact.user_id
-            ) for contact in contacts if len(contacts)
-        ]
+        schemas.Contact(
+            contact_igs_id=contact.contact_igs_id,
+            user_page_id=contact.user_page_id,
+            id=contact.id,
+            last_message_at=contact.last_message_at,
+            information=contact.information,
+            last_message=contact.last_message,
+            user_id=contact.user_id
+        ) for contact in contacts if len(contacts)
+    ]
 
 
 @router.put("/{page_id}")

@@ -1,9 +1,8 @@
 from typing import List
 from app import services, models, schemas
 from app.api import deps
-from app.constants.errors import Error
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/message", tags=["Messages"])

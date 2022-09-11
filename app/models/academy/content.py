@@ -20,6 +20,12 @@ class Content(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     content_attachment = relationship(
-        "ContentAttachment", back_populates="content", cascade="all, delete-orphan")
+        "ContentAttachment",
+        back_populates="content",
+        cascade="all, delete-orphan"
+    )
     content_categories = relationship(
-        "ContentCategory", back_populates="content", cascade="all, delete-orphan")
+        "ContentCategory",
+        back_populates="content",
+        cascade="all, delete-orphan"
+    )

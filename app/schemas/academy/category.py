@@ -1,5 +1,5 @@
 
-from typing import Optional, List, Any
+from typing import Optional, List
 from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
@@ -53,26 +53,26 @@ class CategoryListApi(BaseModel):
         schema_extra = {
             "example": {
                 "categories": [
-                {
-                    "title": "guide",
-                    "parrent_id": "null",
-                    "children": [
-                        {"id": "0cabbc9b-bed2-4d83-924b-748c4c4394af",
-                         "title": "guide instagram",
-                         "children": [],
-                         "parrent_id": "0244e0b0-e498-407a-95e1-25fd486fa527"}
-                    ],
-                    "id": "e744f7eb-3529-4562-bcf3-e8e4eaad0267"
-                }
-            ],
+                    {
+                        "title": "guide",
+                        "parrent_id": "null",
+                        "children": [
+                            {"id": "0cabbc9b-bed2-4d83-924b-748c4c4394af",
+                             "title": "guide instagram",
+                             "children": [],
+                             "parrent_id": "0244e0b0-e498-407a-95e1-25fd486fa527"}  # noqa
+                        ],
+                        "id": "e744f7eb-3529-4562-bcf3-e8e4eaad0267"
+                    }
+                ],
                 "pagination": {
                     "page": 1,
                     "total_pages": 1,
                     "page_size": 20,
                     "total_count": 4
                 }
+            }
         }
-    }
 
 
 class CategoryContent(BaseModel):

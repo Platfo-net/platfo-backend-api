@@ -32,9 +32,11 @@ class ContentServices(
             total_pages=total_pages,
             total_count=total_count
         )
-        contents = db.query(self.model).order_by(desc(self.model.created_at)) \
-            .options(joinedload(self.model.content_categories)
-                     ).offset(page_size * (page - 1)).limit(page_size).all()
+        contents = db.query(self.model).order_by(
+            desc(self.model.created_at)
+        ) .options(
+            joinedload(self.model.content_categories)
+        ).offset(page_size * (page - 1)).limit(page_size).all()
 
         return contents, pagination
 
@@ -47,16 +49,22 @@ class ContentServices(
             page_size: int = 20
     ):
 
-        content = db.query(self.model). \
-            options(joinedload(self.model.content_categories))\
-            .filter(self.model.id == id).offset(page_size * (page - 1)).limit(page_size).first()
+        content = db.query(self.model).options(
+            joinedload(self.model.content_categories)
+        ).filter(self.model.id == id).offset(
+            page_size * (page - 1)
+        ).limit(page_size).first()
 
         content_categories = content.content_categories
 
         categories = []
         for content_category in content_categories:
-            categories.append(db.query(models.academy.Category). \
-                              filter(models.academy.Category.id == content_category.category_id).first())
+            categories.append(db.query(
+                models.academy.Category
+            ).filter(
+                models.academy.Category.id == content_category.category_id
+            ).first()
+            )
 
         return content, categories
 
@@ -78,10 +86,15 @@ class ContentServices(
         try:
             contents = []
             for category in categories_list:
-                contents.append(db.query(models.academy.Content) \
-                                .filter(models.academy.Content.content_categories.
-                                        any(category_id=category))
-                                .offset(page_size * (page - 1)).limit(page_size).all())
+                contents.append(
+                    db.query(
+                        models.academy.Content
+                    ).filter(
+                        models.academy.Content.content_categories.any(
+                            category_id=category
+                        )).offset(
+                        page_size * (page - 1)
+                    ).limit(page_size).all())
             return contents, pagination
         except (Exception,):
             pass

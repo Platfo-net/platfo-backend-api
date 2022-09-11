@@ -24,5 +24,5 @@ from app.models.academy import Category, Content,\
      ContentAttachment, ContentCategory  # noqa
 
 
-from app.models.node_ui import NodeUI
-from app.models.edge import Edge
+from app.models.node_ui import NodeUI  # noqa
+from app.models.edge import Edge  # noqa

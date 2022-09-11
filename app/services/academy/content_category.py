@@ -27,7 +27,7 @@ class CategoryContentServices:
             content_id: UUID4
     ):
         return db.query(self.model).filter(self.model.
-            content_id == content_id).delete()
+                                           content_id == content_id).delete()
 
 
 category_content = CategoryContentServices(models.academy.ContentCategory)

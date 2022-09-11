@@ -1,11 +1,10 @@
 
-from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi import APIRouter, Depends, Security
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import services, models, schemas
 from app.api import deps
-from app.constants.errors import Error
 from app.constants.role import Role
 
 router = APIRouter(prefix="/chatflow-ui", tags=["ChatflowUI"])
@@ -86,12 +85,15 @@ def create_chatflow_nodes_edges(
     db.query(models.Edge).filter(
         models.Edge.chatflow_id == chatflow_id).delete()
 
-    chatflow = services.chatflow.get(db, chatflow_id , current_user.id)
+    chatflow = services.chatflow.get(db, chatflow_id, current_user.id)
 
-    services.chatflow.update(db, db_obj=chatflow, obj_in=schemas.ChatflowUpdate(
-        is_active=True,
-        name=obj_in.name
-    ))
+    services.chatflow.update(
+        db,
+        db_obj=chatflow,
+        obj_in=schemas.ChatflowUpdate(
+            is_active=True,
+            name=obj_in.name
+        ))
 
     new_nodes = []
     for node in obj_in.nodes:
@@ -178,7 +180,7 @@ def chatflow_ui_parse(
         widget, quick_replies = widget_mapper(node.data, node.id)
         from_widget = [
             str(edge.from_widget) for edge in edges if edge.to_id == node.id]
-        
+
         obj = models.Node(
             id=node.id,
             title=node.text,
@@ -206,7 +208,7 @@ def widget_mapper(data, node_id):
         choices = data["choices"]
         widget = {
             "widget_type": data["type"],
-            "id":str(node_id),
+            "id": str(node_id),
             "choices": [{
                 "id": str(choice["value"]),
                 "text":choice["label"]

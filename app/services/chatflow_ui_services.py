@@ -1,7 +1,5 @@
 from typing import List
-from pydantic import UUID4
-from app.services.base import BaseServices
-from app import models, schemas
+from app import models
 from sqlalchemy.orm import Session
 
 

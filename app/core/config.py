@@ -1,4 +1,3 @@
-import os
 from functools import lru_cache
 from typing import Any, Dict, Optional
 from pydantic import BaseSettings, PostgresDsn, validator, RedisDsn
@@ -28,7 +27,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
-    
+
     S3_ACADEMY_ATTACHMENT_BUCKET: str
 
     FACEBOOK_APP_ID: str
