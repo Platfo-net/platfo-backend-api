@@ -16,4 +16,4 @@ class AccountDetail(BaseModel):
     platform: Optional[str] = None
     profile_image_url: Optional[str] = None
     page_id: Optional[str] = None
-    information: dict
+    information: Optional[dict] = None

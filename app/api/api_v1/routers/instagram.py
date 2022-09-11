@@ -114,6 +114,7 @@ def connect_instagram_page(
                 .get_page_by_instagram_page_id(
                     db, instagram_page_id=instagram_page_id
                 )
+            print(page_details)
 
             if instagram_page:
                 instagram_page_in = schemas.InstagramPageUpdate(
@@ -124,12 +125,12 @@ def connect_instagram_page(
                     instagram_username=page_details["username"],
                     instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
                     information=dict(
-                         website=page_details['website'],
-                         ig_id=page_details['ig_id'],
-                         followers_count=page_details['followers_count'],
-                         follows_count=page_details['follows_count'],
-                         biography=page_details['biography'],
-                         name=page_details['name']
+                         website=page_details['website'] if "website" in page_details else None,
+                         ig_id=page_details['ig_id'] if "ig_id" in page_details else None,
+                         followers_count=page_details['followers_count'] if "followers_count" in page_details else None,
+                         follows_count=page_details['follows_count'] if "follows_count" in page_details else None,
+                         biography=page_details['biography'] if "biography" in page_details else None,
+                         name=page_details['name'] if "name" in page_details else None
                                      )
                 )
                 services.instagram_page.update(
@@ -146,19 +147,19 @@ def connect_instagram_page(
                     instagram_username=page_details["username"],
                     instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
                     information=dict(
-                         website=page_details['website'],
-                         ig_id=page_details['ig_id'],
-                         followers_count=page_details['followers_count'],
-                         follows_count=page_details['follows_count'],
-                         biography=page_details['biography'],
-                         name=page_details['name']
+                         website=page_details['website'] if "website" in page_details else None,
+                         ig_id=page_details['ig_id'] if "ig_id" in page_details else None,
+                         followers_count=page_details['followers_count'] if "followers_count" in page_details else None,
+                         follows_count=page_details['follows_count'] if "follows_count" in page_details else None,
+                         biography=page_details['biography'] if "biography" in page_details else None,
+                         name=page_details['name'] if "name" in page_details else None
                                      )
                     )
 
                 services.instagram_page.create(db, obj_in=instagram_page_in)
 
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
     return
 
