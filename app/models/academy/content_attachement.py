@@ -12,7 +12,7 @@ class ContentAttachment(Base):
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
-
+    attachment_type = Column(String(256), nullable=True)
     attachment_id = Column(String(256), nullable=True)
 
     content_id = Column(

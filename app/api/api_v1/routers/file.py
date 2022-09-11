@@ -36,11 +36,11 @@ router = APIRouter(prefix="/file", tags=["File"])
 @router.post("/upload/academy/attachment")
 async def upload_academy_content_attachment(
         file: UploadFile = File(...),
+
         current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN["name"],
-            Role.USER["name"],
         ],
         ),
 ):
@@ -60,14 +60,7 @@ async def upload_academy_content_attachment(
 @router.get("/upload/academy/attachment/{attachment_id}")
 async def upload_academy_content_attachment(
         *,
-        attachment_id: str,
-        current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
-        ],
-        ),
+        attachment_id: str
 ):
     """
         Service for uploading file for academy 

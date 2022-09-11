@@ -15,10 +15,11 @@ class Content(Base):
     )
 
     title = Column(String(1024), nullable=True)
+    caption = Column(Text(), nullable=True)
     detail = Column(Text(), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     content_attachment = relationship(
-        "ContentAttachment", back_populates="content" , cascade="all, delete-orphan", uselist=False)
+        "ContentAttachment", back_populates="content", cascade="all, delete-orphan")
     content_categories = relationship(
-        "ContentCategory", back_populates="content",cascade="all, delete-orphan")
+        "ContentCategory", back_populates="content", cascade="all, delete-orphan")

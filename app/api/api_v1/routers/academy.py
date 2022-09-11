@@ -17,14 +17,7 @@ def get_categories_list(
         *,
         db: Session = Depends(deps.get_db),
         page: int = 1,
-        page_size: int = 20,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+        page_size: int = 20
 ):
 
     categories, pagination = services.academy.category.get_multi(
@@ -38,14 +31,15 @@ def get_categories_list(
         categories_list = [{
             "id": category.id,
             "title": category.title,
-            "children": categories_to_child_categories(category.id)
+            "children": categories_to_child_categories(category.id),
+            "parrent_id": category.parrent_id
         }
             for category in categories if category.parrent_id == n
         ]
         return categories_list
 
     categories_tree = schemas.academy.CategoryListApi(
-        items=categories_to_child_categories(),
+        categories=categories_to_child_categories(),
         pagination=pagination
     )
     return categories_tree
@@ -90,23 +84,20 @@ def update_category(
     return category
 
 
-@router.get('/search')
+@router.get('/search', response_model=schemas.academy.ContentSearch)
 def search_content_by_category(
         *,
-        categories_list: List[str] = Query(None),
-        db: Session = Depends(deps.get_db),
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+        page: int = 1,
+        page_size: int = 20,
+        categories_list_id: List[UUID4] = Query(None),
+        db: Session = Depends(deps.get_db)
 ):
 
-    contents = services.academy.content.search(
+    contents, pagination = services.academy.content.search(
                         db,
-                        categories_list=categories_list
+                        categories_list=categories_list_id,
+                        page=page,
+                        page_size=page_size
                        )
     if not contents:
         raise HTTPException(
@@ -114,29 +105,39 @@ def search_content_by_category(
             detail=Error.CONTENT_NOT_FOUND['text']
         )
 
-    return contents
+    for content in contents:
+        return schemas.academy.ContentSearch(
+            contents=content,
+            pagination=pagination
+        )
 
 
 @router.get('/', response_model=schemas.academy.ContentListApi)
 def get_all_contents(*,
         db: Session = Depends(deps.get_db),
         page: int = 1,
-        page_size: int = 20,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+        page_size: int = 20
 ):
     contents, pagination = services.academy.content.get_multi(
         db,
         page=page,
         page_size=page_size,
     )
+
+    # for content in contents:
+    #     content_attachments = services.academy.content_attachment.\
+    #         get_by_content_id(db, content_id=content.id)
+    #
+    #     new_content_attachment = [
+    #         schemas.academy.ContentAttachment(
+    #             id=content_attachment.id,
+    #             attachment_id=content_attachment.attachment_id,
+    #             attachment_type=content_attachment.attachment_type
+    #         )
+    #         for content_attachment in content_attachments
+    #     ]
     content_list = schemas.academy.ContentListApi(
-        items=contents,
+        contents=contents,
         pagination=pagination
     )
     return content_list
@@ -145,14 +146,7 @@ def get_all_contents(*,
 @router.get('/{id}', response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*,
         db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+        id: UUID4
 ):
     content, categories = services.academy.content.get_by_detail(db, id=id)
 
@@ -166,15 +160,18 @@ def get_content_by_id(*,
 
     new_content_attachment = [
         schemas.academy.ContentAttachment(
-            id=item.id,
-            attachment_id=item.attachment_id
+            id=content_attachment.id,
+            attachment_id=content_attachment.attachment_id,
+            attachment_type=content_attachment.attachment_type
         )
-        for item in content_attachments
+        for content_attachment in content_attachments
     ]
     content_detail = [schemas.academy.ContentDetailList(
         id=content.id,
         title=content.title,
         detail=content.detail,
+        caption=content.caption,
+        created_at=content.created_at,
         categories=categories,
         content_attachments=new_content_attachment
     )]
@@ -205,7 +202,8 @@ def create_content(*, obj_in: schemas.academy.ContentCreate,
         services.academy.content_attachment.create(
             db,
             obj_in=schemas.academy.ContentAttachmentCreate(
-                attachment_id=content_attachment.attachment_id
+                attachment_id=content_attachment.attachment_id,
+                attachment_type=content_attachment.attachment_type
             ),
             content_id=content.id
         )
@@ -242,7 +240,8 @@ def update_content(*,
         services.academy.content_attachment.create(
             db,
             obj_in=schemas.academy.ContentAttachmentCreate(
-                attachment_id=content_attachment.attachment_id
+                attachment_id=content_attachment.attachment_id,
+                attachment_type=content_attachment.attachment_type
             ),
             content_id=old_content.id
         )
