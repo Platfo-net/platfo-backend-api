@@ -110,6 +110,22 @@ class ContactServices:
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+    
+    def remove_by_user_page_id(
+        self,
+        db: Session,
+        *,
+        user_page_id: str
+    ):
+
+        contacts =  db.query(self.model).filter(
+            self.model.user_page_id == user_page_id
+        ).all()
+        for contact in contacts:
+            db.delete(contact)
+        db.commit()
+        return
+
 
 
 contact = ContactServices(models.Contact)

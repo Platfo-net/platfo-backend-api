@@ -103,6 +103,7 @@ def delete_account(
         Get list of accounts from different platforms
     """
     instagram_page = services.instagram_page.get(db, id)
+
     if not instagram_page:
         raise HTTPException(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
@@ -120,6 +121,11 @@ def delete_account(
             detail=Error.ACCOUNT_NOT_FOUND_PERMISSION_DENIED["text"],
         )
 
-    services.instagram_page.remove(db, id)
+    services.instagram_page.remove(db, id=id)
+
+    services.contact.remove_by_user_page_id(
+        db, user_page_id=instagram_page.facebook_page_id)
+    services.message.remove_by_user_page_id(
+        db, user_page_id=instagram_page.facebook_page_id)
 
     return

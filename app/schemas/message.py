@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import UUID4, BaseModel
 
 
@@ -16,3 +17,6 @@ class MessageCreate(MessageBase):
 class Message(MessageBase):
     id: UUID4
     send_at: datetime
+
+class SendMessage(BaseModel):
+    text:Optional[str] = None

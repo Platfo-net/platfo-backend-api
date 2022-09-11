@@ -29,8 +29,8 @@ class MessageServices:
         self,
         db: Session,
         *,
-        contact_igs_id: UUID4,
-        page_id: UUID4,
+        contact_igs_id: str,
+        page_id: str,
         skip: int = 0,
         limit: int = 20
     ) -> List[schemas.Message]:
@@ -48,6 +48,25 @@ class MessageServices:
 
             )
         ).order_by(self.model.send_at.desc()).offset(skip).limit(limit).all()
+
+    def remove_by_user_page_id(
+        self,
+        db: Session,
+        *,
+        user_page_id: str
+    ):
+        messages =  db.query(self.model).filter(
+            or_(
+                self.model.from_page_id == user_page_id,
+                self.model.to_page_id == user_page_id
+            )
+        ).all()
+
+        for message in messages:
+            db.delete(message)
+        
+        db.commit()
+        return
 
 
 message = MessageServices(models.Message)
