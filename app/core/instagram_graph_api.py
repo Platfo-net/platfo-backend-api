@@ -196,15 +196,23 @@ class InstagramGraphApi:
             contact_igs_id
         )
         params = dict(
-            fields="name,username,profile_pic,follower_count,"
-            "is_user_follow_business,is_business_follow_user",
+            fields="name,username,profile_pic,follower_count,is_verified_user,"
+                   "is_user_follow_business,is_business_follow_user",
             access_token=page_access_token
         )
         res = requests.get(url=url, params=params)
         if res.status_code == 200:
             username = res.json()['username']
             profile_image = res.json()['profile_pic']
-            return dict(username=username, profile_image=profile_image)
+            name = res.json()['name']
+            follower_count = res.json()['follower_count']
+            is_verified_user = res.json()['is_verified_user']
+            is_user_follow_business = res.json()['is_user_follow_business']
+            is_business_follow_user = res.json()['is_business_follow_user']
+            return dict(username=username, profile_image=profile_image, name=name,
+                        follower_count=follower_count, is_verified_user=is_verified_user,
+                        is_user_follow_business=is_user_follow_business,
+                        is_business_follow_user=is_business_follow_user)
 
         return None
 
