@@ -16,7 +16,7 @@ class ContactCreate(ContactBase):
 class Contact(ContactBase):
     id: UUID4
     last_message_at: datetime
-    information: dict
+    information: Optional[dict] = None
     last_message: dict
 
 
