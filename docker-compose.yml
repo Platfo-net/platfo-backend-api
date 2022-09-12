@@ -82,7 +82,7 @@ services:
     container_name: "${APP_NAME}-redis"
     restart: unless-stopped
     image: redis:6.2.7
-    command: "redis-server /usr/local/etc/redis/redis.conf"
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $PASSWORD --appendonly yes"
     ports:
       - "${REDIS_PORT}:6379"
     environment:
@@ -145,21 +145,21 @@ services:
 #      - api-3
 #      - redis
 
-  celery-flower:
-    image: "botinow-backend-app"
-    build: .
-    container_name: "${APP_NAME}-celery-flower"
-    command: celery -A app.core.celery.celery flower --port=5555
-    volumes:
-      - .:/app
-    ports:
-      - "5555:5555"
-    depends_on:
-      - db
-      - api-1
-#      - api-2
-#      - api-3
-      - redis
+#  celery-flower:
+#    image: "botinow-backend-app"
+#    build: .
+#    container_name: "${APP_NAME}-celery-flower"
+#    command: celery -A app.core.celery.celery flower --port=5555
+#    volumes:
+#      - .:/app
+#    ports:
+#      - "5555:5555"
+#    depends_on:
+#      - db
+#      - api-1
+##      - api-2
+##      - api-3
+#      - redis
 
 volumes:
   postgres-data:

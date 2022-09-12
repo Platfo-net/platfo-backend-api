@@ -74,6 +74,7 @@ class Settings(BaseSettings):
             return v
         return RedisDsn.build(
             scheme="redis",
+            password=values.get("PASSWORD"),
             host=values.get("REDIS_HOST"),
             port=values.get("REDIS_PORT"),
             path=f"/{values.get('REDIS_DB_CELERY') or ''}",
@@ -90,3 +91,9 @@ def get_settings():
 
 
 settings = get_settings()
+
+
+'''
+broker_url = 'redis://user:password@redishost:6379/0'
+
+'''
