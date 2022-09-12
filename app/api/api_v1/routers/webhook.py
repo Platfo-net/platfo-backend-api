@@ -122,6 +122,7 @@ def webhook_instagram_listener(
 
         if chatflow_id is None:
             return None
+
         try:
             node = services.node.get_chatflow_head_node(
                 db, chatflow_id=chatflow_id)
