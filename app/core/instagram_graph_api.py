@@ -85,7 +85,7 @@ class InstagramGraphApi:
 
         from app.core import storage
 
-        image_url = None
+        print(data)
 
         body = {
             "template_type": "generic",
