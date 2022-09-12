@@ -36,7 +36,7 @@ def get_accounts_list(
         schemas.Account(
             id=item.id,
             username=item.instagram_username,
-            profile_image_url=item.instagram_profile_picture_url,
+            profile_image=item.instagram_profile_picture_url,
             platform="instagram",
             page_id=item.facebook_page_id,
         )
@@ -82,7 +82,7 @@ def get_account(
     return schemas.AccountDetail(
         id=instagram_page.id,
         username=instagram_page.instagram_username,
-        profile_image_url=instagram_page.instagram_profile_picture_url,
+        profile_image=instagram_page.instagram_profile_picture_url,
         platform="INSTAGRAM",
         page_id=instagram_page.facebook_page_id,
         information=instagram_page.information

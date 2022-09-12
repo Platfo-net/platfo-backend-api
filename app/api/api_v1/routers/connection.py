@@ -58,7 +58,7 @@ def get_list_of_connections(
                     id=account.id,
                     username=account.instagram_username,
                     platform="Instagram",
-                    profile_image_url=account.instagram_profile_picture_url,
+                    profile_image=account.instagram_profile_picture_url,
                     page_id=account.facebook_page_id
 
                 ),

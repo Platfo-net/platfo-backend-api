@@ -216,7 +216,7 @@ class InstagramGraphApi:
                 'profile_pic'] if "profile_pic" in res.json() else None,
                 name=res.json()[
                 'name'] if "name" in res.json() else None,
-                follower_count=res.json(
+                followers_count=res.json(
             )['follower_count'] if "follower_count" in res.json() else None,
                 is_verified_user=res.json(
             )['is_verified_user'] if "is_verified_user" in res.json() else None,
