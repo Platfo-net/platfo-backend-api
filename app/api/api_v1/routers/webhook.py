@@ -122,16 +122,18 @@ def webhook_instagram_listener(
 
         if chatflow_id is None:
             return None
-
-        node = services.node.get_chatflow_head_node(
-            db, chatflow_id=chatflow_id)
-        tasks.send_widget.delay(
-            widget=node.widget,
-            quick_replies=node.quick_replies,
-            contact_igs_id=instagram_data.id_sender,
-            payload=instagram_data.payload,
-            user_page_data=user_page_data.to_dict()
-        )
+        try:
+            node = services.node.get_chatflow_head_node(
+                db, chatflow_id=chatflow_id)
+            tasks.send_widget.delay(
+                widget=node.widget,
+                quick_replies=node.quick_replies,
+                contact_igs_id=instagram_data.id_sender,
+                payload=instagram_data.payload,
+                user_page_data=user_page_data.to_dict()
+            )
+        except Exception as e:
+            print(e)
     return Response(status_code=200)
 
 
