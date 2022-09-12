@@ -209,6 +209,7 @@ def widget_mapper(data, node_id):
         widget = {
             "widget_type": data["type"],
             "id": str(node_id),
+            "title": str(data["question"]),
             "choices": [{
                 "id": str(choice["value"]),
                 "text":choice["label"]
