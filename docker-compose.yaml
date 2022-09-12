@@ -5,12 +5,12 @@ services:
       context: .
       args:
         - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app"
+    image: "botinow-backend-app:${TAG}"
     volumes:
       - .:/app
     command: /app/startup.sh
     ports:
-      - "${API_PORT_1}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}0:8000"
     env_file:
       - .env
     depends_on:
