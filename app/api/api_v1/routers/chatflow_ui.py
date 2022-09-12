@@ -146,7 +146,7 @@ def chatflow_ui_parse(
     objs = []
     start_node = None
     for node in nodes:
-        if node.data["type"] == "start":
+        if node.data["type"] == "START":
             start_node = node
 
     head_node = None
@@ -203,7 +203,7 @@ def widget_mapper(data, node_id):
             "message": data["value"]
         }
 
-    if data["type"] == "TEXT":
+    if data["type"] == "MENU":
         print("ok")
         choices = data["choices"]
         widget = {
