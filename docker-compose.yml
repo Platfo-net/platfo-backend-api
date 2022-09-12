@@ -16,42 +16,41 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+  api-2:
+    container_name: "${APP_NAME}-api-2"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "${API_PORT_2}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped
 
-#  api-2:
-#    container_name: "${APP_NAME}-api-2"
-#    build:
-#      context: .
-#      args:
-#        - ENVIRONMENT=${ENVIRONMENT}
-#    image: "botinow-backend-app"
-#    volumes:
-#      - .:/app
-#    command: /app/startup.sh
-#    ports:
-#      - "${API_PORT_2}:8000"
-#    env_file:
-#      - .env
-#    depends_on:
-#      - db
-#    restart: unless-stopped
-
-#  api-3:
-#    container_name: "${APP_NAME}-api-3"
-#    build:
-#      context: .
-#      args:
-#        - ENVIRONMENT=${ENVIRONMENT}
-#    image: "botinow-backend-app"
-#    volumes:
-#      - .:/app
-#    command: /app/startup.sh
-#    ports:
-#      - "${API_PORT_3}:8000"
-#    env_file:
-#      - .env
-#    depends_on:
-#      - db
-#    restart: unless-stopped
+  api-3:
+    container_name: "${APP_NAME}-api-3"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "${API_PORT_3}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped
 
   db:
     container_name: "${APP_NAME}-database"
@@ -113,37 +112,37 @@ services:
     depends_on:
       - db
       - api-1
-#      - api-2
-#      - api-3
+      #      - api-2
+      #      - api-3
       - redis
 
-#  celery-worker-2:
-#    image: "botinow-backend-app"
-#    build: .
-#    container_name: "${APP_NAME}-celery-worker-2"
-#    command: celery -A app.core.celery.celery worker --loglevel=info -n w2
-#    volumes:
-#      - .:/app
-#    depends_on:
-#      - db
-#      - api-1
-#      - api-2
-#      - api-3
-#      - redis
+  #  celery-worker-2:
+  #    image: "botinow-backend-app"
+  #    build: .
+  #    container_name: "${APP_NAME}-celery-worker-2"
+  #    command: celery -A app.core.celery.celery worker --loglevel=info -n w2
+  #    volumes:
+  #      - .:/app
+  #    depends_on:
+  #      - db
+  #      - api-1
+  #      - api-2
+  #      - api-3
+  #      - redis
 
-#  celery-worker-3:
-#    image: "botinow-backend-app"
-#    build: .
-#    container_name: "${APP_NAME}-celery-worker-3"
-#    command: celery -A app.core.celery.celery worker --loglevel=info -n w3
-#    volumes:
-#      - .:/app
-#    depends_on:
-#      - db
-#      - api-1
-#      - api-2
-#      - api-3
-#      - redis
+  #  celery-worker-3:
+  #    image: "botinow-backend-app"
+  #    build: .
+  #    container_name: "${APP_NAME}-celery-worker-3"
+  #    command: celery -A app.core.celery.celery worker --loglevel=info -n w3
+  #    volumes:
+  #      - .:/app
+  #    depends_on:
+  #      - db
+  #      - api-1
+  #      - api-2
+  #      - api-3
+  #      - redis
 
   celery-flower:
     image: "botinow-backend-app"
@@ -157,8 +156,8 @@ services:
     depends_on:
       - db
       - api-1
-#      - api-2
-#      - api-3
+      #      - api-2
+      #      - api-3
       - redis
 
 volumes:
