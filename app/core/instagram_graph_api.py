@@ -84,15 +84,14 @@ class InstagramGraphApi:
             page_access_token: str):
 
         from app.core import storage
-        image_url = storage.get_object_url(data["image"],
-                                           settings.S3_CHATFLOW_MEDIA_BUCKET)
+
+        image_url = None
 
         body = {
             "template_type": "generic",
             "elements": [
                 {
                     "title": data["title"],
-                    "image_url": image_url,
                     "buttons": [
                         {
                             "type": "postback",
@@ -104,8 +103,11 @@ class InstagramGraphApi:
                 }
             ]
         }
+        if "image" in data:
+            image_url = storage.get_object_url(data["image"],
+                                               settings.S3_CHATFLOW_MEDIA_BUCKET)
 
-        print(body)
+            body["elements"][0]["image_url"] = image_url
         url = "{}/{}/{}/messages".format(
             settings.FACEBOOK_GRAPH_BASE_URL,
             settings.FACEBOOK_GRAPH_VERSION,
@@ -210,12 +212,17 @@ class InstagramGraphApi:
             # is_business_follow_user = res.json()['is_business_follow_user']
             # data_res = res.json()
             return dict(username=res.json()['username'] if "username" in res.json() else None,
-                        profile_image=res.json()['profile_pic'] if "profile_pic" in res.json() else None,
-                        name=res.json()['name'] if "name" in res.json() else None,
-                        follower_count=res.json()['follower_count'] if "follower_count" in res.json() else None,
-                        is_verified_user=res.json()['is_verified_user'] if "is_verified_user" in res.json() else None,
-                        is_user_follow_business=res.json()['is_user_follow_business'] if "is_user_follow_business" in res.json() else None,
-                        is_business_follow_user=res.json()['is_business_follow_user'] if "is_business_follow_user" in res.json() else None)
+                        profile_image=res.json()[
+                'profile_pic'] if "profile_pic" in res.json() else None,
+                name=res.json()[
+                'name'] if "name" in res.json() else None,
+                follower_count=res.json(
+            )['follower_count'] if "follower_count" in res.json() else None,
+                is_verified_user=res.json(
+            )['is_verified_user'] if "is_verified_user" in res.json() else None,
+                is_user_follow_business=res.json(
+            )['is_user_follow_business'] if "is_user_follow_business" in res.json() else None,
+                is_business_follow_user=res.json()['is_business_follow_user'] if "is_business_follow_user" in res.json() else None)
 
         return None
 
