@@ -2,7 +2,7 @@
 
 docker compose -f docker-compose-stage.yaml down
 
-# docker rmi botinow-backend-app:latest
+docker rmi botinow-backend-app:latest
 
 
-# docker compose -f docker-compose-stage.yaml up -d
+docker compose -f docker-compose-stage.yaml up -d
