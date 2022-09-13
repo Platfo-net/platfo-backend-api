@@ -243,32 +243,26 @@ def update_connection(
     return connection
 
 
-@router.get("/related_chatflow/{application_name}/{account_id}/{trigger_name}")
-def get_related_chatflow(
+@router.put("/chatflow/{state}/{page_id}/")
+def disable_chatflow_for_page(
     *,
     db: Session = Depends(deps.get_db),
-    account_id: UUID4,
-    trigger_name: str,
-    application_name: str
+    page_id: UUID4,
+    state: str = None
 ):
-    """
-        Not for frontend usage!!!
-    """
-    trigger = services.trigger.get_by_name(db, name=trigger_name)
-    connections = services.connection.get_page_connection(
-        db,
-        account_id=account_id,
-        application_name=application_name
+    from app.constants.application import Application
+    account = services.instagram_page.get_by_page_id(db, page_id=page_id)
+    connection = services.connection.get_page_connection(
+        db, 
+        account_id=account.id, 
+        application_name=Application.BOT_BUILDER
     )
-    print(connections)
-    for connection in connections:
-        connection_chatflow = services.connection_chatflow\
-            .get_connection_chatflow_by_connection_and_trigger(
-                db, connection_id=connection.id, trigger_id=trigger.id)
-        print(connection_chatflow.chatflow_id)
-        if connection_chatflow:
-            return {"chatflow_id": connection_chatflow.chatflow_id}
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND
-    )
-    # page_id , trigger -> chatflow
+    connection_chatflow = db.query(models.ConnectionChatflow).filter(
+        models.ConnectionChatflow.connection_id == connection.id
+    ).first()
+    connection_chatflow_status = True if state == "enable" else False
+    connection_chatflow.is_active == connection_chatflow_status
+    db.add(connection_chatflow)
+    db.commit()
+    db.refresh(connection_chatflow)
+    return 

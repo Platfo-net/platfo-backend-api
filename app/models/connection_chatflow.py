@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -30,6 +30,8 @@ class ConnectionChatflow(Base):
         ForeignKey("chatflows.id"),
         nullable=True,
     )
+
+    is_active = Column(Boolean() , nullable=True , default=True)
 
     connection = relationship(
         "Connection", back_populates="connection_chatflow")
