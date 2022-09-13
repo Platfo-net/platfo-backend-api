@@ -31,6 +31,14 @@ class ConnectionChatflowServices:
             self.model.connection_id == connection_id
         ).delete()
 
+    def remove_by_connection_id_accounts(self, db: Session, *, connection_id: UUID4):
+        db_obj = db.query(self.model).filter(
+            self.model.connection_id == connection_id
+        ).first()
+        db.delete(db_obj)
+        db.commit()
+        return db_obj
+
     def get_connection_chatflow_by_connection_and_trigger(
         self,
         db: Session,

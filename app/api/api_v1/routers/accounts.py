@@ -131,4 +131,15 @@ def delete_account(
     services.message.remove_by_user_page_id(
         db, user_page_id=instagram_page.facebook_page_id)
 
+    connections = services.connection.get_page_connection(db,
+                                                          account_id=instagram_page.id,
+                                                          application_name="BOT_BUILDER")
+
+    for connection in connections:
+        services.connection_chatflow.remove_by_connection_id_accounts(
+            db,
+            connection_id=connection.id
+        )
+        services.connection.remove(db, id=connection.id)
+
     return
