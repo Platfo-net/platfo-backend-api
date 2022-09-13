@@ -82,7 +82,7 @@ services:
     container_name: "${APP_NAME}-redis"
     restart: unless-stopped
     image: redis:6.2.7
-    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $PASSWORD --appendonly yes"
+    command: "redis-server /usr/local/etc/redis/redis.conf"
     ports:
       - "${REDIS_PORT}:6379"
     environment:
