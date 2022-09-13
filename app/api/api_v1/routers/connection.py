@@ -274,7 +274,7 @@ def disable_chatflow_for_page(
     ).first()
     print(connection_chatflow.is_active)
     connection_chatflow_status = True if state == "enable" else False
-    connection_chatflow.is_active == connection_chatflow_status
+    connection_chatflow.is_active = connection_chatflow_status
     print(connection_chatflow.is_active)
 
     db.add(connection_chatflow)
