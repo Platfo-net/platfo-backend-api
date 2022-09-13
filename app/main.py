@@ -11,7 +11,9 @@ settings.ENVIRONMENT
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    debug=False if settings.ENVIRONMENT == "prod" else True
+    debug=False if settings.ENVIRONMENT == "prod" else True,
+    docs_url= None if settings.ENVIRONMENT == "prod" else "/docs",
+    redoc_url= None if settings.ENVIRONMENT == "prod" else "/redoc",
 )
 
 

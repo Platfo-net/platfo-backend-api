@@ -155,3 +155,8 @@ mnt*
 .db.env
 
 report.txt
+
+
+prod.env
+stage.env
+local.env

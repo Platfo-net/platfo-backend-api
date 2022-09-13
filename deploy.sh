@@ -1,7 +1,8 @@
 #!/bin/bash
 
-docker compose down
+docker compose -f docker-compose-prod.yaml down
 
-docker rmi botinow-backend-app:latest
+# docker rmi botinow-backend-app:latest
 
-docker compose up -d
+
+# docker compose -f docker-compose-prod.yaml up -d
