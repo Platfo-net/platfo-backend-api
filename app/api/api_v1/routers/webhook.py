@@ -68,13 +68,13 @@ def webhook_instagram_listener(
     if instagram_data.is_echo:
         return None
 
-    try:
-        user_page_data = cache.get_user_data(
-            redis_client,
-            db,
-            instagram_page_id=instagram_data.id_recipient)
-    except:
-        raise HTTPException(status_code=400, detail="Error getting user data")
+    # try:
+    user_page_data = cache.get_user_data(
+        redis_client,
+        db,
+        instagram_page_id=instagram_data.id_recipient)
+    # except:
+    #     raise HTTPException(status_code=400, detail="Error getting user data")
 
     message_in = dict(
         from_page_id=instagram_data.id_sender,
