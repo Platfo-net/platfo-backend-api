@@ -29,3 +29,6 @@ class Content(Base):
         back_populates="content",
         cascade="all, delete-orphan"
     )
+
+    # user = relationship(
+    #     "User", back_populates="transaction")
