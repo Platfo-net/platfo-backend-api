@@ -268,7 +268,7 @@ def disable_chatflow_for_page(
         db, 
         account_id=account.id, 
         application_name=Application.BOT_BUILDER["name"]
-    )
+    )[0]
     connection_chatflow = db.query(models.ConnectionChatflow).filter(
         models.ConnectionChatflow.connection_id == connection.id
     ).first()
