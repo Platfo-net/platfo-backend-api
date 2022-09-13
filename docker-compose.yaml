@@ -49,9 +49,9 @@ services:
     container_name: "${APP_NAME}-redis"
     restart: unless-stopped
     image: redis:6.2.7
-    command: "redis-server /usr/local/etc/redis/redis.conf"
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $REDIS_PASSWORD --appendonly yes"
     ports:
-      - "6327:6327"
+      - "${REDIS_PORT}:6379"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
