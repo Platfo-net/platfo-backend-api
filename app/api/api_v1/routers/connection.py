@@ -247,7 +247,7 @@ def update_connection(
 def disable_chatflow_for_page(
     *,
     db: Session = Depends(deps.get_db),
-    page_id: UUID4,
+    page_id: str,
     state: str = None,
     current_user: models.User = Security(
         deps.get_current_active_user,
