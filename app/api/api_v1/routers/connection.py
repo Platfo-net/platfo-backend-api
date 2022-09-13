@@ -248,8 +248,20 @@ def disable_chatflow_for_page(
     *,
     db: Session = Depends(deps.get_db),
     page_id: UUID4,
-    state: str = None
+    state: str = None,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
+    """
+    Args:
+        page_id (UUID4): _description_
+        state (str, optional): Options: enable, disable
+    """
     from app.constants.application import Application
     account = services.instagram_page.get_by_page_id(db, page_id=page_id)
     connection = services.connection.get_page_connection(
