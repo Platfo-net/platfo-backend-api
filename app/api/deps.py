@@ -114,6 +114,7 @@ def get_redis_client():
         client = redis.Redis(
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
+            password=settings.REDIS_PASSWORD,
             db=1,
         )
         ping = client.ping()

@@ -32,11 +32,9 @@ services:
     container_name: "${APP_NAME}-redis"
     restart: unless-stopped
     image: redis:6.2.7
-    command: "redis-server /usr/local/etc/redis/redis.conf"
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $REDIS_PASSWORD --appendonly yes"
     ports:
-      - "2483:2483"
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
+      - "${REDIS_PORT}:6379"
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf

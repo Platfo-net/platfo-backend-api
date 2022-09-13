@@ -39,10 +39,11 @@ class Settings(BaseSettings):
     FACEBOOK_WEBHOOK_VERIFY_TOKEN: str
 
     REDIS_HOST: str
+    REDIS_PASSWORD: str
     REDIS_PORT: str
     REDIS_DB_CELERY: str
 
-    CELERY_URI: Optional[RedisDsn] = None
+    CELERY_URI: str
 
     S3_ROOT_USER: str
 
@@ -51,7 +52,6 @@ class Settings(BaseSettings):
     S3_HOST: str
 
     S3_CHATFLOW_MEDIA_BUCKET: str
-
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
@@ -67,18 +67,18 @@ class Settings(BaseSettings):
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
-    @validator("CELERY_URI", pre=True)
-    def assemble_celery_connection(
-            cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Any:
-        if isinstance(v, str):
-            return v
-        return RedisDsn.build(
-            scheme="redis",
-            host=values.get("REDIS_HOST"),
-            port=values.get("REDIS_PORT"),
-            path=f"/{values.get('REDIS_DB_CELERY') or ''}",
-        )
+    # @validator("CELERY_URI", pre=True)
+    # def assemble_celery_connection(
+    #         cls, v: Optional[str], values: Dict[str, Any]
+    # ) -> Any:
+    #     if isinstance(v, str):
+    #         return v
+    #     return RedisDsn.build(
+    #         scheme="redis",
+    #         host=values.get("REDIS_HOST"),
+    #         port=values.get("REDIS_PORT"),
+    #         path=f"/{values.get('REDIS_DB_CELERY') or ''}",
+    #     )
 
     class Config:
         case_sensitive = True
