@@ -51,7 +51,7 @@ services:
     image: redis:6.2.7
     command: "redis-server /usr/local/etc/redis/redis.conf"
     ports:
-      - "8547:8547"
+      - "6327:6327"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
