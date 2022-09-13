@@ -28,21 +28,6 @@ x-celery-worker-common:
     - redis
 
 services:
-  migrate:
-    build:
-      context: .
-      args:
-        - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app"
-    volumes:
-      - .:/app
-    command: /app/migrate.sh
-    env_file:
-      - .env
-    depends_on:
-      - db
-    restart: unless-stopped
-
   api-1:
     <<: *api-common
     container_name: "${APP_NAME}-api-1"
