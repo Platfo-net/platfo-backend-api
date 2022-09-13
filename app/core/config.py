@@ -52,6 +52,7 @@ class Settings(BaseSettings):
 
     S3_CHATFLOW_MEDIA_BUCKET: str
 
+
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
             cls, v: Optional[str], values: Dict[str, Any]

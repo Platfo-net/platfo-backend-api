@@ -118,6 +118,8 @@ def webhook_instagram_listener(
                 .get_connection_chatflow_by_connection_and_trigger(
                     db, connection_id=connection.id, trigger_id=trigger.id)
             if connection_chatflow:
+                if not connection_chatflow.is_active:
+                    return None
                 chatflow_id = connection_chatflow.chatflow_id
 
         if chatflow_id is None:
