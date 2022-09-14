@@ -89,7 +89,7 @@ def webhook_instagram_listener(
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"]
     )
-    print('messssssssssagggggggeeeeeeee', message_in)
+
     tasks.save_message.delay(
         obj_in=message_in,
         instagram_page_id=instagram_data.id_recipient)
