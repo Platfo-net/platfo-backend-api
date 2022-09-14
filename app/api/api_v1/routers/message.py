@@ -78,15 +78,20 @@ def send_message(
                        to_contact_igs_id,
                        instagram_page.facebook_page_token
                        )
-    tasks.save_message.delay(
-        obj_in=dict(
+    message_in = dict(
             from_page_id=from_page_id,
             to_page_id=to_contact_igs_id,
             content={
                 "message": obj_in.text
             },
             user_id=current_user.id,
-            direction=MessageDirection.OUT["name"]
+            direction=MessageDirection.OUT["name"],
+            mid=None
         )
+
+    print(message_in)
+                       
+    tasks.save_message.delay(
+        obj_in= message_in
     )
     return
