@@ -84,7 +84,7 @@ def send_message(
             content={
                 "message": obj_in.text
             },
-            user_id=current_user.id,
+            user_id=str(current_user.id),
             direction=MessageDirection.OUT["name"],
             mid=None
         )
