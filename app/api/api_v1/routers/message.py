@@ -45,6 +45,7 @@ def get_archive(
             to_page_id=message.to_page_id,
             content=message.content,
             user_id=message.user_id,
+            mid=message.mid,
             send_at=message.send_at
         ) for message in messages if len(messages) > 0
     ]

@@ -7,7 +7,7 @@ class MessageBase(BaseModel):
     from_page_id: str
     to_page_id: str
     content: dict
-    mid: str
+    mid: Optional[str] = None
     user_id: UUID4
 
 
