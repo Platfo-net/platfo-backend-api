@@ -35,7 +35,7 @@ class MessageServices:
         page_id: str,
         skip: int = 0,
         limit: int = 20
-    ) -> List[schemas.Message]:
+    ):
 
         return db.query(self.model).filter(
             or_(

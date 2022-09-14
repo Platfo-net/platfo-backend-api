@@ -36,10 +36,9 @@ def get_archive(
         skip=skip,
         limit=limit
     )
-
-    return [
-
-        schemas.Message(
+    new_messages = []
+    for message in list(messages):
+        new_message = schemas.Message(
             id=message.id,
             from_page_id=message.from_page_id,
             to_page_id=message.to_page_id,
@@ -47,8 +46,10 @@ def get_archive(
             user_id=message.user_id,
             mid=message.mid,
             send_at=message.send_at
-        ) for message in reversed(messages) if len(messages) > 0
-    ]
+        )
+        new_messages.append(new_message)
+
+    return new_messages
 
 
 @router.post("/send/{from_page_id}/{to_contact_igs_id}")
@@ -79,19 +80,19 @@ def send_message(
                        instagram_page.facebook_page_token
                        )
     message_in = dict(
-            from_page_id=from_page_id,
-            to_page_id=to_contact_igs_id,
-            content={
-                "message": obj_in.text
-            },
-            user_id=str(current_user.id),
-            direction=MessageDirection.OUT["name"],
-            mid=None
-        )
+        from_page_id=from_page_id,
+        to_page_id=to_contact_igs_id,
+        content={
+            "message": obj_in.text
+        },
+        user_id=str(current_user.id),
+        direction=MessageDirection.OUT["name"],
+        mid=None
+    )
 
     print(message_in)
-                       
+
     tasks.save_message(
-        obj_in= message_in
+        obj_in=message_in
     )
     return
