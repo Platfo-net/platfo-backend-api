@@ -37,6 +37,7 @@ def get_archive(
         limit=limit
     )
     new_messages = []
+    messages = reversed(messages)
     for message in list(messages):
         new_message = schemas.Message(
             id=message.id,
