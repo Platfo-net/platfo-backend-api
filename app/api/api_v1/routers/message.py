@@ -47,7 +47,7 @@ def get_archive(
             user_id=message.user_id,
             mid=message.mid,
             send_at=message.send_at
-        ) for message in messages if len(messages) > 0
+        ) for message in reversed(messages) if len(messages) > 0
     ]
 
 
