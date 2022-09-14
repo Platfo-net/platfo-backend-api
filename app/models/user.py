@@ -49,4 +49,4 @@ class User(Base):
 
     notification_user = relationship("NotificationUser", back_populates="user")
 
-    # copy_writer = relationship("Content", back_populates="user")
+    content = relationship("Content", back_populates="user")
