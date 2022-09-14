@@ -14,10 +14,12 @@ class MessageServices:
             obj_in.content = {
                 "text": obj_in.content
             }
+
         message = self.model(
             from_page_id=obj_in.from_page_id,
             to_page_id=obj_in.to_page_id,
             content=obj_in.content,
+            mid=obj_in.mid,
             user_id=obj_in.user_id
         )
         db.add(message)
@@ -55,7 +57,7 @@ class MessageServices:
         *,
         user_page_id: str
     ):
-        messages =  db.query(self.model).filter(
+        messages = db.query(self.model).filter(
             or_(
                 self.model.from_page_id == user_page_id,
                 self.model.to_page_id == user_page_id
@@ -64,8 +66,15 @@ class MessageServices:
 
         for message in messages:
             db.delete(message)
-        
+
         db.commit()
+        return
+
+    def remove_message_by_mid(self, db: Session, *, mid: str):
+        message = db.query(models.Message).filter(models.Message.mid == mid).first()
+        db.delete(message)
+        db.commit()
+        # db.refresh(message)
         return
 
 

@@ -5,17 +5,19 @@ class InstagramData:
                  id_sender: str = None,
                  id_recipient: str = None,
                  message_detail: str = None,
-                 message_id: str = None,
+                 mid: str = None,
                  postback: dict = {},
                  payload: dict = {}):
 
         self.id_sender = id_sender
         self.id_recipient = id_recipient
         self.message_detail = message_detail
-        self.message_id = message_id
+        self.mid = mid
         self.postback = postback
         self.payload = payload
         self.is_echo = False
+        self.is_deleted = False
+        self.mid = None
 
     def parse(self, body):
         for element in body:
@@ -25,7 +27,11 @@ class InstagramData:
                 self.id_recipient = item['recipient']['id']
                 try:
                     if item['message']:
-                        self.message_id = item['message']['mid']
+                        self.mid = item['message']['mid']
+                        try:
+                            self.is_deleted = item['message']['is_deleted']
+                        except Exception:
+                            pass
                         try:
                             self.message_detail = item['message']['text']
                         except Exception:
@@ -44,7 +50,7 @@ class InstagramData:
             id_sender=self.id_sender,
             id_recipient=self.id_recipient,
             message_detail=self.message_detail,
-            message_id=self.message_id,
+            mid=self.mid,
             postback=self.postback,
             payload=self.payload,
             is_echo=self.is_echo

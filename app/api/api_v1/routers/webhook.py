@@ -67,6 +67,9 @@ def webhook_instagram_listener(
 
     if instagram_data.is_echo:
         return None
+    
+    if instagram_data.is_deleted:
+        return services.message.remove_message_by_mid(db, mid=instagram_data.mid)
 
     try:
         user_page_data = cache.get_user_data(
@@ -79,12 +82,14 @@ def webhook_instagram_listener(
     message_in = dict(
         from_page_id=instagram_data.id_sender,
         to_page_id=user_page_data.facebook_page_id,
+        mid=instagram_data.mid,
         content={
             "message": instagram_data.message_detail
         },
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"]
     )
+
     tasks.save_message.delay(
         obj_in=message_in,
         instagram_page_id=instagram_data.id_recipient)
