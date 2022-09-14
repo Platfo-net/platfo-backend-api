@@ -42,8 +42,6 @@ class InstagramGraphApi:
             "access_token": page_access_token
         }
         res = requests.post(url, params=params, json=payload)
-        print(res)
-        print('javab quick issssssssssssssss', res.json())
 
         return res.json()
 
@@ -85,7 +83,6 @@ class InstagramGraphApi:
 
         from app.core import storage
 
-        print(data)
 
         body = {
             "template_type": "generic",

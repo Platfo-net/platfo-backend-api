@@ -113,7 +113,6 @@ def update_page_contacts_information(
 ):
     data = dict()
     data[obj_in.key] = obj_in.value
-    print(data)
     contacts = services.contact.update_information(
         db,
         contact_igs_id=contact_igs_id,

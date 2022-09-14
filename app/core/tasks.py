@@ -26,7 +26,6 @@ def save_message(obj_in: dict, instagram_page_id: str = None):
             contact_igs_id=obj_in["from_page_id"]
         )
         if not contact:
-            print(obj_in)
             contact_in = schemas.ContactCreate(
                 contact_igs_id=obj_in["from_page_id"],
                 user_page_id=obj_in["to_page_id"],
@@ -67,7 +66,6 @@ def save_message(obj_in: dict, instagram_page_id: str = None):
             last_message=obj_in["content"]
         )
 
-    
     report = services.message.create(db, obj_in=schemas.MessageCreate(
         from_page_id=obj_in["from_page_id"],
         to_page_id=obj_in["to_page_id"],
@@ -76,8 +74,7 @@ def save_message(obj_in: dict, instagram_page_id: str = None):
         user_id=obj_in["user_id"],
         direction=obj_in["direction"]
     ))
-    print(report)
-
+    return report
 
 
 @celery.task
@@ -143,3 +140,4 @@ def send_widget(
                 direction=MessageDirection.OUT["name"]
             )
         )
+    return widget

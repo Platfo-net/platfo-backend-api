@@ -204,7 +204,6 @@ def widget_mapper(data, node_id):
         }
 
     if data["type"] == "MENU":
-        print("ok")
         choices = data["choices"]
         widget = {
             "widget_type": data["type"],

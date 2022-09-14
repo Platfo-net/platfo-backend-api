@@ -118,18 +118,12 @@ def webhook_instagram_listener(
         if connections is None:
             return None
 
-        print("----------------------------")
 
         for connection in connections:
             connection_chatflow = services.connection_chatflow\
                 .get_connection_chatflow_by_connection_and_trigger(
                     db, connection_id=connection.id, trigger_id=trigger.id)
             if connection_chatflow:
-                print("-----------------------")
-                print("-----------------------")
-                print("-----------------------")
-                print("-----------------------")
-                print(connection_chatflow.is_active)
                 if not connection_chatflow.is_active:
                     return None
                 chatflow_id = connection_chatflow.chatflow_id
@@ -148,7 +142,7 @@ def webhook_instagram_listener(
                 user_page_data=user_page_data.to_dict()
             )
         except Exception as e:
-            print(e)
+            pass
     return Response(status_code=200)
 
 
