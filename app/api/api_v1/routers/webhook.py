@@ -67,6 +67,9 @@ def webhook_instagram_listener(
 
     if instagram_data.is_echo:
         return None
+    
+    if instagram_data.is_deleted:
+        return services.message.remove_message_by_mid(db , mid = instagram_data.message_id)
 
     try:
         user_page_data = cache.get_user_data(

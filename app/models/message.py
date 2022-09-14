@@ -17,6 +17,7 @@ class Message(Base):
     to_page_id = Column(String(64), nullable=True)
 
     content = Column(JSON, nullable=True)
+    mid = Column(String(256), nullable=True)
     send_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user_id = Column(
