@@ -7,6 +7,7 @@ class MessageBase(BaseModel):
     from_page_id: str
     to_page_id: str
     content: dict
+    mid: str
     user_id: UUID4
 
 
@@ -17,6 +18,7 @@ class MessageCreate(MessageBase):
 class Message(MessageBase):
     id: UUID4
     send_at: datetime
+
 
 class SendMessage(BaseModel):
     text:Optional[str] = None

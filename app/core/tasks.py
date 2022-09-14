@@ -17,7 +17,7 @@ from app.constants.widget_type import WidgetType
 
 @celery.task
 def save_message(obj_in: dict, instagram_page_id: str = None):
-
+    print('mmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
     db = SessionLocal()
     client = deps.get_redis_client()
     if obj_in["direction"] == MessageDirection.IN["name"]:
@@ -71,6 +71,7 @@ def save_message(obj_in: dict, instagram_page_id: str = None):
         from_page_id=obj_in["from_page_id"],
         to_page_id=obj_in["to_page_id"],
         content=obj_in["content"],
+        mid=obj_in["mid"],
         user_id=obj_in["user_id"],
         direction=obj_in["direction"]
     ))

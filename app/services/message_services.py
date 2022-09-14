@@ -14,10 +14,12 @@ class MessageServices:
             obj_in.content = {
                 "text": obj_in.content
             }
+
         message = self.model(
             from_page_id=obj_in.from_page_id,
             to_page_id=obj_in.to_page_id,
             content=obj_in.content,
+            mid=obj_in.mid,
             user_id=obj_in.user_id
         )
         db.add(message)
@@ -69,10 +71,10 @@ class MessageServices:
         return
 
     def remove_message_by_mid(self, db: Session, *, mid: str):
-        message = db.query(self.model).filter(self.model.mid == mid).first()
+        message = db.query(models.Message).filter(models.Message.mid == mid).first()
         db.delete(message)
         db.commit()
-        db.refresh(message)
+        # db.refresh(message)
         return
 
 

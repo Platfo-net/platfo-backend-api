@@ -29,8 +29,8 @@ class InstagramData:
                     if item['message']:
                         self.mid = item['message']['mid']
                         try:
-                            self.is_deleted  = item['message']['is_deleted']
-                        except:
+                            self.is_deleted = item['message']['is_deleted']
+                        except Exception:
                             pass
                         try:
                             self.message_detail = item['message']['text']
@@ -50,7 +50,7 @@ class InstagramData:
             id_sender=self.id_sender,
             id_recipient=self.id_recipient,
             message_detail=self.message_detail,
-            message_id=self.message_id,
+            mid=self.mid,
             postback=self.postback,
             payload=self.payload,
             is_echo=self.is_echo
