@@ -91,7 +91,7 @@ def send_message(
 
     print(message_in)
                        
-    tasks.save_message.delay(
+    tasks.save_message(
         obj_in= message_in
     )
     return
