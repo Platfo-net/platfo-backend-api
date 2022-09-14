@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     REDIS_PORT: str
     REDIS_DB_CELERY: str
 
-    CELERY_URI: Optional[RedisDsn] = None
+    CELERY_URI: str
 
     S3_ROOT_USER: str
 
@@ -66,19 +66,19 @@ class Settings(BaseSettings):
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
-    @validator("CELERY_URI", pre=True)
-    def assemble_celery_connection(
-            cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Any:
-        if isinstance(v, str):
-            return v
-        return RedisDsn.build(
-            scheme="redis",
-            password=values.get("PASSWORD"),
-            host=values.get("REDIS_HOST"),
-            port=values.get("REDIS_PORT"),
-            path=f"/{values.get('REDIS_DB_CELERY') or ''}",
-        )
+    # @validator("CELERY_URI", pre=True)
+    # def assemble_celery_connection(
+    #         cls, v: Optional[str], values: Dict[str, Any]
+    # ) -> Any:
+    #     if isinstance(v, str):
+    #         return v
+    #     return RedisDsn.build(
+    #         scheme="redis",
+    #         password=values.get("PASSWORD"),
+    #         host=values.get("REDIS_HOST"),
+    #         port=values.get("REDIS_PORT"),
+    #         path=f"/{values.get('REDIS_DB_CELERY') or ''}",
+    #     )
 
     class Config:
         case_sensitive = True

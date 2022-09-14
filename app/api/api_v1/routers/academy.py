@@ -117,7 +117,7 @@ def get_all_contents(*,
                      db: Session = Depends(deps.get_db),
                      page: int = 1,
                      page_size: int = 20
-                     ):
+):
     contents, pagination = services.academy.content.get_multi(
         db,
         page=page,
@@ -147,7 +147,7 @@ def get_all_contents(*,
 def get_content_by_id(*,
                       db: Session = Depends(deps.get_db),
                       id: UUID4
-                      ):
+):
     content, categories = services.academy.content.get_by_detail(db, id=id)
 
     if not content:
@@ -188,10 +188,11 @@ def create_content(*, obj_in: schemas.academy.ContentCreate,
                        deps.get_current_active_user,
                        scopes=[
                            Role.ADMIN["name"],
+                           Role.WRITER["name"]
                        ],
                    ),
-                   ):
-    content = services.academy.content.create(db=db, obj_in=obj_in)
+):
+    content = services.academy.content.create(db=db, obj_in=obj_in, user_id=current_user.id)
     for category in obj_in.categories:
         services.academy.category_content.create(
             db,
@@ -222,7 +223,7 @@ def update_content(*,
                            Role.ADMIN["name"],
                        ],
                    ),
-                   ):
+):
 
     old_content = services.academy.content.get(db, id=id)
 
@@ -232,7 +233,7 @@ def update_content(*,
             detail=Error.CONTENT_NOT_FOUND['text'])
 
     content = services.academy.content.update(
-        db, db_obj=old_content, obj_in=obj_in)
+        db, db_obj=old_content, obj_in=obj_in, user_id=current_user.id)
 
     services.academy.content_attachment.remove_by_content_id(db, content_id=id)
 
@@ -269,7 +270,8 @@ def delete_content(*,
                            Role.ADMIN["name"],
                        ],
                    ),
-                   ):
+):
+
     content = services.academy.content.get(db, id=id)
     if not content:
         raise HTTPException(

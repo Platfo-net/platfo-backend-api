@@ -1,6 +1,9 @@
 import datetime
 from uuid import uuid4
 
+from slugify import slugify
+
+from sqlalchemy import event
 from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -18,8 +21,13 @@ class Content(Base):
     title = Column(String(1024), nullable=True)
     caption = Column(Text(), nullable=True)
     detail = Column(Text(), nullable=True)
-    slug = Column(String(300), unique=True)
+    slug = Column(String(300))
     is_published = Column(Boolean(), default=False)
+
+    @staticmethod
+    def generate_slug(target, value, oldvalue, initiator):
+        if value and (not target.slug or value != oldvalue):
+            target.slug = slugify(value)
 
     user_id = Column(
         UUID(as_uuid=True),
@@ -38,17 +46,20 @@ class Content(Base):
     content_attachment = relationship(
         "ContentAttachment",
         back_populates="content",
-        cascade="all, delete-orphan"
+        cascade="all,delete"
     )
     content_categories = relationship(
         "ContentCategory",
         back_populates="content",
-        cascade="all, delete-orphan"
+        cascade="all,delete"
     )
     content_labels = relationship(
         "ContentLabel",
         back_populates="content",
-        cascade="all, delete-orphan"
+        cascade="all,delete"
     )
     user = relationship(
         "User", back_populates="content")
+
+
+event.listen(Content.title, 'set', Content.generate_slug, retval=False)

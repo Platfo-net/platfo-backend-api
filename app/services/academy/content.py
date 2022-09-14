@@ -1,6 +1,7 @@
 import math
 from typing import List
 
+from pydantic import UUID4
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc
 
@@ -99,30 +100,35 @@ class ContentServices(
         except (Exception,):
             pass
 
-    def create(
+    def create( # noqa
             self,
             db: Session,
             *,
             obj_in: schemas.academy.ContentCreate,
+            user_id: UUID4
+
     ):
         db_obj = self.model(
             title=obj_in.title,
             detail=obj_in.detail,
-            caption=obj_in.caption
+            caption=obj_in.caption,
+            user_id=user_id
         )
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
 
-    def update(
+    def update( # noqa
             self, db: Session, *,
             db_obj: models.academy.Content,
-            obj_in: schemas.academy.ContentCreate
+            obj_in: schemas.academy.ContentCreate,
+            user_id: UUID4
     ):
         db_obj.title = obj_in.title
         db_obj.detail = obj_in.detail
         db_obj.caption = obj_in.caption
+        db_obj.user_id = user_id
 
         db.add(db_obj)
         db.commit()

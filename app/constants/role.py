@@ -12,3 +12,8 @@ class Role:
         "description": "User of Application Ecosystem",
         "persian_name": "کاربر"
     }
+    WRITER = {
+        "name": "WRITER",
+        "description": "Writer of Application Ecosystem",
+        "persian_name": "نویسنده"
+    }
