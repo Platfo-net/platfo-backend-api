@@ -91,7 +91,6 @@ def send_message(
         mid=None
     )
 
-    print(message_in)
 
     tasks.save_message(
         obj_in=message_in
