@@ -106,7 +106,7 @@ def send_widget(
                 page_access_token=user_page_data["facebook_page_token"]
             )
 
-        save_message.delay(
+        save_message(
             obj_in=dict(
                 from_page_id=user_page_data["facebook_page_id"],
                 to_page_id=contact_igs_id,
@@ -131,7 +131,7 @@ def send_widget(
             to_id=contact_igs_id,
             page_access_token=user_page_data["facebook_page_token"]
         )
-        save_message.delay(
+        save_message(
             obj_in=dict(
                 from_page_id=user_page_data["facebook_page_id"],
                 to_page_id=contact_igs_id,
