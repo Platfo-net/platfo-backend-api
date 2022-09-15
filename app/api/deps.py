@@ -69,8 +69,7 @@ def get_current_user(
         if payload.get("id") is None:
             raise credentials_exception
         token_data = schemas.TokenPayload(**payload)
-    except (jwt.JWTError, ValidationError):
-        logger.error("Error Decoding Token", exc_info=True)
+    except Exception as e:
         raise HTTPException(
             status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR
             ["status_code"],
