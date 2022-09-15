@@ -5,4 +5,5 @@ alembic upgrade head
 
 python ./app/initial_data.py
 #Start app
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+gunicorn app.main:app --workers 6 -b 0.0.0.0:8000
