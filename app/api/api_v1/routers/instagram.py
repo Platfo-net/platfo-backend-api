@@ -117,11 +117,11 @@ def connect_instagram_page(
             if instagram_page:
                 instagram_page_in = schemas.InstagramPageUpdate(
                     facebook_account_id=facebook_account.id,
-                    facebook_page_id=page["id"],
-                    facebook_page_token=page["access_token"],
+                    facebook_page_id=page["id"] if "id" in page else None,
+                    facebook_page_token=page["access_token"] if "access_token" in page else None,
                     instagram_page_id=instagram_page_id,
-                    instagram_username=page_details["username"],
-                    instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
+                    instagram_username=page_details["username"] if "username" in page else None,
+                    instagram_profile_picture_url=page_details["profile_picture_url"] if "profile_picture_url" in page else None,  # noqa
                     information=dict(
                          website=page_details['website'] if "website" in page_details else None,
                          ig_id=page_details['ig_id'] if "ig_id" in page_details else None,
@@ -139,11 +139,11 @@ def connect_instagram_page(
             else:
                 instagram_page_in = schemas.InstagramPageCreate(
                     facebook_account_id=facebook_account.id,
-                    facebook_page_id=page["id"],
-                    facebook_page_token=page["access_token"],
+                    facebook_page_id=page["id"] if "id" in page else None,
+                    facebook_page_token=page["access_token"] if "access_token" in page else None,
                     instagram_page_id=instagram_page_id,
-                    instagram_username=page_details["username"],
-                    instagram_profile_picture_url=page_details["profile_picture_url"],  # noqa
+                    instagram_username=page_details["username"] if "username" in page else None,
+                    instagram_profile_picture_url=page_details["profile_picture_url"] if "profile_picture_url" in page else None,  # noqa
                     information=dict(
                          website=page_details['website'] if "website" in page_details else None,
                          ig_id=page_details['ig_id'] if "ig_id" in page_details else None,
