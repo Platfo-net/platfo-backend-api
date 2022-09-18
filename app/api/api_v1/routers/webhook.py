@@ -74,12 +74,10 @@ def webhook_instagram_listener(
         return services.message.remove_message_by_mid(db, mid=instagram_data.mid)
 
     try:
-        print("Heeeeeeeeeeeeeeeeeeeeeee")
         user_page_data = cache.get_user_data(
             redis_client,
             db,
             instagram_page_id=instagram_data.id_recipient)
-        print("Heeeeeeeeeeeeeeeeeeeeeee")
 
     except:
         raise HTTPException(status_code=400, detail="Error getting user data")
@@ -103,7 +101,6 @@ def webhook_instagram_listener(
             "widget_type": WidgetType.TEXT["name"],
             "id": str(uuid4())
         }
-    print(saved_data)
     message_in = dict(
         from_page_id=instagram_data.id_sender,
         to_page_id=user_page_data.facebook_page_id,
@@ -132,7 +129,6 @@ def webhook_instagram_listener(
 
     else:
         # get chatflow from a connection
-
         chatflow_id = None
         trigger = services.trigger.get_by_name(db, name="MESSAGE")
         connections = services.connection.get_page_connection(
