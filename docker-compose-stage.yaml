@@ -51,29 +51,6 @@ services:
     container_name: "${APP_NAME}-api-4"
     ports:
       - "${API_PORT_FIRST_THREE_DIGITS}4:8000"
-  api-5:
-    <<: *api-common
-    container_name: "${APP_NAME}-api-5"
-    ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}5:8000"
-
-  api-6:
-    <<: *api-common
-    container_name: "${APP_NAME}-api-6"
-    ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}6:8000"
-
-  api-7:
-    <<: *api-common
-    container_name: "${APP_NAME}-api-7"
-    ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}7:8000"
-  api-8:
-    <<: *api-common
-    container_name: "${APP_NAME}-api-8"
-    ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}8:8000"
-
   db:
     container_name: "${APP_NAME}-database"
     image: postgres:14
@@ -127,26 +104,6 @@ services:
     <<: *celery-worker-common
     container_name: "${APP_NAME}-celery-worker-4"
     command: celery -A app.core.celery.celery worker --loglevel=info -n worker-4
-
-  celery-worker-5:
-    <<: *celery-worker-common
-    container_name: "${APP_NAME}-celery-worker-5"
-    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-5
-
-  celery-worker-6:
-    <<: *celery-worker-common
-    container_name: "${APP_NAME}-celery-worker-6"
-    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-6
-
-  celery-worker-7:
-    <<: *celery-worker-common
-    container_name: "${APP_NAME}-celery-worker-7"
-    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-7
-
-  celery-worker-8:
-    <<: *celery-worker-common
-    container_name: "${APP_NAME}-celery-worker-8"
-    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-8
 
   celery-flower:
     image: "botinow-backend-app"
