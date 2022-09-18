@@ -12,7 +12,7 @@ x-api-common:
     - .env
   depends_on:
     - db
-    - initial-database
+    - minio
   restart: unless-stopped
 
 x-celery-worker-common:
@@ -32,47 +32,47 @@ services:
     <<: *api-common
     container_name: "${APP_NAME}-api-1"
     ports:
-      - "${API_PORT_1}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}1:8000"
 
   api-2:
     <<: *api-common
     container_name: "${APP_NAME}-api-2"
     ports:
-      - "${API_PORT_2}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}2:8000"
 
   api-3:
     <<: *api-common
     container_name: "${APP_NAME}-api-3"
     ports:
-      - "${API_PORT_3}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}3:8000"
 
   api-4:
     <<: *api-common
     container_name: "${APP_NAME}-api-4"
     ports:
-      - "${API_PORT_4}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}4:8000"
   api-5:
     <<: *api-common
     container_name: "${APP_NAME}-api-5"
     ports:
-      - "${API_PORT_5}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}5:8000"
 
   api-6:
     <<: *api-common
     container_name: "${APP_NAME}-api-6"
     ports:
-      - "${API_PORT_6}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}6:8000"
 
   api-7:
     <<: *api-common
     container_name: "${APP_NAME}-api-7"
     ports:
-      - "${API_PORT_7}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}7:8000"
   api-8:
     <<: *api-common
     container_name: "${APP_NAME}-api-8"
     ports:
-      - "${API_PORT_8}:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}8:8000"
 
   db:
     container_name: "${APP_NAME}-database"
