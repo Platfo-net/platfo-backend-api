@@ -80,6 +80,9 @@ def webhook_instagram_listener(
     except:
         raise HTTPException(status_code=400, detail="Error getting user data")
 
+
+    print(instagram_data.attachment)
+    print(instagram_data.story_url)
     if instagram_data.attachment:
 
         saved_data = {
