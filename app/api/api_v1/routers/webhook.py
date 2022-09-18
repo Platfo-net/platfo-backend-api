@@ -95,17 +95,16 @@ def webhook_instagram_listener(
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"]
     )
-    
 
     tasks.save_message(
         obj_in=message_in,
         instagram_page_id=instagram_data.id_recipient
     )
-
-    if not instagram_data.attachment:
+    print("--------------------------")
+    print(instagram_data.attachment)
+    if instagram_data.attachment:
         return None
     if instagram_data.payload:
-
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
         tasks.send_widget.delay(
             widget=node.widget,
