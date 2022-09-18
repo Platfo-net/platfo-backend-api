@@ -1,6 +1,7 @@
 # noqa
 
 # from datetime import timedelta
+from uuid import uuid4
 from redis.client import Redis
 from fastapi import APIRouter, HTTPException, Response, Request, Depends
 from sqlalchemy.orm import Session
@@ -82,10 +83,12 @@ def webhook_instagram_listener(
 
     saved_data = {
         "url": instagram_data.attachment,
-        "type": "STORY_MENTION"
+        "widget_type": "STORY_MENTION",
+        "id": uuid4()
     } if instagram_data.attachment else {
         "message": instagram_data.message_detail,
-        "type": WidgetType.TEXT["name"]
+        "widget_type": WidgetType.TEXT["name"],
+        "id": uuid4()
     }
     message_in = dict(
         from_page_id=instagram_data.id_sender,
