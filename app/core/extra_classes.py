@@ -78,7 +78,8 @@ class InstagramData:
             payload=self.payload,
             is_echo=self.is_echo,
             story_url=self.story_url,
-            attachment=self.attachment 
+            attachment=self.attachment ,
+            is_deleted=self.is_deleted,
         )
 
 
