@@ -8,9 +8,27 @@ services:
     image: "botinow-backend-app"
     volumes:
       - .:/app
-    command: /app/startup-local.sh
+    command: /app/startup.sh
     ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}0:8000"
+      - "${API_PORT_FIRST_THREE_DIGITS}1:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped
+  
+  api-2:
+    container_name: "${APP_NAME}-api-2"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "${API_PORT_FIRST_THREE_DIGITS}2:8000"
     env_file:
       - .env
     depends_on:
