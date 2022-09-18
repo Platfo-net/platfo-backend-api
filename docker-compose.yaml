@@ -5,10 +5,10 @@ services:
       context: .
       args:
         - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app:${TAG}"
+    image: "botinow-backend-app"
     volumes:
       - .:/app
-    command: /app/startup.sh
+    command: /app/startup-local.sh
     ports:
       - "${API_PORT_FIRST_THREE_DIGITS}0:8000"
     env_file:
@@ -17,23 +17,6 @@ services:
       - db
     restart: unless-stopped
   
-  api-2:
-    container_name: "${APP_NAME}-api-2"
-    build:
-      context: .
-      args:
-        - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app"
-    volumes:
-      - .:/app
-    command: /app/startup.sh
-    ports:
-      - "${API_PORT_2}:8000"
-    env_file:
-      - .env
-    depends_on:
-      - db
-    restart: unless-stopped
   db:
     container_name: "${APP_NAME}-database"
     image: postgres:14

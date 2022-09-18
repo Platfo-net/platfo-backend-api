@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app import services
 from app.api import deps
+from app.constants.widget_type import WidgetType
 from app.core import cache, tasks
 from app.core.config import settings
 from app.constants.message_direction import MessageDirection
@@ -67,7 +68,7 @@ def webhook_instagram_listener(
 
     if instagram_data.is_echo:
         return None
-    
+
     if instagram_data.is_deleted:
         return services.message.remove_message_by_mid(db, mid=instagram_data.mid)
 
@@ -79,20 +80,30 @@ def webhook_instagram_listener(
     except:
         raise HTTPException(status_code=400, detail="Error getting user data")
 
+    saved_data = {
+        "url": instagram_data.attachment,
+        "type": "STORY_MENTION"
+    } if instagram_data.attachment else {
+        "message": instagram_data.message_detail,
+        "type": WidgetType.TEXT["name"]
+    }
     message_in = dict(
         from_page_id=instagram_data.id_sender,
         to_page_id=user_page_data.facebook_page_id,
         mid=instagram_data.mid,
-        content={
-            "message": instagram_data.message_detail
-        },
+        content=saved_data,
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"]
     )
+    
 
     tasks.save_message(
         obj_in=message_in,
-        instagram_page_id=instagram_data.id_recipient)
+        instagram_page_id=instagram_data.id_recipient
+    )
+
+    if not instagram_data.attachment:
+        return None
     if instagram_data.payload:
 
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
@@ -117,7 +128,6 @@ def webhook_instagram_listener(
 
         if connections is None:
             return None
-
 
         for connection in connections:
             connection_chatflow = services.connection_chatflow\

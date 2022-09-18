@@ -15,10 +15,12 @@ def get_data_from_cache(client: Redis, key: str = None) -> str:
 def set_data_to_cache(
     client: Redis,
     key: str = None,
-    value: str = None
+    value: str = None,
+    expire: int = 3600
 ) -> bool:
     state = client.setex(key, timedelta(seconds=3600),
                          value=value)  # todo time
+    client.expire(key, expire)
     return state
 
 

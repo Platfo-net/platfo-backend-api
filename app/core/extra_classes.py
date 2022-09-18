@@ -18,6 +18,7 @@ class InstagramData:
         self.is_echo = False
         self.is_deleted = False
         self.mid = None
+        self.attachment = None
 
     def parse(self, body):
         for element in body:
@@ -26,24 +27,41 @@ class InstagramData:
                 self.id_sender = item['sender']['id']
                 self.id_recipient = item['recipient']['id']
                 try:
-                    if item['message']:
+                    try:
                         self.mid = item['message']['mid']
-                        try:
-                            self.is_deleted = item['message']['is_deleted']
-                        except Exception:
-                            pass
-                        try:
-                            self.message_detail = item['message']['text']
-                        except Exception:
-                            pass
-                        try:
-                            self.is_echo = item["message"]["is_echo"]
-                        except Exception:
-                            pass
+                    except Exception:
+                        pass
+                    
+                    try:
+                        self.mid = item["postback"]["mid"]
+                    except Exception:
+                        pass
+                    try:
+                        self.is_deleted = item['message']['is_deleted']
+                    except Exception:
+                        pass
+                    try:
+                        self.message_detail = item['message']['text']
+                    except Exception:
+                        pass
+                    try:
+                        self.is_echo = item["message"]["is_echo"]
+                    except Exception:
+                        pass
+                    try:
+                        self.attachment = item["message"]["attachments"][0]["payload"]["url"]
+                    except Exception:
+                        pass
+                    try:
+                        self.message_detail = item['postback']["title"]
+                    except Exception:
+                        pass
+                    try:
+                        self.payload = item['postback']['payload']
+                    except Exception:
+                        pass
                 except Exception:
-                    self.message_detail = item['postback']["title"]
-                    # print(self.postback)
-                    self.payload = item['postback']['payload']
+                    pass
 
     def to_dict(self):
         return dict(
