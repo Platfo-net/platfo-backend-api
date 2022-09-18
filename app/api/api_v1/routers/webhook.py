@@ -106,11 +106,7 @@ def webhook_instagram_listener(
     if instagram_data.attachment:
         return None
     if instagram_data.payload:
-        print("-------payload")
-        print(instagram_data.payload)
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
-        print("-------node")
-        print(node)
         tasks.send_widget.delay(
             widget=node.widget,
             quick_replies=node.quick_replies,
@@ -129,9 +125,6 @@ def webhook_instagram_listener(
             account_id=user_page_data.account_id,
             application_name="BOT_BUILDER"
         )
-
-        print("*--------connections--------")
-        print(connections)
 
         if connections is None:
             return None

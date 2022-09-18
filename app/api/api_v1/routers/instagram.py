@@ -1,3 +1,4 @@
+import logging
 import requests
 
 from typing import Any
@@ -109,13 +110,13 @@ def connect_instagram_page(
             res = requests.get(get_page_info_url, params=params)
 
             page_details = res.json()
+            logging.debug(page)
+            logging.debug("----------------------------")
 
             instagram_page = services.instagram_page\
                 .get_page_by_instagram_page_id(
                     db, instagram_page_id=instagram_page_id
                 )
-            print(page)
-            print(page_details)
             if instagram_page:
                 instagram_page_in = schemas.InstagramPageUpdate(
                     facebook_account_id=facebook_account.id,

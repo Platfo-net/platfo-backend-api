@@ -78,7 +78,6 @@ def get_user_from_cache(
         user = services.user.get(db, id)
         if not user:
             return None
-        print(type(user.created_at))
         data = dict(
             id=str(user.id),
             first_name=user.first_name,
