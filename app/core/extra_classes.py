@@ -19,6 +19,7 @@ class InstagramData:
         self.is_deleted = False
         self.mid = None
         self.attachment = None
+        self.story_url = None
 
     def parse(self, body):
         for element in body:
@@ -58,6 +59,10 @@ class InstagramData:
                         pass
                     try:
                         self.payload = item['postback']['payload']
+                    except Exception:
+                        pass
+                    try:
+                        self.story_url = item["message"]["reply_to"]["story"]["url"]
                     except Exception:
                         pass
                 except Exception:

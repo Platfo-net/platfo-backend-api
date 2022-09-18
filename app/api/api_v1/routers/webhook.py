@@ -82,15 +82,26 @@ def webhook_instagram_listener(
     except:
         raise HTTPException(status_code=400, detail="Error getting user data")
 
-    saved_data = {
-        "url": instagram_data.attachment,
-        "widget_type": "STORY_MENTION",
-        "id": str(uuid4())
-    } if instagram_data.attachment else {
-        "message": instagram_data.message_detail,
-        "widget_type": WidgetType.TEXT["name"],
-        "id": str(uuid4())
-    }
+    if instagram_data.attachment:
+
+        saved_data = {
+            "url": instagram_data.attachment,
+            "widget_type": "STORY_MENTION",
+            "id": str(uuid4())
+        }
+    elif instagram_data.story_url:
+        saved_data = {
+            "url": instagram_data.story_url,
+            "widget_type": "STORY_REPLY",
+            "message": instagram_data.message_detail,
+            "id": str(uuid4())
+        }
+    else:
+        saved_data = {
+            "message": instagram_data.message_detail,
+            "widget_type": WidgetType.TEXT["name"],
+            "id": str(uuid4())
+        }
     message_in = dict(
         from_page_id=instagram_data.id_sender,
         to_page_id=user_page_data.facebook_page_id,
@@ -104,8 +115,9 @@ def webhook_instagram_listener(
         obj_in=message_in,
         instagram_page_id=instagram_data.id_recipient
     )
-    if instagram_data.attachment:
+    if instagram_data.attachment or instagram_data.story_url:
         return None
+
     if instagram_data.payload:
         node = services.node.get_next_node(db, from_id=instagram_data.payload)
         tasks.send_widget.delay(
