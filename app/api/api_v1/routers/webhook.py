@@ -64,8 +64,9 @@ def webhook_instagram_listener(
 ):
     facebook_webhook_body = request['entry']
     instagram_data = InstagramData()
+    print(facebook_webhook_body)
     instagram_data.parse(facebook_webhook_body)
-
+    print("-------------------------------------")
     if instagram_data.is_echo:
         return None
 
