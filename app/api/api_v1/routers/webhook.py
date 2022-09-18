@@ -74,16 +74,15 @@ def webhook_instagram_listener(
         return services.message.remove_message_by_mid(db, mid=instagram_data.mid)
 
     try:
+        print("Heeeeeeeeeeeeeeeeeeeeeee")
         user_page_data = cache.get_user_data(
             redis_client,
             db,
             instagram_page_id=instagram_data.id_recipient)
+        print("Heeeeeeeeeeeeeeeeeeeeeee")
+
     except:
         raise HTTPException(status_code=400, detail="Error getting user data")
-    print("Heeeeeeeeeeeeeeeeeeeeeee")
-    print("Heeeeeeeeeeeeeeeeeeeeeee")
-    print("Heeeeeeeeeeeeeeeeeeeeeee")
-    print("Heeeeeeeeeeeeeeeeeeeeeee")
     if instagram_data.attachment:
 
         saved_data = {
