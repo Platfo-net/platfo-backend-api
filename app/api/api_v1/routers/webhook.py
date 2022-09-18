@@ -66,7 +66,7 @@ def webhook_instagram_listener(
     instagram_data = InstagramData()
     print(facebook_webhook_body)
     instagram_data.parse(facebook_webhook_body)
-    print("-------------------------------------")
+    print(instagram_data.to_dict())
     if instagram_data.is_echo:
         return None
 
@@ -80,14 +80,6 @@ def webhook_instagram_listener(
             instagram_page_id=instagram_data.id_recipient)
     except:
         raise HTTPException(status_code=400, detail="Error getting user data")
-
-    print("--------------yes-----------------------")
-
-    print(instagram_data.attachment)
-    print("--------------no-----------------------")
-
-    print(instagram_data.story_url)
-    print("--------------no-----------------------")
 
     if instagram_data.attachment:
 

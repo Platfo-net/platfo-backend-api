@@ -76,7 +76,9 @@ class InstagramData:
             mid=self.mid,
             postback=self.postback,
             payload=self.payload,
-            is_echo=self.is_echo
+            is_echo=self.is_echo,
+            story_url=self.story_url,
+            attachment=self.attachment 
         )
 
 
