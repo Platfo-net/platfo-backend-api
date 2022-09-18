@@ -7,7 +7,7 @@ x-api-common:
   image: "botinow-backend-app"
   volumes:
     - .:/app
-  command: /app/startup.sh
+  command: /app/runserver.sh
   env_file:
     - .env
   depends_on:

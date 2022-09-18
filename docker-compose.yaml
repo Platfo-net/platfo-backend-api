@@ -1,6 +1,6 @@
 services:
-  api-1:
-    container_name: "${APP_NAME}-api-1"
+  api:
+    container_name: "${APP_NAME}-api"
     build:
       context: .
       args:
@@ -10,31 +10,12 @@ services:
       - .:/app
     command: /app/startup.sh
     ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}1:8000"
+      - "8000:8000"
     env_file:
       - .env
     depends_on:
       - db
     restart: unless-stopped
-  
-  api-2:
-    container_name: "${APP_NAME}-api-2"
-    build:
-      context: .
-      args:
-        - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app"
-    volumes:
-      - .:/app
-    command: /app/startup.sh
-    ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}2:8000"
-    env_file:
-      - .env
-    depends_on:
-      - db
-    restart: unless-stopped
-  
   db:
     container_name: "${APP_NAME}-database"
     image: postgres:14
@@ -59,17 +40,17 @@ services:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
 
-  # minio:
-  #   image: bitnami/minio:2022.8.26
-  #   ports:
-  #     - '${S3_PORT}:9000'
-  #     - '${MINIO_ADMIN_PANEL_PORT}:9001'
-  #   volumes:
-  #     - minio-data:/data
+  minio:
+    image: bitnami/minio:2022.8.26
+    ports:
+      - '${S3_PORT}:9000'
+      - '${MINIO_ADMIN_PANEL_PORT}:9001'
+    volumes:
+      - minio-data:/data
 
-  #   environment:
-  #     MINIO_ROOT_USER: "${S3_ROOT_USER}"
-  #     MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
+    environment:
+      MINIO_ROOT_USER: "${S3_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
 
   celery-worker-1:
     image: "botinow-backend-app"
@@ -83,21 +64,20 @@ services:
       - api-1
       - redis
 
-  # celery-flower:
-  #   image: "botinow-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-flower"
-  #   command: celery -A app.core.celery.celery flower --port=5555
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "5555:5555"
-  #   depends_on:
-  #     - db
-  #     - api-1
-  #     - redis
+  celery-flower:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-flower"
+    command: celery -A app.core.celery.celery flower --port=5555
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555"
+    depends_on:
+      - db
+      - api-1
+      - redis
 
 volumes:
   postgres-data:
-  redis-data:
-  # minio-data:
+  redis-data: # minio-data:

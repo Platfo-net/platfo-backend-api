@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache pip install wheel
 RUN --mount=type=cache,target=/root/.cache pip install -r requirements.txt
 
 COPY ./startup.sh /app/
-COPY ./startup-local.sh /app/
+COPY ./runserver.sh /app/
 
 RUN chmod +x /app/startup.sh
-RUN chmod +x /app/startup-local.sh
+RUN chmod +x /app/runserver.sh

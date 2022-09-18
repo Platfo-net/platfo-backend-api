@@ -84,11 +84,11 @@ def webhook_instagram_listener(
     saved_data = {
         "url": instagram_data.attachment,
         "widget_type": "STORY_MENTION",
-        "id": uuid4()
+        "id": str(uuid4())
     } if instagram_data.attachment else {
         "message": instagram_data.message_detail,
         "widget_type": WidgetType.TEXT["name"],
-        "id": uuid4()
+        "id": str(uuid4())
     }
     message_in = dict(
         from_page_id=instagram_data.id_sender,
