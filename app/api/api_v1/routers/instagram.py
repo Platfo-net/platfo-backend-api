@@ -114,21 +114,24 @@ def connect_instagram_page(
                 .get_page_by_instagram_page_id(
                     db, instagram_page_id=instagram_page_id
                 )
+            print(page)
+            print(page_details)
             if instagram_page:
                 instagram_page_in = schemas.InstagramPageUpdate(
                     facebook_account_id=facebook_account.id,
-                    facebook_page_id=page["id"] if "id" in page else None,
-                    facebook_page_token=page["access_token"] if "access_token" in page else None,
+                    facebook_page_id=page.get("id", None),
+                    facebook_page_token=page.get("access_token", None),
                     instagram_page_id=instagram_page_id,
-                    instagram_username=page_details["username"] if "username" in page else None,
-                    instagram_profile_picture_url=page_details["profile_picture_url"] if "profile_picture_url" in page else None,  # noqa
+                    instagram_username=page_details.get("username", None),
+                    instagram_profile_picture_url=page_details.get("profile_picture_url", None),  # noqa
                     information=dict(
-                         website=page_details['website'] if "website" in page_details else None,
-                         ig_id=page_details['ig_id'] if "ig_id" in page_details else None,
-                         followers_count=page_details['followers_count'] if "followers_count" in page_details else None,
-                         follows_count=page_details['follows_count'] if "follows_count" in page_details else None,
-                         biography=page_details['biography'] if "biography" in page_details else None,
-                         name=page_details['name'] if "name" in page_details else None
+                         website=page_details.get("website", None),
+                         ig_id=page_details.get('ig_id', None),
+                         followers_count=page_details.get(
+                             'followers_count', None),
+                         follows_count=page_details.get('follows_count', None),
+                         biography=page_details.get('biography', None),
+                         name=page_details.get("name", None)
                                      )
                 )
                 services.instagram_page.update(
@@ -139,18 +142,19 @@ def connect_instagram_page(
             else:
                 instagram_page_in = schemas.InstagramPageCreate(
                     facebook_account_id=facebook_account.id,
-                    facebook_page_id=page["id"] if "id" in page else None,
-                    facebook_page_token=page["access_token"] if "access_token" in page else None,
+                    facebook_page_id=page.get("id", None),
+                    facebook_page_token=page.get("access_token", None),
                     instagram_page_id=instagram_page_id,
-                    instagram_username=page_details["username"] if "username" in page else None,
-                    instagram_profile_picture_url=page_details["profile_picture_url"] if "profile_picture_url" in page else None,  # noqa
+                    instagram_username=page_details.get("username", None),
+                    instagram_profile_picture_url=page_details.get("profile_picture_url", None),  # noqa
                     information=dict(
-                         website=page_details['website'] if "website" in page_details else None,
-                         ig_id=page_details['ig_id'] if "ig_id" in page_details else None,
-                         followers_count=page_details['followers_count'] if "followers_count" in page_details else None,
-                         follows_count=page_details['follows_count'] if "follows_count" in page_details else None,
-                         biography=page_details['biography'] if "biography" in page_details else None,
-                         name=page_details['name'] if "name" in page_details else None
+                         website=page_details.get("website", None),
+                         ig_id=page_details.get('ig_id', None),
+                         followers_count=page_details.get(
+                             'followers_count', None),
+                         follows_count=page_details.get('follows_count', None),
+                         biography=page_details.get('biography', None),
+                         name=page_details.get("name", None)
                                      )
                     )
 
