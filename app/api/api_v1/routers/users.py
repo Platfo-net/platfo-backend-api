@@ -145,7 +145,8 @@ def get_user_me(
         ],
     ),
 ) -> Any:
-    return current_user
+    user = services.user.get(db , id = current_user.id)
+    return user
 
 
 @router.post("/forget-password", status_code=status.HTTP_200_OK)

@@ -101,6 +101,7 @@ def test_token(
     """
     Test access token
     """
+    
     return current_user
 
 
