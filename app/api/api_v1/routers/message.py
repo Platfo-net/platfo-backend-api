@@ -1,4 +1,5 @@
 from typing import List
+from uuid import uuid4
 from app import services, models, schemas
 from app.api import deps
 from app.constants.message_direction import MessageDirection
@@ -7,6 +8,7 @@ from fastapi import APIRouter, Depends, Security, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.core.instagram_graph_api import graph_api
 from app.core import tasks
+from app.constants.widget_type import WidgetType
 
 router = APIRouter(prefix="/message", tags=["Messages"])
 
@@ -84,13 +86,14 @@ def send_message(
         from_page_id=from_page_id,
         to_page_id=to_contact_igs_id,
         content={
-            "message": obj_in.text
+            "message": obj_in.text,
+            "widget_type": WidgetType.TEXT["name"],
+            "id": str(uuid4()),
         },
         user_id=str(current_user.id),
         direction=MessageDirection.OUT["name"],
         mid=None
     )
-
 
     tasks.save_message(
         obj_in=message_in
