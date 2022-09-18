@@ -78,8 +78,6 @@ def get_user_from_cache(
         user = services.user.get(db, id)
         if not user:
             return None
-        print(user.created_at)
-        print(user.updated_at)
         print(type(user.created_at))
         data = dict(
             id=str(user.id),
@@ -99,9 +97,6 @@ def get_user_from_cache(
             user = get_data_from_cache(redis_client, str(user.id))
 
     user = json.loads(user)
-    print(user)
-    print("---------------------------------")
-    print("---------------------------------")
     return models.User(
         id=UUID4(user.get('id')),
         first_name=user.get('first_name', None),
