@@ -26,6 +26,7 @@ def save_message(obj_in: dict, instagram_page_id: str = None):
             contact_igs_id=obj_in["from_page_id"]
         )
         if not contact:
+            print('-------------------contact save kardan ejra shoddddddddddddddddd------------------')
             contact_in = schemas.ContactCreate(
                 contact_igs_id=obj_in["from_page_id"],
                 user_page_id=obj_in["to_page_id"],
