@@ -67,18 +67,18 @@ class Settings(BaseSettings):
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
-    # @validator("CELERY_URI", pre=True)
-    # def assemble_celery_connection(
-    #         cls, v: Optional[str], values: Dict[str, Any]
-    # ) -> Any:
-    #     if isinstance(v, str):
-    #         return v
-    #     return RedisDsn.build(
-    #         scheme="redis",
-    #         host=values.get("REDIS_HOST"),
-    #         port=values.get("REDIS_PORT"),
-    #         path=f"/{values.get('REDIS_DB_CELERY') or ''}",
-    #     )
+    @validator("CELERY_URI", pre=True)
+    def assemble_celery_connection(
+            cls, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:
+        if isinstance(v, str):
+            return v
+        return RedisDsn.build(
+            scheme="redis",
+            host=values.get("REDIS_HOST"),
+            port=values.get("REDIS_PORT"),
+            path=f"/{values.get('REDIS_DB_CELERY') or ''}",
+        )
 
     class Config:
         case_sensitive = True
@@ -91,3 +91,9 @@ def get_settings():
 
 
 settings = get_settings()
+
+
+'''
+broker_url = 'redis://user:password@redishost:6379/0'
+
+'''

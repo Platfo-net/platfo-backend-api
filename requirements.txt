@@ -21,6 +21,7 @@ charset-normalizer==2.1.0
 click==8.1.3
 click-didyoumean==0.3.0
 click-plugins==1.1.1
+python-slugify==6.1.2
 click-repl==0.2.0
 ConfigArgParse==1.5.3
 coverage==6.4.2

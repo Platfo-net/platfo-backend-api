@@ -7,6 +7,7 @@ from app.schemas.academy.content_attachment import ContentAttachment,\
     ContentAttachmentCreate
 from app.schemas.academy.category import CategoryContent,\
     CategoryListItemContent
+from app.schemas.user import User
 
 
 class ContentBase(BaseModel):
