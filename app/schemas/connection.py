@@ -1,10 +1,27 @@
 
 
+from .chatflow import Chatflow
+from typing import Optional
 from typing import List, Optional
 from pydantic import UUID4, BaseModel
 from app.schemas.account import Account
-from app.schemas.connection_chatflow import ConnectionChatflow, \
-    ConnectionChatflowCreate
+
+
+class ConnectionChatflowBase(BaseModel):
+    chatflow_id: Optional[UUID4] = None
+    trigger_id: Optional[UUID4] = None
+
+
+class ConnectionChatflowCreate(ConnectionChatflowBase):
+    pass
+
+
+class ConnectionChatflow(ConnectionChatflowBase):
+    id: UUID4
+    chatflow: Optional[Chatflow]
+
+    class Config:
+        orm_mode = True
 
 
 class ConnectionBase(BaseModel):
@@ -12,10 +29,11 @@ class ConnectionBase(BaseModel):
     description: Optional[str] = None
     application_name: Optional[str] = None
     account_id: Optional[UUID4] = None
+    details: List[dict]
 
 
 class ConnectionCreate(ConnectionBase):
-    connection_chatflows: List[ConnectionChatflowCreate]
+    pass
 
 
 class ConnectionUpdate(ConnectionCreate):
@@ -30,8 +48,4 @@ class ConnectionInDBBase(ConnectionBase):
 
 
 class Connection(ConnectionInDBBase):
-    account: Optional[Account] = None
-
-
-class ConnectionInDB(ConnectionInDBBase):
-    connection_chatflows: List[ConnectionChatflow]
+    pass

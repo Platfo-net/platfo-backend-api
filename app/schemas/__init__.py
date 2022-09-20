@@ -17,12 +17,9 @@ from .transaction import TransactionCreate,\
 from .account import Account, AccountDetail
 
 from .connection import Connection, ConnectionCreate, \
-    ConnectionUpdate, ConnectionInDB
+    ConnectionUpdate , ConnectionChatflow , ConnectionChatflowCreate
 from .trigger import TriggerCreate, TriggerUpdate, Trigger
 
-
-from .connection_chatflow import ConnectionChatflow,\
-    ConnectionChatflowCreate
 
 
 from .chatflow import Chatflow, ChatflowCreate, ChatflowUpdate

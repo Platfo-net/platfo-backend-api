@@ -16,7 +16,7 @@ class Category(Base):
     title = Column(String(255), nullable=True)
     parrent_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("categories.id"),
+        ForeignKey("academy_categories.id"),
         nullable=True,
     )
 

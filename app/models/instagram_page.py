@@ -29,4 +29,4 @@ class InstagramPage(Base):
     information = Column(JSON, nullable=True)
 
     user = relationship(
-        "User", back_populates="facebook_account")
+        "User", back_populates="instagram_page")

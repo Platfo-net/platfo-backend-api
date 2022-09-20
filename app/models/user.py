@@ -40,7 +40,7 @@ class User(Base):
     role = relationship(
         "Role", back_populates="user")
 
-    facebook_account = relationship("FacebookAccount", back_populates="user")
+    instagram_page = relationship("InstagramPage", back_populates="user")
     transaction = relationship("Transaction", back_populates="user")
     credit = relationship("Credit", back_populates="user")
 
@@ -50,3 +50,4 @@ class User(Base):
     notification_user = relationship("NotificationUser", back_populates="user")
 
     content = relationship("Content", back_populates="user")
+

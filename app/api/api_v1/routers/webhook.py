@@ -20,7 +20,7 @@ from app.core.extra_classes import InstagramData
 router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
 
-@router.get("/user")
+@router.get("/user" , )
 def user_webhook_subscription(request: Request):
     try:
         _ = request.query_params["hub.mode"]

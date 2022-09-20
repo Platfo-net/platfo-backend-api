@@ -1,7 +1,8 @@
 from uuid import uuid4
 
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Column, ForeignKey,\
+    String, UniqueConstraint, ARRAY, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -22,6 +23,7 @@ class Connection(Base):
         UUID(as_uuid=True), nullable=True
     )  # it can be instagram page or any other platform page
 
+    details = Column(ARRAY(JSON), nullable=True)
     user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id"),
@@ -34,5 +36,3 @@ class Connection(Base):
 
     user = relationship("User", back_populates="connection")
 
-    connection_chatflow = relationship(
-        "ConnectionChatflow", back_populates="connection")

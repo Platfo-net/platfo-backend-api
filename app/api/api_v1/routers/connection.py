@@ -18,8 +18,6 @@ router = APIRouter(prefix="/connection", tags=["Connection"])
 def get_list_of_connections(
         *,
         db: Session = Depends(deps.get_db),
-        skip: int = 0,
-        limit: int = 20,
         account_id: UUID4 = None,
         current_user: models.User = Security(
             deps.get_current_active_user,
@@ -46,7 +44,7 @@ def get_list_of_connections(
         List of a user connection
     """
 
-    connections = services.connection.get_by_user_id(
+    connections = services.connection.get_by_user_and_account_id(
         db, user_id=current_user.id, account_id=account_id)
     new_connections = []
 
@@ -88,21 +86,12 @@ def create_connection(
     """
     connection = services.connection.create(
         db, obj_in=obj_in, user_id=current_user.id)
-
-    for connection_chatflow in obj_in.connection_chatflows:
-        services.connection_chatflow.create(
-            db,
-            obj_in=schemas.ConnectionChatflowCreate(
-                chatflow_id=connection_chatflow.chatflow_id,
-                trigger_id=connection_chatflow.trigger_id,
-            ),
-            connection_id=connection.id
-        )
+    
 
     return connection
 
 
-@router.get('/{connection_id}', response_model=schemas.ConnectionInDB)
+@router.get('/{connection_id}', response_model=schemas.Connection)
 def get_connection_by_id(
     *,
     db: Session = Depends(deps.get_db),
@@ -132,29 +121,13 @@ def get_connection_by_id(
             status_code=Error.INVALID_CONNECTION_ID['status_code'],
             detail=Error.INVALID_CONNECTION_ID['text']
         )
-    connection_chatflows = services.connection_chatflow.\
-        get_by_connection_id(db, connection_id=connection.id)
-
-    new_connection_chatflows = [
-        schemas.ConnectionChatflow(
-            id=connection_chatflow.id,
-            chatflow_id=connection_chatflow.chatflow_id,
-            trigger_id=connection_chatflow.trigger_id,
-            chatflow=services.chatflow.get(
-                db,
-                id=connection_chatflow.chatflow_id,
-                user_id=current_user.id
-            )
-        )
-        for connection_chatflow in connection_chatflows
-    ]
-    return schemas.ConnectionInDB(
+    return schemas.Connection(
         id=connection.id,
-        connection_chatflows=new_connection_chatflows,
         name=connection.name,
         description=connection.description,
         account_id=connection.account_id,
         application_name=connection.application_name,
+        details=connection.details
     )
 
 
@@ -183,10 +156,6 @@ def delete_connection(
             detail=Error.CONNECTION_NOT_FOUND["detail"]
         )
     services.connection.remove(db, id=connection_id)
-    services.connection_chatflow.remove_by_connection_id(
-        db,
-        connection_id=connection_id
-    )
     return
 
 
@@ -225,57 +194,4 @@ def update_connection(
     connection = services.connection.update(
         db, db_obj=old_connection, obj_in=obj_in, user_id=current_user.id)
 
-    services.connection_chatflow.remove_by_connection_id(
-        db,
-        connection_id=connection_id
-    )
-
-    for connection_chatflow in obj_in.connection_chatflows:
-        services.connection_chatflow.create(
-            db,
-            obj_in=schemas.ConnectionChatflowCreate(
-                chatflow_id=connection_chatflow.chatflow_id,
-                trigger_id=connection_chatflow.trigger_id,
-            ),
-            connection_id=old_connection.id
-        )
-
     return connection
-
-
-@router.put("/chatflow/{state}/{page_id}/")
-def disable_chatflow_for_page(
-    *,
-    db: Session = Depends(deps.get_db),
-    page_id: str,
-    state: str = None,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
-):
-    """
-    Args:
-        page_id (UUID4): _description_
-        state (str, optional): Options: enable, disable
-    """
-    from app.constants.application import Application
-    account = services.instagram_page.get_by_page_id(db, page_id=page_id)
-    connection = services.connection.get_page_connection(
-        db, 
-        account_id=account.id, 
-        application_name=Application.BOT_BUILDER["name"]
-    )[0]
-    connection_chatflow = db.query(models.ConnectionChatflow).filter(
-        models.ConnectionChatflow.connection_id == connection.id
-    ).first()
-    connection_chatflow_status = True if state == "enable" else False
-    connection_chatflow.is_active = connection_chatflow_status
-
-    db.add(connection_chatflow)
-    db.commit()
-    db.refresh(connection_chatflow)
-    return 

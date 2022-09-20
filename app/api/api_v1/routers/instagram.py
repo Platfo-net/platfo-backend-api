@@ -67,6 +67,7 @@ def connect_instagram_page(
                 page['id'],
             )
             res = requests.get(get_instagram_page_id_url, params=params)
+            print(res.json())
             instagram_page_id = res.json()['connected_instagram_account']['id']
 
             params = dict(
@@ -87,7 +88,7 @@ def connect_instagram_page(
             page_details = res.json()
 
             instagram_page = services.instagram_page\
-                .get_page_by_instagram_page_id(
+                .get_by_instagram_page_id(
                     db, instagram_page_id=instagram_page_id
                 )
             if not instagram_page:
@@ -111,10 +112,12 @@ def connect_instagram_page(
                                      )
                     )
 
-                services.instagram_page.create(db, obj_in=instagram_page_in)
+                s = services.instagram_page.create(db, obj_in=instagram_page_in)
+                print(s)
 
         except Exception as e:
-            pass
+            print(e)
+            print("--------------------------------")
 
     return
 

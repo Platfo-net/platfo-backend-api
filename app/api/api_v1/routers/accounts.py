@@ -10,6 +10,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.constants.application import Application
+from app.constants.platform import Platform
 
 
 
@@ -41,7 +42,7 @@ def get_accounts_list(
             id=item.id,
             username=item.instagram_username,
             profile_image=item.instagram_profile_picture_url,
-            platform="instagram",
+            platform=Platform.INSTAGRAM["name"],
             page_id=item.facebook_page_id,
         )
         for item in instagram_pages if len(instagram_pages) > 0

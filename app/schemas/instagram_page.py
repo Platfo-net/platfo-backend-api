@@ -1,6 +1,5 @@
 from typing import Optional
 
-from .facebook_account import FacebookAccount
 from pydantic import UUID4, BaseModel
 
 
