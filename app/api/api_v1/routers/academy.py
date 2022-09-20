@@ -12,6 +12,85 @@ from app.constants.role import Role
 router = APIRouter(prefix="/academy", tags=["Academy"])
 
 
+@router.get("/label/all", response_model=schemas.academy.LabelListApi)
+def get_labels_list(
+        *,
+        db: Session = Depends(deps.get_db),
+        page: int = 1,
+        page_size: int = 20
+):
+    labels, pagination = services.academy.label.get_multi(
+        db,
+        page=page,
+        page_size=page_size,
+    )
+
+    return schemas.academy.LabelListApi(
+        labels=labels,
+        pagination=pagination
+    )
+
+
+@router.post('/label/create', response_model=schemas.academy.Label)
+def create_label(
+        *, obj_in: schemas.academy.LabelCreate,
+        db: Session = Depends(deps.get_db),
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.ADMIN["name"],
+            ],
+        ),
+):
+    label = services.academy.label.create(obj_in=obj_in, db=db)
+    return label
+
+
+@router.put('/label/{id}', response_model=schemas.academy.Label)
+def update_label(
+        *, obj_in: schemas.academy.LabelUpdate,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.ADMIN["name"],
+            ],
+        ),
+):
+    label = services.academy.label.get(db, id)
+    if not label:
+        raise HTTPException(
+            status_code=Error.CATEGORY_NOT_FOUND['status_code'],
+            detail=Error.CATEGORY_NOT_FOUND['text']
+        )
+    label = services.academy.label.update(
+        db, db_obj=label, obj_in=obj_in)
+
+    return label
+
+
+@router.delete('/label/{id}')
+def delete_label(*,
+                 db: Session = Depends(deps.get_db),
+                 id: UUID4,
+                 current_user: models.User = Security(
+                   deps.get_current_active_user,
+                   scopes=[
+                       Role.ADMIN["name"],
+                   ],
+                ),
+                   ):
+    label = services.academy.label.get(db, id=id)
+    if not label:
+        raise HTTPException(
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text']
+        )
+    services.academy.label.remove(db, id=id)
+    return
+
+
 @router.get("/category/all", response_model=schemas.academy.CategoryListApi)
 def get_categories_list(
         *,
@@ -82,6 +161,27 @@ def update_category(
     return category
 
 
+@router.delete('/category/{id}')
+def delete_category(*,
+                    db: Session = Depends(deps.get_db),
+                    id: UUID4,
+                    current_user: models.User = Security(
+                      deps.get_current_active_user,
+                      scopes=[
+                         Role.ADMIN["name"],
+                   ],
+            ),
+):
+    category = services.academy.category.get(db, id=id)
+    if not category:
+        raise HTTPException(
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text']
+        )
+    services.academy.category.remove(db, id=id)
+    return
+
+
 @router.get('/search', response_model=schemas.academy.ContentSearch)
 def search_content_by_category(
         *,
@@ -134,7 +234,7 @@ def get_content_by_id(*,
                       db: Session = Depends(deps.get_db),
                       id: UUID4
                       ):
-    content, categories = services.academy.content.get_by_detail(db, id=id)
+    content, categories, labels = services.academy.content.get_by_detail(db, id=id)
 
     if not content:
         raise HTTPException(
@@ -162,6 +262,7 @@ def get_content_by_id(*,
         caption=content.caption,
         created_at=content.created_at,
         categories=categories,
+        labels=labels,
         user_id=content.user_id,
         content_attachments=new_content_attachment
     )]
@@ -187,6 +288,12 @@ def create_content(*, obj_in: schemas.academy.ContentCreate,
         services.academy.category_content.create(
             db,
             category_id=category.category_id,
+            content_id=content.id
+        )
+    for label in obj_in.labels:
+        services.academy.label_content.create(
+            db,
+            label_id=label.label_id,
             content_id=content.id
         )
     for content_attachment in obj_in.content_attachments:

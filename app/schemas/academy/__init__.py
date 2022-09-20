@@ -8,3 +8,6 @@ from .content import Content, ContentCreate,\
 
 from .content_attachment import ContentAttachment,\
     ContentAttachmentBase, ContentAttachmentCreate, ContentAttachmentList
+
+from .label import Label, LabelCreate, LabelBase,\
+    LabelUpdate, LabelListApi, LabelInDB, LabelListItemContent, LabelContent

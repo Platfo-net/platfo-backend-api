@@ -7,6 +7,7 @@ from app.schemas.academy.content_attachment import ContentAttachment,\
     ContentAttachmentCreate
 from app.schemas.academy.category import CategoryContent,\
     CategoryListItemContent
+from app.schemas.academy.label import LabelListItemContent, LabelContent
 
 
 class File(BaseModel):
@@ -48,6 +49,7 @@ class ContentBase(BaseModel):
 class ContentCreate(ContentBase):
     content_attachments: List[ContentAttachmentCreate]
     categories: List[CategoryContent]
+    labels: List[LabelContent]
 
 
 class ContentUpdate(ContentBase):
@@ -65,6 +67,7 @@ class ContentDetailList(ContentBase):
     id: UUID4
     user_id: UUID4
     categories: List[CategoryListItemContent]
+    labels: List[LabelListItemContent]
     content_attachments: List[ContentAttachment]
 
     class Config:
@@ -128,16 +131,17 @@ class ContentCategory(BaseModel):
         orm_mode = True
 
 
-# class ContentTest(BaseModel):
-#     content_attachment: ContentAttachmentList
-#
-#     class Config:
-#         orm_mode = True
+class ContentLabel(BaseModel):
+    label: LabelListItemContent
+
+    class Config:
+        orm_mode = True
 
 
 class ContentListItem(ContentBase):
     id: UUID4
     content_categories: Optional[List[ContentCategory]]
+    content_labels: Optional[List[ContentLabel]]
     # content_attachments: List[ContentAttachment]
 
     class Config:
@@ -191,7 +195,7 @@ class ContentListApi(BaseModel):
 
 
 class ContentSearch(BaseModel):
-    contents: List[ContentInDB]
+    contents: List[ContentListItem]
     pagination: Pagination
 
     class Config:

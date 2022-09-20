@@ -29,8 +29,9 @@ class ContentServices(
         contents = db.query(self.model).order_by(
             desc(self.model.created_at)
         ).options(
-            joinedload(self.model.content_categories)
-        ).offset(page_size * (page - 1)).limit(page_size).all()
+            joinedload(self.model.content_categories),
+            joinedload(self.model.content_labels))\
+            .offset(page_size * (page - 1)).limit(page_size).all()
 
         total_count = db.query(self.model).count()
         total_pages = math.ceil(total_count / page_size)
@@ -52,12 +53,13 @@ class ContentServices(
     ):
 
         content = db.query(self.model).options(
-            joinedload(self.model.content_categories)
-        ).filter(self.model.id == id).offset(
+            joinedload(self.model.content_categories),
+            joinedload(self.model.content_labels)).filter(self.model.id == id).offset(
             page_size * (page - 1)
         ).limit(page_size).first()
 
         content_categories = content.content_categories
+        content_labels = content.content_labels
 
         categories = []
         for content_category in content_categories:
@@ -67,8 +69,16 @@ class ContentServices(
                 models.academy.Category.id == content_category.category_id
             ).first()
                               )
+        labels = []
+        for content_label in content_labels:
+            labels.append(db.query(
+                models.academy.Label
+            ).filter(
+                models.academy.Label.id == content_label.label_id
+            ).first()
+                              )
 
-        return content, categories
+        return content, categories, labels
 
     def search(self,
                db: Session,
@@ -145,7 +155,7 @@ class ContentServices(
             caption=obj_in.caption,
             is_published=obj_in.is_published,
             user_id=user_id,
-            cover_iamge=obj_in.cover_image
+            cover_image=obj_in.cover_image
         )
         db.add(db_obj)
         db.commit()
