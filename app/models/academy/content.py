@@ -12,7 +12,7 @@ from app.db.base_class import Base
 
 
 class Content(Base):
-    __tablename__ = "contents"
+    __tablename__ = "academy_contents"
 
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4

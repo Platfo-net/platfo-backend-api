@@ -10,37 +10,26 @@ class InstagramPageServices(
             schemas.InstagramPageCreate,
             schemas.InstagramPageUpdate
         ]):
-    def delete_by_facebook_account_id(self, db: Session, *, account_id: UUID4):
+    def get_multi_by_user_id(self, db: Session, *, user_id: UUID4)-> models.InstagramPage:
         return db.query(self.model).filter(
-            self.model.facebook_account_id == account_id
-        ).delete()
-
-    def get_multi_by_user_id(self, db: Session, *, user_id: UUID4):
-        account = db.query(models.FacebookAccount).filter(
-            models.FacebookAccount.user_id == user_id).first()
-
-        if not account:
-            return []
-        pages = db.query(self.model).filter(
-            self.model.facebook_account_id == account.id
+            self.model.user_id == user_id
         ).all()
-        return pages
 
-    def get_page_by_instagram_page_id(
+    def get_by_instagram_page_id(
         self, db: Session, *, instagram_page_id: str = None
-    ) -> schemas.InstagramPage:
+    ) -> models.InstagramPage:
         return db.query(self.model).filter(
             self.model.instagram_page_id == instagram_page_id
         ).first()
 
-    def delete_by_page_id(self, db: Session, *, ig_id):
+    def delete_by_facebook_page_id(self, db: Session, *, ig_id):
         return db.query(self.model).filter(
             self.model.instagram_page_id == ig_id
         ).delete()
 
-    def get_by_page_id(self, db: Session, *, page_id: str):
+    def get_by_facebook_page_id(self, db: Session, *, facebook_page_id: str):
         return db.query(self.model)\
-            .filter(self.model.facebook_page_id == page_id).first()
+            .filter(self.model.facebook_page_id == facebook_page_id).first()
 
 
 instagram_page = InstagramPageServices(models.InstagramPage)

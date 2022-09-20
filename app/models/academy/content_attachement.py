@@ -8,7 +8,7 @@ from app.db.base_class import Base
 
 
 class ContentAttachment(Base):
-    __tablename__ = "content_attachments"
+    __tablename__ = "academy_content_attachments"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
@@ -17,7 +17,7 @@ class ContentAttachment(Base):
 
     content_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("contents.id"),
+        ForeignKey("academy_contents.id"),
         nullable=True,
     )
 

@@ -42,17 +42,3 @@ def init_db(db: Session) -> None:
             db,
             obj_in=user_in,
         )
-
-    # creating triggers
-
-    message_trigger = services.trigger.get_by_name(
-        db, name=Trigger.Message["name"])
-
-    if not message_trigger:
-        services.trigger.create(
-            db, obj_in=schemas.TriggerCreate(
-                name=Trigger.Message["name"],
-                persian_name=Trigger.Message["persian_name"],
-                platform=Trigger.Message["platform"]
-            )
-        )

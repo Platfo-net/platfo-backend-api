@@ -2,7 +2,6 @@ from app.services import academy
 
 from .role_services import role
 from .user_services import user
-from .facebook_account_services import facebook_account
 from .instagram_page_services import instagram_page
 from .credit_services import credit
 from .plan_services import plan

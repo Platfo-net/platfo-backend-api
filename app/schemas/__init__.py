@@ -5,10 +5,6 @@ from .user import User, UserCreate, \
     UserInDB, UserUpdate, UserRegister,\
     UserBase, ForgetPassword, ChangePassword
 
-
-from .facebook_account import FacebookAccount,\
-    FacebookAccountCreate, FacebookAccountUpdate
-
 from .instagram_page import InstagramPageCreate,\
     InstagramPageUpdate, InstagramPage, ConnectPage
 

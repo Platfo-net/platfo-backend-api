@@ -1,7 +1,6 @@
 from app.models import academy
 from .user import User
 from .role import Role
-from .facebook_account import FacebookAccount
 from .instagram_page import InstagramPage
 from .plan import Plan
 from .credit import Credit
