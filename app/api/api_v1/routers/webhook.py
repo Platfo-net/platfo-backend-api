@@ -64,7 +64,7 @@ def webhook_instagram_listener(
 ):
     facebook_webhook_body = request['entry']
     instagram_data = InstagramData()
-    print('--------------------facebook_webhook_bodyyyyyyyyyyyyyyyyyyyyy------------------------', facebook_webhook_body)
+    print(facebook_webhook_body)
     instagram_data.parse(facebook_webhook_body)
     print(instagram_data.to_dict())
     if instagram_data.is_echo:
@@ -109,8 +109,7 @@ def webhook_instagram_listener(
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"]
     )
-    print('message_innnnnnnnnnnnn', message_in)
-    print('instagram_data', instagram_data)
+
     tasks.save_message(
         obj_in=message_in,
         instagram_page_id=instagram_data.id_recipient
