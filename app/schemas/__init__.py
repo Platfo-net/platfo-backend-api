@@ -46,3 +46,5 @@ from .notification import Notification, NotificationCreate,\
     NotificationUpdate, NotificationListApi, NotificationListItem
 
 from .chatflow_ui import NodeUI, Edge, ChatflowUI
+
+from .file import FileUpload

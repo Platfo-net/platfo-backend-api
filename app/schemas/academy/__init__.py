@@ -4,7 +4,7 @@ from .category import Category, CategoryCreate,\
 
 from .content import Content, ContentCreate,\
     ContentUpdate, ContentBase, ContentListApi, ContentListItem,\
-    ContentDetail, ContentDetailList, ContentSearch
+    ContentDetail, ContentDetailList, ContentSearch, Data, SubData, File, Paragraph
 
 from .content_attachment import ContentAttachment,\
     ContentAttachmentBase, ContentAttachmentCreate, ContentAttachmentList

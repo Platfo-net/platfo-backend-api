@@ -4,8 +4,8 @@ from uuid import uuid4
 from slugify import slugify
 
 from sqlalchemy import event
-from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -20,9 +20,10 @@ class Content(Base):
 
     title = Column(String(1024), nullable=True)
     caption = Column(Text(), nullable=True)
-    detail = Column(Text(), nullable=True)
+    blocks = Column(ARRAY(JSON), nullable=True)
     slug = Column(String(300))
     is_published = Column(Boolean(), default=False)
+    cover_image = Column(String(1024))
 
     @staticmethod
     def generate_slug(target, value, oldvalue, initiator):

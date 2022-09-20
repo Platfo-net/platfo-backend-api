@@ -7,14 +7,42 @@ from app.schemas.academy.content_attachment import ContentAttachment,\
     ContentAttachmentCreate
 from app.schemas.academy.category import CategoryContent,\
     CategoryListItemContent
-from app.schemas.user import User
+
+
+class File(BaseModel):
+    url: Optional[str] = None
+
+
+class SubData(BaseModel):
+    text: Optional[str] = None
+    level: Optional[str] = None
+    items: Optional[List] = None
+    style: Optional[str] = None
+    file: Optional[File] = None
+    caption: Optional[str] = None
+    withBorder: Optional[bool] = False
+    stretched: Optional[bool] = False
+    withBackground: Optional[bool] = False
+
+
+class Paragraph(BaseModel):
+    text: Optional[str] = None
+
+
+class Data(BaseModel):
+    id: Optional[str] = None
+    type: Optional[str] = None
+    data: Optional[SubData] = None
 
 
 class ContentBase(BaseModel):
     title: Optional[str] = None
-    detail: Optional[str] = None
+    blocks: Optional[List[Data]] = None
     caption: Optional[str] = None
     created_at:  Optional[datetime] = None
+    is_published: Optional[bool] = False
+    slug: Optional[str] = None
+    cover_image: Optional[str] = None
 
 
 class ContentCreate(ContentBase):
@@ -35,6 +63,7 @@ class Content(BaseModel):
 
 class ContentDetailList(ContentBase):
     id: UUID4
+    user_id: UUID4
     categories: List[CategoryListItemContent]
     content_attachments: List[ContentAttachment]
 
