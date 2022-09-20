@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import UUID4
 from app.services.base import BaseServices
 from app import models, schemas
@@ -8,9 +8,9 @@ from fastapi.encoders import jsonable_encoder
 
 class NodeServices(
         BaseServices[
-            models.Node,
-            schemas.NodeCreate,
-            schemas.NodeUpdate
+            models.bot_builder.Node,
+            schemas.bot_builder.NodeCreate,
+            schemas.bot_builder.NodeUpdate
         ]):
 
     def get_nodes(
@@ -18,7 +18,7 @@ class NodeServices(
         db: Session,
         *,
         chatflow_id: UUID4
-    ) -> List[schemas.Node]:
+    ) -> List[schemas.bot_builder.Node]:
         return db.query(self.model).filter(
             self.model.chatflow_id == chatflow_id
         ).all()
@@ -27,8 +27,8 @@ class NodeServices(
         self,
         db: Session,
         *,
-        obj_in: schemas.NodeCreate
-    ) -> schemas.Node:
+        obj_in: schemas.bot_builder.NodeCreate
+    ) -> schemas.bot_builder.Node:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data, from_widget={})
         db.add(db_obj)
@@ -37,7 +37,7 @@ class NodeServices(
         return db_obj
 
     def add_widget(self, db: Session, *, obj_in: dict, node_id: UUID4):
-        node = db.query(models.Node).filter(models.Node.id == node_id).first()
+        node = db.query(models.bot_builder.Node).filter(models.bot_builder.Node.id == node_id).first()
         node.widget = obj_in
         db.add(node)
         db.commit()
@@ -45,7 +45,7 @@ class NodeServices(
         return(node)
 
     def connect(self, db: Session, *, from_id: UUID4, node_id: UUID4):
-        node = db.query(models.Node).filter(models.Node.id == node_id).first()
+        node = db.query(models.bot_builder.Node).filter(models.bot_builder.Node.id == node_id).first()
         from_widget = node.from_widget if node.from_widget else []
         from_widget.append(str(from_id))
         node.from_widget = None
@@ -63,25 +63,25 @@ class NodeServices(
         obj_in: List[dict],
         node_id: UUID4
     ):
-        node = db.query(models.Node).filter(models.Node.id == node_id).first()
+        node = db.query(models.bot_builder.Node).filter(models.bot_builder.Node.id == node_id).first()
         node.quick_replies = obj_in
         db.add(node)
         db.commit()
         db.refresh(node)
         return node
 
-    def get_next_node(self, db: Session, *, from_id: UUID4):
-        return db.query(models.Node).filter(
-            models.Node.from_widget.contains([str(from_id)])
+    def get_next_node(self, db: Session, *, from_id: UUID4)-> Optional[models.bot_builder.Node]:
+        return db.query(models.bot_builder.Node).filter(
+            models.bot_builder.Node.from_widget.contains([str(from_id)])
         ).first()
 
     def get_chatflow_head_node(self, db: Session, *, chatflow_id):
-        return db.query(models.Node).filter(
-            models.Node.chatflow_id == chatflow_id,
-            models.Node.is_head == True  # noqa
+        return db.query(models.bot_builder.Node).filter(
+            models.bot_builder.Node.chatflow_id == chatflow_id,
+            models.bot_builder.Node.is_head == True  # noqa
         ).first()
 
-    def create_bulk_nodes(self, db: Session, *, nodes: List[models.Node]):
+    def create_bulk_nodes(self, db: Session, *, nodes: List[models.bot_builder.Node]):
         for node in nodes:
             db.add(node)
         db.commit()
@@ -93,4 +93,4 @@ class NodeServices(
         ).delete()
 
 
-node = NodeServices(models.Node)
+node = NodeServices(models.bot_builder.Node)

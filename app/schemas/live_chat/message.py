@@ -20,5 +20,5 @@ class Message(MessageBase):
     send_at: datetime
 
 
-class SendMessage(BaseModel):
+class MessageSend(BaseModel):
     text:Optional[str] = None

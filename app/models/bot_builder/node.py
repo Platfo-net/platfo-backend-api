@@ -8,14 +8,14 @@ from sqlalchemy.orm import relationship
 
 class Node(Base):
 
-    __tablename__ = "nodes"
+    __tablename__ = "bot_builder_nodes"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
     title = Column(String(255), nullable=True)
     chatflow_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("chatflows.id"),
+        ForeignKey("bot_builder_chatflows.id"),
         primary_key=False,
         nullable=True,
     )

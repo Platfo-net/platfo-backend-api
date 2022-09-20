@@ -14,8 +14,8 @@ class ContactServices:
         self,
         db: Session,
         *,
-        obj_in: schemas.ContactCreate
-    ) -> models.Contact:
+        obj_in: schemas.live_chat.ContactCreate
+    ) -> models.live_chat.Contact:
         obj_in = jsonable_encoder(obj_in)
         contact = self.model(
             **obj_in,
@@ -77,7 +77,6 @@ class ContactServices:
         skip: int = 0,
         limit: int = 100
     ):
-        # -> List[schemas.Contact]:
         """Return an specific instagram page's contacts
 
         Args:
@@ -100,7 +99,7 @@ class ContactServices:
         last_message: dict
     ):
 
-        db_obj: models.Contact = db.query(self.model).filter(
+        db_obj = db.query(self.model).filter(
             self.model.contact_igs_id == contact_igs_id
         ).first()
 
@@ -128,4 +127,4 @@ class ContactServices:
 
 
 
-contact = ContactServices(models.Contact)
+contact = ContactServices(models.live_chat.Contact)

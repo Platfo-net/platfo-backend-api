@@ -8,8 +8,8 @@ class ChatflowUIServices:
         self,
         db: Session,
         *,
-        nodes: List[models.NodeUI],
-        edges: List[models.Edge]
+        nodes: List[models.bot_builder.NodeUI],
+        edges: List[models.bot_builder.Edge]
     ):
         for node in nodes:
             db.add(node)

@@ -1,27 +1,11 @@
-
-
-from .chatflow import Chatflow
 from typing import Optional
 from typing import List, Optional
 from pydantic import UUID4, BaseModel
-from app.schemas.account import Account
 
 
 class ConnectionChatflowBase(BaseModel):
     chatflow_id: Optional[UUID4] = None
     trigger_id: Optional[UUID4] = None
-
-
-class ConnectionChatflowCreate(ConnectionChatflowBase):
-    pass
-
-
-class ConnectionChatflow(ConnectionChatflowBase):
-    id: UUID4
-    chatflow: Optional[Chatflow]
-
-    class Config:
-        orm_mode = True
 
 
 class ConnectionBase(BaseModel):

@@ -7,7 +7,7 @@ from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
 
-router = APIRouter(prefix="/chatflow-ui", tags=["ChatflowUI"])
+router = APIRouter(prefix="/chatflow-ui")
 
 
 @router.get("/nodes/all/{chatflow_id}")
@@ -23,16 +23,16 @@ def get_chatflow_nodes_edges(
             ],
         ),
 ):
-    chatflow = db.query(models.Chatflow).filter(
+    chatflow = db.query(models.bot_builder.Chatflow).filter(
         models.Chatflow.id == chatflow_id).first()
 
-    nodes = db.query(models.NodeUI).filter(
-        models.NodeUI.chatflow_id == chatflow_id).all()
-    edges = db.query(models.Edge).filter(
-        models.Edge.chatflow_id == chatflow_id).all()
+    nodes = db.query(models.bot_builder.NodeUI).filter(
+        models.bot_builder.NodeUI.chatflow_id == chatflow_id).all()
+    edges = db.query(models.bot_builder.Edge).filter(
+        models.bot_builder.Edge.chatflow_id == chatflow_id).all()
 
     nodes = [
-        schemas.NodeUI(
+        schemas.bot_builder.NodeUI(
             id=node.id,
             text=node.text,
             width=node.width,
@@ -46,7 +46,7 @@ def get_chatflow_nodes_edges(
     ]
 
     edges = [
-        schemas.Edge(
+        schemas.bot_builder.Edge(
             id=edge.id,
             from_id=edge.from_id,
             to_id=edge.to_id,
@@ -57,7 +57,7 @@ def get_chatflow_nodes_edges(
         ) for edge in edges
     ]
 
-    return schemas.ChatflowUI(
+    return schemas.bot_builder.ChatflowUI(
         chatflow_id=chatflow_id,
         name=chatflow.name,
         nodes=nodes,
@@ -70,7 +70,7 @@ def create_chatflow_nodes_edges(
         *,
         db: Session = Depends(deps.get_db),
         chatflow_id: UUID4,
-        obj_in: schemas.ChatflowUI,
+        obj_in: schemas.bot_builder.ChatflowUI,
         current_user: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -80,24 +80,24 @@ def create_chatflow_nodes_edges(
         ),
 ):
 
-    db.query(models.NodeUI).filter(
-        models.NodeUI.chatflow_id == chatflow_id).delete()
-    db.query(models.Edge).filter(
-        models.Edge.chatflow_id == chatflow_id).delete()
+    db.query(models.bot_builder.NodeUI).filter(
+        models.bot_builder.NodeUI.chatflow_id == chatflow_id).delete()
+    db.query(models.bot_builder.Edge).filter(
+        models.bot_builder.Edge.chatflow_id == chatflow_id).delete()
 
-    chatflow = services.chatflow.get(db, chatflow_id, current_user.id)
+    chatflow = services.bot_builder.chatflow.get(db, chatflow_id, current_user.id)
 
-    services.chatflow.update(
+    services.bot_builder.chatflow.update(
         db,
         db_obj=chatflow,
-        obj_in=schemas.ChatflowUpdate(
+        obj_in=schemas.bot_builder.ChatflowUpdate(
             is_active=True,
             name=obj_in.name
         ))
 
     new_nodes = []
     for node in obj_in.nodes:
-        db_obj = models.NodeUI(
+        db_obj = models.bot_builder.NodeUI(
             id=node.id,
             text=node.text,
             width=node.width,
@@ -113,7 +113,7 @@ def create_chatflow_nodes_edges(
 
     new_edges = []
     for edge in obj_in.edges:
-        db_obj = models.Edge(
+        db_obj = models.bot_builder.Edge(
             id=edge.id,
             from_id=edge.from_id,
             to_id=edge.to_id,
@@ -125,15 +125,15 @@ def create_chatflow_nodes_edges(
         )
         new_edges.append(db_obj)
 
-    services.chatflow_ui.create_bulk_chatflow(
+    services.bot_builder.chatflow_ui.create_bulk_chatflow(
         db, nodes=new_nodes, edges=new_edges
     )
 
-    services.node.delete_chatflow_nodes(db, chatflow_id=chatflow_id)
+    services.bot_builder.node.delete_chatflow_nodes(db, chatflow_id=chatflow_id)
     nodes = chatflow_ui_parse(chatflow_id=chatflow_id,
                               nodes=obj_in.nodes, edges=obj_in.edges)
 
-    services.node.create_bulk_nodes(db, nodes=nodes)
+    services.bot_builder.node.create_bulk_nodes(db, nodes=nodes)
     return obj_in
 
 
@@ -162,7 +162,7 @@ def chatflow_ui_parse(
     from_widget = [
         str(edge.from_widget) for edge in edges if edge.to_id == head_node.id]
 
-    obj = models.Node(
+    obj = models.bot_builder.Node(
         id=head_node.id,
         title=head_node.text,
         chatflow_id=chatflow_id,
@@ -181,7 +181,7 @@ def chatflow_ui_parse(
         from_widget = [
             str(edge.from_widget) for edge in edges if edge.to_id == node.id]
 
-        obj = models.Node(
+        obj = models.bot_builder.Node(
             id=node.id,
             title=node.text,
             chatflow_id=chatflow_id,

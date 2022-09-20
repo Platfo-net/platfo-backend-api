@@ -9,7 +9,7 @@ class MessageServices:
     def __init__(self, model):
         self.model = model
 
-    def create(self, db: Session, *, obj_in: schemas.MessageCreate):
+    def create(self, db: Session, *, obj_in: schemas.live_chat.MessageCreate):
         if type(obj_in.content) == str:
             obj_in.content = {
                 "text": obj_in.content
@@ -71,11 +71,11 @@ class MessageServices:
         return
 
     def remove_message_by_mid(self, db: Session, *, mid: str):
-        message = db.query(models.Message).filter(models.Message.mid == mid).first()
+        message = db.query(self.model).filter(self.model.mid == mid).first()
         db.delete(message)
         db.commit()
         # db.refresh(message)
         return
 
 
-message = MessageServices(models.Message)
+message = MessageServices(models.live_chat.Message)

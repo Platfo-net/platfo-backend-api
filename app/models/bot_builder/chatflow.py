@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 
 class Chatflow(Base):
 
-    __tablename__ = "chatflows"
+    __tablename__ = "bot_builder_chatflows"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )

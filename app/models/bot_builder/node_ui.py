@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 
 
 class NodeUI(Base):
-    __tablename__ = "nodeuies"
+    __tablename__ = "bot_builder_nodeuies"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
@@ -24,7 +24,7 @@ class NodeUI(Base):
 
     chatflow_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("chatflows.id"),
+        ForeignKey("bot_builder_chatflows.id"),
         nullable=True,
     )
 

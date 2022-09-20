@@ -9,14 +9,14 @@ from pydantic.types import UUID4
 from app.constants.errors import Error
 from app.constants.role import Role
 
-router = APIRouter(prefix="/chatflow", tags=["Chatflow"])
+router = APIRouter(prefix="/chatflow")
 
 
-@router.post("", response_model=schemas.Chatflow)
+@router.post("", response_model=schemas.bot_builder.Chatflow)
 def create_chatflow(
     *,
     db: Session = Depends(deps.get_db),
-    obj_in: schemas.ChatflowCreate,
+    obj_in: schemas.bot_builder.ChatflowCreate,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -32,13 +32,6 @@ def create_chatflow(
         obj_in=obj_in,
         user_id=current_user.id
     )
-    # node = services.node.create(db, obj_in=schemas.NodeCreate(
-    #     title="Start",
-    #     chatflow_id=chatflow.id,
-    #     is_head=True
-    # ))
-    # services.node.add_widget(db, obj_in=dict(
-    #     widget_type="START"), node_id=node.id)
     return chatflow
 
 
@@ -70,7 +63,7 @@ def delete_chatflow(
     return
 
 
-@router.get("/all", response_model=List[schemas.Chatflow])
+@router.get("/all", response_model=List[schemas.bot_builder.Chatflow])
 def get_user_chatflows(
     *,
     db: Session = Depends(deps.get_db),

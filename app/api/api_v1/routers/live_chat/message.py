@@ -10,11 +10,11 @@ from app.core.instagram_graph_api import graph_api
 from app.core import tasks
 from app.constants.widget_type import WidgetType
 
-router = APIRouter(prefix="/message", tags=["Messages"])
+router = APIRouter(prefix="/message")
 
 
 @router.get("/archive/{page_id}/{contact_igs_id}",
-            response_model=List[schemas.Message])
+            response_model=List[schemas.live_chat.Message])
 def get_archive(
     *,
     db: Session = Depends(deps.get_db),
@@ -41,7 +41,7 @@ def get_archive(
     new_messages = []
     messages = reversed(messages)
     for message in list(messages):
-        new_message = schemas.Message(
+        new_message = schemas.live_chat.Message(
             id=message.id,
             from_page_id=message.from_page_id,
             to_page_id=message.to_page_id,
@@ -61,7 +61,7 @@ def send_message(
     db: Session = Depends(deps.get_db),
     from_page_id: str,
     to_contact_igs_id: str,
-    obj_in: schemas.SendMessage,
+    obj_in: schemas.live_chat.MessageSend,
     backgroud: BackgroundTasks,
     current_user: models.User = Security(
         deps.get_current_active_user,

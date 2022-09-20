@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 class Message(Base):
 
-    __tablename__ = "messages"
+    __tablename__ = "live_chat_messages"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )

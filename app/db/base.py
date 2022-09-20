@@ -8,11 +8,11 @@ from app.models.credit import Credit  # noqa
 from app.models.plan import Plan  # noqa
 from app.models.connection import Connection  # noqa
 
-from app.models.chatflow import Chatflow  # noqa
-from app.models.node import Node  # noqa
+from app.models.bot_builder.chatflow import Chatflow  # noqa
+from app.models.bot_builder.node import Node  # noqa
 
-from app.models.contact import Contact  # noqa
-from app.models.message import Message  # noqa
+from app.models.live_chat.contact import Contact  # noqa
+from app.models.live_chat.message import Message  # noqa
 
 from app.models.notification import Notification, NotificationUser  # noqa
 
@@ -21,5 +21,5 @@ from app.models.academy import Category, Content,\
      ContentAttachment, ContentCategory, Label, ContentLabel  # noqa
 
 
-from app.models.node_ui import NodeUI  # noqa
-from app.models.edge import Edge  # noqa
+from app.models.bot_builder.node_ui import NodeUI  # noqa
+from app.models.bot_builder.edge import Edge  # noqa

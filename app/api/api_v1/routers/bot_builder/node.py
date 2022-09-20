@@ -14,10 +14,10 @@ from app.constants.widget_type import WidgetType
 from app.constants.role import Role
 
 
-router = APIRouter(prefix="/node", tags=["Node"])
+router = APIRouter(prefix="/node")
 
 
-@router.get("/all/{chatflow_id}", response_model=List[schemas.Node])
+@router.get("/all/{chatflow_id}", response_model=List[schemas.bot_builder.Node])
 def get_all_nodes(
     *,
     db: Session = Depends(deps.get_db),
@@ -40,15 +40,15 @@ def get_all_nodes(
             detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['text'],
         )
 
-    nodes = services.node.get_nodes(db, chatflow_id=chatflow_id)
+    nodes = services.bot_builder.node.get_nodes(db, chatflow_id=chatflow_id)
     return nodes
 
 
-@router.post("/full", response_model=schemas.Node)
+@router.post("/full", response_model=schemas.bot_builder.Node)
 def create_full_node(
     *,
     db: Session = Depends(deps.get_db),
-    obj_in: schemas.FullNodeCreate,
+    obj_in: schemas.bot_builder.FullNodeCreate,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -66,14 +66,14 @@ def create_full_node(
             status_code=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['status_code'],
             detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['text'],
         )
-    node_in = schemas.NodeCreate(
+    node_in = schemas.bot_builder.NodeCreate(
         title=obj_in.title,
         chatflow_id=obj_in.chatflow_id,
         is_head=obj_in.is_head
     )
     quick_replies = jsonable_encoder(obj_in.quick_replies)
 
-    node = services.node.create(db, obj_in=node_in)
+    node = services.bot_builder.node.create(db, obj_in=node_in)
 
     if obj_in.widget_type == WidgetType.TEXT["name"]:
         obj_in = dict(id=str(uuid.uuid4()),
@@ -93,13 +93,13 @@ def create_full_node(
         obj_in["choices"] = [dict(id=str(uuid.uuid4()), text=ch["text"])
                              for ch in obj_in["choices"]]
 
-    node = services.node.add_widget(db, obj_in=obj_in, node_id=node.id)
-    node = services.node.add_quick_reply(
+    node = services.bot_builder.node.add_widget(db, obj_in=obj_in, node_id=node.id)
+    node = services.bot_builder.node.add_quick_reply(
         db, obj_in=quick_replies, node_id=node.id)
     return node
 
 
-@router.get("/connect/{node_id}/{from_id}", response_model=schemas.Node)
+@router.get("/connect/{node_id}/{from_id}", response_model=schemas.bot_builder.Node)
 def connect_widget_to_node(
     *,
     db: Session = Depends(deps.get_db),
@@ -114,7 +114,7 @@ def connect_widget_to_node(
     ),
 ) -> Any:
 
-    node = services.node.get(db, id=node_id)
+    node = services.bot_builder.node.get(db, id=node_id)
 
     if not node:
         raise HTTPException(
@@ -131,4 +131,4 @@ def connect_widget_to_node(
             detail=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE['text'],
         )
 
-    return services.node.connect(db, from_id=from_id, node_id=node_id)
+    return services.bot_builder.node.connect(db, from_id=from_id, node_id=node_id)
