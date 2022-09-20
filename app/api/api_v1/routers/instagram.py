@@ -93,7 +93,17 @@ def connect_instagram_page(
             )
             res = requests.get(get_instagram_page_id_url, params=params)
             instagram_page_id = res.json()['connected_instagram_account']['id']
-
+            subscribe_url = "{}/{}/{}/subscribed_apps".format(
+                settings.FACEBOOK_GRAPH_BASE_URL,
+                settings.FACEBOOK_GRAPH_VERSION,
+                page['id']
+            )
+            params = dict(
+                subscribed_fields="name",
+                access_token=page["access_token"],
+            )
+            res = requests.post(subscribe_url, params=params)
+            print(res.json())
             params = dict(
                 fields="username,profile_picture_url,"
                        "followers_count,follows_count,biography,"
@@ -110,8 +120,6 @@ def connect_instagram_page(
             res = requests.get(get_page_info_url, params=params)
 
             page_details = res.json()
-            logging.debug(page)
-            logging.debug("----------------------------")
 
             instagram_page = services.instagram_page\
                 .get_page_by_instagram_page_id(
