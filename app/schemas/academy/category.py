@@ -7,7 +7,7 @@ from app.schemas.pagination import Pagination
 
 class CategoryBase(BaseModel):
     title: Optional[str] = None
-    parrent_id: Optional[UUID4] = None
+    parent_id: Optional[UUID4] = None
 
 
 class CategoryCreate(CategoryBase):
@@ -28,7 +28,7 @@ class Category(BaseModel):
 class CategoryListItem(BaseModel):
     id: UUID4
     title: Optional[str] = None
-    parrent_id: Optional[UUID4] = None
+    parent_id: Optional[UUID4] = None
     children: Optional[List[dict]] = None
 
     class Config:
@@ -38,7 +38,7 @@ class CategoryListItem(BaseModel):
 class CategoryListItemContent(BaseModel):
     id: UUID4
     title: Optional[str] = None
-    parrent_id: Optional[UUID4] = None
+    parent_id: Optional[UUID4] = None
 
     class Config:
         orm_mode = True
@@ -55,12 +55,12 @@ class CategoryListApi(BaseModel):
                 "categories": [
                     {
                         "title": "guide",
-                        "parrent_id": "null",
+                        "parent_id": "null",
                         "children": [
                             {"id": "0cabbc9b-bed2-4d83-924b-748c4c4394af",
                              "title": "guide instagram",
                              "children": [],
-                             "parrent_id": "0244e0b0-e498-407a-95e1-25fd486fa527"}  # noqa
+                             "parent_id": "0244e0b0-e498-407a-95e1-25fd486fa527"}  # noqa
                         ],
                         "id": "e744f7eb-3529-4562-bcf3-e8e4eaad0267"
                     }

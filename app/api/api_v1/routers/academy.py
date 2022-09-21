@@ -109,9 +109,9 @@ def get_categories_list(
             "id": category.id,
             "title": category.title,
             "children": categories_to_child_categories(category.id),
-            "parrent_id": category.parrent_id
+            "parent_id": category.parent_id
         }
-            for category in categories if category.parrent_id == n
+            for category in categories if category.parent_id == n
         ]
         return categories_list
 
@@ -353,6 +353,17 @@ def update_content(*,
             category_id=category.category_id
         )
 
+    services.academy.label_content.remove_by_content_id(
+        db,
+        content_id=id,
+    )
+    for label in obj_in.labels:
+        services.academy.label_content.create(
+            db,
+            label_id=label.label_id,
+            content_id=old_content.id
+        )
+
     return content
 
 
@@ -375,34 +386,3 @@ def delete_content(*,
         )
     services.academy.content.remove(db, id=id)
     return
-
-# {
-#     "title": "string",
-#     "blocks": [
-#         {
-#             "id": "e7fd5f16-f2a8-4c6e-bef9-52d0f4f3fe46",
-#             "type": "list",
-#             "data": {
-#                 "style": "unordered",
-#                 "items": [
-#                     "It is a block-styled editor",
-#                     "It returns clean data output in JSON",
-#                     "Designed to be extendable and pluggable with a simple API"
-#                 ]}
-#
-#         }
-#     ],
-#     "caption": "string",
-#     "created_at": "2022-09-20T07:15:16.052Z",
-#     "content_attachments": [
-#         {
-#             "attachment_type": "string",
-#             "attachment_id": "string"
-#         }
-#     ],
-#     "categories": [
-#         {
-#             "category_id": "4d5e8309-c8d5-4cd7-97bb-6cafd2c83ab2"
-#         }
-#     ]
-# }

@@ -5,6 +5,7 @@ from app import models
 
 
 class CategoryContentServices:
+
     def __init__(self, model):
         self.model = model
 

@@ -14,11 +14,16 @@ class Category(Base):
     )
 
     title = Column(String(255), nullable=True)
-    parrent_id = Column(
+    parent_id = Column(
         UUID(as_uuid=True),
         ForeignKey("categories.id"),
-        nullable=True,
+        nullable=True
     )
 
     content_categories = relationship(
         "ContentCategory", back_populates="category")
+
+    parent_categories = relationship(
+        "Category",
+        cascade="all,delete"
+        )

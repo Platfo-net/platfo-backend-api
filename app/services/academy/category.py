@@ -38,7 +38,7 @@ class CategoryServices(
     ):
         db_obj = self.model(
             title=obj_in.title,
-            parrent_id=obj_in.parrent_id
+            parent_id=obj_in.parent_id
         )
         db.add(db_obj)
         db.commit()

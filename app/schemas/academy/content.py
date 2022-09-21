@@ -93,13 +93,13 @@ class ContentDetail(BaseModel):
                                 {
                                     "id": "496d30b6-9519-4b8a-91cf-1bb1f9c48ba1",
                                     "title": "cat 1",
-                                    "parrent_id": "7bda49e9-7479-41ee-b9f4-2998bdd717a2",
+                                    "parent_id": "7bda49e9-7479-41ee-b9f4-2998bdd717a2",
                                     "children": [
                                         {
                                           "id": "0cabbc9b-bed2-4d83-924b-748c4c4394af",
                                           "title": "guide instagram",
                                           "children": [],
-                                          "parrent_id": "0244e0b0-e498-407a-95e1-25fd486fa527"
+                                          "parent_id": "0244e0b0-e498-407a-95e1-25fd486fa527"
                                         }
                                     ]
                                 }
@@ -168,7 +168,7 @@ class ContentListApi(BaseModel):
                                 "category": {
                                     "id": "c2709ad4-db44-4e49-9d2e-93c9e6ad27e3",
                                     "title": "amozesh",
-                                    "parrent_id": "null"
+                                    "parent_id": "null"
                                 }
                             }
                         ]
@@ -184,7 +184,7 @@ class ContentListApi(BaseModel):
                                 "category": {
                                     "id": "496d30b6-9519-4b8a-91cf-1bb1f9c48ba1",
                                     "title": "cat 1",
-                                    "parrent_id": "7bda49e9-7479-41ee-b9f4-2998bdd717a2"
+                                    "parent_id": "7bda49e9-7479-41ee-b9f4-2998bdd717a2"
                                 }
                             }
                         ]
