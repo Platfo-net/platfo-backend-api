@@ -19,6 +19,7 @@ class InstagramData:
         self.is_deleted = False
         self.mid = None
         self.attachment = None
+        self.attachment_type = None
         self.story_url = None
 
     def parse(self, body):
@@ -51,6 +52,10 @@ class InstagramData:
                         pass
                     try:
                         self.attachment = item["message"]["attachments"][0]["payload"]["url"]
+                    except Exception:
+                        pass
+                    try:
+                        self.attachment_type = item["message"]["attachments"][0]["type"]
                     except Exception:
                         pass
                     try:

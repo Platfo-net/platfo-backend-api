@@ -95,6 +95,12 @@ def webhook_instagram_listener(
             "message": instagram_data.message_detail,
             "id": str(uuid4())
         }
+    elif instagram_data.attachment_type:
+        saved_data = {
+            "url": instagram_data.attachment,
+            "widget_type": instagram_data.attachment_type.upper(),
+            "id": str(uuid4())
+        }
     else:
         saved_data = {
             "message": instagram_data.message_detail,
