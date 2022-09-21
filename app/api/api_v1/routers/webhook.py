@@ -88,13 +88,6 @@ def webhook_instagram_listener(
             "widget_type": instagram_data.attachment_type.upper(),
             "id": str(uuid4())
         }
-    elif instagram_data.attachment:
-
-        saved_data = {
-            "url": instagram_data.attachment,
-            "widget_type": "STORY_MENTION",
-            "id": str(uuid4())
-        }
     elif instagram_data.story_url:
         saved_data = {
             "url": instagram_data.story_url,
@@ -102,7 +95,6 @@ def webhook_instagram_listener(
             "message": instagram_data.message_detail,
             "id": str(uuid4())
         }
-    
     else:
         saved_data = {
             "message": instagram_data.message_detail,
