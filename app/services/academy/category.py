@@ -1,3 +1,4 @@
+
 import math
 
 from sqlalchemy.orm import Session
@@ -14,8 +15,13 @@ class CategoryServices(
         schemas.academy.CategoryUpdate
     ]
 ):
-    def get_multi(self, db: Session, *, page: int = 1, page_size: int = 20):
-
+    def get_multi(
+            self,
+            db: Session,
+            *,
+            page: int = 1,
+            page_size: int = 20
+    ):
         categories = db.query(self.model).offset(
             page_size * (page - 1)).limit(page_size).all()
 

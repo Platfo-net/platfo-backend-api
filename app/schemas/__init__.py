@@ -38,7 +38,7 @@ from .node import NodeCreate, NodeUpdate,\
 
 from .contact import Contact, ContactCreate, ProfileUpdate
 
-from .message import MessageCreate, Message,SendMessage
+from .message import MessageCreate, Message, SendMessage
 
 
 from .pagination import Pagination

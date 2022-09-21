@@ -1,3 +1,4 @@
+
 from pydantic import UUID4
 from app import models, schemas
 from sqlalchemy.orm import Session
@@ -21,12 +22,22 @@ class ContentAttachmentServices:
         db.commit()
         db.refresh(db_obj)
 
-    def get_by_content_id(self, db: Session, *, content_id: UUID4):
+    def get_by_content_id(
+            self,
+            db: Session,
+            *,
+            content_id: UUID4
+    ):
         return db.query(self.model).filter(
             self.model.content_id == content_id
         )
 
-    def remove_by_content_id(self, db: Session, *, content_id: UUID4):
+    def remove_by_content_id(
+            self,
+            db: Session,
+            *,
+            content_id: UUID4
+    ):
         return db.query(self.model).filter(
             self.model.content_id == content_id
         ).delete()

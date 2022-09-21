@@ -1,3 +1,4 @@
+
 import math
 from typing import List
 
@@ -30,7 +31,7 @@ class ContentServices(
             desc(self.model.created_at)
         ).options(
             joinedload(self.model.content_categories),
-            joinedload(self.model.content_labels))\
+            joinedload(self.model.content_labels)) \
             .offset(page_size * (page - 1)).limit(page_size).all()
 
         total_count = db.query(self.model).count()
@@ -54,7 +55,8 @@ class ContentServices(
 
         content = db.query(self.model).options(
             joinedload(self.model.content_categories),
-            joinedload(self.model.content_labels)).filter(self.model.id == id).offset(
+            joinedload(self.model.content_labels)).\
+            filter(self.model.id == id).offset(
             page_size * (page - 1)
         ).limit(page_size).first()
 
@@ -68,7 +70,7 @@ class ContentServices(
             ).filter(
                 models.academy.Category.id == content_category.category_id
             ).first()
-                              )
+               )
         labels = []
         for content_label in content_labels:
             labels.append(db.query(
@@ -76,17 +78,18 @@ class ContentServices(
             ).filter(
                 models.academy.Label.id == content_label.label_id
             ).first()
-                              )
+                          )
 
         return content, categories, labels
 
-    def search(self,
-               db: Session,
-               *,
-               categories_list: List,
-               page: int = 1,
-               page_size: int = 20
-               ):
+    def search(
+            self,
+            db: Session,
+            *,
+            categories_list: List,
+            page: int = 1,
+            page_size: int = 20
+    ):
         total_count = db.query(self.model).count()
         total_pages = math.ceil(total_count / page_size)
         pagination = schemas.Pagination(
@@ -118,19 +121,22 @@ class ContentServices(
             *,
             obj_in: schemas.academy.ContentCreate,
             user_id: UUID4
-
     ):
         sub_data = []
         for item in obj_in.blocks:
             data = None
             if item.type == 'paragraph':
-                data = schemas.academy.SubData(text=item.data.text)
+                data = schemas.academy.\
+                    SubData(text=item.data.text)
             if item.type == 'header':
-                data = schemas.academy.SubData(text=item.data.text, level=item.data.style)
+                data = schemas.academy.\
+                    SubData(text=item.data.text, level=item.data.style)
             if item.type == 'heading':
-                data = schemas.academy.SubData(text=item.data.text, level=item.data.style)
+                data = schemas.academy.\
+                    SubData(text=item.data.text, level=item.data.style)
             if item.type == 'list':
-                data = schemas.academy.SubData(style=item.data.style, items=item.data.items)
+                data = schemas.academy.\
+                    SubData(style=item.data.style, items=item.data.items)
             if item.type == 'image':
                 data = schemas.academy.SubData(
                     file=schemas.academy.File(url=item.data.file.url),
@@ -139,7 +145,10 @@ class ContentServices(
                     stretched=item.data.stretched,
                     withBackground=item.data.withBackground
                 )
-            sub_data.append(schemas.academy.Data(id=item.id, type=item.type, data=data))
+            sub_data.append(
+                schemas.academy.
+                Data(id=item.id, type=item.type, data=data)
+                        )
 
         blocks = [
             {
@@ -155,7 +164,9 @@ class ContentServices(
             caption=obj_in.caption,
             is_published=obj_in.is_published,
             user_id=user_id,
-            cover_image=obj_in.cover_image
+            cover_image=obj_in.cover_image,
+            version=obj_in.version,
+            time=obj_in.time
         )
         db.add(db_obj)
         db.commit()
@@ -163,7 +174,9 @@ class ContentServices(
         return db_obj
 
     def update(  # noqa
-            self, db: Session, *,
+            self,
+            db: Session,
+            *,
             db_obj: models.academy.Content,
             obj_in: schemas.academy.ContentCreate,
             user_id: UUID4
@@ -173,6 +186,8 @@ class ContentServices(
         db_obj.caption = obj_in.caption
         db_obj.user_id = user_id
         db_obj.cover_image = obj_in.cover_image
+        db_obj.version = obj_in.version
+        db_obj.time = obj_in.time
 
         db.add(db_obj)
         db.commit()

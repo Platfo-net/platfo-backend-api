@@ -15,7 +15,13 @@ class LabelServices(
         schemas.academy.LabelUpdate
     ]
 ):
-    def get_multi(self, db: Session, *, page: int = 1, page_size: int = 20):
+    def get_multi(
+            self,
+            db: Session,
+            *,
+            page: int = 1,
+            page_size: int = 20
+    ):
         labels = db.query(self.model).offset(
             page_size * (page - 1)).limit(page_size).all()
 
@@ -27,7 +33,6 @@ class LabelServices(
             total_pages=total_pages,
             total_count=total_count
         )
-
         return labels, pagination
 
     def create(

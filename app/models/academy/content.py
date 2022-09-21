@@ -1,10 +1,12 @@
+
 import datetime
 from uuid import uuid4
 
 from slugify import slugify
 
 from sqlalchemy import event
-from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON
+from sqlalchemy import Column, String, Text,\
+    DateTime, Boolean, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 
@@ -24,6 +26,8 @@ class Content(Base):
     slug = Column(String(300))
     is_published = Column(Boolean(), default=False)
     cover_image = Column(String(1024))
+    time = Column(String(200), nullable=True)
+    version = Column(String(200), nullable=True)
 
     @staticmethod
     def generate_slug(target, value, oldvalue, initiator):

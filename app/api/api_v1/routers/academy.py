@@ -1,6 +1,8 @@
+
 from typing import List
 
-from fastapi import APIRouter, Depends, Security, HTTPException, Query
+from fastapi import APIRouter, Depends,\
+    Security, HTTPException, Query
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -33,7 +35,8 @@ def get_labels_list(
 
 @router.post('/label/create', response_model=schemas.academy.Label)
 def create_label(
-        *, obj_in: schemas.academy.LabelCreate,
+        *,
+        obj_in: schemas.academy.LabelCreate,
         db: Session = Depends(deps.get_db),
         current_user: models.User = Security(
             deps.get_current_active_user,
@@ -46,9 +49,10 @@ def create_label(
     return label
 
 
-@router.put('/label/{id}', response_model=schemas.academy.Label)
+@router.put('/label/update/{id}', response_model=schemas.academy.Label)
 def update_label(
-        *, obj_in: schemas.academy.LabelUpdate,
+        *,
+        obj_in: schemas.academy.LabelUpdate,
         db: Session = Depends(deps.get_db),
         id: UUID4,
         current_user: models.User = Security(
@@ -70,17 +74,18 @@ def update_label(
     return label
 
 
-@router.delete('/label/{id}')
-def delete_label(*,
-                 db: Session = Depends(deps.get_db),
-                 id: UUID4,
-                 current_user: models.User = Security(
-                   deps.get_current_active_user,
-                   scopes=[
-                       Role.ADMIN["name"],
-                   ],
-                ),
-                   ):
+@router.delete('/label/delete/{id}')
+def delete_label(
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+           deps.get_current_active_user,
+           scopes=[
+               Role.ADMIN["name"],
+           ],
+        ),
+):
     label = services.academy.label.get(db, id=id)
     if not label:
         raise HTTPException(
@@ -124,7 +129,8 @@ def get_categories_list(
 
 @router.post('/category/create', response_model=schemas.academy.Category)
 def create_category(
-        *, obj_in: schemas.academy.CategoryCreate,
+        *,
+        obj_in: schemas.academy.CategoryCreate,
         db: Session = Depends(deps.get_db),
         current_user: models.User = Security(
             deps.get_current_active_user,
@@ -137,9 +143,10 @@ def create_category(
     return category
 
 
-@router.put('/category/{id}', response_model=schemas.academy.Category)
+@router.put('/category/update/{id}', response_model=schemas.academy.Category)
 def update_category(
-        *, obj_in: schemas.academy.CategoryUpdate,
+        *,
+        obj_in: schemas.academy.CategoryUpdate,
         db: Session = Depends(deps.get_db),
         id: UUID4,
         current_user: models.User = Security(
@@ -161,16 +168,17 @@ def update_category(
     return category
 
 
-@router.delete('/category/{id}')
-def delete_category(*,
-                    db: Session = Depends(deps.get_db),
-                    id: UUID4,
-                    current_user: models.User = Security(
-                      deps.get_current_active_user,
-                      scopes=[
-                         Role.ADMIN["name"],
-                   ],
-            ),
+@router.delete('/category/delete/{id}')
+def delete_category(
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+          deps.get_current_active_user,
+          scopes=[
+             Role.ADMIN["name"],
+          ],
+        ),
 ):
     category = services.academy.category.get(db, id=id)
     if not category:
@@ -210,11 +218,12 @@ def search_content_by_category(
 
 
 @router.get('/', response_model=schemas.academy.ContentListApi)
-def get_all_contents(*,
-                     db: Session = Depends(deps.get_db),
-                     page: int = 1,
-                     page_size: int = 20
-                     ):
+def get_all_contents(
+         *,
+         db: Session = Depends(deps.get_db),
+         page: int = 1,
+         page_size: int = 20
+):
     contents, pagination = services.academy.content.get_multi(
         db,
         page=page,
@@ -230,10 +239,11 @@ def get_all_contents(*,
 
 @router.get('/{id}', response_model=schemas.academy.ContentDetail,
             response_model_exclude_defaults=True)
-def get_content_by_id(*,
-                      db: Session = Depends(deps.get_db),
-                      id: UUID4
-                      ):
+def get_content_by_id(
+          *,
+          db: Session = Depends(deps.get_db),
+          id: UUID4
+):
     content, categories, labels = services.academy.content.get_by_detail(db, id=id)
 
     if not content:
@@ -260,6 +270,8 @@ def get_content_by_id(*,
         blocks=content.blocks,
         cover_image=content.cover_image,
         caption=content.caption,
+        version=content.version,
+        time=content.time,
         created_at=content.created_at,
         categories=categories,
         labels=labels,
@@ -273,17 +285,21 @@ def get_content_by_id(*,
 
 
 @router.post('/', response_model=schemas.academy.Content)
-def create_content(*, obj_in: schemas.academy.ContentCreate,
-                   db: Session = Depends(deps.get_db),
-                   current_user: models.User = Security(
-                       deps.get_current_active_user,
-                       scopes=[
-                           Role.ADMIN["name"],
-                           Role.WRITER["name"]
-                       ],
-                   ),
-                   ):
-    content = services.academy.content.create(db=db, obj_in=obj_in, user_id=current_user.id)
+def create_content(
+        *,
+        obj_in: schemas.academy.ContentCreate,
+        db: Session = Depends(deps.get_db),
+        current_user: models.User = Security(
+           deps.get_current_active_user,
+           scopes=[
+               Role.ADMIN["name"],
+               Role.WRITER["name"]
+           ],
+        ),
+):
+    content = services.academy.content.create(db=db,
+                                              obj_in=obj_in,
+                                              user_id=current_user.id)
     for category in obj_in.categories:
         services.academy.category_content.create(
             db,
@@ -310,17 +326,18 @@ def create_content(*, obj_in: schemas.academy.ContentCreate,
 
 
 @router.put('/{id}', response_model=schemas.academy.Content)
-def update_content(*,
-                   db: Session = Depends(deps.get_db),
-                   id: str,
-                   obj_in: schemas.academy.ContentCreate,
-                   current_user: models.User = Security(
-                       deps.get_current_active_user,
-                       scopes=[
-                           Role.ADMIN["name"],
-                       ],
-                   ),
-                   ):
+def update_content(
+           *,
+           db: Session = Depends(deps.get_db),
+           id: str,
+           obj_in: schemas.academy.ContentCreate,
+           current_user: models.User = Security(
+               deps.get_current_active_user,
+               scopes=[
+                   Role.ADMIN["name"],
+               ],
+           ),
+):
     old_content = services.academy.content.get(db, id=id)
 
     if not old_content:
@@ -331,7 +348,8 @@ def update_content(*,
     content = services.academy.content.update(
         db, db_obj=old_content, obj_in=obj_in, user_id=current_user.id)
 
-    services.academy.content_attachment.remove_by_content_id(db, content_id=id)
+    services.academy.content_attachment.\
+        remove_by_content_id(db, content_id=id)
 
     for content_attachment in obj_in.content_attachments:
         services.academy.content_attachment.create(
@@ -368,16 +386,17 @@ def update_content(*,
 
 
 @router.delete('/{id}')
-def delete_content(*,
-                   db: Session = Depends(deps.get_db),
-                   id: UUID4,
-                   current_user: models.User = Security(
-                       deps.get_current_active_user,
-                       scopes=[
-                           Role.ADMIN["name"],
-                       ],
-                   ),
-                   ):
+def delete_content(
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+           deps.get_current_active_user,
+           scopes=[
+               Role.ADMIN["name"],
+           ],
+        ),
+):
     content = services.academy.content.get(db, id=id)
     if not content:
         raise HTTPException(
