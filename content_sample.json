@@ -28,12 +28,6 @@
   "is_published": false,
   "slug": "string",
   "cover_image": "http://minio:9000/academy-attachment-bucket/82c1bb7c-99fd-43ca-b7d7-ad2b49146c35-mobile.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=botinow%2F20220921%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220921T070350Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=a7b771d8560222b61051575fa646ea1c7e93d9ce160e084cfc850737f51d6287",
-  "content_attachments": [
-    {
-      "attachment_type": "string",
-      "attachment_id": "string"
-    }
-  ],
   "categories": [
     {
       "category_id": "cf5e715d-29dd-4cc8-9395-94449fc0f0cd"

@@ -21,7 +21,7 @@ from app.models.notification import Notification, NotificationUser  # noqa
 
 
 from app.models.academy import Category, Content,\
-     ContentAttachment, ContentCategory, Label, ContentLabel  # noqa
+      ContentCategory, Label, ContentLabel  # noqa
 
 
 from app.models.node_ui import NodeUI  # noqa
