@@ -35,7 +35,8 @@ router = APIRouter(prefix="/file", tags=["File"])
 #     return {"file_name": uploaded_file_name, "url": url}
 
 
-@router.post("/upload/academy/attachment", response_model=schemas.FileUpload)
+@router.post("/upload/academy/attachment",
+             response_model=schemas.FileUpload)
 async def upload_academy_content_attachment(
         file: UploadFile = File(...),
 
@@ -64,7 +65,8 @@ async def upload_academy_content_attachment(
     return schemas.FileUpload(file_name=uploaded_file_name, url=url)
 
 
-@router.get("/upload/academy/attachment/{attachment_id}", response_model=schemas.FileUpload)
+@router.get("/upload/academy/attachment/{attachment_id}",
+            response_model=schemas.FileUpload)
 async def get_academy_content_attachment(
         *,
         attachment_id: str
@@ -102,7 +104,8 @@ async def upload_chatflow_media(
     return schemas.FileUpload(file_name=uploaded_file_name, url=url)
 
 
-@router.get("/chatflow/media/{media_id}", response_model=schemas.FileUpload)
+@router.get("/chatflow/media/{media_id}",
+            response_model=schemas.FileUpload)
 async def get_chatflow_media_url(
         *,
         media_id: str,
@@ -117,4 +120,3 @@ async def get_chatflow_media_url(
     url = storage.get_object_url(media_id, settings.S3_CHATFLOW_MEDIA_BUCKET)
 
     return schemas.FileUpload(file_name=media_id, url=url)
-

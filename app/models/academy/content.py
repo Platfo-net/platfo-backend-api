@@ -32,7 +32,7 @@ class Content(Base):
     @staticmethod
     def generate_slug(target, value, oldvalue, initiator):
         if value and (not target.slug or value != oldvalue):
-            target.slug = slugify(value)
+            target.slug = slugify(value, allow_unicode=True)
 
     user_id = Column(
         UUID(as_uuid=True),

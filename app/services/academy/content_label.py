@@ -16,7 +16,7 @@ class LabelContentServices:
             *,
             label_id: UUID4,
             content_id: UUID4,
-):
+    ):
         db_obj = self.model(label_id=label_id,
                             content_id=content_id)
         db.add(db_obj)

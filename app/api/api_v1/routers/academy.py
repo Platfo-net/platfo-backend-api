@@ -237,31 +237,21 @@ def get_all_contents(
     return content_list
 
 
-@router.get('/{id}', response_model=schemas.academy.ContentDetail,
-            response_model_exclude_defaults=True)
+@router.get('/{id}', response_model=schemas.academy.ContentDetail)
 def get_content_by_id(
           *,
           db: Session = Depends(deps.get_db),
           id: UUID4
 ):
-    content, categories, labels = services.academy.content.get_by_detail(db, id=id)
+    content, categories, labels = services.academy.content.\
+        get_by_detail(db, id=id)
 
     if not content:
         raise HTTPException(
             status_code=Error.CONTENT_NOT_FOUND['status_code'],
             detail=Error.CONTENT_NOT_FOUND['text']
         )
-    content_attachments = services.academy.content_attachment. \
-        get_by_content_id(db, content_id=content.id)
 
-    new_content_attachment = [
-        schemas.academy.ContentAttachment(
-            id=content_attachment.id,
-            attachment_id=content_attachment.attachment_id,
-            attachment_type=content_attachment.attachment_type
-        )
-        for content_attachment in content_attachments
-    ]
     content_detail = [schemas.academy.ContentDetailList(
         id=content.id,
         title=content.title,
@@ -273,10 +263,10 @@ def get_content_by_id(
         version=content.version,
         time=content.time,
         created_at=content.created_at,
+        updated_at=content.updated_at,
         categories=categories,
         labels=labels,
         user_id=content.user_id,
-        content_attachments=new_content_attachment
     )]
 
     return schemas.academy.ContentDetail(
@@ -312,15 +302,6 @@ def create_content(
             label_id=label.label_id,
             content_id=content.id
         )
-    for content_attachment in obj_in.content_attachments:
-        services.academy.content_attachment.create(
-            db,
-            obj_in=schemas.academy.ContentAttachmentCreate(
-                attachment_id=content_attachment.attachment_id,
-                attachment_type=content_attachment.attachment_type
-            ),
-            content_id=content.id
-        )
 
     return content
 
@@ -348,18 +329,6 @@ def update_content(
     content = services.academy.content.update(
         db, db_obj=old_content, obj_in=obj_in, user_id=current_user.id)
 
-    services.academy.content_attachment.\
-        remove_by_content_id(db, content_id=id)
-
-    for content_attachment in obj_in.content_attachments:
-        services.academy.content_attachment.create(
-            db,
-            obj_in=schemas.academy.ContentAttachmentCreate(
-                attachment_id=content_attachment.attachment_id,
-                attachment_type=content_attachment.attachment_type
-            ),
-            content_id=old_content.id
-        )
     services.academy.category_content.remove_by_content_id(
         db,
         content_id=id,
