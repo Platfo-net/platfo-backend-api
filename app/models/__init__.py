@@ -1,4 +1,4 @@
-from app.models import academy , bot_builder, live_chat
+from app.models import academy, bot_builder, live_chat
 from .user import User
 from .role import Role
 from .instagram_page import InstagramPage
