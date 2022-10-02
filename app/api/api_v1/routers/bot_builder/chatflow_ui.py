@@ -24,7 +24,7 @@ def get_chatflow_nodes_edges(
         ),
 ):
     chatflow = db.query(models.bot_builder.Chatflow).filter(
-        models.Chatflow.id == chatflow_id).first()
+        models.bot_builder.Chatflow.id == chatflow_id).first()
 
     nodes = db.query(models.bot_builder.NodeUI).filter(
         models.bot_builder.NodeUI.chatflow_id == chatflow_id).all()

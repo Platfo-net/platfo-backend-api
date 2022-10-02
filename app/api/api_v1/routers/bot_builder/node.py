@@ -31,7 +31,7 @@ def get_all_nodes(
     ),
 ) -> Any:
 
-    chatflow = services.chatflow.get(
+    chatflow = services.bot_builder.chatflow.get(
         db, id=chatflow_id, user_id=current_user.id)
 
     if not chatflow:
@@ -58,7 +58,7 @@ def create_full_node(
     ),
 ) -> Any:
 
-    chatflow = services.chatflow.get(
+    chatflow = services.bot_builder.chatflow.get(
         db, id=obj_in.chatflow_id, user_id=current_user.id)
 
     if not chatflow:
@@ -122,7 +122,7 @@ def connect_widget_to_node(
             detail=Error.NO_NODE_WITH_THE_GIVEN_ID['text'],
         )
 
-    chatflow = services.chatflow.get(
+    chatflow = services.bot_builder.chatflow.get(
         db, id=node.chatflow_id, user_id=current_user.id)
 
     if not chatflow:

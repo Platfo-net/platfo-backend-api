@@ -27,7 +27,7 @@ def create_chatflow(
 
 ) -> Any:
 
-    chatflow = services.chatflow.create(
+    chatflow = services.bot_builder.chatflow.create(
         db,
         obj_in=obj_in,
         user_id=current_user.id
@@ -48,7 +48,7 @@ def delete_chatflow(
         ],
     ),
 ) -> Any:
-    chatflow = services.chatflow.get(
+    chatflow = services.bot_builder.chatflow.get(
         db,
         id=chatflow_id,
         user_id=current_user.id
@@ -59,7 +59,7 @@ def delete_chatflow(
             detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['text'],
         )
 
-    services.chatflow.remove(db, id=chatflow_id)
+    services.bot_builder.chatflow.remove(db, id=chatflow_id)
     return
 
 
@@ -78,7 +78,7 @@ def get_user_chatflows(
     ),
 ) -> Any:
 
-    return services.chatflow.get_multi(
+    return services.bot_builder.chatflow.get_multi(
         db,
         user_id=current_user.id,
         skip=skip,
