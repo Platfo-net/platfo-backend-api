@@ -4,8 +4,6 @@ from app.db.base_class import Base  # noqa
 from app.models.role import Role  # noqa
 from app.models.user import User  # noqa
 from app.models.instagram_page import InstagramPage  # noqa
-from app.models.credit import Credit  # noqa
-from app.models.plan import Plan  # noqa
 from app.models.connection import Connection  # noqa
 
 from app.models.bot_builder.chatflow import Chatflow  # noqa

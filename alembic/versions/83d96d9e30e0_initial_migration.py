@@ -1,8 +1,8 @@
-"""initial
+"""Initial Migration
 
-Revision ID: 0b5a0fd1b8e9
+Revision ID: 83d96d9e30e0
 Revises: 
-Create Date: 2022-09-20 12:03:14.340278
+Create Date: 2022-10-02 11:51:11.447164
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '0b5a0fd1b8e9'
+revision = '83d96d9e30e0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,8 +21,8 @@ def upgrade():
     op.create_table('academy_categories',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=True),
-    sa.Column('parrent_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['parrent_id'], ['academy_categories.id'], ),
+    sa.Column('parent_id', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.ForeignKeyConstraint(['parent_id'], ['academy_categories.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('academy_labels',
@@ -36,14 +36,6 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('is_visible', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('plans',
-    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('price', sa.Integer(), nullable=True),
-    sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
-    sa.Column('days_add', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('roles',
@@ -73,16 +65,19 @@ def upgrade():
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('title', sa.String(length=1024), nullable=True),
     sa.Column('caption', sa.Text(), nullable=True),
-    sa.Column('detail', sa.Text(), nullable=True),
+    sa.Column('blocks', postgresql.ARRAY(sa.JSON()), nullable=True),
     sa.Column('slug', sa.String(length=300), nullable=True),
     sa.Column('is_published', sa.Boolean(), nullable=True),
+    sa.Column('cover_image', sa.String(length=1024), nullable=True),
+    sa.Column('time', sa.String(length=200), nullable=True),
+    sa.Column('version', sa.String(length=200), nullable=True),
     sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('chatflows',
+    op.create_table('bot_builder_chatflows',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
@@ -104,25 +99,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('account_id', 'application_name')
     )
-    op.create_table('contacts',
-    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('contact_igs_id', sa.String(length=64), nullable=True),
-    sa.Column('user_page_id', sa.String(length=64), nullable=True),
-    sa.Column('last_message', sa.JSON(), nullable=True),
-    sa.Column('last_message_at', sa.DateTime(), nullable=True),
-    sa.Column('information', sa.JSON(), nullable=True),
-    sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('credits',
-    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('to_datetime', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('instagram_pages',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('facebook_user_long_lived_token', sa.String(length=255), nullable=True),
@@ -137,7 +113,18 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('messages',
+    op.create_table('live_chat_contacts',
+    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('contact_igs_id', sa.String(length=64), nullable=True),
+    sa.Column('user_page_id', sa.String(length=64), nullable=True),
+    sa.Column('last_message', sa.JSON(), nullable=True),
+    sa.Column('last_message_at', sa.DateTime(), nullable=True),
+    sa.Column('information', sa.JSON(), nullable=True),
+    sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('live_chat_messages',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('from_page_id', sa.String(length=64), nullable=True),
     sa.Column('to_page_id', sa.String(length=64), nullable=True),
@@ -156,23 +143,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('transactions',
-    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('price', sa.DateTime(), nullable=True),
-    sa.Column('status', sa.String(length=10), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('academy_content_attachments',
-    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('attachment_type', sa.String(length=256), nullable=True),
-    sa.Column('attachment_id', sa.String(length=256), nullable=True),
-    sa.Column('content_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['content_id'], ['academy_contents.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('academy_content_categories',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('content_id', postgresql.UUID(as_uuid=True), nullable=True),
@@ -189,7 +159,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['label_id'], ['academy_labels.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('edges',
+    op.create_table('bot_builder_edges',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('from_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('to_id', postgresql.UUID(as_uuid=True), nullable=True),
@@ -198,10 +168,10 @@ def upgrade():
     sa.Column('from_widget', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('text', sa.String(length=255), nullable=True),
     sa.Column('chatflow_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['chatflow_id'], ['chatflows.id'], ),
+    sa.ForeignKeyConstraint(['chatflow_id'], ['bot_builder_chatflows.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('nodes',
+    op.create_table('bot_builder_nodes',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('chatflow_id', postgresql.UUID(as_uuid=True), nullable=True),
@@ -209,10 +179,10 @@ def upgrade():
     sa.Column('widget', sa.JSON(), nullable=True),
     sa.Column('quick_replies', postgresql.ARRAY(sa.JSON()), nullable=True),
     sa.Column('is_head', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['chatflow_id'], ['chatflows.id'], ),
+    sa.ForeignKeyConstraint(['chatflow_id'], ['bot_builder_chatflows.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('nodeuies',
+    op.create_table('bot_builder_nodeuies',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('text', sa.String(length=255), nullable=True),
     sa.Column('width', sa.Integer(), nullable=True),
@@ -222,7 +192,7 @@ def upgrade():
     sa.Column('has_delete_action', sa.Boolean(), nullable=True),
     sa.Column('has_edit_action', sa.Boolean(), nullable=True),
     sa.Column('chatflow_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['chatflow_id'], ['chatflows.id'], ),
+    sa.ForeignKeyConstraint(['chatflow_id'], ['bot_builder_chatflows.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
@@ -230,24 +200,20 @@ def upgrade():
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('nodeuies')
-    op.drop_table('nodes')
-    op.drop_table('edges')
+    op.drop_table('bot_builder_nodeuies')
+    op.drop_table('bot_builder_nodes')
+    op.drop_table('bot_builder_edges')
     op.drop_table('academy_content_labels')
     op.drop_table('academy_content_categories')
-    op.drop_table('academy_content_attachments')
-    op.drop_table('transactions')
     op.drop_table('notification_users')
-    op.drop_table('messages')
+    op.drop_table('live_chat_messages')
+    op.drop_table('live_chat_contacts')
     op.drop_table('instagram_pages')
-    op.drop_table('credits')
-    op.drop_table('contacts')
     op.drop_table('connections')
-    op.drop_table('chatflows')
+    op.drop_table('bot_builder_chatflows')
     op.drop_table('academy_contents')
     op.drop_table('users')
     op.drop_table('roles')
-    op.drop_table('plans')
     op.drop_table('notifications')
     op.drop_table('academy_labels')
     op.drop_table('academy_categories')

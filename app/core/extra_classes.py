@@ -198,7 +198,6 @@ class InstagramData:
             sender_id=self.sender_id,
             recipient_id=self.recipient_id,
             text=self.text,
-            mid=self.mid,
             postback=self.postback,
             payload=self.payload,
             mid=self.mid,

@@ -41,8 +41,6 @@ class User(Base):
         "Role", back_populates="user")
 
     instagram_page = relationship("InstagramPage", back_populates="user")
-    transaction = relationship("Transaction", back_populates="user")
-    credit = relationship("Credit", back_populates="user")
 
     connection = relationship("Connection", back_populates="user")
     chatflow = relationship("Chatflow", back_populates="user")

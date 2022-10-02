@@ -8,11 +8,6 @@ from .user import User, UserCreate, \
 from .instagram_page import InstagramPageCreate,\
     InstagramPageUpdate, InstagramPage, ConnectPage
 
-from .plan import PlanCreate, PlanUpdate, Plan
-
-from .transaction import TransactionCreate,\
-    Transaction, TransactionUpdate
-
 
 from .account import Account, AccountDetail
 
@@ -23,3 +18,4 @@ from .pagination import Pagination
 from .notification import Notification, NotificationCreate,\
     NotificationUpdate, NotificationListApi, NotificationListItem
 
+from .file import FileUpload
