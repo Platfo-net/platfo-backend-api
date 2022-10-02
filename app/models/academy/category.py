@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 
 class Category(Base):
 
-    __tablename__ = "categories"
+    __tablename__ = "academy_categories"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
@@ -17,8 +17,8 @@ class Category(Base):
     title = Column(String(255), nullable=True)
     parent_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("categories.id"),
-        nullable=True
+        ForeignKey("academy_categories.id"),
+        nullable=True,
     )
 
     content_categories = relationship(

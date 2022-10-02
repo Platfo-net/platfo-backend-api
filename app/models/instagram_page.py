@@ -12,18 +12,21 @@ class InstagramPage(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
 
-    facebook_account_id = Column(
+    facebook_user_long_lived_token = Column(String(255), nullable=True)
+    facebook_user_id = Column(String(255), nullable=True)
+
+    user_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("facebook_accounts.id"),
+        ForeignKey("users.id"),
         primary_key=False,
         nullable=True,
     )
-    facebook_page_id = Column(String(255))
-    instagram_page_id = Column(String(255))
-    facebook_page_token = Column(String(255))
+    facebook_page_id = Column(String(255) , nullable=True)
+    instagram_page_id = Column(String(255) , nullable=True)
+    facebook_page_token = Column(String(255) , nullable=True)
     instagram_username = Column(String(255), nullable=True)
     instagram_profile_picture_url = Column(String(1024), nullable=True)
     information = Column(JSON, nullable=True)
 
-    facebook_account = relationship(
-        "FacebookAccount", back_populates="instagram_page")
+    user = relationship(
+        "User", back_populates="instagram_page")

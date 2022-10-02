@@ -9,7 +9,7 @@ from app.db.base_class import Base
 
 
 class Label(Base):
-    __tablename__ = "labels"
+    __tablename__ = "academy_labels"
 
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4

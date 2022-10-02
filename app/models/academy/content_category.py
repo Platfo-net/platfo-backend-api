@@ -9,20 +9,20 @@ from app.db.base_class import Base
 
 
 class ContentCategory(Base):
-    __tablename__ = "content_categories"
+    __tablename__ = "academy_content_categories"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
 
     content_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("contents.id"),
+        ForeignKey("academy_contents.id"),
         nullable=True,
     )
 
     category_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("categories.id"),
+        ForeignKey("academy_categories.id"),
         nullable=True,
     )
 

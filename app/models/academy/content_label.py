@@ -8,18 +8,18 @@ from sqlalchemy.orm import relationship
 
 
 class ContentLabel(Base):
-    __tablename__ = "content_labels"
+    __tablename__ = "academy_content_labels"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )
     content_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("contents.id"),
+        ForeignKey("academy_contents.id"),
         nullable=True,
     )
     label_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("labels.id"),
+        ForeignKey("academy_labels.id"),
         nullable=True,
     )
     label = relationship("Label", back_populates="content_labels")
