@@ -7,12 +7,12 @@ from app import models, schemas
 from app.services.base import BaseServices
 
 
-class CategoryServices(
+class LabelServices(
     BaseServices
     [
-        models.academy.Category,
-        schemas.academy.CategoryCreate,
-        schemas.academy.CategoryUpdate
+        models.academy.Label,
+        schemas.academy.LabelCreate,
+        schemas.academy.LabelUpdate
     ]
 ):
     def get_multi(
@@ -22,7 +22,7 @@ class CategoryServices(
             page: int = 1,
             page_size: int = 20
     ):
-        categories = db.query(self.model).offset(
+        labels = db.query(self.model).offset(
             page_size * (page - 1)).limit(page_size).all()
 
         total_count = db.query(self.model).count()
@@ -33,18 +33,16 @@ class CategoryServices(
             total_pages=total_pages,
             total_count=total_count
         )
-
-        return categories, pagination
+        return labels, pagination
 
     def create(
             self,
             db: Session,
             *,
-            obj_in: schemas.academy.CategoryCreate,
+            obj_in: schemas.academy.LabelCreate,
     ):
         db_obj = self.model(
-            title=obj_in.title,
-            parent_id=obj_in.parent_id
+            label_name=obj_in.label_name,
         )
         db.add(db_obj)
         db.commit()
@@ -52,4 +50,4 @@ class CategoryServices(
         return db_obj
 
 
-category = CategoryServices(models.academy.Category)
+label = LabelServices(models.academy.Label)

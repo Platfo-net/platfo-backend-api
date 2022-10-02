@@ -38,7 +38,7 @@ from .node import NodeCreate, NodeUpdate,\
 
 from .contact import Contact, ContactCreate, ProfileUpdate
 
-from .message import MessageCreate, Message,SendMessage
+from .message import MessageCreate, Message, SendMessage
 
 
 from .pagination import Pagination
@@ -46,3 +46,5 @@ from .notification import Notification, NotificationCreate,\
     NotificationUpdate, NotificationListApi, NotificationListItem
 
 from .chatflow_ui import NodeUI, Edge, ChatflowUI
+
+from .file import FileUpload

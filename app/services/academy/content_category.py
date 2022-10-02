@@ -1,3 +1,4 @@
+
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -5,6 +6,7 @@ from app import models
 
 
 class CategoryContentServices:
+
     def __init__(self, model):
         self.model = model
 
