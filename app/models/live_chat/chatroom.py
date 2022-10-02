@@ -10,7 +10,7 @@ from app.db.base_class import Base
 
 
 class Chatroom(Base):
-    __tablename__ = "chatrooms"
+    __tablename__ = "live_chat_chatrooms"
     id = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4
     )

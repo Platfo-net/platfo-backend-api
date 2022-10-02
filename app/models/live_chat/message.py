@@ -1,6 +1,8 @@
 import datetime
 from uuid import uuid4
 
+from sqlalchemy.orm import relationship
+
 from app.db.base_class import Base
 from sqlalchemy import Column, ForeignKey, String, JSON, DateTime
 from sqlalchemy.dialects.postgresql import UUID
@@ -25,3 +27,11 @@ class Message(Base):
         ForeignKey("users.id"),
         nullable=True,
     )
+
+    chatroom_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("live_chat_chatrooms.id"),
+        nullable=True,
+    )
+    chatroom = relationship("Chatroom", back_populates="message")
+

@@ -49,3 +49,8 @@ class User(Base):
 
     content = relationship("Content", back_populates="user")
 
+    chatroom = relationship(
+        "Chatroom",
+        back_populates="user",
+        cascade="all,delete"
+    )
