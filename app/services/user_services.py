@@ -66,11 +66,11 @@ class UserServices(
         db: Session,
         *,
         user_id: UUID4,
-        new_password: str
+        obj_in: schemas.UserUpdatePassword
     ):
         db_user = db.query(models.User).filter(
             models.User.id == user_id).first()
-        db_user.hashed_password = get_password_hash(new_password)
+        db_user.hashed_password = get_password_hash(obj_in.password)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
