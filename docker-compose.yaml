@@ -61,7 +61,7 @@ services:
       - .:/app
     depends_on:
       - db
-      - api-1
+      - api
       - redis
 
   # celery-flower:
