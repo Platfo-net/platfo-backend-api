@@ -19,8 +19,10 @@ class InstagramData:
         self.timestamp = None
         self.is_deleted = False
         self.is_echo = False
+        self.message_detail = None
 
     def parse(self, body):
+        print('bbbbbbbbbbbbb', body)
         match body:
             case {
                 "object": platform,
@@ -213,12 +215,10 @@ class InstagramData:
 
 class UserData:
     def __init__(self, user_id,
-                 facebook_account_id,
                  facebook_page_token,
                  facebook_page_id,
                  account_id):
         self.user_id = user_id
-        self.facebook_account_id = facebook_account_id
         self.facebook_page_token = facebook_page_token
         self.facebook_page_id = facebook_page_id
         self.account_id = account_id
@@ -226,7 +226,6 @@ class UserData:
     def to_dict(self):
         return dict(
             user_id=self.user_id,
-            facebook_account_id=self.facebook_account_id,
             facebook_page_token=self.facebook_page_token,
             facebook_page_id=self.facebook_page_id,
             account_id=self.account_id,

@@ -34,7 +34,7 @@ def connect_instagram_page(
     params = dict(grant_type="fb_exchange_token",
                   client_id=settings.FACEBOOK_APP_ID,
                   client_secret=settings.FACEBOOK_APP_SECRET,
-                  redirect_uri='https://botinow.com',  # noqa
+                  redirect_uri='https://botinow.com/api/auth/callback/facebook',  # noqa
                   fb_exchange_token=obj_in.facebook_user_token)
 
     get_long_lived_token_url = "{}/{}/oauth/access_token".format(
@@ -47,95 +47,95 @@ def connect_instagram_page(
     long_lived_user_access_token = res.json()['access_token']
     print('longggggggggg', long_lived_user_access_token)
 
-    # params = dict(access_token=long_lived_user_access_token)
-    #
-    # page_long_lived_token_url = "{}/{}/{}/accounts".format(
-    #     settings.FACEBOOK_GRAPH_BASE_URL,
-    #     settings.FACEBOOK_GRAPH_VERSION,
-    #     obj_in.facebook_user_id
-    # )
-    # res = requests.get(page_long_lived_token_url, params=params)
-    #
-    # pages = res.json()["data"]
-    # print('secccccccccccccccc 222222 ')
-    # for page in pages:
-    #     try:
-    #         params = dict(
-    #             access_token=page["access_token"],
-    #             fields='connected_instagram_account',
-    #         )
-    #         get_instagram_page_id_url = "{}/{}/{}/".format(
-    #             settings.FACEBOOK_GRAPH_BASE_URL,
-    #             settings.FACEBOOK_GRAPH_VERSION,
-    #             page['id'],
-    #         )
-    #         res = requests.get(get_instagram_page_id_url, params=params)
-    #         print('secccccccccccccccc 333333 ')
-    #
-    #         print(res.json())
-    #         instagram_page_id = res.json()['connected_instagram_account']['id']
-    #         subscribe_url = "{}/{}/{}/subscribed_apps".format(
-    #             settings.FACEBOOK_GRAPH_BASE_URL,
-    #             settings.FACEBOOK_GRAPH_VERSION,
-    #             page['id']
-    #         )
-    #         params = dict(
-    #             subscribed_fields="name",
-    #             access_token=page["access_token"],
-    #         )
-    #         res = requests.post(subscribe_url, params=params)
-    #         print(res.json())
-    #         params = dict(
-    #             fields="username,profile_picture_url,"
-    #                    "followers_count,follows_count,biography,"
-    #                    "website,ig_id,name",
-    #             access_token=page["access_token"],
-    #         )
-    #         print('secccccccccccccccc 4444444 ')
-    #
-    #         get_page_info_url = "{}/{}/{}".format(
-    #             settings.FACEBOOK_GRAPH_BASE_URL,
-    #             settings.FACEBOOK_GRAPH_VERSION,
-    #             instagram_page_id
-    #         )
-    #
-    #         res = requests.get(get_page_info_url, params=params)
-    #         print('secccccccccccccccc 555555 ')
-    #
-    #         page_details = res.json()
-    #
-    #         instagram_page = services.instagram_page\
-    #             .get_by_instagram_page_id(
-    #                 db, instagram_page_id=instagram_page_id
-    #             )
-    #         if not instagram_page:
-    #             instagram_page_in = schemas.InstagramPageCreate(
-    #                 user_id=current_user.id,
-    #                 facebook_user_long_lived_token=long_lived_user_access_token,
-    #                 facebook_user_id=obj_in.facebook_user_id,
-    #                 facebook_page_id=page.get("id", None),
-    #                 facebook_page_token=page.get("access_token", None),
-    #                 instagram_page_id=instagram_page_id,
-    #                 instagram_username=page_details.get("username", None),
-    #                 instagram_profile_picture_url=page_details.get("profile_picture_url", None),  # noqa
-    #                 information=dict(
-    #                      website=page_details.get("website", None),
-    #                      ig_id=page_details.get('ig_id', None),
-    #                      followers_count=page_details.get(
-    #                          'followers_count', None),
-    #                      follows_count=page_details.get('follows_count', None),
-    #                      biography=page_details.get('biography', None),
-    #                      name=page_details.get("name", None)
-    #                                  )
-    #                 )
-    #             print('secccccccccccccccc 66666 ')
-    #
-    #             s = services.instagram_page.create(db, obj_in=instagram_page_in)
-    #             print(s)
-    #
-    #     except Exception as e:
-    #         print(e)
-    #         print("--------------------------------")
+    params = dict(access_token=long_lived_user_access_token)
+
+    page_long_lived_token_url = "{}/{}/{}/accounts".format(
+        settings.FACEBOOK_GRAPH_BASE_URL,
+        settings.FACEBOOK_GRAPH_VERSION,
+        obj_in.facebook_user_id
+    )
+    res = requests.get(page_long_lived_token_url, params=params)
+
+    pages = res.json()["data"]
+    print('secccccccccccccccc 222222 ')
+    for page in pages:
+        try:
+            params = dict(
+                access_token=page["access_token"],
+                fields='connected_instagram_account',
+            )
+            get_instagram_page_id_url = "{}/{}/{}/".format(
+                settings.FACEBOOK_GRAPH_BASE_URL,
+                settings.FACEBOOK_GRAPH_VERSION,
+                page['id'],
+            )
+            res = requests.get(get_instagram_page_id_url, params=params)
+            print('secccccccccccccccc 333333 ')
+
+            print(res.json())
+            instagram_page_id = res.json()['connected_instagram_account']['id']
+            subscribe_url = "{}/{}/{}/subscribed_apps".format(
+                settings.FACEBOOK_GRAPH_BASE_URL,
+                settings.FACEBOOK_GRAPH_VERSION,
+                page['id']
+            )
+            params = dict(
+                subscribed_fields="name",
+                access_token=page["access_token"],
+            )
+            res = requests.post(subscribe_url, params=params)
+            print(res.json())
+            params = dict(
+                fields="username,profile_picture_url,"
+                       "followers_count,follows_count,biography,"
+                       "website,ig_id,name",
+                access_token=page["access_token"],
+            )
+            print('secccccccccccccccc 4444444 ')
+
+            get_page_info_url = "{}/{}/{}".format(
+                settings.FACEBOOK_GRAPH_BASE_URL,
+                settings.FACEBOOK_GRAPH_VERSION,
+                instagram_page_id
+            )
+
+            res = requests.get(get_page_info_url, params=params)
+            print('secccccccccccccccc 555555 ')
+
+            page_details = res.json()
+
+            instagram_page = services.instagram_page\
+                .get_by_instagram_page_id(
+                    db, instagram_page_id=instagram_page_id
+                )
+            if not instagram_page:
+                instagram_page_in = schemas.InstagramPageCreate(
+                    user_id=current_user.id,
+                    facebook_user_long_lived_token=long_lived_user_access_token,
+                    facebook_user_id=obj_in.facebook_user_id,
+                    facebook_page_id=page.get("id", None),
+                    facebook_page_token=page.get("access_token", None),
+                    instagram_page_id=instagram_page_id,
+                    instagram_username=page_details.get("username", None),
+                    instagram_profile_picture_url=page_details.get("profile_picture_url", None),  # noqa
+                    information=dict(
+                         website=page_details.get("website", None),
+                         ig_id=page_details.get('ig_id', None),
+                         followers_count=page_details.get(
+                             'followers_count', None),
+                         follows_count=page_details.get('follows_count', None),
+                         biography=page_details.get('biography', None),
+                         name=page_details.get("name", None)
+                                     )
+                    )
+                print('secccccccccccccccc 66666 ')
+
+                s = services.instagram_page.create(db, obj_in=instagram_page_in)
+                print(s)
+
+        except Exception as e:
+            print(e)
+            print("--------------------------------")
 
     return
 
@@ -160,3 +160,9 @@ def get_page_data_by_page_id(
     obj_instagram = services.instagram_page.get_by_page_id(db, page_id=page_id)
 
     return obj_instagram
+
+
+# {
+#   "facebook_user_id": "147425181204416",
+#   "facebook_user_token": "EAAH2CD9dUYcBAN7Gwh0FZCFk4bwCekp1ZCInMkqbzLNK4dy26Y4bI33wRE8NdZBwMyXlUiedxZBKq01TlA52CBS6UYJaZAi2uQZCV9PfN5XivHi6RWoue095YiVtxOPAtyTpab7AxPgy7yqRfdDvsXEnNQQVqE4ZCCK7Y4TCb7IYQ8IFqXEi6tNzIKAoMwAHJz428swKqLNZCYm7QFPo80dWR1ngSDAsZCvwZD"
+# }
