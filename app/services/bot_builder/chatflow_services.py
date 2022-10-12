@@ -63,24 +63,12 @@ class ChatflowServices(
             self.model.id == id).first()
         connections = db.query(models.Connection)\
             .filter(models.Connection.user_id == db_obj.user_id).all()
-        new_connections = []
         for connection in connections:
-            if connection.details:
-                for item in connection.details:
-                    if item['chatflow_id'] != str(db_obj.id):
-                        new_connections.append(item)
-                        connection.details = new_connections
-                        db.add(connection)
-                        db.commit()
-                    else:
-                        connection.details = None
-                        db.add(connection)
-                        db.commit()
-        d = db.query(models.Connection)\
-            .filter(models.Connection.details == None).all()
-        for ele in d:
-            db.delete(ele)
-            db.commit()
+            for detail in connection.details:
+                if detail['chatflow_id'] == str(db_obj.id):
+                    connection_obj = db.query(models.Connection)\
+                        .filter(models.Connection.id == connection.id).first()
+                    db.delete(connection_obj)
         db.delete(db_obj)
         db.commit()
 
