@@ -29,9 +29,13 @@ class ConnectionServices(
             details=obj_in.details
 
         )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        try:
+            db.add(db_obj)
+            db.commit()
+            db.refresh(db_obj)
+        except Exception as e:
+            print(e)
+            db.rollback()
         return db_obj
 
     def get_by_user_and_account_id(
@@ -76,6 +80,18 @@ class ConnectionServices(
             self.model.account_id == account_id,
             self.model.application_name == application_name
         ).all()
+
+    def get_by_application_name_and_account_id(
+        self,
+        db: Session,
+        *,
+        account_id: str,
+        application_name: str
+    ):
+        return db.query(self.model).filter(
+            self.model.account_id == account_id,
+            self.model.application_name == application_name
+        ).first()
 
 
 connection = ConnectionServices(models.Connection)

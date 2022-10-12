@@ -77,7 +77,7 @@ def webhook_instagram_listener(
 
     # except:
     #     pass
-        # raise HTTPException(status_code=400, detail="Error getting user data")
+    #     raise HTTPException(status_code=400, detail="Error getting user data")
 
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:

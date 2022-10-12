@@ -59,7 +59,7 @@ def delete_chatflow(
             detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['text'],
         )
 
-    services.bot_builder.chatflow.remove(db, id=chatflow_id)
+    services.bot_builder.chatflow.delete_chatflow(db, id=chatflow_id)
     return
 
 

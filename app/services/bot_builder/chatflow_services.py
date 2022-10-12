@@ -53,5 +53,36 @@ class ChatflowServices(
             self.model.user_id == user_id
         ).offset(skip).limit(limit).all()
 
+    def delete_chatflow(
+        self,
+        db: Session,
+        *,
+        id: str,
+    ):
+        db_obj = db.query(self.model).filter(
+            self.model.id == id).first()
+        connections = db.query(models.Connection)\
+            .filter(models.Connection.user_id == db_obj.user_id).all()
+        new_connections = []
+        for connection in connections:
+            if connection.details:
+                for item in connection.details:
+                    if item['chatflow_id'] != str(db_obj.id):
+                        new_connections.append(item)
+                        connection.details = new_connections
+                        db.add(connection)
+                        db.commit()
+                    else:
+                        connection.details = None
+                        db.add(connection)
+                        db.commit()
+        d = db.query(models.Connection)\
+            .filter(models.Connection.details == None).all()
+        for ele in d:
+            db.delete(ele)
+            db.commit()
+        db.delete(db_obj)
+        db.commit()
+
 
 chatflow = ChatflowServices(models.bot_builder.Chatflow)
