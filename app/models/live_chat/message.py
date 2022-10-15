@@ -28,10 +28,10 @@ class Message(Base):
         nullable=True,
     )
 
-    chatroom_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("live_chat_chatrooms.id"),
-        nullable=True,
-    )
-    chatroom = relationship("Chatroom", back_populates="message")
+    # chatroom_id = Column(
+    #     UUID(as_uuid=True),
+    #     ForeignKey("live_chat_chatrooms.id"),
+    #     nullable=True,
+    # )
+    # chatroom = relationship("Chatroom", back_populates="message")
 

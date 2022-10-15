@@ -3,7 +3,7 @@ from .role import Role, RoleCreate, RoleInDB, RoleUpdate
 from .token import Token, TokenPayload, Login, LoginForm
 from .user import User, UserCreate, \
     UserInDB, UserUpdate, UserRegister,\
-    UserBase, ForgetPassword, ChangePassword
+    UserBase, ForgetPassword, ChangePassword, UserUpdatePassword
 
 from .instagram_page import InstagramPageCreate,\
     InstagramPageUpdate, InstagramPage, ConnectPage

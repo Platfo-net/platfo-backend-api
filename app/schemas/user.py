@@ -58,4 +58,4 @@ class ForgetPassword(BaseModel):
 class ChangePassword(BaseModel):
     email: EmailStr
     code: str
-    new_password: str
+    password: str

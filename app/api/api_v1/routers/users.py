@@ -118,7 +118,7 @@ def update_user_me(
 def change_password_me(
     *,
     db: Session = Depends(deps.get_db),
-    user_in: schemas.UserUpdate,
+    user_in: schemas.UserUpdatePassword,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -128,7 +128,7 @@ def change_password_me(
     ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
-    user = services.user.update(db, db_obj=user, obj_in=user_in)
+    user = services.user.change_password(db, user_id=user.id, obj_in=user_in)
 
     return user
 
@@ -161,7 +161,8 @@ async def forget_password(
             status_code=Error.USER_NOT_FOUND['status_code'],
             detail=Error.USER_NOT_FOUND['text'],
         )
-    await services.user.send_recovery_mail(db, user.email)
+    return
+    # await services.user.send_recovery_mail(db, user.email)  # todo
 
 
 @router.post("/recovery-password", status_code=status.HTTP_200_OK)
@@ -189,5 +190,5 @@ def recovery_password(
         )
     user = services.user.get_by_email(db, email=user_in.email)
     services.user.change_password(
-        db, user_id=user.id, new_password=user_in.new_password)
+        db, user_id=user.id, obj_in=user_in)
     return

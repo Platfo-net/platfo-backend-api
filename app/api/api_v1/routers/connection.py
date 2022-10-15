@@ -81,12 +81,24 @@ def create_connection(
 ):
     """
     Endpoint for creating connection
-    Args:
-        -
+    detail: [{
+        "trigger": "string",
+        "chatflow_id": "string"
+      }]
     """
+    connection = services.connection.\
+        get_by_application_name_and_account_id(
+                                db,
+                                application_name=obj_in.application_name,
+                                account_id=obj_in.account_id)
+    if connection:
+        raise HTTPException(
+            status_code=Error.CONNECTION_EXIST['status_code'],
+            detail=Error.CONNECTION_EXIST['text']
+        )
+
     connection = services.connection.create(
         db, obj_in=obj_in, user_id=current_user.id)
-    
 
     return connection
 
@@ -155,6 +167,7 @@ def delete_connection(
             status_code=Error.CONNECTION_NOT_FOUND["status_code"],
             detail=Error.CONNECTION_NOT_FOUND["detail"]
         )
+
     services.connection.remove(db, id=connection_id)
     return
 
@@ -178,6 +191,16 @@ def update_connection(
     Args:
         connection_id (UUID4): Id of a connection related to a user
     """
+    connection = services.connection.\
+        get_by_application_name_and_account_id(
+                                db,
+                                application_name=obj_in.application_name,
+                                account_id=obj_in.account_id)
+    if connection:
+        raise HTTPException(
+            status_code=Error.CONNECTION_EXIST['status_code'],
+            detail=Error.CONNECTION_EXIST['text']
+        )
 
     old_connection = services.connection.get(db, id=connection_id)
 

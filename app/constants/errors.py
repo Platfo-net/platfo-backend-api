@@ -132,3 +132,9 @@ class Error:
         "status_code": 404,
         "code": 70
     }
+
+    CONNECTION_EXIST = {
+        "text": "Connection already exist.",
+        "status_code": 400,
+        "code": 80
+    }

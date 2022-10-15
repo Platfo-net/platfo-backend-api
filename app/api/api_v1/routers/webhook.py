@@ -61,27 +61,30 @@ def webhook_instagram_listener(
     *,
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client),
-    request: dict,
+    facebook_webhook_body: dict,
 ):
-    facebook_webhook_body = request['entry']
+
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
+    print('------------------', instagram_data.sender_id)
 
-    try:
-        user_page_data = cache.get_user_data(
-            redis_client,
-            db,
-            instagram_page_id=instagram_data.recipient_id)
+    # try:
+    user_page_data = cache.get_user_data(
+        redis_client,
+        db,
+        instagram_page_id=instagram_data.recipient_id)
+    print('uuuuuuuuuuuuuu', user_page_data)
 
-    except:
-        raise HTTPException(status_code=400, detail="Error getting user data")
+    # except:
+    #     pass
+    #     raise HTTPException(status_code=400, detail="Error getting user data")
 
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:
             return None
 
         case WebhookType.DELETE_MESSAGE:
-            return services.message.remove_message_by_mid(db, mid=instagram_data.mid)
+            return services.live_chat.message.remove_message_by_mid(db, mid=instagram_data.mid)
 
         case WebhookType.STORY_MENTION:
             saved_data = {
@@ -89,8 +92,9 @@ def webhook_instagram_listener(
                 "widget_type": "STORY_MENTION",
                 "id": str(uuid4())
             }
+
             tasks.save_message(
-                from_page_id=instagram_data.id_sender,
+                from_page_id=instagram_data.sender_id,
                 to_page_id=user_page_data.facebook_page_id,
                 mid=instagram_data.mid,
                 content=saved_data,
@@ -107,7 +111,7 @@ def webhook_instagram_listener(
                 "id": str(uuid4())
             }
             tasks.save_message(
-                from_page_id=instagram_data.id_sender,
+                from_page_id=instagram_data.sender_id,
                 to_page_id=user_page_data.facebook_page_id,
                 mid=instagram_data.mid,
                 content=saved_data,
@@ -124,7 +128,7 @@ def webhook_instagram_listener(
     }
 
     tasks.save_message(
-        from_page_id=instagram_data.id_sender,
+        from_page_id=instagram_data.sender_id,
         to_page_id=user_page_data.facebook_page_id,
         mid=instagram_data.mid,
         content=saved_data,
@@ -170,7 +174,7 @@ def webhook_instagram_listener(
             tasks.send_widget.delay(
                 widget=node.widget,
                 quick_replies=node.quick_replies,
-                contact_igs_id=instagram_data.id_sender,
+                contact_igs_id=instagram_data.sender_id,
                 payload=instagram_data.payload,
                 user_page_data=user_page_data.to_dict()
             )

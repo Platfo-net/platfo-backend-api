@@ -99,9 +99,9 @@ def delete_account(
 
     services.instagram_page.remove(db, id=id)
 
-    services.contact.remove_by_user_page_id(
+    services.live_chat.contact.remove_by_user_page_id(
         db, user_page_id=instagram_page.facebook_page_id)
-    services.message.remove_by_user_page_id(
+    services.live_chat.message.remove_by_user_page_id(
         db, user_page_id=instagram_page.facebook_page_id)
     connections = services.connection.get_page_connection(
         db,
@@ -110,10 +110,6 @@ def delete_account(
     )
 
     for connection in connections:
-        services.connection_chatflow.remove_by_connection_id_accounts(
-            db,
-            connection_id=connection.id
-        )
         services.connection.remove(db, id=connection.id)
 
     return

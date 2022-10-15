@@ -55,21 +55,21 @@ def save_message(
                 contact_igs_id=new_contact.contact_igs_id,
                 page_access_token=user_data["facebook_page_token"]
             )
-            services.contact.set_information(
+            services.live_chat.contact.set_information(
                 db,
                 contact_igs_id=from_page_id,
                 information=information,
             )
 
     if direction == MessageDirection.IN["name"]:
-        services.contact.update_last_message(
+        services.live_chat.contact.update_last_message(
             db,
             contact_igs_id=from_page_id,
             last_message=content
         )
 
     else:
-        services.contact.update_last_message(
+        services.live_chat.contact.update_last_message(
             db,
             contact_igs_id=to_page_id,
             last_message=content

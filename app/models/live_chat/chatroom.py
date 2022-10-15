@@ -19,15 +19,15 @@ class Chatroom(Base):
     chat_members = Column(ARRAY(JSON), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    user_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("users.id"),
-        nullable=True,
-    )
-
-    message = relationship(
-           "Message",
-           back_populates="chatroom",
-           cascade="all,delete"
-    )
-    user = relationship("User", back_populates="chatroom")
+    # user_id = Column(
+    #     UUID(as_uuid=True),
+    #     ForeignKey("users.id"),
+    #     nullable=True,
+    # )
+    #
+    # message = relationship(
+    #        "Message",
+    #        back_populates="chatroom",
+    #        cascade="all,delete"
+    # )
+    # user = relationship("User", back_populates="chatroom")

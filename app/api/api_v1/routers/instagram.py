@@ -40,9 +40,12 @@ def connect_instagram_page(
     get_long_lived_token_url = "{}/{}/oauth/access_token".format(
         settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION
     )
+    print('secccccccccccccccc 1111111 ')
 
     res = requests.get(get_long_lived_token_url, params=params)
+    print('ressssssss', res)
     long_lived_user_access_token = res.json()['access_token']
+    print('longggggggggg', long_lived_user_access_token)
 
     params = dict(access_token=long_lived_user_access_token)
 
@@ -54,7 +57,7 @@ def connect_instagram_page(
     res = requests.get(page_long_lived_token_url, params=params)
 
     pages = res.json()["data"]
-
+    print('secccccccccccccccc 222222 ')
     for page in pages:
         try:
             params = dict(
@@ -67,6 +70,8 @@ def connect_instagram_page(
                 page['id'],
             )
             res = requests.get(get_instagram_page_id_url, params=params)
+            print('secccccccccccccccc 333333 ')
+
             print(res.json())
             instagram_page_id = res.json()['connected_instagram_account']['id']
             subscribe_url = "{}/{}/{}/subscribed_apps".format(
@@ -86,6 +91,7 @@ def connect_instagram_page(
                        "website,ig_id,name",
                 access_token=page["access_token"],
             )
+            print('secccccccccccccccc 4444444 ')
 
             get_page_info_url = "{}/{}/{}".format(
                 settings.FACEBOOK_GRAPH_BASE_URL,
@@ -94,6 +100,7 @@ def connect_instagram_page(
             )
 
             res = requests.get(get_page_info_url, params=params)
+            print('secccccccccccccccc 555555 ')
 
             page_details = res.json()
 
@@ -121,6 +128,7 @@ def connect_instagram_page(
                          name=page_details.get("name", None)
                                      )
                     )
+                print('secccccccccccccccc 66666 ')
 
                 s = services.instagram_page.create(db, obj_in=instagram_page_in)
                 print(s)
@@ -130,7 +138,6 @@ def connect_instagram_page(
             print("--------------------------------")
 
     return
-
 
 
 @router.get('/get/{instagram_page_id}', response_model=schemas.InstagramPage)
@@ -153,3 +160,9 @@ def get_page_data_by_page_id(
     obj_instagram = services.instagram_page.get_by_page_id(db, page_id=page_id)
 
     return obj_instagram
+
+
+# {
+#   "facebook_user_id": "147425181204416",
+#   "facebook_user_token": "EAAH2CD9dUYcBAN7Gwh0FZCFk4bwCekp1ZCInMkqbzLNK4dy26Y4bI33wRE8NdZBwMyXlUiedxZBKq01TlA52CBS6UYJaZAi2uQZCV9PfN5XivHi6RWoue095YiVtxOPAtyTpab7AxPgy7yqRfdDvsXEnNQQVqE4ZCCK7Y4TCb7IYQ8IFqXEi6tNzIKAoMwAHJz428swKqLNZCYm7QFPo80dWR1ngSDAsZCvwZD"
+# }

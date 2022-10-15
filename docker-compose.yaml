@@ -1,5 +1,5 @@
 services:
-  api:
+  api-1:
     container_name: "${APP_NAME}-api"
     build:
       context: .
