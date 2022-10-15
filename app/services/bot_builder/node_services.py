@@ -37,7 +37,8 @@ class NodeServices(
         return db_obj
 
     def add_widget(self, db: Session, *, obj_in: dict, node_id: UUID4):
-        node = db.query(models.bot_builder.Node).filter(models.bot_builder.Node.id == node_id).first()
+        node = db.query(models.bot_builder.Node).filter(
+            models.bot_builder.Node.id == node_id).first()
         node.widget = obj_in
         db.add(node)
         db.commit()
@@ -45,12 +46,12 @@ class NodeServices(
         return(node)
 
     def connect(self, db: Session, *, from_id: UUID4, node_id: UUID4):
-        node = db.query(models.bot_builder.Node).filter(models.bot_builder.Node.id == node_id).first()
+        node = db.query(models.bot_builder.Node).filter(
+            models.bot_builder.Node.id == node_id).first()
         from_widget = node.from_widget if node.from_widget else []
         from_widget.append(str(from_id))
         node.from_widget = None
         node.from_widget = set(from_widget)
-
         db.add(node)
         db.commit()
         db.refresh(node)
@@ -63,14 +64,15 @@ class NodeServices(
         obj_in: List[dict],
         node_id: UUID4
     ):
-        node = db.query(models.bot_builder.Node).filter(models.bot_builder.Node.id == node_id).first()
+        node = db.query(models.bot_builder.Node).filter(
+            models.bot_builder.Node.id == node_id).first()
         node.quick_replies = obj_in
         db.add(node)
         db.commit()
         db.refresh(node)
         return node
 
-    def get_next_node(self, db: Session, *, from_id: UUID4)-> Optional[models.bot_builder.Node]:
+    def get_next_node(self, db: Session, *, from_id: UUID4) -> Optional[models.bot_builder.Node]:
         return db.query(models.bot_builder.Node).filter(
             models.bot_builder.Node.from_widget.contains([str(from_id)])
         ).first()

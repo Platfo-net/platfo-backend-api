@@ -1,20 +1,13 @@
-from app import services, schemas
+from app import services, schemas, models
 from sqlalchemy.orm import Session
-from tests.utils.utils import random_lower_string
 
 
-def test_create_role(db: Session) -> None:
-    role_name = random_lower_string()
+def test_create_role_successfully(db:Session):
     role_in = schemas.RoleCreate(
-        name=role_name,
-        description=random_lower_string(),
-        persian_name=random_lower_string()
-
+        name = "TEST",
+        description = "TEST"
     )
-    role = services.role.create(db, obj_in=role_in)
+    role = services.role.create(db ,obj_in = role_in )
 
-    role_in_db = services.role.get(db, role.id)
-
-    assert role
-    assert role.id == role_in_db.id
-    assert role_in_db.name == role_name
+    assert isinstance(role , models.Role)
+    assert role.name == "TEST"

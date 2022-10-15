@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     FIRST_ADMIN_EMAIL: str
     FIRST_ADMIN_PASSWORD: str
 
+    FIRST_USER_EMAIL: str = None
+    FIRST_USER_PASSWORD: str = None
+
     DB_HOST: str
 
     POSTGRES_PASSWORD: str
@@ -82,7 +85,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
-        env_file = ".env"
+        # env_file = ".env"
 
 
 @lru_cache()

@@ -16,6 +16,10 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+    logging:
+      driver: loki
+      options:
+        loki-url: http://167.235.10.141:3100/loki/api/v1/push
 
   api-2:
     container_name: "${APP_NAME}-api-2"
@@ -34,6 +38,10 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+    logging:
+      driver: loki
+      options:
+        loki-url: http://167.235.10.141:3100/loki/api/v1/push
 
   db:
     container_name: "${APP_NAME}-database"
@@ -99,5 +107,5 @@ services:
 
 volumes:
   postgres-data:
-  redis-data: 
+  redis-data:
   minio-data:

@@ -160,3 +160,5 @@ report.txt
 prod.env
 stage.env
 local.env
+
+.test.env

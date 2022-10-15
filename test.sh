@@ -11,5 +11,5 @@ alembic upgrade head
 python ./app/initial_test_data.py
 
 # Run tests
-pytest  --traceconfig --print tests
+pytest  tests
 # --cov=app --cov-report=term-missing tests

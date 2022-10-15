@@ -1,12 +1,10 @@
 from typing import Optional
-
 from app.core.security import get_password_hash, verify_password
 from app.services.base import BaseServices
 from app.constants.role import Role
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
 from app import models, schemas, services
-
 
 class UserServices(
     BaseServices
@@ -19,8 +17,8 @@ class UserServices(
     def get_by_email(
         self, db: Session, *, email: str
     ) -> Optional[models.User]:
-        return db.query(self.model).filter(models.User.email == email).first()
-
+        user = db.query(self.model).filter(self.model.email == email).first()
+        return user
     def register(
         self,
         db: Session,
