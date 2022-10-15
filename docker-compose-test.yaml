@@ -1,0 +1,47 @@
+services:
+  api:
+    container_name: "${APP_NAME}-api-test"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app-test"
+    volumes:
+      - .:/app
+    command: /app/test.sh
+    ports:
+      - "8000:8000"
+    env_file:
+      - .test.env
+    depends_on:
+      - db
+    logging:
+      driver: loki
+      options:
+        loki-url: http://167.235.10.141:3100/loki/api/v1/push  
+
+  db:
+    container_name: "${APP_NAME}-database-test"
+    image: postgres:14
+    env_file:
+      - .test.env
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres-data-test:/var/lib/postgresql/data
+
+  redis:
+    container_name: "${APP_NAME}-redis-test"
+    image: redis:6.2.7
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $REDIS_PASSWORD --appendonly yes"
+    ports:
+      - "${REDIS_PORT}:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data-test:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+volumes:
+  postgres-data-test:
+  redis-data-test: 
