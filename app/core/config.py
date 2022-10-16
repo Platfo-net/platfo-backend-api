@@ -57,13 +57,13 @@ class Settings(BaseSettings):
 
     S3_CHATFLOW_MEDIA_BUCKET: str
 
-
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
             cls, v: Optional[str], values: Dict[str, Any]
     ) -> Any:
         if isinstance(v, str):
             return v
+
         return PostgresDsn.build(
             scheme="postgresql",
             user=values.get("POSTGRES_USER"),
@@ -87,7 +87,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
-        
+
         # env_file = ".env"
 
 
