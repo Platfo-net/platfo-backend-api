@@ -30,9 +30,5 @@ class Connection(Base):
         nullable=True,
     )
 
-    __table_args__ = (
-        UniqueConstraint("account_id", "application_name"),
-    )
-
     user = relationship("User", back_populates="connection")
 

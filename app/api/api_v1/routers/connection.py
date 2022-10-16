@@ -176,7 +176,7 @@ def delete_connection(
 def update_connection(
     *,
     db: Session = Depends(deps.get_db),
-    obj_in: schemas.ConnectionCreate,
+    obj_in: schemas.ConnectionUpdate,
     connection_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,

@@ -11,9 +11,8 @@ def test_test_user_created_success(db: Session):
         Test that test user created automatically is exist or not
     """
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
+    assert isinstance(user, models.User)
     assert user.email == settings.FIRST_USER_EMAIL
-
-
 
 
 def test_test_user_created_success(db: Session):
@@ -22,8 +21,8 @@ def test_test_user_created_success(db: Session):
         Test that test admin created automatically is exist or not
     """
     user = services.user.get_by_email(db, email=settings.FIRST_ADMIN_EMAIL)
+    assert isinstance(user, models.User)
     assert user.email == settings.FIRST_ADMIN_EMAIL
-
 
 
 def test_register_user_success(db: Session):

@@ -1,0 +1,25 @@
+from app import services, schemas
+from sqlalchemy.orm import Session
+import uuid
+from app.core.config import settings
+from app.constants.application import Application
+from app.constants.trigger import Trigger
+
+
+def create_connection(db: Session, test_account_id):
+    connection_in = schemas.ConnectionCreate(
+        name="test",
+        application_name=Application.BOT_BUILDER["name"],
+        description="test",
+        account_id=test_account_id,
+        details=[
+            {
+                "chatflow_id": str(uuid.uuid4()),
+                "trigger": Trigger.Message["name"]
+            }
+        ]
+    )
+
+    user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
+    return services.connection.create(
+        db, obj_in=connection_in, user_id=user.id)

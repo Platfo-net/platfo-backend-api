@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     FIRST_USER_PASSWORD: str = None
 
     DB_HOST: str
+    DB_PORT: int = 5432
 
     POSTGRES_PASSWORD: str
     POSTGRES_USER: str
@@ -56,6 +57,7 @@ class Settings(BaseSettings):
 
     S3_CHATFLOW_MEDIA_BUCKET: str
 
+
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
             cls, v: Optional[str], values: Dict[str, Any]
@@ -85,6 +87,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
+        
         # env_file = ".env"
 
 
