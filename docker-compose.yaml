@@ -1,5 +1,5 @@
 services:
-  api-1:
+  api:
     container_name: "${APP_NAME}-api"
     build:
       context: .
@@ -11,11 +11,11 @@ services:
     command: /app/startup.sh
     ports:
       - "8000:8000"
-    env_file:
-      - .env
     depends_on:
       - db
     restart: unless-stopped
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
     # logging:
       # driver: loki
       # options:
@@ -57,7 +57,7 @@ services:
       MINIO_ROOT_USER: "${S3_ROOT_USER}"
       MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
 
-  celery-worker-1:
+  celery-worker:
     image: "botinow-backend-app"
     build: .
     container_name: "${APP_NAME}-celery-worker-1"

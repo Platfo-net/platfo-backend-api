@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     FIRST_USER_PASSWORD: str = None
 
     DB_HOST: str
+    DB_PORT: int = 5432
 
     POSTGRES_PASSWORD: str
     POSTGRES_USER: str
@@ -62,6 +63,7 @@ class Settings(BaseSettings):
     ) -> Any:
         if isinstance(v, str):
             return v
+
         return PostgresDsn.build(
             scheme="postgresql",
             user=values.get("POSTGRES_USER"),
@@ -85,6 +87,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
+
         # env_file = ".env"
 
 
