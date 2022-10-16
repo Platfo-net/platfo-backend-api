@@ -2,7 +2,7 @@ import datetime
 from uuid import uuid4
 
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, JSON, DateTime
+from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 
 
@@ -20,6 +20,8 @@ class Contact(Base):
     last_message_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     information = Column(JSON, nullable=True)
+
+    # contact_status = Column(Boolean(), default=True)
 
     user_id = Column(
         UUID(as_uuid=True),

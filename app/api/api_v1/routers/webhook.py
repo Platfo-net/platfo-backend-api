@@ -66,18 +66,16 @@ def webhook_instagram_listener(
 
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
-    print('------------------', instagram_data.sender_id)
+    print(',,,,,,,,,,,,,,,,,,,,,,,,,', facebook_webhook_body)
 
-    # try:
-    user_page_data = cache.get_user_data(
-        redis_client,
-        db,
-        instagram_page_id=instagram_data.recipient_id)
-    print('uuuuuuuuuuuuuu', user_page_data)
-
-    # except:
-    #     pass
-    #     raise HTTPException(status_code=400, detail="Error getting user data")
+    try:
+        user_page_data = cache.get_user_data(
+            redis_client,
+            db,
+            instagram_page_id=instagram_data.recipient_id)
+    except:
+       pass
+    #    raise HTTPException(status_code=400, detail="Error getting user data")
 
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:
@@ -146,7 +144,6 @@ def webhook_instagram_listener(
             payload=instagram_data.payload,
             user_page_data=user_page_data.to_dict()
         )
-
     else:
         # get chatflow from a connection
         chatflow_id = None
@@ -155,7 +152,7 @@ def webhook_instagram_listener(
             account_id=user_page_data.account_id,
             application_name="BOT_BUILDER"
         )
-
+        print('conections areeeeeee', connections)
         if connections is None:
             return None
         from app.constants.trigger import Trigger
@@ -164,10 +161,11 @@ def webhook_instagram_listener(
             for detail in details:
                 if detail["trigger"] == Trigger.Message["name"]:
                     chatflow_id = detail["chatflow_id"]
+        print('ghable chatflow none')
 
         if chatflow_id is None:
             return None
-
+        print('badel chatflow none')
         try:
             node = services.bot_builder.node.get_chatflow_head_node(
                 db, chatflow_id=chatflow_id)

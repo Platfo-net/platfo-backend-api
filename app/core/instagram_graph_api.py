@@ -200,14 +200,6 @@ class InstagramGraphApi:
         )
         res = requests.get(url=url, params=params)
         if res.status_code == 200:
-            # username = res.json()['username']
-            # profile_image = res.json()['profile_pic']
-            # name = res.json()['name']
-            # follower_count = res.json()['follower_count']
-            # is_verified_user = res.json()['is_verified_user']
-            # is_user_follow_business = res.json()['is_user_follow_business']
-            # is_business_follow_user = res.json()['is_business_follow_user']
-            # data_res = res.json()
             return dict(username=res.json()['username'] if "username" in res.json() else None,
                         profile_image=res.json()[
                 'profile_pic'] if "profile_pic" in res.json() else None,
@@ -219,7 +211,8 @@ class InstagramGraphApi:
             )['is_verified_user'] if "is_verified_user" in res.json() else None,
                 is_user_follow_business=res.json(
             )['is_user_follow_business'] if "is_user_follow_business" in res.json() else None,
-                is_business_follow_user=res.json()['is_business_follow_user'] if "is_business_follow_user" in res.json() else None)
+                is_business_follow_user=res.json()['is_business_follow_user'] if
+                "is_business_follow_user" in res.json() else None)
 
         return None
 

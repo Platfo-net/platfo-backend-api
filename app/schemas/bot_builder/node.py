@@ -1,3 +1,4 @@
+import uuid
 from typing import List, Optional
 
 from .chatflow import Chatflow
@@ -5,8 +6,8 @@ from pydantic import UUID4, BaseModel
 
 
 class QuickReply(BaseModel):
-    id: UUID4
-    text: Optional[str] = None
+    id: UUID4 = uuid.uuid4()
+    text: Optional[str] = "connect to agent"
 
 
 class NodeBase(BaseModel):
