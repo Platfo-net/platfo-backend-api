@@ -6,8 +6,8 @@ from pydantic import UUID4, BaseModel
 
 
 class QuickReply(BaseModel):
-    id: UUID4 = uuid.uuid4()
-    text: Optional[str] = "connect to agent"
+    id: UUID4 = None
+    text: Optional[str] = None
 
 
 class NodeBase(BaseModel):
