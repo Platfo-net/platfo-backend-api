@@ -15,12 +15,12 @@ from app.models.live_chat.message import Message  # noqa
 from app.models.notification import Notification, NotificationUser  # noqa
 
 
-from app.models.academy import (
-    Category,
-    Content,
-    ContentCategory,
-    Label,
-    ContentLabel,
+from app.models.academy import (  # noqa
+    Category,  # noqa
+    Content,  # noqa
+    ContentCategory,  # noqa
+    Label,  # noqa
+    ContentLabel,  # noqa
 )  # noqa
 
 

@@ -80,9 +80,12 @@ class Error:
         "status_code": 404,
         "code": 16,
     }
-    NO_NEXT_MOVE = {"text": "There is no next move.", "status_code": 404, "code": 17}
-    NOT_AUTHENTICATED = {"text": "not authenticated.", "status_code": 401, "code": 18}
-    NOT_AUTHORIZED = {"text": "not authorized.", "status_code": 401, "code": 19}
+    NO_NEXT_MOVE = {"text": "There is no next move.",
+                    "status_code": 404, "code": 17}
+    NOT_AUTHENTICATED = {"text": "not authenticated.",
+                         "status_code": 401, "code": 18}
+    NOT_AUTHORIZED = {"text": "not authorized.",
+                      "status_code": 401, "code": 19}
     ACCOUNT_NOT_FOUND_PERMISSION_DENIED = {
         "text": "There is no account with the given id.",
         "status_code": 404,
@@ -104,11 +107,13 @@ class Error:
 
     # Category errors
 
-    CATEGORY_NOT_FOUND = {"text": "Category not found", "status_code": 404, "code": 60}
+    CATEGORY_NOT_FOUND = {"text": "Category not found",
+                          "status_code": 404, "code": 60}
 
     # Content errors
 
-    CONTENT_NOT_FOUND = {"text": "Content not found", "status_code": 404, "code": 70}
+    CONTENT_NOT_FOUND = {"text": "Content not found",
+                         "status_code": 404, "code": 70}
 
     CONNECTION_EXIST = {
         "text": "Connection already exist.",

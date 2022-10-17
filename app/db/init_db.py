@@ -1,6 +1,5 @@
 from app import services, schemas
 from app.constants.role import Role
-from app.constants.trigger import Trigger
 from app.core.config import settings
 from sqlalchemy.orm import Session
 

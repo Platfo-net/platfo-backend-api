@@ -97,7 +97,8 @@ def create_full_node(
             dict(id=str(uuid.uuid4()), text=ch["text"]) for ch in obj_in["choices"]
         ]
 
-    node = services.bot_builder.node.add_widget(db, obj_in=obj_in, node_id=node.id)
+    node = services.bot_builder.node.add_widget(
+        db, obj_in=obj_in, node_id=node.id)
     node = services.bot_builder.node.add_quick_reply(
         db, obj_in=quick_replies, node_id=node.id
     )

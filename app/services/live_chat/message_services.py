@@ -1,6 +1,4 @@
-from typing import List
 from app import models, schemas
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 

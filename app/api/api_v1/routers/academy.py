@@ -151,7 +151,8 @@ def update_category(
             status_code=Error.CATEGORY_NOT_FOUND["status_code"],
             detail=Error.CATEGORY_NOT_FOUND["text"],
         )
-    category = services.academy.category.update(db, db_obj=category, obj_in=obj_in)
+    category = services.academy.category.update(
+        db, db_obj=category, obj_in=obj_in)
 
     return category
 
@@ -217,7 +218,8 @@ def get_all_contents(
 
 @router.get("/{id}", response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*, db: Session = Depends(deps.get_db), id: UUID4):
-    content, categories, labels = services.academy.content.get_by_detail(db, id=id)
+    content, categories, labels = services.academy.content.get_by_detail(
+        db, id=id)
 
     if not content:
         raise HTTPException(
