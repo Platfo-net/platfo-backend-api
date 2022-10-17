@@ -1,4 +1,3 @@
-
 from minio import Minio
 from minio.error import S3Error
 
@@ -30,10 +29,7 @@ def get_object_url(object_name, bucket_name):
         if object_name in ["", None]:
             return ""
         url = client.get_presigned_url(
-            "GET",
-            bucket_name,
-            object_name,
-            expires=timedelta(days=1)
+            "GET", bucket_name, object_name, expires=timedelta(days=1)
         )
         return url
     except S3Error as exc:
@@ -46,7 +42,7 @@ def create_client():
             f"{settings.S3_HOST}:{settings.S3_PORT}",
             access_key=settings.S3_ROOT_USER,
             secret_key=settings.S3_ROOT_PASSWORD,
-            secure=False
+            secure=False,
         )
         return client
     except S3Error as exc:

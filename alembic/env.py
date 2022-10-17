@@ -1,3 +1,4 @@
+from posix import environ
 from app.db.base import Base
 import sys
 import os
@@ -34,13 +35,11 @@ target_metadata = Base.metadata
 
 def get_url():
     from app.core.config import settings
-
+    import os
     user = settings.POSTGRES_USER
     password = settings.POSTGRES_PASSWORD
     host = settings.DB_HOST
-    db = (
-        settings.POSTGRES_DB
-    )
+    db = f"{settings.POSTGRES_DB}_test" if os.environ.get("ENVIRONMENT") == "test" else settings.POSTGRES_DB
 
     return f"postgresql://{user}:{password}@{host}/{db}"
 

@@ -16,13 +16,13 @@ app = FastAPI(
 )
 
 
-# @app.middleware("http")
-# async def add_sql_tap(request: Request, call_next):
-#     profiler = sqltap.start()
-#     response = await call_next(request)
-#     statistics = profiler.collect()
-#     sqltap.report(statistics, "report.txt", report_format="text")
-#     return response
+@app.middleware("http")
+async def add_sql_tap(request: Request, call_next):
+    profiler = sqltap.start()
+    response = await call_next(request)
+    statistics = profiler.collect()
+    sqltap.report(statistics, "report.txt", report_format="text")
+    return response
 
 
 app.add_middleware(
@@ -41,5 +41,5 @@ async def health():
     return {"message": "ok!"}
 
 
-if not settings.ENVIRONMENT =="test":
+if not settings.ENVIRONMENT == "test":
     Instrumentator().instrument(app).expose(app)

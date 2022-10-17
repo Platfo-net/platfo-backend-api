@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     FIRST_USER_PASSWORD: str = None
 
     DB_HOST: str
+    DB_PORT: int = 5432
 
     POSTGRES_PASSWORD: str
     POSTGRES_USER: str
@@ -57,11 +58,10 @@ class Settings(BaseSettings):
     S3_CHATFLOW_MEDIA_BUCKET: str
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(
-            cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Any:
+    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
+
         return PostgresDsn.build(
             scheme="postgresql",
             user=values.get("POSTGRES_USER"),
@@ -72,7 +72,7 @@ class Settings(BaseSettings):
 
     @validator("CELERY_URI", pre=True)
     def assemble_celery_connection(
-            cls, v: Optional[str], values: Dict[str, Any]
+        cls, v: Optional[str], values: Dict[str, Any]
     ) -> Any:
         if isinstance(v, str):
             return v
@@ -85,6 +85,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
+
         # env_file = ".env"
 
 
@@ -96,7 +97,7 @@ def get_settings():
 settings = get_settings()
 
 
-'''
+"""
 broker_url = 'redis://user:password@redishost:6379/0'
 
-'''
+"""

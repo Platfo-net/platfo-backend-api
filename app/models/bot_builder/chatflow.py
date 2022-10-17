@@ -10,9 +10,7 @@ from sqlalchemy.orm import relationship
 class Chatflow(Base):
 
     __tablename__ = "bot_builder_chatflows"
-    id = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
     name = Column(String(255), nullable=True)
     is_active = Column(Boolean(), default=True)

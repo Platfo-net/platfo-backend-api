@@ -70,8 +70,8 @@ def delete_user(
     user = services.user.get(db, id=user_id)
     if not user:
         raise HTTPException(
-            status_code=Error.NO_USER_WITH_THE_GIVEN_ID['status_code'],
-            detail=Error.NO_USER_WITH_THE_GIVEN_ID['text'],
+            status_code=Error.NO_USER_WITH_THE_GIVEN_ID["status_code"],
+            detail=Error.NO_USER_WITH_THE_GIVEN_ID["text"],
         )
 
     services.user.remove(db, id=user_id)
@@ -95,7 +95,7 @@ def get_all_users(
     return services.user.get_multi(db, skip=skip, limit=limit)
 
 
-@router.put("/me",  response_model=schemas.User)
+@router.put("/me", response_model=schemas.User)
 def update_user_me(
     *,
     db: Session = Depends(deps.get_db),
@@ -114,7 +114,7 @@ def update_user_me(
     return user
 
 
-@router.put("/",  response_model=schemas.User)
+@router.put("/", response_model=schemas.User)
 def change_password_me(
     *,
     db: Session = Depends(deps.get_db),
@@ -145,7 +145,7 @@ def get_user_me(
         ],
     ),
 ) -> Any:
-    user = services.user.get(db , id = current_user.id)
+    user = services.user.get(db, id=current_user.id)
     return user
 
 
@@ -158,8 +158,8 @@ async def forget_password(
     user = services.user.get_by_email(db, email=user_in.email)
     if user is None:
         raise HTTPException(
-            status_code=Error.USER_NOT_FOUND['status_code'],
-            detail=Error.USER_NOT_FOUND['text'],
+            status_code=Error.USER_NOT_FOUND["status_code"],
+            detail=Error.USER_NOT_FOUND["text"],
         )
     return
     # await services.user.send_recovery_mail(db, user.email)  # todo
@@ -170,25 +170,20 @@ def recovery_password(
     *,
     db: Session = Depends(deps.get_db),
     user_in: schemas.ChangePassword,
-    redis_client: Redis = Depends(deps.get_redis_client)
+    redis_client: Redis = Depends(deps.get_redis_client),
 ):
 
     code = get_password_data(client=redis_client, code=user_in.code)
     if code is None:
         raise HTTPException(
-            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
-            ["status_code"],
-            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
-            ["text"],
+            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["status_code"],
+            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["text"],
         )
-    if str(code.decode('utf-8')) != str(user_in.code):
+    if str(code.decode("utf-8")) != str(user_in.code):
         raise HTTPException(
-            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
-            ["status_code"],
-            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR
-            ["text"],
+            status_code=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["status_code"],
+            detail=Error.CODE_EXPIRATION_OR_NOT_EXIST_ERROR["text"],
         )
     user = services.user.get_by_email(db, email=user_in.email)
-    services.user.change_password(
-        db, user_id=user.id, obj_in=user_in)
+    services.user.change_password(db, user_id=user.id, obj_in=user_in)
     return

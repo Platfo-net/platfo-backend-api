@@ -9,9 +9,7 @@ from app.db.base_class import Base
 
 class ContentAttachment(Base):
     __tablename__ = "academy_content_attachments"
-    id = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     attachment_type = Column(String(256), nullable=True)
     attachment_id = Column(String(256), nullable=True)
 

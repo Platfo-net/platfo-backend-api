@@ -1,8 +1,7 @@
 from typing import Any
 from app import models, services, schemas
 from app.api import deps
-from fastapi import APIRouter, Depends, \
-    HTTPException, Security
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
 from app.constants.errors import Error
@@ -48,19 +47,14 @@ def get_notifications_list(
             page_size=page_size,
         )
         notification_list = schemas.NotificationListApi(
-            items=notifications,
-            pagination=pagination
+            items=notifications, pagination=pagination
         )
         return notification_list
 
-    notifications, pagination = services.notification.\
-        get_by_multi_for_user(
-            db, page=page, page_size=page_size, user_id=current_user.id
-        )
-    return schemas.NotificationListApi(
-        items=notifications,
-        pagination=pagination
+    notifications, pagination = services.notification.get_by_multi_for_user(
+        db, page=page, page_size=page_size, user_id=current_user.id
     )
+    return schemas.NotificationListApi(items=notifications, pagination=pagination)
 
 
 @router.post("", response_model=schemas.Notification)
@@ -74,7 +68,6 @@ def create_notification(
             Role.ADMIN["name"],
         ],
     ),
-
 ) -> Any:
     """
     Create a notification by admin.
@@ -114,11 +107,10 @@ def update_notification(
     notification = services.notification.get(db, id=id)
     if not notification:
         raise HTTPException(
-            status_code=Error.NOTIFICATON_NOT_FOUND['status_code'],
-            detail=Error.NOTIFICATON_NOT_FOUND['text'],
+            status_code=Error.NOTIFICATON_NOT_FOUND["status_code"],
+            detail=Error.NOTIFICATON_NOT_FOUND["text"],
         )
-    notification = services.notification.update(
-        db, db_obj=notification, obj_in=obj_in)
+    notification = services.notification.update(db, db_obj=notification, obj_in=obj_in)
 
     return notification
 
@@ -152,8 +144,8 @@ def delete_notification(
         id,
     ):
         raise HTTPException(
-            status_code=Error.NOTIFICATON_NOT_FOUND['status_code'],
-            detail=Error.NOTIFICATON_NOT_FOUND['text'],
+            status_code=Error.NOTIFICATON_NOT_FOUND["status_code"],
+            detail=Error.NOTIFICATON_NOT_FOUND["text"],
         )
 
     services.notification.remove(db, id=id)
@@ -188,20 +180,13 @@ def read_notification(
         id=id,
     ):
         raise HTTPException(
-            status_code=Error.NOTIFICATON_NOT_FOUND['status_code'],
-            detail=Error.NOTIFICATON_NOT_FOUND['text'],
+            status_code=Error.NOTIFICATON_NOT_FOUND["status_code"],
+            detail=Error.NOTIFICATON_NOT_FOUND["text"],
         )
-    if services.notification_user.get(db,
-                                      notification_id=id,
-                                      user_id=current_user.id
-                                      ):
+    if services.notification_user.get(db, notification_id=id, user_id=current_user.id):
         raise HTTPException(
             status_code=Error.NOTIFICATION_ALREADY_READED["status_code"],
-            detail=Error.NOTIFICATION_ALREADY_READED["text"]
+            detail=Error.NOTIFICATION_ALREADY_READED["text"],
         )
 
-    return services.notification.read(
-        db,
-        id=id,
-        user_id=current_user.id
-    )
+    return services.notification.read(db, id=id, user_id=current_user.id)

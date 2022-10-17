@@ -23,19 +23,19 @@ def login_access_token(
     OAuth2 compatible token login, get an access token for future requests
     """
     user = services.user.authenticate(
-        db, email=data.email, password=data.password
-    )
+        db, email=data.email, password=data.password)
     if not user:
         raise HTTPException(
             status_code=Error.USER_PASS_WRONG_ERROR["status_code"],
             detail=Error.USER_PASS_WRONG_ERROR["text"],
         )
     elif not services.user.is_active(user):
-        raise HTTPException(status_code=Error.INACTIVE_USER["status_code"],
-                            detail=Error.INACTIVE_USER["text"])
+        raise HTTPException(
+            status_code=Error.INACTIVE_USER["status_code"],
+            detail=Error.INACTIVE_USER["text"],
+        )
     access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     if not user.role_id:
         role = "GUEST"
@@ -71,11 +71,12 @@ def login_access_token_swagger(
             detail=Error.USER_PASS_WRONG_ERROR["text"],
         )
     elif not services.user.is_active(user):
-        raise HTTPException(status_code=Error.INACTIVE_USER["status_code"],
-                            detail=Error.INACTIVE_USER["text"])
+        raise HTTPException(
+            status_code=Error.INACTIVE_USER["status_code"],
+            detail=Error.INACTIVE_USER["text"],
+        )
     access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     if not user.role_id:
         role = "GUEST"
@@ -101,12 +102,14 @@ def test_token(
     """
     Test access token
     """
-    
+
     return current_user
 
 
 @router.post("/hash-password", response_model=str)
-def hash_password(password: str = Body(..., embed=True),) -> Any:
+def hash_password(
+    password: str = Body(..., embed=True),
+) -> Any:
     """
     Hash a password
     """

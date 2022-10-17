@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, Security
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -12,24 +11,33 @@ router = APIRouter(prefix="/chatflow-ui")
 
 @router.get("/nodes/all/{chatflow_id}")
 def get_chatflow_nodes_edges(
-        *,
-        db: Session = Depends(deps.get_db),
-        chatflow_id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    chatflow_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+    ),
 ):
-    chatflow = db.query(models.bot_builder.Chatflow).filter(
-        models.bot_builder.Chatflow.id == chatflow_id).first()
+    chatflow = (
+        db.query(models.bot_builder.Chatflow)
+        .filter(models.bot_builder.Chatflow.id == chatflow_id)
+        .first()
+    )
 
-    nodes = db.query(models.bot_builder.NodeUI).filter(
-        models.bot_builder.NodeUI.chatflow_id == chatflow_id).all()
-    edges = db.query(models.bot_builder.Edge).filter(
-        models.bot_builder.Edge.chatflow_id == chatflow_id).all()
+    nodes = (
+        db.query(models.bot_builder.NodeUI)
+        .filter(models.bot_builder.NodeUI.chatflow_id == chatflow_id)
+        .all()
+    )
+    edges = (
+        db.query(models.bot_builder.Edge)
+        .filter(models.bot_builder.Edge.chatflow_id == chatflow_id)
+        .all()
+    )
 
     nodes = [
         schemas.bot_builder.NodeUI(
@@ -40,9 +48,9 @@ def get_chatflow_nodes_edges(
             data=node.data,
             ports=node.ports,
             has_delete_action=node.has_delete_action,
-            has_edit_action=node.has_edit_action
-
-        )for node in nodes
+            has_edit_action=node.has_edit_action,
+        )
+        for node in nodes
     ]
 
     edges = [
@@ -54,7 +62,8 @@ def get_chatflow_nodes_edges(
             to_port=edge.to_port,
             from_widget=edge.from_widget,
             text=edge.text,
-        ) for edge in edges
+        )
+        for edge in edges
     ]
 
     return schemas.bot_builder.ChatflowUI(
@@ -67,33 +76,35 @@ def get_chatflow_nodes_edges(
 
 @router.post("/{chatflow_id}")
 def create_chatflow_nodes_edges(
-        *,
-        db: Session = Depends(deps.get_db),
-        chatflow_id: UUID4,
-        obj_in: schemas.bot_builder.ChatflowUI,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    chatflow_id: UUID4,
+    obj_in: schemas.bot_builder.ChatflowUI,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+    ),
 ):
 
     db.query(models.bot_builder.NodeUI).filter(
-        models.bot_builder.NodeUI.chatflow_id == chatflow_id).delete()
+        models.bot_builder.NodeUI.chatflow_id == chatflow_id
+    ).delete()
     db.query(models.bot_builder.Edge).filter(
-        models.bot_builder.Edge.chatflow_id == chatflow_id).delete()
+        models.bot_builder.Edge.chatflow_id == chatflow_id
+    ).delete()
 
-    chatflow = services.bot_builder.chatflow.get(db, chatflow_id, current_user.id)
+    chatflow = services.bot_builder.chatflow.get(
+        db, chatflow_id, current_user.id)
 
     services.bot_builder.chatflow.update(
         db,
         db_obj=chatflow,
         obj_in=schemas.bot_builder.ChatflowUpdate(
-            is_active=True,
-            name=obj_in.name
-        ))
+            is_active=True, name=obj_in.name),
+    )
 
     new_nodes = []
     for node in obj_in.nodes:
@@ -106,7 +117,7 @@ def create_chatflow_nodes_edges(
             ports=node.ports,
             has_delete_action=node.has_delete_action,
             has_edit_action=node.has_edit_action,
-            chatflow_id=chatflow_id
+            chatflow_id=chatflow_id,
         )
 
         new_nodes.append(db_obj)
@@ -121,7 +132,7 @@ def create_chatflow_nodes_edges(
             to_port=edge.to_port,
             chatflow_id=chatflow_id,
             from_widget=edge.from_widget,
-            text=edge.text
+            text=edge.text,
         )
         new_edges.append(db_obj)
 
@@ -129,19 +140,17 @@ def create_chatflow_nodes_edges(
         db, nodes=new_nodes, edges=new_edges
     )
 
-    services.bot_builder.node.delete_chatflow_nodes(db, chatflow_id=chatflow_id)
-    nodes = chatflow_ui_parse(chatflow_id=chatflow_id,
-                              nodes=obj_in.nodes, edges=obj_in.edges)
+    services.bot_builder.node.delete_chatflow_nodes(
+        db, chatflow_id=chatflow_id)
+    nodes = chatflow_ui_parse(
+        chatflow_id=chatflow_id, nodes=obj_in.nodes, edges=obj_in.edges
+    )
 
     services.bot_builder.node.create_bulk_nodes(db, nodes=nodes)
     return obj_in
 
 
-def chatflow_ui_parse(
-        chatflow_id: UUID4,
-        nodes,
-        edges
-):
+def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
 
     objs = []
     start_node = None
@@ -160,7 +169,8 @@ def chatflow_ui_parse(
 
     widget, quick_replies = widget_mapper(head_node.data, head_node.id)
     from_widget = [
-        str(edge.from_widget) for edge in edges if edge.to_id == head_node.id]
+        str(edge.from_widget) for edge in edges if edge.to_id == head_node.id
+    ]
 
     obj = models.bot_builder.Node(
         id=head_node.id,
@@ -169,7 +179,8 @@ def chatflow_ui_parse(
         from_widget=from_widget,
         widget=widget,
         quick_replies=quick_replies,
-        is_head=True)
+        is_head=True,
+    )
 
     objs.append(obj)
 
@@ -178,8 +189,8 @@ def chatflow_ui_parse(
 
     for node in nodes:
         widget, quick_replies = widget_mapper(node.data, node.id)
-        from_widget = [
-            str(edge.from_widget) for edge in edges if edge.to_id == node.id]
+        from_widget = [str(edge.from_widget)
+                       for edge in edges if edge.to_id == node.id]
 
         obj = models.bot_builder.Node(
             id=node.id,
@@ -188,7 +199,8 @@ def chatflow_ui_parse(
             from_widget=from_widget,
             widget=widget,
             quick_replies=quick_replies,
-            is_head=False)
+            is_head=False,
+        )
 
         objs.append(obj)
 
@@ -200,7 +212,7 @@ def widget_mapper(data, node_id):
         widget = {
             "widget_type": data["type"],
             "id": str(node_id),
-            "message": data["value"]
+            "message": data["value"],
         }
 
     if data["type"] == "MENU":
@@ -209,20 +221,15 @@ def widget_mapper(data, node_id):
             "widget_type": data["type"],
             "id": str(node_id),
             "title": str(data["question"]),
-            "choices": [{
-                "id": str(choice["value"]),
-                "text":choice["label"]
-            }
+            "choices": [
+                {"id": str(choice["value"]), "text": choice["label"]}
                 for choice in choices
-            ]
+            ],
         }
 
     replies = data["quickReplies"] if data["quickReplies"] else []
 
     quick_replies = [
-        {
-            "id": reply["value"],
-            "text": reply["label"]
-        }for reply in replies
+        {"id": reply["value"], "text": reply["label"]} for reply in replies
     ]
     return widget, quick_replies

@@ -7,9 +7,7 @@ from sqlalchemy.orm import relationship
 
 class Edge(Base):
     __tablename__ = "bot_builder_edges"
-    id = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     from_id = Column(
         UUID(as_uuid=True),
         nullable=True,

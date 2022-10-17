@@ -16,16 +16,16 @@ router = APIRouter(prefix="/connection", tags=["Connection"])
 
 @router.get("/all", response_model=List[schemas.Connection])
 def get_list_of_connections(
-        *,
-        db: Session = Depends(deps.get_db),
-        account_id: UUID4 = None,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    account_id: UUID4 = None,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     """
     Endpoint for getting list of a user connections.
@@ -45,7 +45,8 @@ def get_list_of_connections(
     """
 
     connections = services.connection.get_by_user_and_account_id(
-        db, user_id=current_user.id, account_id=account_id)
+        db, user_id=current_user.id, account_id=account_id
+    )
     new_connections = []
 
     for connection in connections:
@@ -57,8 +58,7 @@ def get_list_of_connections(
                     username=account.instagram_username,
                     platform="Instagram",
                     profile_image=account.instagram_profile_picture_url,
-                    page_id=account.facebook_page_id
-
+                    page_id=account.facebook_page_id,
                 ),
                 **jsonable_encoder(connection),
             )
@@ -86,15 +86,13 @@ def create_connection(
         "chatflow_id": "string"
       }]
     """
-    connection = services.connection.\
-        get_by_application_name_and_account_id(
-                                db,
-                                application_name=obj_in.application_name,
-                                account_id=obj_in.account_id)
+    connection = services.connection.get_by_application_name_and_account_id(
+        db, application_name=obj_in.application_name, account_id=obj_in.account_id
+    )
     if connection:
         raise HTTPException(
-            status_code=Error.CONNECTION_EXIST['status_code'],
-            detail=Error.CONNECTION_EXIST['text']
+            status_code=Error.CONNECTION_EXIST["status_code"],
+            detail=Error.CONNECTION_EXIST["text"],
         )
 
     connection = services.connection.create(
@@ -103,7 +101,7 @@ def create_connection(
     return connection
 
 
-@router.get('/{connection_id}', response_model=schemas.Connection)
+@router.get("/{connection_id}", response_model=schemas.Connection)
 def get_connection_by_id(
     *,
     db: Session = Depends(deps.get_db),
@@ -117,21 +115,21 @@ def get_connection_by_id(
     ),
 ):
     """
-        Get a connection and it's detail by connecion id.
-            all connection chatflows will return in this API
+    Get a connection and it's detail by connecion id.
+        all connection chatflows will return in this API
 
-        Be Careful: Send all of connection chatflows in this endpoint
+    Be Careful: Send all of connection chatflows in this endpoint
 
-        Args:
+    Args:
 
-        connection_id (UUID4, optional): Id of a connection
+    connection_id (UUID4, optional): Id of a connection
     """
 
     connection = services.connection.get(db, id=connection_id)
     if not connection:
         raise HTTPException(
-            status_code=Error.INVALID_CONNECTION_ID['status_code'],
-            detail=Error.INVALID_CONNECTION_ID['text']
+            status_code=Error.INVALID_CONNECTION_ID["status_code"],
+            detail=Error.INVALID_CONNECTION_ID["text"],
         )
     return schemas.Connection(
         id=connection.id,
@@ -139,11 +137,11 @@ def get_connection_by_id(
         description=connection.description,
         account_id=connection.account_id,
         application_name=connection.application_name,
-        details=connection.details
+        details=connection.details,
     )
 
 
-@router.delete('/{connection_id}', status_code=status.HTTP_200_OK)
+@router.delete("/{connection_id}", status_code=status.HTTP_200_OK)
 def delete_connection(
     *,
     db: Session = Depends(deps.get_db),
@@ -165,7 +163,7 @@ def delete_connection(
     if connection.user_id != current_user.id:
         raise HTTPException(
             status_code=Error.CONNECTION_NOT_FOUND["status_code"],
-            detail=Error.CONNECTION_NOT_FOUND["detail"]
+            detail=Error.CONNECTION_NOT_FOUND["detail"],
         )
 
     services.connection.remove(db, id=connection_id)
@@ -176,7 +174,7 @@ def delete_connection(
 def update_connection(
     *,
     db: Session = Depends(deps.get_db),
-    obj_in: schemas.ConnectionCreate,
+    obj_in: schemas.ConnectionUpdate,
     connection_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -191,15 +189,13 @@ def update_connection(
     Args:
         connection_id (UUID4): Id of a connection related to a user
     """
-    connection = services.connection.\
-        get_by_application_name_and_account_id(
-                                db,
-                                application_name=obj_in.application_name,
-                                account_id=obj_in.account_id)
+    connection = services.connection.get_by_application_name_and_account_id(
+        db, application_name=obj_in.application_name, account_id=obj_in.account_id
+    )
     if connection:
         raise HTTPException(
-            status_code=Error.CONNECTION_EXIST['status_code'],
-            detail=Error.CONNECTION_EXIST['text']
+            status_code=Error.CONNECTION_EXIST["status_code"],
+            detail=Error.CONNECTION_EXIST["text"],
         )
 
     old_connection = services.connection.get(db, id=connection_id)
@@ -207,15 +203,17 @@ def update_connection(
     if old_connection.user_id != current_user.id:
         raise HTTPException(
             status_code=Error.CONNECTION_NOT_FOUND["status_code"],
-            detail=Error.CONNECTION_NOT_FOUND["detail"]
+            detail=Error.CONNECTION_NOT_FOUND["detail"],
         )
     if not old_connection:
         raise HTTPException(
-            status_code=Error.CONNECTION_NOT_FOUND['status_code'],
-            detail=Error.CONNECTION_NOT_FOUND['text'])
+            status_code=Error.CONNECTION_NOT_FOUND["status_code"],
+            detail=Error.CONNECTION_NOT_FOUND["text"],
+        )
 
     connection = services.connection.update(
-        db, db_obj=old_connection, obj_in=obj_in, user_id=current_user.id)
+        db, db_obj=old_connection, obj_in=obj_in, user_id=current_user.id
+    )
 
     return connection
 
@@ -240,6 +238,7 @@ def disable_chatflow_for_page(
         state (str, optional): Options: enable, disable
     """
     from app.constants.application import Application
+
     account = services.instagram_page.get_by_page_id(db, page_id=page_id)
     connections = services.connection.get_page_connections(
         db, 
@@ -247,15 +246,17 @@ def disable_chatflow_for_page(
         application_name=Application.BOT_BUILDER["name"]
     )
     if not len(connections):
-        return 
+        return
     connection = connections[0]
-    connection_chatflow = db.query(models.ConnectionChatflow).filter(
-        models.ConnectionChatflow.connection_id == connection.id
-    ).first()
+    connection_chatflow = (
+        db.query(models.ConnectionChatflow)
+        .filter(models.ConnectionChatflow.connection_id == connection.id)
+        .first()
+    )
     connection_chatflow_status = True if state == "enable" else False
     connection_chatflow.is_active = connection_chatflow_status
 
     db.add(connection_chatflow)
     db.commit()
     db.refresh(connection_chatflow)
-    return 
+    return

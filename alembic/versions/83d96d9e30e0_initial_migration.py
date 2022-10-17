@@ -96,8 +96,7 @@ def upgrade():
     sa.Column('details', sa.ARRAY(sa.JSON()), nullable=True),
     sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('account_id', 'application_name')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('instagram_pages',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
