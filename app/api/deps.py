@@ -1,4 +1,3 @@
-from datetime import datetime
 import json
 import logging
 import redis
@@ -23,7 +22,10 @@ from pydantic import UUID4
 
 
 class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
-    async def __call__(self, request: Request = None, websocket: WebSocket = None):
+    async def __call__(self,
+                       request: Request = None,
+                       websocket: WebSocket = None
+                       ):
         return await super().__call__(websocket or request)
 
 
@@ -126,7 +128,7 @@ def get_current_user(
         if payload.get("id") is None:
             raise credentials_exception
         token_data = schemas.TokenPayload(**payload)
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["status_code"],
             detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["text"],
@@ -142,7 +144,8 @@ def get_current_user(
             detail=Error.PERMISSION_DENIED_ERROR["text"],
             headers={"WWW-Authenticate": authenticate_value},
         )
-    if security_scopes.scopes and token_data.role not in security_scopes.scopes:
+    if security_scopes.scopes and \
+            token_data.role not in security_scopes.scopes:
         raise HTTPException(
             status_code=Error.PERMISSION_DENIED_ERROR["status_code"],
             detail=Error.PERMISSION_DENIED_ERROR["text"],

@@ -95,7 +95,8 @@ def create_connection(
             detail=Error.CONNECTION_EXIST["text"],
         )
 
-    connection = services.connection.create(db, obj_in=obj_in, user_id=current_user.id)
+    connection = services.connection.create(
+        db, obj_in=obj_in, user_id=current_user.id)
 
     return connection
 

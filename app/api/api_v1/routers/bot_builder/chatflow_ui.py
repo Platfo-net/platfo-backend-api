@@ -96,12 +96,14 @@ def create_chatflow_nodes_edges(
         models.bot_builder.Edge.chatflow_id == chatflow_id
     ).delete()
 
-    chatflow = services.bot_builder.chatflow.get(db, chatflow_id, current_user.id)
+    chatflow = services.bot_builder.chatflow.get(
+        db, chatflow_id, current_user.id)
 
     services.bot_builder.chatflow.update(
         db,
         db_obj=chatflow,
-        obj_in=schemas.bot_builder.ChatflowUpdate(is_active=True, name=obj_in.name),
+        obj_in=schemas.bot_builder.ChatflowUpdate(
+            is_active=True, name=obj_in.name),
     )
 
     new_nodes = []
@@ -138,7 +140,8 @@ def create_chatflow_nodes_edges(
         db, nodes=new_nodes, edges=new_edges
     )
 
-    services.bot_builder.node.delete_chatflow_nodes(db, chatflow_id=chatflow_id)
+    services.bot_builder.node.delete_chatflow_nodes(
+        db, chatflow_id=chatflow_id)
     nodes = chatflow_ui_parse(
         chatflow_id=chatflow_id, nodes=obj_in.nodes, edges=obj_in.edges
     )
@@ -181,11 +184,13 @@ def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
 
     objs.append(obj)
 
-    nodes = [node for node in nodes if node.id not in [start_node.id, head_node.id]]
+    nodes = [node for node in nodes if node.id not in [
+        start_node.id, head_node.id]]
 
     for node in nodes:
         widget, quick_replies = widget_mapper(node.data, node.id)
-        from_widget = [str(edge.from_widget) for edge in edges if edge.to_id == node.id]
+        from_widget = [str(edge.from_widget)
+                       for edge in edges if edge.to_id == node.id]
 
         obj = models.bot_builder.Node(
             id=node.id,

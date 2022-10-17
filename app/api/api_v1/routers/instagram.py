@@ -1,13 +1,11 @@
-import logging
 import requests
 
 from typing import Any
 
 from app import services, models, schemas
 from app.api import deps
-from app.constants.errors import Error
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, HTTPException, Security, status
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 from app.core.config import settings
 
@@ -34,22 +32,16 @@ def connect_instagram_page(
         grant_type="fb_exchange_token",
         client_id=settings.FACEBOOK_APP_ID,
         client_secret=settings.FACEBOOK_APP_SECRET,
-        redirect_uri="https://botinow.com/api/auth/callback/facebook",  # noqa
+        redirect_uri="https://botinow.com/api/auth/callback/facebook",
         fb_exchange_token=obj_in.facebook_user_token,
     )
 
     get_long_lived_token_url = "{}/{}/oauth/access_token".format(
         settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION
     )
-    print("secccccccccccccccc 1111111 ")
-
     res = requests.get(get_long_lived_token_url, params=params)
-    print("ressssssss", res)
     long_lived_user_access_token = res.json()["access_token"]
-    print("longggggggggg", long_lived_user_access_token)
-
     params = dict(access_token=long_lived_user_access_token)
-
     page_long_lived_token_url = "{}/{}/{}/accounts".format(
         settings.FACEBOOK_GRAPH_BASE_URL,
         settings.FACEBOOK_GRAPH_VERSION,
@@ -58,7 +50,6 @@ def connect_instagram_page(
     res = requests.get(page_long_lived_token_url, params=params)
 
     pages = res.json()["data"]
-    print("secccccccccccccccc 222222 ")
     for page in pages:
         try:
             params = dict(
@@ -71,9 +62,6 @@ def connect_instagram_page(
                 page["id"],
             )
             res = requests.get(get_instagram_page_id_url, params=params)
-            print("secccccccccccccccc 333333 ")
-
-            print(res.json())
             instagram_page_id = res.json()["connected_instagram_account"]["id"]
             subscribe_url = "{}/{}/{}/subscribed_apps".format(
                 settings.FACEBOOK_GRAPH_BASE_URL,
@@ -85,14 +73,12 @@ def connect_instagram_page(
                 access_token=page["access_token"],
             )
             res = requests.post(subscribe_url, params=params)
-            print(res.json())
             params = dict(
                 fields="username,profile_picture_url,"
                 "followers_count,follows_count,biography,"
                 "website,ig_id,name",
                 access_token=page["access_token"],
             )
-            print("secccccccccccccccc 4444444 ")
 
             get_page_info_url = "{}/{}/{}".format(
                 settings.FACEBOOK_GRAPH_BASE_URL,
@@ -101,7 +87,6 @@ def connect_instagram_page(
             )
 
             res = requests.get(get_page_info_url, params=params)
-            print("secccccccccccccccc 555555 ")
 
             page_details = res.json()
 
@@ -123,20 +108,18 @@ def connect_instagram_page(
                     information=dict(
                         website=page_details.get("website", None),
                         ig_id=page_details.get("ig_id", None),
-                        followers_count=page_details.get("followers_count", None),
+                        followers_count=page_details.get(
+                            "followers_count", None),
                         follows_count=page_details.get("follows_count", None),
                         biography=page_details.get("biography", None),
                         name=page_details.get("name", None),
                     ),
                 )
-                print("secccccccccccccccc 66666 ")
+                services.instagram_page.create(
+                    db, obj_in=instagram_page_in)
 
-                s = services.instagram_page.create(db, obj_in=instagram_page_in)
-                print(s)
-
-        except Exception as e:
-            print(e)
-            print("--------------------------------")
+        except Exception:
+            pass
 
     return
 
@@ -156,9 +139,3 @@ def get_page_data_by_page_id(*, db: Session = Depends(deps.get_db), page_id: str
     obj_instagram = services.instagram_page.get_by_page_id(db, page_id=page_id)
 
     return obj_instagram
-
-
-# {
-#   "facebook_user_id": "147425181204416",
-#   "facebook_user_token": "EAAH2CD9dUYcBAN7Gwh0FZCFk4bwCekp1ZCInMkqbzLNK4dy26Y4bI33wRE8NdZBwMyXlUiedxZBKq01TlA52CBS6UYJaZAi2uQZCV9PfN5XivHi6RWoue095YiVtxOPAtyTpab7AxPgy7yqRfdDvsXEnNQQVqE4ZCCK7Y4TCb7IYQ8IFqXEi6tNzIKAoMwAHJz428swKqLNZCYm7QFPo80dWR1ngSDAsZCvwZD"
-# }
