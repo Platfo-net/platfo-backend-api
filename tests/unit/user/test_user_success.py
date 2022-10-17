@@ -15,7 +15,7 @@ def test_test_user_created_success(db: Session):
     assert user.email == settings.FIRST_USER_EMAIL
 
 
-def test_test_user_created_success(db: Session):
+def test_test_admin_created_success(db: Session):
     """
         Test creation of a user
         Test that test admin created automatically is exist or not
@@ -43,7 +43,7 @@ def test_register_user_success(db: Session):
 
 def test_authenticate_user_success(db: Session):
     """
-        Test authenticate user function 
+        Test authenticate user function
         that return User object if user exist and authenticate
     """
     admin = services.user.authenticate(

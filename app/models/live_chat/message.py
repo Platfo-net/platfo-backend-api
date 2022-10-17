@@ -11,9 +11,7 @@ from sqlalchemy.dialects.postgresql import UUID
 class Message(Base):
 
     __tablename__ = "live_chat_messages"
-    id = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
     from_page_id = Column(String(64), nullable=True)
     to_page_id = Column(String(64), nullable=True)
@@ -34,4 +32,3 @@ class Message(Base):
     #     nullable=True,
     # )
     # chatroom = relationship("Chatroom", back_populates="message")
-

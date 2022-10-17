@@ -21,4 +21,4 @@ class Message(MessageBase):
 
 
 class MessageSend(BaseModel):
-    text:Optional[str] = None
+    text: Optional[str] = None

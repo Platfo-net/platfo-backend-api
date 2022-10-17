@@ -11,7 +11,6 @@ def init() -> None:
     db = TestingSessionLocal()
     init_test_db(db)
 
-    
 
 def main() -> None:
     logger.info("Creating initial data")

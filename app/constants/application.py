@@ -1,4 +1,2 @@
 class Application:
-    BOT_BUILDER = {
-        "name": "BOT_BUILDER"
-    }
+    BOT_BUILDER = {"name": "BOT_BUILDER"}

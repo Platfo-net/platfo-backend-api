@@ -32,12 +32,13 @@ def get_all_nodes(
 ) -> Any:
 
     chatflow = services.bot_builder.chatflow.get(
-        db, id=chatflow_id, user_id=current_user.id)
+        db, id=chatflow_id, user_id=current_user.id
+    )
 
     if not chatflow:
         raise HTTPException(
-            status_code=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['status_code'],
-            detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['text'],
+            status_code=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID["status_code"],
+            detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID["text"],
         )
 
     nodes = services.bot_builder.node.get_nodes(db, chatflow_id=chatflow_id)
@@ -59,43 +60,47 @@ def create_full_node(
 ) -> Any:
 
     chatflow = services.bot_builder.chatflow.get(
-        db, id=obj_in.chatflow_id, user_id=current_user.id)
+        db, id=obj_in.chatflow_id, user_id=current_user.id
+    )
 
     if not chatflow:
         raise HTTPException(
-            status_code=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['status_code'],
-            detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID['text'],
+            status_code=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID["status_code"],
+            detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID["text"],
         )
     node_in = schemas.bot_builder.NodeCreate(
-        title=obj_in.title,
-        chatflow_id=obj_in.chatflow_id,
-        is_head=obj_in.is_head
+        title=obj_in.title, chatflow_id=obj_in.chatflow_id, is_head=obj_in.is_head
     )
     quick_replies = jsonable_encoder(obj_in.quick_replies)
 
     node = services.bot_builder.node.create(db, obj_in=node_in)
 
     if obj_in.widget_type == WidgetType.TEXT["name"]:
-        obj_in = dict(id=str(uuid.uuid4()),
-                      widget_type=WidgetType.TEXT["name"],
-                      **jsonable_encoder(obj_in.widget))
+        obj_in = dict(
+            id=str(uuid.uuid4()),
+            widget_type=WidgetType.TEXT["name"],
+            **jsonable_encoder(obj_in.widget),
+        )
 
     elif obj_in.widget_type == WidgetType.MEDIA["name"]:
-        obj_in = dict(id=str(uuid.uuid4()),
-                      widget_type=WidgetType.MEDIA["name"],
-                      title=obj_in.widget["title"],
-                      image=obj_in.widget["image"]
-                      )
+        obj_in = dict(
+            id=str(uuid.uuid4()),
+            widget_type=WidgetType.MEDIA["name"],
+            title=obj_in.widget["title"],
+            image=obj_in.widget["image"],
+        )
 
     elif obj_in.widget_type == WidgetType.MENU["name"]:
         obj_in = jsonable_encoder(obj_in.widget)
         obj_in["widget_type"] = WidgetType.MENU["name"]
-        obj_in["choices"] = [dict(id=str(uuid.uuid4()), text=ch["text"])
-                             for ch in obj_in["choices"]]
+        obj_in["choices"] = [
+            dict(id=str(uuid.uuid4()), text=ch["text"]) for ch in obj_in["choices"]
+        ]
 
     node = services.bot_builder.node.add_widget(db, obj_in=obj_in, node_id=node.id)
     node = services.bot_builder.node.add_quick_reply(
-        db, obj_in=quick_replies, node_id=node.id)
+        db, obj_in=quick_replies, node_id=node.id
+    )
     return node
 
 
@@ -118,17 +123,18 @@ def connect_widget_to_node(
 
     if not node:
         raise HTTPException(
-            status_code=Error.NO_NODE_WITH_THE_GIVEN_ID['status_code'],
-            detail=Error.NO_NODE_WITH_THE_GIVEN_ID['text'],
+            status_code=Error.NO_NODE_WITH_THE_GIVEN_ID["status_code"],
+            detail=Error.NO_NODE_WITH_THE_GIVEN_ID["text"],
         )
 
     chatflow = services.bot_builder.chatflow.get(
-        db, id=node.chatflow_id, user_id=current_user.id)
+        db, id=node.chatflow_id, user_id=current_user.id
+    )
 
     if not chatflow:
         raise HTTPException(
-            status_code=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE['status_code'],
-            detail=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE['text'],
+            status_code=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE["status_code"],
+            detail=Error.NO_CHATFLOW_RELATED_TO_THIS_NODE["text"],
         )
 
     return services.bot_builder.node.connect(db, from_id=from_id, node_id=node_id)

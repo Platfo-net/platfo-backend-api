@@ -13,8 +13,10 @@ from app.constants.widget_type import WidgetType
 router = APIRouter(prefix="/message")
 
 
-@router.get("/archive/{page_id}/{contact_igs_id}",
-            response_model=List[schemas.live_chat.Message])
+@router.get(
+    "/archive/{page_id}/{contact_igs_id}",
+    response_model=List[schemas.live_chat.Message],
+)
 def get_archive(
     *,
     db: Session = Depends(deps.get_db),
@@ -32,11 +34,7 @@ def get_archive(
 ):
 
     messages = services.message.get_pages_messages(
-        db,
-        contact_igs_id=contact_igs_id,
-        page_id=page_id,
-        skip=skip,
-        limit=limit
+        db, contact_igs_id=contact_igs_id, page_id=page_id, skip=skip, limit=limit
     )
     new_messages = []
     messages = reversed(messages)
@@ -48,7 +46,7 @@ def get_archive(
             content=message.content,
             user_id=message.user_id,
             mid=message.mid,
-            send_at=message.send_at
+            send_at=message.send_at,
         )
         new_messages.append(new_message)
 
@@ -72,16 +70,14 @@ def send_message(
     ),
 ):
 
-    instagram_page = services.instagram_page.get_by_page_id(
-        db,
-        page_id=from_page_id
+    instagram_page = services.instagram_page.get_by_page_id(db, page_id=from_page_id)
+    backgroud.add_task(
+        graph_api.send_text_message,
+        obj_in.text,
+        from_page_id,
+        to_contact_igs_id,
+        instagram_page.facebook_page_token,
     )
-    backgroud.add_task(graph_api.send_text_message,
-                       obj_in.text,
-                       from_page_id,
-                       to_contact_igs_id,
-                       instagram_page.facebook_page_token
-                       )
     message_in = dict(
         from_page_id=from_page_id,
         to_page_id=to_contact_igs_id,
@@ -92,10 +88,8 @@ def send_message(
         },
         user_id=str(current_user.id),
         direction=MessageDirection.OUT["name"],
-        mid=None
+        mid=None,
     )
 
-    tasks.save_message(
-        obj_in=message_in
-    )
+    tasks.save_message(obj_in=message_in)
     return

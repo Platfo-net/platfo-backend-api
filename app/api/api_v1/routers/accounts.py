@@ -13,25 +13,24 @@ from app.constants.application import Application
 from app.constants.platform import Platform
 
 
-
 router = APIRouter(prefix="/account", tags=["Account"])
 
 
 @router.get("/all", response_model=List[schemas.Account])
 def get_accounts_list(
-        *,
-        db: Session = Depends(deps.get_db),
-        platform: str = None,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    platform: str = None,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     """
-        Get list of accounts from different platforms
+    Get list of accounts from different platforms
     """
     instagram_pages = services.instagram_page.get_multi_by_user_id(
         db, user_id=current_user.id
@@ -45,26 +44,27 @@ def get_accounts_list(
             platform=Platform.INSTAGRAM["name"],
             page_id=item.facebook_page_id,
         )
-        for item in instagram_pages if len(instagram_pages) > 0
+        for item in instagram_pages
+        if len(instagram_pages) > 0
     ]
     return accounts
 
 
 @router.get("/{id}", response_model=schemas.InstagramPage)
 def get_account(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     """
-        Get list of accounts from different platforms
+    Get list of accounts from different platforms
     """
     instagram_page = services.instagram_page.get(db, id)
     if not instagram_page:
@@ -78,16 +78,16 @@ def get_account(
 
 @router.delete("/{id}")
 def delete_account(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     instagram_page = services.instagram_page.get(db, id)
 
@@ -100,13 +100,15 @@ def delete_account(
     services.instagram_page.remove(db, id=id)
 
     services.live_chat.contact.remove_by_user_page_id(
-        db, user_page_id=instagram_page.facebook_page_id)
+        db, user_page_id=instagram_page.facebook_page_id
+    )
     services.live_chat.message.remove_by_user_page_id(
-        db, user_page_id=instagram_page.facebook_page_id)
+        db, user_page_id=instagram_page.facebook_page_id
+    )
     connections = services.connection.get_page_connection(
         db,
         account_id=instagram_page.id,
-        application_name=Application.BOT_BUILDER["name"]
+        application_name=Application.BOT_BUILDER["name"],
     )
 
     for connection in connections:

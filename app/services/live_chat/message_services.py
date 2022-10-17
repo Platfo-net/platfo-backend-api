@@ -11,16 +11,14 @@ class MessageServices:
 
     def create(self, db: Session, *, obj_in: schemas.live_chat.MessageCreate):
         if type(obj_in.content) == str:
-            obj_in.content = {
-                "text": obj_in.content
-            }
+            obj_in.content = {"text": obj_in.content}
 
         message = self.model(
             from_page_id=obj_in.from_page_id,
             to_page_id=obj_in.to_page_id,
             content=obj_in.content,
             mid=obj_in.mid,
-            user_id=obj_in.user_id
+            user_id=obj_in.user_id,
         )
         db.add(message)
         db.commit()
@@ -37,32 +35,37 @@ class MessageServices:
         limit: int = 20
     ):
 
-        return db.query(self.model).filter(
-            or_(
-                and_(
-                    self.model.from_page_id == contact_igs_id,
-                    self.model.to_page_id == page_id
-                ),
-                and_(
-                    self.model.from_page_id == page_id,
-                    self.model.to_page_id == contact_igs_id
-                ),
-
+        return (
+            db.query(self.model)
+            .filter(
+                or_(
+                    and_(
+                        self.model.from_page_id == contact_igs_id,
+                        self.model.to_page_id == page_id,
+                    ),
+                    and_(
+                        self.model.from_page_id == page_id,
+                        self.model.to_page_id == contact_igs_id,
+                    ),
+                )
             )
-        ).order_by(self.model.send_at.desc()).offset(skip).limit(limit).all()
+            .order_by(self.model.send_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
 
-    def remove_by_user_page_id(
-        self,
-        db: Session,
-        *,
-        user_page_id: str
-    ):
-        messages = db.query(self.model).filter(
-            or_(
-                self.model.from_page_id == user_page_id,
-                self.model.to_page_id == user_page_id
+    def remove_by_user_page_id(self, db: Session, *, user_page_id: str):
+        messages = (
+            db.query(self.model)
+            .filter(
+                or_(
+                    self.model.from_page_id == user_page_id,
+                    self.model.to_page_id == user_page_id,
+                )
             )
-        ).all()
+            .all()
+        )
 
         for message in messages:
             db.delete(message)

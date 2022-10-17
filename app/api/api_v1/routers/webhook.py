@@ -21,7 +21,9 @@ from app.core.extra_classes import InstagramData
 router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
 
-@router.get("/user", )
+@router.get(
+    "/user",
+)
 def user_webhook_subscription(request: Request):
     try:
         _ = request.query_params["hub.mode"]
@@ -66,14 +68,13 @@ def webhook_instagram_listener(
 
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
-    print('------------------', instagram_data.sender_id)
+    print("------------------", instagram_data.sender_id)
 
     # try:
     user_page_data = cache.get_user_data(
-        redis_client,
-        db,
-        instagram_page_id=instagram_data.recipient_id)
-    print('uuuuuuuuuuuuuu', user_page_data)
+        redis_client, db, instagram_page_id=instagram_data.recipient_id
+    )
+    print("uuuuuuuuuuuuuu", user_page_data)
 
     # except:
     #     pass
@@ -84,13 +85,15 @@ def webhook_instagram_listener(
             return None
 
         case WebhookType.DELETE_MESSAGE:
-            return services.live_chat.message.remove_message_by_mid(db, mid=instagram_data.mid)
+            return services.live_chat.message.remove_message_by_mid(
+                db, mid=instagram_data.mid
+            )
 
         case WebhookType.STORY_MENTION:
             saved_data = {
                 "url": instagram_data.url,
                 "widget_type": "STORY_MENTION",
-                "id": str(uuid4())
+                "id": str(uuid4()),
             }
 
             tasks.save_message(
@@ -100,7 +103,7 @@ def webhook_instagram_listener(
                 content=saved_data,
                 user_id=user_page_data.user_id,
                 direction=MessageDirection.IN["name"],
-                instagram_page_id=instagram_data.recipient_id
+                instagram_page_id=instagram_data.recipient_id,
             )
             return None
         case WebhookType.STORY_REPLY:
@@ -108,7 +111,7 @@ def webhook_instagram_listener(
                 "url": instagram_data.story_url,
                 "widget_type": "STORY_REPLY",
                 "message": instagram_data.message_detail,
-                "id": str(uuid4())
+                "id": str(uuid4()),
             }
             tasks.save_message(
                 from_page_id=instagram_data.sender_id,
@@ -117,14 +120,14 @@ def webhook_instagram_listener(
                 content=saved_data,
                 user_id=user_page_data.user_id,
                 direction=MessageDirection.IN["name"],
-                instagram_page_id=instagram_data.recipient_id
+                instagram_page_id=instagram_data.recipient_id,
             )
             return
 
     saved_data = {
         "message": instagram_data.text,
         "widget_type": WidgetType.TEXT["name"],
-        "id": str(uuid4())
+        "id": str(uuid4()),
     }
 
     tasks.save_message(
@@ -134,31 +137,31 @@ def webhook_instagram_listener(
         content=saved_data,
         user_id=user_page_data.user_id,
         direction=MessageDirection.IN["name"],
-        instagram_page_id=instagram_data.recipient_id
+        instagram_page_id=instagram_data.recipient_id,
     )
     if instagram_data.payload:
         node = services.bot_builder.node.get_next_node(
-            db, from_id=instagram_data.payload)
+            db, from_id=instagram_data.payload
+        )
         tasks.send_widget.delay(
             widget=node.widget,
             quick_replies=node.quick_replies,
             contact_igs_id=instagram_data.sender_id,
             payload=instagram_data.payload,
-            user_page_data=user_page_data.to_dict()
+            user_page_data=user_page_data.to_dict(),
         )
 
     else:
         # get chatflow from a connection
         chatflow_id = None
         connections = services.connection.get_page_connections(
-            db,
-            account_id=user_page_data.account_id,
-            application_name="BOT_BUILDER"
+            db, account_id=user_page_data.account_id, application_name="BOT_BUILDER"
         )
 
         if connections is None:
             return None
         from app.constants.trigger import Trigger
+
         for connection in connections:
             details = connection.details
             for detail in details:
@@ -170,13 +173,14 @@ def webhook_instagram_listener(
 
         try:
             node = services.bot_builder.node.get_chatflow_head_node(
-                db, chatflow_id=chatflow_id)
+                db, chatflow_id=chatflow_id
+            )
             tasks.send_widget.delay(
                 widget=node.widget,
                 quick_replies=node.quick_replies,
                 contact_igs_id=instagram_data.sender_id,
                 payload=instagram_data.payload,
-                user_page_data=user_page_data.to_dict()
+                user_page_data=user_page_data.to_dict(),
             )
         except Exception as e:
             pass
