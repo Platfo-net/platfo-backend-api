@@ -1,4 +1,3 @@
-
 from fastapi.responses import HTMLResponse
 
 from starlette.websockets import WebSocketDisconnect
@@ -51,9 +50,9 @@ html = """
 """
 
 
-'''
+"""
 toye db mon goroh haye mokhtalef id haye uniq e khudshunu daran
-'''
+"""
 
 
 class ConnectionManager:
@@ -62,7 +61,7 @@ class ConnectionManager:
 
     async def connect(self, websocket: WebSocket, client_id):
         await websocket.accept()
-        self.active_connections.append({'websocket': websocket, 'client_id': client_id})
+        self.active_connections.append({"websocket": websocket, "client_id": client_id})
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
@@ -72,7 +71,7 @@ class ConnectionManager:
 
     async def broadcast(self, message: str):
         for connection in self.active_connections:
-            await connection['websocket'].send_text(message)
+            await connection["websocket"].send_text(message)
 
 
 manager = ConnectionManager()
@@ -84,14 +83,16 @@ async def get():
 
 
 @router.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: int,
-            current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+async def websocket_endpoint(
+    websocket: WebSocket,
+    client_id: int,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     await manager.connect(websocket, client_id)
     try:

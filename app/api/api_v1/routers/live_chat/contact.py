@@ -1,5 +1,3 @@
-
-
 from typing import List
 
 from pydantic import UUID4
@@ -46,8 +44,8 @@ def get_contact(
 
     if not contact:
         raise HTTPException(
-            status_code=Error.CONTACT_NOT_FOUND['status_code'],
-            detail=Error.CONTACT_NOT_FOUND['text']
+            status_code=Error.CONTACT_NOT_FOUND["status_code"],
+            detail=Error.CONTACT_NOT_FOUND["text"],
         )
 
     return schemas.live_chat.Contact(
@@ -57,13 +55,11 @@ def get_contact(
         id=contact.id,
         last_message_at=contact.last_message_at,
         information=contact.information,
-        last_message=contact.last_message
+        last_message=contact.last_message,
     )
 
 
-@router.get("/page/{page_id}",
-            response_model=List[schemas.live_chat.Contact]
-            )
+@router.get("/page/{page_id}", response_model=List[schemas.live_chat.Contact])
 def get_pages_contacts(
     *,
     db: Session = Depends(deps.get_db),
@@ -79,10 +75,8 @@ def get_pages_contacts(
     ),
 ):
     contacts = services.live_chat.contact.get_pages_contacts(
-        db,
-        page_id=page_id,
-        skip=skip,
-        limit=limit)
+        db, page_id=page_id, skip=skip, limit=limit
+    )
 
     return [
         schemas.live_chat.Contact(
@@ -92,8 +86,10 @@ def get_pages_contacts(
             last_message_at=contact.last_message_at,
             information=contact.information,
             last_message=contact.last_message,
-            user_id=contact.user_id
-        ) for contact in contacts if len(contacts)
+            user_id=contact.user_id,
+        )
+        for contact in contacts
+        if len(contacts)
     ]
 
 
@@ -114,8 +110,7 @@ def update_page_contacts_information(
     data = dict()
     data[obj_in.key] = obj_in.value
     contacts = services.live_chat.contact.update_information(
-        db,
-        contact_igs_id=contact_igs_id,
-        data=data)
+        db, contact_igs_id=contact_igs_id, data=data
+    )
 
     return contacts

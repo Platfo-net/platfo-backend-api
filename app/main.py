@@ -41,5 +41,5 @@ async def health():
     return {"message": "ok!"}
 
 
-if not settings.ENVIRONMENT =="test":
+if not settings.ENVIRONMENT == "test":
     Instrumentator().instrument(app).expose(app)

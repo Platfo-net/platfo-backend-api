@@ -10,9 +10,11 @@ class InstagramPageBase(BaseModel):
     instagram_username: Optional[str] = None
     instagram_profile_picture_url: Optional[str] = None
     information: Optional[dict] = None
-    facebook_user_long_lived_token : Optional[str] = None
-    facebook_user_id : Optional[str] = None
-    user_id : UUID4
+    facebook_user_long_lived_token: Optional[str] = None
+    facebook_user_id: Optional[str] = None
+    user_id: UUID4
+
+
 class InstagramPageCreate(InstagramPageBase):
     pass
 

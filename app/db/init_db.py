@@ -8,25 +8,21 @@ from sqlalchemy.orm import Session
 def init_db(db: Session) -> None:
 
     # Admin role
-    admin_role = services.role.get_by_name(
-        db, name=Role.ADMIN["name"]
-    )
+    admin_role = services.role.get_by_name(db, name=Role.ADMIN["name"])
     if not admin_role:
         admin_role_in = schemas.RoleCreate(
             name=Role.ADMIN["name"],
             description=Role.ADMIN["description"],
-            persian_name=Role.ADMIN["persian_name"]
+            persian_name=Role.ADMIN["persian_name"],
         )
         services.role.create(db, obj_in=admin_role_in)
 
-    user_role = services.role.get_by_name(
-        db, name=Role.USER["name"]
-    )
+    user_role = services.role.get_by_name(db, name=Role.USER["name"])
     if not user_role:
         user_role_in = schemas.RoleCreate(
             name=Role.USER["name"],
             description=Role.USER["description"],
-            persian_name=Role.USER["persian_name"]
+            persian_name=Role.USER["persian_name"],
         )
         services.role.create(db, obj_in=user_role_in)
 
@@ -47,25 +43,21 @@ def init_db(db: Session) -> None:
 def init_test_db(db: Session) -> None:
 
     # Admin role
-    admin_role = services.role.get_by_name(
-        db, name=Role.ADMIN["name"]
-    )
+    admin_role = services.role.get_by_name(db, name=Role.ADMIN["name"])
     if not admin_role:
         admin_role_in = schemas.RoleCreate(
             name=Role.ADMIN["name"],
             description=Role.ADMIN["description"],
-            persian_name=Role.ADMIN["persian_name"]
+            persian_name=Role.ADMIN["persian_name"],
         )
         services.role.create(db, obj_in=admin_role_in)
     # User role
-    user_role = services.role.get_by_name(
-        db, name=Role.USER["name"]
-    )
+    user_role = services.role.get_by_name(db, name=Role.USER["name"])
     if not user_role:
         user_role_in = schemas.RoleCreate(
             name=Role.USER["name"],
             description=Role.USER["description"],
-            persian_name=Role.USER["persian_name"]
+            persian_name=Role.USER["persian_name"],
         )
         services.role.create(db, obj_in=user_role_in)
     # Admin user
@@ -88,6 +80,6 @@ def init_test_db(db: Session) -> None:
         user_in = schemas.UserCreate(
             email=settings.FIRST_USER_EMAIL,
             password=settings.FIRST_USER_PASSWORD,
-            role_id=role.id
+            role_id=role.id,
         )
         services.user.create(db, obj_in=user_in)

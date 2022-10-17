@@ -29,15 +29,11 @@ def get_roles(
 
 
 @router.get("/platforms")
-def get_platforms(
-    db: Session = Depends(deps.get_db)
-) -> Any:
+def get_platforms(db: Session = Depends(deps.get_db)) -> Any:
 
     return [{"name": Platform.INSTAGRAM["name"]}]
 
 
 @router.get("/applications")
-def get_applications(
-    db: Session = Depends(deps.get_db)
-) -> Any:
+def get_applications(db: Session = Depends(deps.get_db)) -> Any:
     return [{"name": Application.BOT_BUILDER["name"]}]

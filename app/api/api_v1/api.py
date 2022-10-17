@@ -1,6 +1,18 @@
-from app.api.api_v1.routers import auth, connection, file, \
-    instagram, users, accounts, constants, webhook, \
-    notification, academy, websocket, live_chat_api, bot_builder_api
+from app.api.api_v1.routers import (
+    auth,
+    connection,
+    file,
+    instagram,
+    users,
+    accounts,
+    constants,
+    webhook,
+    notification,
+    academy,
+    websocket,
+    live_chat_api,
+    bot_builder_api,
+)
 from fastapi import APIRouter
 
 api_router = APIRouter()

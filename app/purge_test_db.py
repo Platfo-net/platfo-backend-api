@@ -15,4 +15,3 @@ print("Droping test database!!!")
 query = f"DROP database {settings.POSTGRES_DB}_test;"
 cursor.execute(query)
 print("Test database dropped!!!")
-

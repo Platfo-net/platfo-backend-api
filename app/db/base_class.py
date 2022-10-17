@@ -1,6 +1,7 @@
 from typing import Any
 import inflect
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
+
 p = inflect.engine()
 
 

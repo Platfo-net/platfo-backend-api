@@ -1,9 +1,7 @@
-
 from typing import Any, List
 from app import models, services, schemas
 from app.api import deps
-from fastapi import APIRouter, Depends, \
-    HTTPException, Security
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
 
@@ -25,13 +23,10 @@ def create_chatroom(
             Role.ADMIN["name"],
         ],
     ),
-
 ) -> Any:
 
     chatroom = services.live_chat.chatroom.create(
-        db,
-        obj_in=obj_in,
-        user_id=current_user.id
+        db, obj_in=obj_in, user_id=current_user.id
     )
 
     return chatroom
@@ -51,14 +46,12 @@ def delete_chatroom(
     ),
 ) -> Any:
     chatroom = services.live_chat.chatroom.get(
-        db,
-        id=chatroom_id,
-        user_id=current_user.id
+        db, id=chatroom_id, user_id=current_user.id
     )
     if not chatroom:
         raise HTTPException(
             status_code=404,
-            detail='not found',
+            detail="not found",
         )
 
     services.live_chat.chatroom.remove(db, id=chatroom_id)
@@ -81,8 +74,5 @@ def get_user_chatrooms(
 ) -> Any:
 
     return services.live_chat.chatroom.get_multi(
-        db,
-        user_id=current_user.id,
-        skip=skip,
-        limit=limit
+        db, user_id=current_user.id, skip=skip, limit=limit
     )

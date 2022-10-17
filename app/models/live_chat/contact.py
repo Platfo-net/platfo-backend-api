@@ -9,9 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID
 class Contact(Base):
 
     __tablename__ = "live_chat_contacts"
-    id = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
     contact_igs_id = Column(String(64), nullable=True)
     user_page_id = Column(String(64), nullable=True)

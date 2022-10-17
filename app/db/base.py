@@ -15,8 +15,13 @@ from app.models.live_chat.message import Message  # noqa
 from app.models.notification import Notification, NotificationUser  # noqa
 
 
-from app.models.academy import Category, Content,\
-      ContentCategory, Label, ContentLabel  # noqa
+from app.models.academy import (
+    Category,
+    Content,
+    ContentCategory,
+    Label,
+    ContentLabel,
+)  # noqa
 
 
 from app.models.bot_builder.node_ui import NodeUI  # noqa

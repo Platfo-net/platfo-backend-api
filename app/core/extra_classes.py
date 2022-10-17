@@ -22,7 +22,7 @@ class InstagramData:
         self.message_detail = None
 
     def parse(self, body):
-        print('bbbbbbbbbbbbb', body)
+        print("bbbbbbbbbbbbb", body)
         match body:
             case {
                 "object": platform,
@@ -32,22 +32,18 @@ class InstagramData:
                         "id": "17841449720273509",
                         "messaging": [
                             {
-                    "sender": {
-                        "id": sender_id
-                    },
-                    "recipient": {
-                        "id": recipient_id
-                    },
-                    "timestamp": timestamp,
-                    "postback": {
-                        "mid": mid,
-                        "title": title,
-                        "payload": payload
+                                "sender": {"id": sender_id},
+                                "recipient": {"id": recipient_id},
+                                "timestamp": timestamp,
+                                "postback": {
+                                    "mid": mid,
+                                    "title": title,
+                                    "payload": payload,
+                                },
+                            }
+                        ],
                     }
-                                }
-                        ]
-                    }
-                ]
+                ],
             }:
                 self.platform = platform
                 self.sender_id = sender_id
@@ -66,21 +62,14 @@ class InstagramData:
                         "id": "17841449720273509",
                         "messaging": [
                             {
-                                "sender": {
-                                    "id": sender_id
-                                },
-                                "recipient": {
-                                    "id": recipient_id
-                                },
+                                "sender": {"id": sender_id},
+                                "recipient": {"id": recipient_id},
                                 "timestamp": timestamp,
-                                "message": {
-                                    "mid": mid,
-                                    "text": text
-                                }
+                                "message": {"mid": mid, "text": text},
                             }
-                        ]
+                        ],
                     }
-                ]
+                ],
             }:
                 self.platform = platform
                 self.sender_id = sender_id
@@ -98,22 +87,18 @@ class InstagramData:
                         "id": "17841452052058552",
                         "messaging": [
                             {
-                    "sender": {
-                        "id": sender_id
-                    },
-                    "recipient": {
-                        "id": recipient_id
-                    },
-                    "timestamp": timestamp,
-                    "message": {
-                        "mid": mid,
-                        "text": text,
-                        "is_echo": is_echo
+                                "sender": {"id": sender_id},
+                                "recipient": {"id": recipient_id},
+                                "timestamp": timestamp,
+                                "message": {
+                                    "mid": mid,
+                                    "text": text,
+                                    "is_echo": is_echo,
+                                },
+                            }
+                        ],
                     }
-                                }
-                        ]
-                    }
-                ]
+                ],
             }:
                 self.platform = platform
                 self.sender_id = sender_id
@@ -132,21 +117,14 @@ class InstagramData:
                         "id": "17841452052058552",
                         "messaging": [
                             {
-                    "sender": {
-                        "id": sender_id
-                    },
-                    "recipient": {
-                        "id": recipient_id
-                    },
-                    "timestamp": timestamp,
-                    "message": {
-                        "mid": mid,
-                        "is_deleted": is_deleted
+                                "sender": {"id": sender_id},
+                                "recipient": {"id": recipient_id},
+                                "timestamp": timestamp,
+                                "message": {"mid": mid, "is_deleted": is_deleted},
+                            }
+                        ],
                     }
-                                }
-                        ]
-                    }
-                ]
+                ],
             }:
                 self.platform = platform
                 self.sender_id = sender_id
@@ -164,28 +142,22 @@ class InstagramData:
                         "id": "17841452052058552",
                         "messaging": [
                             {
-                    "sender": {
-                        "id": sender_id
-                    },
-                    "recipient": {
-                        "id": recipient_id
-                    },
-                    "timestamp": timestamp,
-                    "message": {
-                        "mid": mid,
-                        "attachments": [
-                            {
-                                "type": "story_mention",
-                                "payload": {
-                                    "url": url
-                                }
+                                "sender": {"id": sender_id},
+                                "recipient": {"id": recipient_id},
+                                "timestamp": timestamp,
+                                "message": {
+                                    "mid": mid,
+                                    "attachments": [
+                                        {
+                                            "type": "story_mention",
+                                            "payload": {"url": url},
+                                        }
+                                    ],
+                                },
                             }
-                        ]
+                        ],
                     }
-                                }
-                        ]
-                    }
-                ]
+                ],
             }:
                 self.sender_id = sender_id
                 self.recipient_id = recipient_id
@@ -214,10 +186,7 @@ class InstagramData:
 
 
 class UserData:
-    def __init__(self, user_id,
-                 facebook_page_token,
-                 facebook_page_id,
-                 account_id):
+    def __init__(self, user_id, facebook_page_token, facebook_page_id, account_id):
         self.user_id = user_id
         self.facebook_page_token = facebook_page_token
         self.facebook_page_id = facebook_page_id

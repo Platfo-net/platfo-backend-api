@@ -13,9 +13,7 @@ class User(Base):
     """
 
     __tablename__ = "users"
-    id = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
     email = Column(String(100), unique=True, nullable=False)
@@ -37,8 +35,7 @@ class User(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
-    role = relationship(
-        "Role", back_populates="user")
+    role = relationship("Role", back_populates="user")
 
     instagram_page = relationship("InstagramPage", back_populates="user")
 
