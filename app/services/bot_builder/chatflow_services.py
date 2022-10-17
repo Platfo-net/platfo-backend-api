@@ -49,21 +49,16 @@ class ChatflowServices(
         *,
         id: str,
     ):
-        db_obj = db.query(self.model).filter(self.model.id == id).first()
-        connections = (
-            db.query(models.Connection)
-            .filter(models.Connection.user_id == db_obj.user_id)
-            .all()
-        )
-        for connection in connections:
-            for detail in connection.details:
-                if detail["chatflow_id"] == str(db_obj.id):
-                    connection_obj = (
-                        db.query(models.Connection)
-                        .filter(models.Connection.id == connection.id)
-                        .first()
-                    )
-                    db.delete(connection_obj)
+        db_obj = db.query(self.model).filter(
+            self.model.id == id).first()
+        # connections = db.query(models.Connection)\
+        #     .filter(models.Connection.user_id == db_obj.user_id).all()
+        # for connection in connections:
+        #     for detail in connection.details:
+        #         if detail['chatflow_id'] == str(db_obj.id):
+        #             connection_obj = db.query(models.Connection)\
+        #                 .filter(models.Connection.id == connection.id).first()
+        #             db.delete(connection_obj)
         db.delete(db_obj)
         db.commit()
 

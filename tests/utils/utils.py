@@ -16,3 +16,8 @@ def random_string() -> str:
 
 def random_email() -> str:
     return f"{random_string()}@{random_string()}.com"
+
+
+def random_widget_type() -> str:
+    list_widget_type = ["MENU", "TEXT", "MEDIA", ]
+    return random.choice(list_widget_type)

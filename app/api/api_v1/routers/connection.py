@@ -240,8 +240,10 @@ def disable_chatflow_for_page(
     from app.constants.application import Application
 
     account = services.instagram_page.get_by_page_id(db, page_id=page_id)
-    connections = services.connection.get_page_connection(
-        db, account_id=account.id, application_name=Application.BOT_BUILDER["name"]
+    connections = services.connection.get_page_connections(
+        db, 
+        account_id=account.id, 
+        application_name=Application.BOT_BUILDER["name"]
     )
     if not len(connections):
         return

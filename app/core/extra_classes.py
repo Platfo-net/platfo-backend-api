@@ -22,7 +22,6 @@ class InstagramData:
         self.message_detail = None
 
     def parse(self, body):
-        print("bbbbbbbbbbbbb", body)
         match body:
             case {
                 "object": platform,
@@ -165,6 +164,8 @@ class InstagramData:
                 self.mid = mid
                 self.url = url
                 self.type = WebhookType.STORY_MENTION
+            case _:
+                raise Exception()
 
     def to_dict(self):
         return dict(
