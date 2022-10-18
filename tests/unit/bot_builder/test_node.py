@@ -4,11 +4,12 @@ from sqlalchemy.orm import Session
 
 from app import schemas, services, models
 from app.core.utils import widget_mapper
-from tests.unit.bot_builder.helper_chatflow import helper_chatflow
+from tests.unit import helper
 
 
 def test_create_node(db: Session):
-    chatflow = helper_chatflow(db=db)
+    user = helper.create_user(db=db)
+    chatflow = helper.create_chatflow(db=db, user=user)
     node_in = schemas.bot_builder.NodeCreate(
         chatflow_id=chatflow.id,
         title='test_node',
@@ -63,7 +64,7 @@ def test_widget_mapper_text(db: Session):
 
 
 # def test_create_full_node(db: Session):
-#     chatflow = helper_chatflow(db=db)
+#     chatflow = helper(db=db)
 #     node_in = schemas.bot_builder.FullNodeCreate(
 #         chatflow_id=chatflow.id,
 #         title='test_node',

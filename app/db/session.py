@@ -8,5 +8,4 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 test_engine = create_engine(
     f"{settings.SQLALCHEMY_DATABASE_URI}_test", pool_pre_ping=True
 )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False,
-                                   bind=test_engine, expire_on_commit=False)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
