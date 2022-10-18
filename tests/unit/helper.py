@@ -1,9 +1,11 @@
-from app import services, schemas
-from sqlalchemy.orm import Session
 import uuid
-from app.core.config import settings
+
+from sqlalchemy.orm import Session
+
+from app import services, schemas
 from app.constants.application import Application
 from app.constants.trigger import Trigger
+from app.core.config import settings
 
 
 def create_connection(db: Session, test_account_id):
@@ -33,6 +35,63 @@ def create_chatflow(db: Session, user):
 
     return services.bot_builder \
         .chatflow.create(db=db, obj_in=chatflow_in, user_id=user.id)
+
+
+def create_category(db: Session):
+    category_in = schemas.academy.CategoryCreate(
+        title='cat1',
+        parent_id=None
+    )
+
+    return services.academy.category.create(db=db, obj_in=category_in)
+
+
+def create_label(db: Session):
+    label_in = schemas.academy.LabelCreate(
+        label_name='label1'
+    )
+
+    return services.academy.label.create(db=db, obj_in=label_in)
+
+
+def create_content(db: Session, user):
+    content_in = schemas.academy.ContentCreate(
+            title="مقاله تستی",
+            blocks=[ # noqa
+                {
+                    "id": "1234567",
+                    "type": "paragraph",
+                    "data": {
+                        "text": "hello this is a sample text",
+                    },
+                }
+            ],
+            caption="this is a good article",
+            is_published=True,
+            version="2.24.3",
+            time="1663757930863",
+            slug="مقاله-تستی",
+            cover_image="http://minio:9000/academy-attachment-bucket/"
+                           "a13efb7c-a36e-4c21-8eab-343f00eef94a-images.jpeg?"
+                           "X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="
+                           "botinow%2F20220921%2Fus-east-1%2Fs3%2Faws4_request"
+                           "&X-Amz-Date=20220921T122003Z&X-Amz-Expires=86"
+                           "400&X-Amz-SignedHeaders=host&X-Amz-Signature=ef6f55"
+                           "0e1a97d13f109a92478cc00944d075f4"
+                           "0829573793dd13e4593f2c22e3",
+            categories=[  # noqa
+                {
+                    "category_id": "418f667a-6f82-4611-a764-ad7ea12100fc"
+                }
+            ],
+            labels=[  # noqa
+                {
+                    "label_id": "df4939b0-f4c6-4b8b-8085-a7b4030898ab"
+                }
+            ]
+    )
+
+    return services.academy.content.create(db=db, obj_in=content_in, user_id=user.id)
 
 
 def create_user(db: Session):
