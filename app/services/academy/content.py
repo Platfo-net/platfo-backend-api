@@ -104,7 +104,7 @@ class ContentServices(
                 )
 
             return contents, pagination
-        except '_':
+        except:
             contents = (
                 db.query(self.model)
                 .order_by(desc(self.model.created_at))
