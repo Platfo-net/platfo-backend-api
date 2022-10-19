@@ -68,7 +68,6 @@ def webhook_instagram_listener(
 
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
-    print(',,,,,,,,,,,,,,,,,,,,,,,,,', facebook_webhook_body)
 
     try:
         user_page_data = cache.get_user_data(
@@ -76,8 +75,7 @@ def webhook_instagram_listener(
             db,
             instagram_page_id=instagram_data.recipient_id)
     except:
-       pass
-    #    raise HTTPException(status_code=400, detail="Error getting user data")
+       return 
 
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:

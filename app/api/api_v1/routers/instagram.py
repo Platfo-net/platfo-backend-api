@@ -8,6 +8,8 @@ from app.constants.role import Role
 from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 from app.core.config import settings
+from redis.client import Redis
+from app.core.cache import remove_data_from_cache
 
 router = APIRouter(prefix="/instagram", tags=["Instagram"])
 
@@ -117,7 +119,6 @@ def connect_instagram_page(
                 )
                 services.instagram_page.create(
                     db, obj_in=instagram_page_in)
-
         except Exception:
             pass
 

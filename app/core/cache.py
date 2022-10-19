@@ -20,6 +20,10 @@ def set_data_to_cache(
     return state
 
 
+def remove_data_from_cache(client: Redis, key: str = None):
+    client.delete(key)
+    return None
+
 def get_user_data(
     client: Redis, db: Session, *, instagram_page_id: str = None
 ) -> UserData:

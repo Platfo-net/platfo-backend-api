@@ -42,6 +42,7 @@ class InstagramGraphApi:
         from_id: str,
         to_id: str,
         page_access_token: str,
+        quick_replies: list = []
     ):
         url = "{}/{}/{}/messages".format(
             settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION, from_id
@@ -53,6 +54,14 @@ class InstagramGraphApi:
             },
             "message": {
                 "text": text,
+                "quick_replies": [
+                    {
+                        "content_type": "text",
+                        "title": quick_reply["text"],
+                        "payload": quick_reply["id"],
+                    }
+                    for quick_reply in quick_replies
+                ]
             },
         }
 

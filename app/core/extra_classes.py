@@ -27,8 +27,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1660392271172,
-                        "id": "17841449720273509",
+                        "time": entry_time,
+                        "id": entry__id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -57,8 +57,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1660389485931,
-                        "id": "17841449720273509",
+                        "time": entry_time,
+                        "id": entry_id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -112,8 +112,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1663574281056,
-                        "id": "17841452052058552",
+                        "time": entry_time,
+                        "id": entry_id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -137,8 +137,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1663489987699,
-                        "id": "17841452052058552",
+                        "time": entry_time,
+                        "id": entry_id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
