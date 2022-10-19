@@ -179,44 +179,29 @@ def delete_category(
     return
 
 
-@router.get("/search", response_model=schemas.academy.ContentSearch)
+@router.get("/search/all")
 def search_content_by_category(
-    *,
-    page: int = 1,
-    page_size: int = 20,
-    categories_list_id: List[UUID4] = Query(None),
-    db: Session = Depends(deps.get_db),
+        *,
+        page: int = 1,
+        page_size: int = 20,
+        categories_list_id: List[UUID4] = Query(None),
+        db: Session = Depends(deps.get_db),
 ):
     contents, pagination = services.academy.content.search(
         db, categories_list=categories_list_id, page=page, page_size=page_size
     )
-    if not contents:
-        raise HTTPException(
-            status_code=Error.CONTENT_NOT_FOUND["status_code"],
-            detail=Error.CONTENT_NOT_FOUND["text"],
+
+    if not categories_list_id:
+        content_list = schemas.academy.ContentListApi(
+            contents=contents, pagination=pagination
         )
+        return content_list
 
     for content in contents:
         return schemas.academy.ContentSearch(contents=content, pagination=pagination)
 
 
-@router.get("/", response_model=schemas.academy.ContentListApi)
-def get_all_contents(
-    *, db: Session = Depends(deps.get_db), page: int = 1, page_size: int = 20
-):
-    contents, pagination = services.academy.content.get_multi(
-        db,
-        page=page,
-        page_size=page_size,
-    )
-
-    content_list = schemas.academy.ContentListApi(
-        contents=contents, pagination=pagination
-    )
-    return content_list
-
-
-@router.get("/{id}", response_model=schemas.academy.ContentDetail)
+@router.get("/content/detail{id}", response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*, db: Session = Depends(deps.get_db), id: UUID4):
     content, categories, labels = services.academy.content.get_by_detail(
         db, id=id)
@@ -249,7 +234,7 @@ def get_content_by_id(*, db: Session = Depends(deps.get_db), id: UUID4):
     return schemas.academy.ContentDetail(content_detail=content_detail)
 
 
-@router.post("/", response_model=schemas.academy.Content)
+@router.post("/content/create", response_model=schemas.academy.Content)
 def create_content(
     *,
     obj_in: schemas.academy.ContentCreate,
@@ -274,7 +259,7 @@ def create_content(
     return content
 
 
-@router.put("/{id}", response_model=schemas.academy.Content)
+@router.put("/content/update/{id}", response_model=schemas.academy.Content)
 def update_content(
     *,
     db: Session = Depends(deps.get_db),
@@ -320,7 +305,7 @@ def update_content(
     return content
 
 
-@router.delete("/{id}")
+@router.delete("/content/delete/{id}")
 def delete_content(
     *,
     db: Session = Depends(deps.get_db),

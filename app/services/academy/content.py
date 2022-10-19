@@ -104,8 +104,19 @@ class ContentServices(
                 )
 
             return contents, pagination
-        except (Exception,):
-            pass
+        except '_':
+            contents = (
+                db.query(self.model)
+                .order_by(desc(self.model.created_at))
+                .options(
+                    joinedload(self.model.content_categories),
+                    joinedload(self.model.content_labels),
+                )
+                .offset(page_size * (page - 1))
+                .limit(page_size)
+                .all()
+            )
+            return contents, pagination
 
     def create(  # noqa
         self, db: Session, *, obj_in: schemas.academy.ContentCreate, user_id: UUID4

@@ -54,7 +54,7 @@ def create_label(db: Session):
     return services.academy.label.create(db=db, obj_in=label_in)
 
 
-def create_content(db: Session, user):
+def create_content(db: Session, user_id):
     content_in = schemas.academy.ContentCreate(
             title="مقاله تستی",
             blocks=[ # noqa
@@ -91,7 +91,7 @@ def create_content(db: Session, user):
             ]
     )
 
-    return services.academy.content.create(db=db, obj_in=content_in, user_id=user.id)
+    return services.academy.content.create(db=db, obj_in=content_in, user_id=user_id)
 
 
 def create_user(db: Session):
