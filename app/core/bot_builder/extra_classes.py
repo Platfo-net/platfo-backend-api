@@ -200,3 +200,17 @@ class UserData:
             facebook_page_id=self.facebook_page_id,
             account_id=self.account_id,
         )
+
+
+class ConnectionData:
+    def __init__(self, account_id, application_name, details):
+        self.account_id = account_id
+        self.application_name = application_name
+        self.details = details
+
+    def to_dict(self):
+        return dict(
+            account_id=self.account_id,
+            application_name=self.application_name,
+            details=self.details,
+        )
