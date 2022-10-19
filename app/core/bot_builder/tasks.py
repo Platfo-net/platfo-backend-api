@@ -90,7 +90,7 @@ def webhook_proccessor(facebook_webhook_body):
     )
     if instagram_data.payload:
         chatflow_id = cache.get_node_chatflow_id(
-            db, redis_client, node_id=instagram_data.payload)
+            db, redis_client, widget_id=instagram_data.payload)
         if not chatflow_id:
             return None
         connection = cache.get_connection_data(

@@ -100,9 +100,11 @@ class NodeServices(
             db.query(self.model).filter(self.model.chatflow_id == chatflow_id).delete()
         )
 
-    def get_node_chatflow_id(self, db: Session , * , id: UUID4)-> UUID4:
+    def get_widget_chatflow_id(self, db: Session , * , widget_id: UUID4)-> UUID4:
         node =  db.query(self.model).filter(self.model.id == id).first()
         return node.chatflow_id
 
 
 node = NodeServices(models.bot_builder.Node)
+
+

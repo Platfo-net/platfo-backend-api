@@ -100,8 +100,8 @@ def get_connection_data(
     data = json.loads(data)
 
     return ConnectionData(
-        account_id=data.get('account_id'),
-        application_name=data.get('application_name'),
+        account_id=account_id,
+        application_name=application_name,
         details=data.get('details'),
     )
 
@@ -110,19 +110,19 @@ def get_node_chatflow_id(
     db: Session,
     client: Redis,
     *,
-    node_id: str = None
+    widget_id: str = None
 ) -> UUID4:
-    data = get_data_from_cache(client, node_id)
+    data = get_data_from_cache(client, widget_id)
     if not data:
         try:
-            chatflow_id = services.bot_builder.node.get_node_chatflow_id(
-                db, id=UUID4(node_id))
+            node = services.bot_builder.node.get_next_node(
+                db, id=UUID4(widget_id))
         except Exception:
             return None
 
-        state = set_data_to_cache(client, key=node_id, value=str(chatflow_id))
+        state = set_data_to_cache(client, key=widget_id, value=str(node.chatflow_id))
         if not state:
             return None    
-        data = get_data_from_cache(client, key=node_id)
+        data = get_data_from_cache(client, key=widget_id)
         
     return UUID4(data)
