@@ -87,7 +87,7 @@ def get_connection_data(
             return None
         details = []
         for detail in connection.details:
-            details.append(dict(chatflow_id=detail.chatflow_id, trigger=detail.trigger))
+            details.append(dict(chatflow_id=detail['chatflow_id'], trigger=detail['trigger']))
 
         data = dict(
             details=details,
@@ -111,18 +111,20 @@ def get_node_chatflow_id(
     client: Redis,
     *,
     widget_id: str = None
-) -> UUID4:
+):
     data = get_data_from_cache(client, widget_id)
-    if not data:
+    data = str(data).strip("',/b")
+    if data == 'None':
         try:
             node = services.bot_builder.node.get_next_node(
-                db, id=UUID4(widget_id))
+                db, from_id=widget_id)
         except Exception:
             return None
 
         state = set_data_to_cache(client, key=widget_id, value=str(node.chatflow_id))
         if not state:
-            return None    
+            return None
         data = get_data_from_cache(client, key=widget_id)
-        
-    return UUID4(data)
+        data = str(data).strip("',/b")
+
+    return data

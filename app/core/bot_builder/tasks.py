@@ -99,9 +99,11 @@ def webhook_proccessor(facebook_webhook_body):
             application_name=Application.BOT_BUILDER["name"],
             account_id=user_page_data.account_id
         )
+        if not connection:
+            return None
         connection_exist = False
         for detail in connection.details:
-            if detail.get("chatflow_id") == chatflow_id:
+            if detail["chatflow_id"] == chatflow_id:
                 connection_exist = True
         if not connection_exist:
             return None

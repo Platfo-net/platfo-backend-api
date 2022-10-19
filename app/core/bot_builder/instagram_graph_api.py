@@ -75,12 +75,11 @@ class InstagramGraphApi:
     ):
 
         from app.core import storage
-
         body = {
             "template_type": "generic",
             "elements": [
                 {
-                    "title": data["title"],
+                    "title": "string",  # todo keyish irad dre data['text'] ro nmishnace chun widget e na node
                     "buttons": [
                         {
                             "type": "postback",
