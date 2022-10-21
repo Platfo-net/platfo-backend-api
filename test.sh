@@ -4,7 +4,7 @@
 PREVIOUS_ENVIRONMENT=$ENVIRONMENT
 export ENVIRONMENT="test"
 
-echo =========================================== Environment switch from $PREVIOUS_ENVIRONMENT to $ENVIRONMENT =========================
+echo =========================================== Environment switch from $PREVIOUS_ENVIRONMENT to $ENVIRONMENT ====================================================
 #Creating test DB
 python ./app/create_test_db.py
 
