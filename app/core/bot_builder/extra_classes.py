@@ -27,8 +27,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1660392271172,
-                        "id": "17841449720273509",
+                        "time": entry_time,
+                        "id": entry__id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -57,8 +57,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1660389485931,
-                        "id": "17841449720273509",
+                        "time": entry_time,
+                        "id": entry_id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -112,8 +112,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1663574281056,
-                        "id": "17841452052058552",
+                        "time": entry_time,
+                        "id": entry_id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -137,8 +137,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": 1663489987699,
-                        "id": "17841452052058552",
+                        "time": entry_time,
+                        "id": entry_id,
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -199,4 +199,18 @@ class UserData:
             facebook_page_token=self.facebook_page_token,
             facebook_page_id=self.facebook_page_id,
             account_id=self.account_id,
+        )
+
+
+class ConnectionData:
+    def __init__(self, account_id, application_name, details):
+        self.account_id = account_id
+        self.application_name = application_name
+        self.details = details
+
+    def to_dict(self):
+        return dict(
+            account_id=self.account_id,
+            application_name=self.application_name,
+            details=self.details,
         )

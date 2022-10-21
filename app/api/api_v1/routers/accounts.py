@@ -1,3 +1,4 @@
+from redis.client import Redis
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, Security
@@ -11,6 +12,7 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.constants.application import Application
 from app.constants.platform import Platform
+from app.core.cache import remove_data_from_cache
 
 
 router = APIRouter(prefix="/account", tags=["Account"])
@@ -72,6 +74,11 @@ def get_account(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
             detail=Error.ACCOUNT_NOT_FOUND["text"],
         )
+    if not instagram_page.user_id != current_user.id:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
 
     return instagram_page
 
@@ -80,6 +87,7 @@ def get_account(
 def delete_account(
     *,
     db: Session = Depends(deps.get_db),
+    redis_client: Redis = Depends(deps.get_redis_client),
     id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -96,6 +104,13 @@ def delete_account(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
             detail=Error.ACCOUNT_NOT_FOUND["text"],
         )
+    if instagram_page.user_id != current_user.id:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
+
+    remove_data_from_cache(redis_client, instagram_page.instagram_page_id)
 
     services.instagram_page.remove(db, id=id)
 
@@ -105,7 +120,7 @@ def delete_account(
     services.live_chat.message.remove_by_user_page_id(
         db, user_page_id=instagram_page.facebook_page_id
     )
-    connections = services.connection.get_page_connection(
+    connections = services.connection.get_page_connections(
         db,
         account_id=instagram_page.id,
         application_name=Application.BOT_BUILDER["name"],

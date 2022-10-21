@@ -5,12 +5,15 @@ from app import models, schemas
 from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
 
+ModelType = models.bot_builder.Node
+CreateSchemaType = schemas.bot_builder.NodeCreate
+UpdateSchemaType = schemas.bot_builder.NodeUpdate
 
 class NodeServices(
     BaseServices[
-        models.bot_builder.Node,
-        schemas.bot_builder.NodeCreate,
-        schemas.bot_builder.NodeUpdate,
+        ModelType,
+        CreateSchemaType,
+        UpdateSchemaType,
     ]
 ):
     def get_nodes(
@@ -19,7 +22,7 @@ class NodeServices(
         return db.query(self.model).filter(self.model.chatflow_id == chatflow_id).all()
 
     def create(
-        self, db: Session, *, obj_in: schemas.bot_builder.NodeCreate
+        self, db: Session, *, obj_in: CreateSchemaType
     ) -> schemas.bot_builder.Node:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data, from_widget={})
@@ -97,5 +100,11 @@ class NodeServices(
             db.query(self.model).filter(self.model.chatflow_id == chatflow_id).delete()
         )
 
+    def get_widget_chatflow_id(self, db: Session , * , widget_id: UUID4)-> UUID4:
+        node =  db.query(self.model).filter(self.model.id == id).first()
+        return node.chatflow_id
+
 
 node = NodeServices(models.bot_builder.Node)
+
+
