@@ -68,7 +68,10 @@ class InstagramGraphApi:
         params = {"access_token": page_access_token}
 
         res = requests.post(url, params=params, json=payload)
-        return res.json()
+        mid = None
+        if res.status_code == 200:
+            mid = res.json()["message_id"]
+        return mid
 
     def send_menu(
         self, data, quick_replies, from_id: str, to_id: str, page_access_token: str
@@ -115,8 +118,12 @@ class InstagramGraphApi:
         res = requests.post(url=url, params=params, json=payload)
         if quick_replies:
             self.send_quick_replies(quick_replies, from_id, to_id, page_access_token)
+        
+        mid = None
+        if res.status_code == 200:
+            mid = res.json()["message_id"]
 
-        return res.json()
+        return mid
 
     def send_media(
         self, title, image, from_id: str, to_id: str, page_access_token: str
@@ -148,8 +155,11 @@ class InstagramGraphApi:
         }
 
         res = requests.post(url=url, params=params, json=payload)
+        mid = None
+        if res.status_code == 200:
+            mid = res.json()["message_id"]
 
-        return res.json()
+        return mid
 
     def get_contact_information_from_facebook(
         self, contact_igs_id: str = None, page_access_token: str = None

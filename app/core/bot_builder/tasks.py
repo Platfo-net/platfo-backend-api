@@ -16,7 +16,7 @@ from app.constants.application import Application
 
 @celery.task
 def webhook_proccessor(facebook_webhook_body):
-    db = SessionLocal()
+    db = deps.get_db()
     redis_client = deps.get_redis_client()
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
@@ -161,7 +161,7 @@ def save_message(
     instagram_page_id: str = None,
 ):
 
-    db = SessionLocal()
+    db = deps.get_db()
     client = deps.get_redis_client()
     if direction == MessageDirection.IN["name"]:
         contact = services.live_chat.contact.get_contact_by_igs_id(
@@ -223,11 +223,11 @@ def send_widget(
     payload: str,
     user_page_data: dict,
 ):
-    db = SessionLocal()
+    db = deps.get_db()
 
     while widget["widget_type"] in (WidgetType.TEXT["name"], WidgetType.MEDIA["name"]):
         if widget["widget_type"] == WidgetType.MEDIA["name"]:
-            graph_api.send_media(
+            mid = graph_api.send_media(
                 widget["title"],
                 widget["image"],
                 from_id=user_page_data["facebook_page_id"],
@@ -235,18 +235,19 @@ def send_widget(
                 page_access_token=user_page_data["facebook_page_token"],
             )
         if widget["widget_type"] == WidgetType.TEXT["name"]:
-            graph_api.send_text_message(
+            mid = graph_api.send_text_message(
                 text=widget["message"],
                 from_id=user_page_data["facebook_page_id"],
                 to_id=contact_igs_id,
                 page_access_token=user_page_data["facebook_page_token"],
-                quick_replies=quick_replies
+                quick_replies=quick_replies,
+
             )
 
         save_message(
             from_page_id=user_page_data["facebook_page_id"],
             to_page_id=contact_igs_id,
-            mid=None,
+            mid=mid,
             content=widget,
             user_id=user_page_data["user_id"],
             direction=MessageDirection.OUT["name"],
@@ -260,7 +261,7 @@ def send_widget(
         quick_replies = node.quick_replies
 
     if widget["widget_type"] == "MENU":
-        graph_api.send_menu(
+        mid = graph_api.send_menu(
             widget,
             quick_replies,
             from_id=user_page_data["facebook_page_id"],
@@ -270,6 +271,7 @@ def send_widget(
         save_message(
             from_page_id=user_page_data["facebook_page_id"],
             to_page_id=contact_igs_id,
+            mid=mid,
             content=widget,
             user_id=user_page_data["user_id"],
             direction=MessageDirection.OUT["name"],
