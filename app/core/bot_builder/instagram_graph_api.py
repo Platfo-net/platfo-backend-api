@@ -77,7 +77,6 @@ class InstagramGraphApi:
         self, data, quick_replies, from_id: str, to_id: str, page_access_token: str
     ):
 
-        from app.core import storage
         body = {
             "template_type": "generic",
             "elements": [
