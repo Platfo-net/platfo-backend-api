@@ -46,6 +46,8 @@ class User(Base):
 
     content = relationship("Content", back_populates="user")
 
+    campaign = relationship("Campaign", back_populates="user")
+
     # chatroom = relationship(
     #     "Chatroom",
     #     back_populates="user",
