@@ -51,7 +51,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['contact_id'], ['live_chat_contacts.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.drop_constraint('connections_account_id_application_name_key', 'connections', type_='unique')
     op.add_column('live_chat_contacts', sa.Column('message_count', sa.Integer(), nullable=True))
     op.add_column('live_chat_contacts', sa.Column('comment_count', sa.Integer(), nullable=True))
     op.add_column('live_chat_contacts', sa.Column('live_comment_count', sa.Integer(), nullable=True))
@@ -65,7 +64,6 @@ def downgrade():
     op.drop_column('live_chat_contacts', 'live_comment_count')
     op.drop_column('live_chat_contacts', 'comment_count')
     op.drop_column('live_chat_contacts', 'message_count')
-    op.create_unique_constraint('connections_account_id_application_name_key', 'connections', ['account_id', 'application_name'])
     op.drop_table('postman_campaign_contacts')
     op.drop_table('postman_campaigns')
     op.drop_table('live_chat_chatrooms')

@@ -22,9 +22,6 @@ class Campaign(Base):
     facebook_page_id = Column(String(100), nullable=True)
     status = Column(String(255), nullable=True, default=CampaignStatus.PENDING)
 
-    contact_count = Column(Integer(), nullable=True, default=0)
-    sent_count = Column(Integer(), nullable=True, default=0)
-
     content = Column(JSON, nullable=True)
 
     user_id = Column(

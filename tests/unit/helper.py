@@ -57,7 +57,7 @@ def create_label(db: Session):
 def create_content(db: Session, user_id):
     content_in = schemas.academy.ContentCreate(
             title="مقاله تستی",
-            blocks=[ # noqa
+            blocks=[  # noqa
                 {
                     "id": "1234567",
                     "type": "paragraph",
@@ -71,14 +71,7 @@ def create_content(db: Session, user_id):
             version="2.24.3",
             time="1663757930863",
             slug="مقاله-تستی",
-            cover_image="http://minio:9000/academy-attachment-bucket/"
-                           "a13efb7c-a36e-4c21-8eab-343f00eef94a-images.jpeg?"
-                           "X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="
-                           "botinow%2F20220921%2Fus-east-1%2Fs3%2Faws4_request"
-                           "&X-Amz-Date=20220921T122003Z&X-Amz-Expires=86"
-                           "400&X-Amz-SignedHeaders=host&X-Amz-Signature=ef6f55"
-                           "0e1a97d13f109a92478cc00944d075f4"
-                           "0829573793dd13e4593f2c22e3",
+            cover_image="test_image",
             categories=[  # noqa
                 {
                     "category_id": "418f667a-6f82-4611-a764-ad7ea12100fc"
