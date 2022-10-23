@@ -32,6 +32,17 @@ def webhook_proccessor(facebook_webhook_body):
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:
             return None
+
+        case WebhookType.MESSAGE_SEEN:
+            pass
+
+        case WebhookType.COMMENT:  # vase in va live comment bayad contact save beshe tahesh
+            # services.live_chat.contact.update_statistics(db, contact_id, type)
+            pass
+
+        case WebhookType.LIVE_COMMENT:
+            # services.live_chat.contact.update_statistics(db, contact_id, type)
+            pass
         
         case WebhookType.DELETE_MESSAGE:
             return services.live_chat.message.remove_message_by_mid(
