@@ -1,8 +1,10 @@
 import datetime
 from uuid import uuid4
 
+from sqlalchemy.orm import relationship
+
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, JSON, DateTime
+from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, Integer
 from sqlalchemy.dialects.postgresql import UUID
 
 
@@ -19,8 +21,16 @@ class Contact(Base):
 
     information = Column(JSON, nullable=True)
 
+    message_count = Column(Integer(), nullable=True, default=0)
+    comment_count = Column(Integer(), nullable=True, default=0)
+    live_comment_count = Column(Integer(), nullable=True, default=0)
+    first_impression = Column(String(100), nullable=True)
+
     user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id"),
         nullable=True,
+    )
+    campaign_contacts = relationship(
+        "CampaignContact", back_populates="contact", cascade="all,delete"
     )

@@ -12,6 +12,9 @@ from app.models.bot_builder.node import Node  # noqa
 from app.models.live_chat.contact import Contact  # noqa
 from app.models.live_chat.message import Message  # noqa
 
+from app.models.postman.campaign_contact import CampaignContact  # noqa
+from app.models.postman.campaign import Campaign  # noqa
+
 from app.models.notification import Notification, NotificationUser  # noqa
 
 
