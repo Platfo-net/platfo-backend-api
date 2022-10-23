@@ -20,6 +20,13 @@ class InstagramData:
         self.is_deleted = False
         self.is_echo = False
         self.message_detail = None
+        self.read = None
+        self.field = None
+        self.comment_detail = None
+        self.media_id = None
+        self.media_product_type = None
+        self.username = None
+        self.value_id = None
 
     def parse(self, body):
         match body:
@@ -52,6 +59,43 @@ class InstagramData:
                 self.title = title
                 self.payload = payload
                 self.type = WebhookType.MESSAGE_POSTBACK
+
+            case {
+                "entry": [
+                    {
+                        "time": entry_time,
+                        "id": entry__id,
+                        "changes": [
+                            {
+                                "field": field,
+                                "value": {
+                                    "from": {
+                                        "id": sender_id,
+                                        "username": username}
+                                },
+                                "media": {
+                                    "id": media_id,
+                                    "media_product_type": media_product_type
+
+                                },
+                                "id": value_id,
+                                "text": comment_detail
+                            }
+                        ],
+                    }
+                ],
+            }:
+
+                self.sender_id = sender_id
+                self.username = username
+                self.comment_detail = comment_detail
+                self.media_product_type = media_product_type
+                self.value_id = value_id
+                self.field = field
+                # self.timestamp = timestamp
+                self.media_id = media_id
+                self.type = WebhookType.LIVE_COMMENT
+                print('-----------------------', self.comment_detail)
 
             case {
                 "object": platform,
@@ -164,8 +208,9 @@ class InstagramData:
                 self.mid = mid
                 self.url = url
                 self.type = WebhookType.STORY_MENTION
-            case _:
-                raise Exception()
+
+            # case _:
+            #     raise Exception()
 
     def to_dict(self):
         return dict(
@@ -183,6 +228,13 @@ class InstagramData:
             timestamp=self.timestamp,
             is_deleted=self.is_deleted,
             is_echo=self.is_echo,
+            read=self.read,
+            field=self.field,
+            comment_detail=self.comment_detail,
+            media_id=self.media_id,
+            media_product_type=self.media_product_type,
+            username=self.username,
+            value_id=self.value_id,
         )
 
 
@@ -214,3 +266,6 @@ class ConnectionData:
             application_name=self.application_name,
             details=self.details,
         )
+
+
+
