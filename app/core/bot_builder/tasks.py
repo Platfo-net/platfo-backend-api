@@ -32,7 +32,7 @@ def webhook_proccessor(facebook_webhook_body):
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:
             return None
-
+        
         case WebhookType.DELETE_MESSAGE:
             return services.live_chat.message.remove_message_by_mid(
                 db, mid=instagram_data.mid

@@ -11,10 +11,13 @@ class CampaignContact(Base):
     __tablename__ = "postman_campaign_contacts"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
-    contact_igsid = Column(String(100), nullable=True)
-    is_seen = Column(Boolean(), default=True)
-    reaction = Column(String(100), nullable=True)
+    contact_igs_id = Column(String(100), nullable=True)
 
+    is_sent = Column(Boolean(), default=False)
+    is_seen = Column(Boolean(), default=False)
+
+    reaction = Column(String(100), nullable=True)
+    
     contact_id = Column(
         UUID(as_uuid=True),
         ForeignKey("live_chat_contacts.id"),
