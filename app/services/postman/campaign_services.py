@@ -53,10 +53,10 @@ class CampaignServices:
         return db_obj
 
     def get_active_campaigns(self, db: Session) -> List[ModelType]:
-        return db.query(self.model).filter(
-            self.model.is_draft == False,
-            self.model.status == CampaignStatus.PENDING,
-            self.model.is_active == False
+        return db.query(models.postman.Campaign).filter(
+            models.postman.Campaign.is_draft == False,
+            models.postman.Campaign.status == CampaignStatus.PENDING,
+            models.postman.Campaign.is_active == False
         ).all()
 
     def get(
@@ -116,6 +116,15 @@ class CampaignServices:
         db.commit()
         db.refresh(campaign)
         return campaign
+
+    def delete_campaign(
+            self,
+            db: Session,
+            *,
+            campaign_id: UUID4
+    ):
+        return db.query(models.postman.Campaign)\
+            .filter(models.postman.Campaign.id == campaign_id).delete()
 
 
 campaign = CampaignServices(models.postman.Campaign)

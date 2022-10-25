@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import UUID4
 from fastapi.encoders import jsonable_encoder
 from app import models, schemas
@@ -117,7 +119,6 @@ class ContactServices:
             db.delete(contact)
         db.commit()
         return
-    from typing import List
 
     def get_bulk(
         self,
