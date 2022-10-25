@@ -128,11 +128,11 @@ class ContentServices(
                 data = schemas.academy.SubData(text=item.data.text)
             if item.type == "header":
                 data = schemas.academy.SubData(
-                    text=item.data.text, level=item.data.style
+                    text=item.data.text, level=item.data.level
                 )
             if item.type == "heading":
                 data = schemas.academy.SubData(
-                    text=item.data.text, level=item.data.style
+                    text=item.data.text, level=item.data.level
                 )
             if item.type == "list":
                 data = schemas.academy.SubData(
