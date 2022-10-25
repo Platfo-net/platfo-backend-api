@@ -67,3 +67,24 @@ def test_change_campain_is_draft(db: Session):
     new_campaign = services.postman.campaign.get(db, campaign.id)
 
     assert new_campaign.is_draft is True
+
+
+def test_change_campaign_activity(db: Session):
+    user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
+    account = helper.create_instagram_account(db, page_id="15")
+
+    campaign = helper.create_campaign(db, user.id, account.facebook_page_id)
+
+    services.postman.campaign.change_activity(
+        db, campaign_id=campaign.id, is_active=True)
+
+    campaign = helper.campaign.get(db, campaign.id)
+
+    assert campaign.is_active == True
+
+    services.postman.campaign.change_activity(
+        db, campaign_id=campaign.id, is_active=False)
+
+    campaign = helper.campaign.get(db, campaign.id)
+
+    assert campaign.is_active == False
