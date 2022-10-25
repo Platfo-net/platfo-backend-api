@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app import services, schemas
+from app import services, schemas, models
 from app.core.config import settings
 from tests.unit.postman import helper
 
@@ -55,7 +55,7 @@ def test_add_contacts_to_campaign(db: Session):
         )
     ]
 
-    services.postman.campaign_contact.create_bulk(
+    campaign_contacts = services.postman.campaign_contact.create_bulk(
         db, campaign_id=campaign.id, contacts=contacts_in)
 
     contacts_id = [
@@ -71,3 +71,13 @@ def test_add_contacts_to_campaign(db: Session):
     assert contact_1.id in db_contacts_id
     assert contact_2.id in db_contacts_id
     assert contact_3.id in db_contacts_id
+
+    assert type(campaign_contacts) == list
+    for campaign_contact in campaign_contacts:
+        assert isinstance(campaign_contact, models.postman.CampaignContact)
+
+    db_campaing_contatcs_igs_id = [c.contact_igs_id for c in campaign_contacts]
+
+    assert contact_1.contact_igs_id in db_campaing_contatcs_igs_id
+    assert contact_2.contact_igs_id in db_campaing_contatcs_igs_id
+    assert contact_3.contact_igs_id in db_campaing_contatcs_igs_id

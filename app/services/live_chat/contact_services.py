@@ -117,6 +117,19 @@ class ContactServices:
             db.delete(contact)
         db.commit()
         return
+    from typing import List
+
+    def get_bulk(
+        self,
+        db: Session,
+        *,
+        contacts_id: List[UUID4]
+    ):
+        contacts = []
+        for contact_id in contacts_id:
+            contacts.append(db.query(models.live_chat.Contact).
+                            filter(models.live_chat.Contact.id == contact_id).first())
+        return contacts
 
 
 contact = ContactServices(models.live_chat.Contact)
