@@ -18,7 +18,7 @@ alembic upgrade head
 python ./app/initial_test_data.py
 
 # Run tests
-pytest  tests
+pytest --disable-warnings tests
 TEST_RESULT=$?
 # --cov=app --cov-report=term-missing tests
 
@@ -29,7 +29,7 @@ export ENVIRONMENT=$PREVIOUS_ENVIRONMENT
 
 echo =========================================== Environment switch from test to $ENVIRONMENT =======================
 
-flake8
+flake8 tests/
 
 LINT_EXIT_CODE=$?
 

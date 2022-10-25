@@ -1,9 +1,9 @@
 from typing import List, Optional
 from pydantic import UUID4
-from app import models, schemas
+from app import models, schemas, services
 from sqlalchemy.orm import Session
 from app.constants.campaign_status import CampaignStatus
-
+from app.core.config import settings
 ModelType = models.postman.Campaign
 CreateSchemaType = schemas.postman.CampaignCreate
 
@@ -23,6 +23,7 @@ class CampaignServices:
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
 
     def get_active_campaigns(self, db: Session) -> List[ModelType]:
         return db.query(self.model).filter(
