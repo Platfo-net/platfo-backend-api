@@ -34,7 +34,12 @@ def test_update_campaign_information(db: Session):
         is_draft=False,
     )
 
-    campaign = obj_in.services.postman.campaign.update(db, db_obj=db_obj, obj_in=obj_in)
+    campaign = services.postman.campaign.update(
+            db,
+            user_id=user.id,
+            db_obj=db_obj,
+            obj_in=obj_in
+    )
     assert isinstance(campaign, models.postman.Campaign)
     assert campaign.name == "test_campaign_updated"
     assert campaign.description == "test_campaign_description_updated"
@@ -42,7 +47,7 @@ def test_update_campaign_information(db: Session):
     assert campaign.content == content
 
 
-def test_change_campain_status(db: Session):
+def test_change_campaign_status(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
     account = helper.create_instagram_account(db, page_id="14")
 
@@ -51,12 +56,12 @@ def test_change_campain_status(db: Session):
     services.postman.campaign.change_status(
         db, campaign_id=campaign.id, status=CampaignStatus.DONE)
 
-    new_campaign = services.postman.campaign.get(db, campaign.id)
+    new_campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 
     assert new_campaign.status == CampaignStatus.DONE
 
 
-def test_change_campain_is_draft(db: Session):
+def test_change_campaign_is_draft(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
     account = helper.create_instagram_account(db, page_id="15")
 
@@ -64,7 +69,7 @@ def test_change_campain_is_draft(db: Session):
 
     services.postman.campaign.change_is_draft(db, campaign_id=campaign.id, is_draft=True)
 
-    new_campaign = services.postman.campaign.get(db, campaign.id)
+    new_campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 
     assert new_campaign.is_draft is True
 
@@ -78,13 +83,13 @@ def test_change_campaign_activity(db: Session):
     services.postman.campaign.change_activity(
         db, campaign_id=campaign.id, is_active=True)
 
-    campaign = helper.campaign.get(db, campaign.id)
+    campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 
-    assert campaign.is_active == True
+    assert campaign.is_active is True
 
     services.postman.campaign.change_activity(
         db, campaign_id=campaign.id, is_active=False)
 
-    campaign = helper.campaign.get(db, campaign.id)
+    campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 
-    assert campaign.is_active == False
+    assert campaign.is_active is False

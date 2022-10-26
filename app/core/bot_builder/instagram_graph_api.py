@@ -81,7 +81,7 @@ class InstagramGraphApi:
             "template_type": "generic",
             "elements": [
                 {
-                    "title": "string",  # todo keyish irad dre data['text'] ro nmishnace chun widget e na node
+                    "title": data.get("title", ''),  # todo keyish irad dre data['text'] ro nmishnace chun widget e na node
                     "buttons": [
                         {
                             "type": "postback",

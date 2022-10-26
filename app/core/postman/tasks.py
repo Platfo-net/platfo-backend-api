@@ -62,9 +62,9 @@ def campaign_handler(campaign_id):
             # TODO
 
     # result handling
-    all_count = services.postman.campaign_contacts.get_all_contacts_count(
+    all_count = services.postman.campaign_contact.get_all_contacts_count(
         db, campaign_id=campaign_id)
-    send_count = services.postman.campaign_contacts.get_campaign_unsend_contacts_count(
+    send_count = services.postman.campaign_contact.get_campaign_unsend_contacts_count(
         db, campaign_id=campaign_id)
 
     if all_count == send_count:

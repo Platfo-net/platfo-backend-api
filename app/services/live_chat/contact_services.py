@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import UUID4
 from fastapi.encoders import jsonable_encoder
 from app import models, schemas
@@ -117,6 +119,18 @@ class ContactServices:
             db.delete(contact)
         db.commit()
         return
+
+    def get_bulk(
+        self,
+        db: Session,
+        *,
+        contacts_id: List[UUID4]
+    ):
+        contacts = []
+        for contact_id in contacts_id:
+            contacts.append(db.query(models.live_chat.Contact).
+                            filter(models.live_chat.Contact.id == contact_id).first())
+        return contacts
 
 
 contact = ContactServices(models.live_chat.Contact)
