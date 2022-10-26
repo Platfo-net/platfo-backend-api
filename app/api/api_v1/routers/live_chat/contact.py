@@ -114,3 +114,30 @@ def update_page_contacts_information(
     )
 
     return contacts
+
+
+
+
+
+@router.put("/all/search")
+def get_all_contact_based_on_filters(
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.live_chat.SearchBody,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
+):
+    queryset = db.query(Contact)
+    for obj in obj_in:
+        match obj.operator:
+            case "gt":
+                queryset = queryset.filter(getattr(Contact, obj.field) > obj.value)
+            case "gte":
+                queryset = queryset.filter(getattr(Contact, obj.field) >= obj.value)
+
+        queryset = queryset.filter()

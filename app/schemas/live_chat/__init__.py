@@ -1,4 +1,4 @@
-from .contact import Contact, ContactCreate, ProfileUpdate
+from .contact import Contact, ContactCreate, ProfileUpdate , SearchBody
 
 from .message import MessageCreate, Message, MessageSend
 
