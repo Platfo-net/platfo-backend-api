@@ -34,8 +34,11 @@ class ProfileUpdate(BaseModel):
 class SearchItem(BaseModel):
     field: Optional[str] = None
     operator: Optional[str] = None
-    value: Optional[str] = None
+    value: Optional[int] = None
 
 
 class SearchBody(BaseModel):
-    filter = List[SearchItem]
+    filter: List[SearchItem]
+
+    class Config:
+        orm_mode = True

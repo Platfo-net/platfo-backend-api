@@ -1,7 +1,10 @@
+import math
 from typing import List
 
 from pydantic import UUID4
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import subquery
+
 from app import models, schemas
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -132,5 +135,51 @@ class ContactServices:
                             filter(models.live_chat.Contact.id == contact_id).first())
         return contacts
 
+    def search(
+            self,
+            db: Session,
+            *,
+            obj_in: schemas.live_chat.SearchBody,
+            page: int = 1,
+            page_size: int = 20
+    ):
+        total_count = db.query(self.model).count()
+        total_pages = math.ceil(total_count / page_size)
+        pagination = schemas.Pagination(
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            total_count=total_count,
+        )
+        queryset = db.query(self.model)
+        for obj in obj_in.filter:
+            match obj.operator:
+                case "eq":
+                    queryset = queryset \
+                        .filter(getattr(models.live_chat.Contact, obj.field) == obj.value)
+                case "ne":
+                    return queryset \
+                        .filter(getattr(models.live_chat.Contact, obj.field) != obj.value).all()
+                case "gt":
+                    queryset = queryset \
+                        .filter(getattr(models.live_chat.Contact, obj.field) > obj.value)
+                case "lt":
+                    return queryset \
+                        .filter(getattr(models.live_chat.Contact, obj.field) < obj.value).all()
+                case "gte":
+                    return queryset \
+                        .filter(getattr(models.live_chat.Contact, obj.field) >= obj.value).all()
+                case "lte":
+                    return queryset \
+                        .filter(getattr(models.live_chat.Contact, obj.field) <= obj.value).all()
+            return queryset.all()
 
+
+''' 
+eq ya ne
+gt ya lt
+gte ya ltq
+'''
 contact = ContactServices(models.live_chat.Contact)
+
+
