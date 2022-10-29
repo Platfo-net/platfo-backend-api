@@ -65,7 +65,7 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                         {
-                            "id": entry__id,
+                            "id": recipient_id,
                             "time": entry_time,
                             "changes": [
                                 {
@@ -88,6 +88,7 @@ class InstagramData:
                         }
                     ]
                 }:
+                    self.recipient_id = recipient_id
                     self.field = field
                     self.sender_id = sender_id
                     self.parent_id = parent_id
@@ -103,7 +104,7 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                         {
-                            "id": entry__id,
+                            "id": recipient_id,
                             "time": entry_time,
                             "changes": [
                                 {
@@ -125,6 +126,7 @@ class InstagramData:
                         }
                     ]
             }:
+                self.recipient_id = recipient_id
                 self.field = field
                 self.sender_id = sender_id
                 self.username = username

@@ -2,6 +2,7 @@ from typing import Any, List
 from uuid import uuid4
 from app import schemas, services
 from app.api import deps
+from app.constants.impression import Impression
 from app.db.session import SessionLocal
 from app.core import cache
 from app.core.celery import celery
@@ -34,15 +35,32 @@ def webhook_proccessor(facebook_webhook_body):
             return None
 
         case WebhookType.MESSAGE_SEEN:
+            # services.postman.campagin_contact.update_statistics(db, contact_igs_id, mid)
             pass
 
-        case WebhookType.COMMENT:  # vase in va live comment bayad contact save beshe tahesh
-            # services.live_chat.contact.update_statistics(db, contact_id, type)
-            pass
+        case WebhookType.COMMENT:
+            save_comment(
+                from_page_id=instagram_data.sender_id,
+                to_page_id=user_page_data.facebook_page_id,
+                user_id=user_page_data.user_id,
+                instagram_page_id=instagram_data.recipient_id,
+                last_comment_count=2
+            )
+            return
 
         case WebhookType.LIVE_COMMENT:
-            # services.live_chat.contact.update_statistics(db, contact_id, type)
-            pass
+            # last_live_comment_count = 0
+            # for last_live_comment_count in range():
+            #     last_live_comment_count += 1
+            # print(last_live_comment_count)
+            save_comment(
+                from_page_id=instagram_data.sender_id,
+                to_page_id=user_page_data.facebook_page_id,
+                user_id=user_page_data.user_id,
+                instagram_page_id=instagram_data.recipient_id,
+                last_live_comment_count=2
+            )
+            return
         
         case WebhookType.DELETE_MESSAGE:
             return services.live_chat.message.remove_message_by_mid(
@@ -162,6 +180,103 @@ def webhook_proccessor(facebook_webhook_body):
 
 
 @celery.task
+def save_comment(
+    from_page_id: str = None,
+    to_page_id: str = None,
+
+    user_id: Any = None,
+    instagram_page_id: str = None,
+):
+    db = SessionLocal()
+    client = deps.get_redis_client()
+
+    contact = services.live_chat.contact.get_contact_by_igs_id(
+        db, contact_igs_id=from_page_id
+    )
+    if not contact:
+        contact_in = schemas.live_chat.ContactCreate(
+            contact_igs_id=from_page_id,
+            user_page_id=to_page_id,
+            user_id=user_id,
+            comment_count=1,
+            first_impression=Impression.COMMENT
+        )
+        new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
+
+        try:
+            user_data = cache.get_user_data(
+                client, db, instagram_page_id=instagram_page_id
+            ).to_dict()
+
+        except Exception:
+            return 0
+
+        information = graph_api.get_contact_information_from_facebook(
+            contact_igs_id=new_contact.contact_igs_id,
+            page_access_token=user_data["facebook_page_token"],
+        )
+        services.live_chat.contact.set_information(
+            db,
+            contact_igs_id=from_page_id,
+            information=information,
+        )
+        return 0
+
+    services.live_chat.contact.update_last_comment_count(
+                db,
+                contact_igs_id=contact.contact_igs_id
+    )
+
+
+@celery.task
+def save_live_comment(
+    from_page_id: str = None,
+    to_page_id: str = None,
+    user_id: Any = None,
+    instagram_page_id: str = None,
+):
+    db = SessionLocal()
+    client = deps.get_redis_client()
+
+    contact = services.live_chat.contact.get_contact_by_igs_id(
+        db, contact_igs_id=from_page_id
+    )
+    if not contact:
+        contact_in = schemas.live_chat.ContactCreate(
+            contact_igs_id=from_page_id,
+            user_page_id=to_page_id,
+            user_id=user_id,
+            live_comment_count=1,
+            first_impression=Impression.LIVE_COMMENT
+        )
+        new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
+
+        try:
+            user_data = cache.get_user_data(
+                client, db, instagram_page_id=instagram_page_id
+            ).to_dict()
+
+        except Exception:
+            return 0
+
+        information = graph_api.get_contact_information_from_facebook(
+            contact_igs_id=new_contact.contact_igs_id,
+            page_access_token=user_data["facebook_page_token"],
+        )
+        services.live_chat.contact.set_information(
+            db,
+            contact_igs_id=from_page_id,
+            information=information,
+        )
+        return 0
+
+    services.live_chat.contact.update_last_live_comment_count(
+                    db,
+                    contact_igs_id=contact.contact_igs_id
+    )
+
+
+@celery.task
 def save_message(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -180,7 +295,11 @@ def save_message(
         )
         if not contact:
             contact_in = schemas.live_chat.ContactCreate(
-                contact_igs_id=from_page_id, user_page_id=to_page_id, user_id=user_id
+                contact_igs_id=from_page_id,
+                user_page_id=to_page_id,
+                user_id=user_id,
+                message_count=1,
+                first_impression=Impression.MESSAGE
             )
             new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
 
@@ -201,11 +320,13 @@ def save_message(
                 contact_igs_id=from_page_id,
                 information=information,
             )
+        else:
+            services.live_chat.contact.update_last_message_count(db, contact_igs_id=from_page_id)
 
     if direction == MessageDirection.IN["name"]:
         services.live_chat.contact.update_last_message(
             db, contact_igs_id=from_page_id, last_message=content
-        )
+       )
 
     else:
         services.live_chat.contact.update_last_message(
