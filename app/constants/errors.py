@@ -126,3 +126,9 @@ class Error:
         "status_code": 400,
         "code": 90,
     }
+
+    CONTACT_NOT_FOUND = {
+        "text": "Contact not found!",
+        "status_code": 404,
+        "code": 91,
+    }

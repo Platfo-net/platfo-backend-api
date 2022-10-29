@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import UUID4, BaseModel
 
+from app.schemas.pagination import Pagination
+
 
 class ContactBase(BaseModel):
     contact_igs_id: str
@@ -39,3 +41,8 @@ class SearchItem(BaseModel):
     field: Optional[str] = None
     operator: Optional[str] = None
     value: Optional[int] = None
+
+
+class ContactList(BaseModel):
+    contacts: List[Contact]
+    pagination: Pagination

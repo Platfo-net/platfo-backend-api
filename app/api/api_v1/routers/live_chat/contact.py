@@ -56,6 +56,9 @@ def get_contact(
         last_message_at=contact.last_message_at,
         information=contact.information,
         last_message=contact.last_message,
+        live_comment_count=contact.live_comment_count,
+        comment_count=contact.comment_count,
+        message_count=contact.message_count
     )
 
 
@@ -87,6 +90,9 @@ def get_pages_contacts(
             information=contact.information,
             last_message=contact.last_message,
             user_id=contact.user_id,
+            live_comment_count=contact.live_comment_count,
+            comment_count=contact.comment_count,
+            message_count=contact.message_count
         )
         for contact in contacts
         if len(contacts)
@@ -131,8 +137,8 @@ def get_all_contact_based_on_filters(
         ],
     ),
 ):
-    valid_fields = ["message_count", "comment_count"]
-    valid_operators = ["lte" , "lt" , "gt" , "gte" , "ne" , "eq"]
+    valid_fields = ["message_count", "comment_count", "live_comment_count"]
+    valid_operators = ["lte", "lt", "gt", "gte", "ne", "eq"]
         
     for obj in obj_in:
         if obj.field not in valid_fields or obj.operator not in valid_operators:
@@ -140,7 +146,20 @@ def get_all_contact_based_on_filters(
                 status_code=Error.INVALID_FIELDS_OPERATORS["status_code"],
                 detail=Error.INVALID_FIELDS_OPERATORS["text"],
             )
-    contacts = services.live_chat.contact. \
+    contacts, pagination = services.live_chat.contact. \
         search(db=db, obj_in=obj_in, page=page, page_size=page_size)
 
-    return contacts
+    contacts = [schemas.live_chat.Contact(
+        contact_igs_id=contact.contact_igs_id,
+        user_page_id=contact.user_page_id,
+        id=contact.id,
+        last_message_at=contact.last_message_at,
+        information=contact.information,
+        last_message=contact.last_message,
+        user_id=contact.user_id,
+        live_comment_count=contact.live_comment_count,
+        comment_count=contact.comment_count,
+        message_count=contact.message_count
+    ) for contact in contacts if len(contacts)]
+
+    return schemas.live_chat.ContactList(contacts=contacts, pagination=pagination)
