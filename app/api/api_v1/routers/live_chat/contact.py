@@ -131,12 +131,15 @@ def get_all_contact_based_on_filters(
         ],
     ),
 ):
-    valid_fields = ["message_count"]
+    valid_fields = ["message_count", "comment_count"]
     valid_operators = ["lte" , "lt" , "gt" , "gte" , "ne" , "eq"]
         
     for obj in obj_in:
         if obj.field not in valid_fields or obj.operator not in valid_operators:
-            return HTTPException()
+            raise HTTPException(
+                status_code=Error.INVALID_FIELDS_OPERATORS["status_code"],
+                detail=Error.INVALID_FIELDS_OPERATORS["text"],
+            )
     contacts = services.live_chat.contact. \
         search(db=db, obj_in=obj_in, page=page, page_size=page_size)
 
