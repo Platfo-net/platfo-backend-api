@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, TypeVar
 from pydantic import UUID4
 from app import models, schemas, services
 from sqlalchemy.orm import Session
@@ -72,6 +72,23 @@ class CampaignContactServices:
         return db.query(models.postman.CampaignContact)\
             .filter(models.postman.CampaignContact.id == campaign_contact_id)\
             .delete()
+
+    def change_send_status_bulk(
+        self,
+        db: Session,
+        *,
+        campain_contacts_in: list[ModelType],
+        is_sent: bool
+    ):
+
+        db_objs = []
+        for campaign_contact in campain_contacts_in:
+            campaign_contact.is_sent = is_sent
+            db_objs.append(campaign_contact)
+
+        db.add_all(db_objs)
+        db.commit()
+        return db_objs
 
 
 campaign_contact = CampaignContactServices(models.postman.CampaignContact)

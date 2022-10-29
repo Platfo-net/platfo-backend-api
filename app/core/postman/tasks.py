@@ -1,11 +1,41 @@
 
+from typing import Any
+from app.constants.message_direction import MessageDirection
 from app.core.celery import celery
-from app import services
+from app import schemas, services
 from app.db.session import SessionLocal
 from app.constants.campaign_status import CampaignStatus
 from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.bot_builder.extra_classes import UserData
 from app.constants.widget_type import WidgetType
+
+
+@celery.task
+def save_message(
+    from_page_id: str = None,
+    to_page_id: str = None,
+    mid: str = None,
+    content: dict = None,
+    user_id: Any = None,
+):
+
+    db = SessionLocal()
+    services.live_chat.contact.update_last_message(
+        db, contact_igs_id=to_page_id, last_message=content
+    )
+
+    report = services.live_chat.message.create(
+        db,
+        obj_in=schemas.live_chat.MessageCreate(
+            from_page_id=from_page_id,
+            to_page_id=to_page_id,
+            content=content,
+            mid=mid,
+            user_id=user_id,
+            direction=MessageDirection.OUT["name"],
+        ),
+    )
+    return report
 
 
 @celery.task
@@ -17,7 +47,14 @@ def campaign_terminal():
         return 0
 
     for campaign in campaigns:
-        campaign_handler.delay(campaign.id)
+        unsend_count = services.postman.campaign_contact.get_campaign_unsend_contacts_count(
+            db, campaign_id=campaign.id)
+        if unsend_count == 0:
+            services.postman.campaign.change_status(
+                db, campaign_id=campaign.id, status=CampaignStatus.DONE)
+        else:
+            campaign_handler.delay(campaign.id)
+    return 0
 
 
 @celery.task
@@ -26,6 +63,7 @@ def campaign_handler(campaign_id):
     campaign = services.postman.campaign.get(db, campaign_id)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
         db, campaign_id=campaign_id, count=150)
+
     services.postman.campaign.change_activity(
         db, campaign_id=campaign_id, is_active=True)
 
@@ -42,31 +80,41 @@ def campaign_handler(campaign_id):
     )
 
     for contact in campaign_contacts:
-        if content.widget_type == WidgetType.TEXT:
-            mid = graph_api.send_text_message(
-                text=content.text,
-                from_id=instagram_page.facebook_page_id,
-                to_id=contact.instagram_igs_id,
-                page_access_token=instagram_page.facebook_page_token
+        sent_contacts = []
+
+        if content["widget_type"] == WidgetType.TEXT["name"]:
+            for _ in range(3):
+                mid = graph_api.send_text_message(
+                    content["text"],
+                    from_id=instagram_page.facebook_page_id,
+                    to_id=contact.contact_igs_id,
+                    page_access_token=instagram_page.facebook_page_token
+                )
+            if mid:
+                break
+
+        if content["widget_type"] == WidgetType.MENU["name"]:
+            for _ in range(3):
+                mid = graph_api.send_menu(
+                    content,
+                    from_id=instagram_page.facebook_page_id,
+                    to_id=contact.contact_igs_id,
+                    page_access_token=instagram_page.facebook_page_token
+                )
+                if mid:
+                    break
+
+        if mid:
+            sent_contacts.append(contact)
+            save_message(
+                from_page_id=instagram_page.facebook_page_id,
+                to_page_id=contact.contact_igs_id,
+                mid=mid,
+                content=content,
+                user_id=instagram_page.user_id,
             )
-            # to do
 
-        if content.widget_type == WidgetType.MENU:
-            mid = graph_api.send_menu(
-                data=content,
-                quick_replies=[],
-                from_id=instagram_page.facebook_page_id,
-                to_id=contact.instagram_igs_id,
-                page_access_token=instagram_page.facebook_page_token
-            )
-            # TODO
+    services.postman.campaign_contact.change_is_sent_status_bulk(
+        db, sent_contacts, is_sent = True)
 
-    # result handling
-    all_count = services.postman.campaign_contact.get_all_contacts_count(
-        db, campaign_id=campaign_id)
-    send_count = services.postman.campaign_contact.get_campaign_unsend_contacts_count(
-        db, campaign_id=campaign_id)
-
-    if all_count == send_count:
-        services.postman.campaign.change_status(
-            db, campaign_id=campaign.id, status=CampaignStatus.DONE)
+    return 0
