@@ -120,3 +120,9 @@ class Error:
         "status_code": 400,
         "code": 80,
     }
+
+    INVALID_FIELDS_OPERATORS = {
+        "text": "Invalid fields or operators",
+        "status_code": 400,
+        "code": 90,
+    }
