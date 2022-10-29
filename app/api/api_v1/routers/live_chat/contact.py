@@ -116,16 +116,13 @@ def update_page_contacts_information(
     return contacts
 
 
-
-
-
 @router.post("/search/all")
 def get_all_contact_based_on_filters(
     *,
     page: int = 1,
     page_size: int = 20,
     db: Session = Depends(deps.get_db),
-    obj_in: schemas.live_chat.SearchBody,
+    obj_in: List[schemas.live_chat.SearchItem],
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -134,8 +131,13 @@ def get_all_contact_based_on_filters(
         ],
     ),
 ):
+    valid_fields = ["message_count"]
+    valid_operators = ["lte" , "lt" , "gt" , "gte" , "ne" , "eq"]
+        
+    for obj in obj_in:
+        if obj.field not in valid_fields or obj.operator not in valid_operators:
+            return HTTPException()
     contacts = services.live_chat.contact. \
         search(db=db, obj_in=obj_in, page=page, page_size=page_size)
-    print('cccccccccccccccc', contacts)
 
     return contacts

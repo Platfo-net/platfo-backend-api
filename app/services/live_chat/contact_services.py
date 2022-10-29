@@ -9,6 +9,7 @@ from app import models, schemas
 from sqlalchemy.orm import Session
 from datetime import datetime
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy import and_
 
 
 class ContactServices:
@@ -139,7 +140,7 @@ class ContactServices:
             self,
             db: Session,
             *,
-            obj_in: schemas.live_chat.SearchBody,
+            obj_in: List[schemas.live_chat.SearchItem],
             page: int = 1,
             page_size: int = 20
     ):
@@ -151,35 +152,33 @@ class ContactServices:
             total_pages=total_pages,
             total_count=total_count,
         )
-        queryset = db.query(self.model)
-        for obj in obj_in.filter:
+        filters = []
+        for obj in obj_in:
+            print(obj)
             match obj.operator:
                 case "eq":
-                    queryset = queryset \
-                        .filter(getattr(models.live_chat.Contact, obj.field) == obj.value)
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) == obj.value)
                 case "ne":
-                    return queryset \
-                        .filter(getattr(models.live_chat.Contact, obj.field) != obj.value).all()
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) != obj.value)
                 case "gt":
-                    queryset = queryset \
-                        .filter(getattr(models.live_chat.Contact, obj.field) > obj.value)
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) > obj.value)
+
                 case "lt":
-                    return queryset \
-                        .filter(getattr(models.live_chat.Contact, obj.field) < obj.value).all()
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) < obj.value)
+
                 case "gte":
-                    return queryset \
-                        .filter(getattr(models.live_chat.Contact, obj.field) >= obj.value).all()
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) >= obj.value)
+
                 case "lte":
-                    return queryset \
-                        .filter(getattr(models.live_chat.Contact, obj.field) <= obj.value).all()
-            return queryset.all()
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) <= obj.value)
+
+        return db.query(self.model).filter(and_(*filters)).all()
 
 
-''' 
-eq ya ne
-gt ya lt
-gte ya ltq
-'''
 contact = ContactServices(models.live_chat.Contact)
-
-
