@@ -1,5 +1,6 @@
 # from typing import Optional
 
+import math
 from typing import List
 from app.services.base import BaseServices
 from sqlalchemy.orm import Session
@@ -33,15 +34,25 @@ class ChatflowServices(
         )
 
     def get_multi(
-        self, db: Session, *, user_id: UUID4, skip: int = 0, limit: int = 100
+        self, db: Session, *, user_id: UUID4, page: int = 1, page_size: int = 20
     ) -> List[models.bot_builder.Chatflow]:
-        return (
+        chatflows = (
             db.query(self.model)
             .filter(self.model.user_id == user_id)
-            .offset(skip)
-            .limit(limit)
+            .offset(page_size * (page - 1))
+            .limit(page_size)
             .all()
         )
+
+        total_count = db.query(self.model).count()
+        total_page = math.ceil(total_count / page_size)
+        pagination = schemas.Pagination(
+            page=page,
+            page_size=page_size,
+            total_pages=total_page,
+            total_count=total_count,
+        )
+        return pagination, chatflows
 
     def delete_chatflow(
         self,

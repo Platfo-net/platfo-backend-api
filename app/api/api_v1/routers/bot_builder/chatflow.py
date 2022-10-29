@@ -57,12 +57,12 @@ def delete_chatflow(
     return
 
 
-@router.get("/all", response_model=List[schemas.bot_builder.Chatflow])
+@router.get("/all", response_model=schemas.bot_builder.ChatflowListApi)
 def get_user_chatflows(
     *,
     db: Session = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
+    page: int = 1,
+    page_size: int = 20,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -72,6 +72,17 @@ def get_user_chatflows(
     ),
 ) -> Any:
 
-    return services.bot_builder.chatflow.get_multi(
-        db, user_id=current_user.id, skip=skip, limit=limit
+    pagination, chatflows = services.bot_builder.chatflow.get_multi(
+        db, user_id=current_user.id, page=page, page_size=page_size
     )
+    items = [
+        schemas.bot_builder.Chatflow(
+            is_active=chatflow.is_active,
+            name=chatflow.name,
+            user_id=chatflow.user_id,
+            created_at=chatflow.created_at,
+            updated_at=chatflow.updated_at
+        ) for chatflow in chatflows if len(chatflows) > 0
+    ]
+
+    return schemas.bot_builder.ChatflowListApi(items=items, pagination=pagination)

@@ -1,7 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
+
+from app.schemas.pagination import Pagination
 
 
 class ChatflowBase(BaseModel):
@@ -23,6 +25,15 @@ class Chatflow(ChatflowBase):
 
     created_at: datetime
     updated_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+
+class ChatflowListApi(BaseModel):
+    items: List[Chatflow]
+    pagination: Pagination
 
     class Config:
         orm_mode = True
