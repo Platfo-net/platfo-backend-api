@@ -108,6 +108,48 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
+    def update_last_comment(
+        self, db: Session, *, contact_igs_id: str, last_comment_count: int
+    ):
+        db_obj = (
+            db.query(self.model)
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
+        )
+        db_obj.comment_count = last_comment_count
+
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+
+    def update_last_live_comment(
+        self, db: Session, *, contact_igs_id: str, last_live_comment_count: int
+    ):
+        db_obj = (
+            db.query(self.model)
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
+        )
+        db_obj.live_comment_count = last_live_comment_count
+
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+
+    def update_first_impression(
+        self, db: Session, *, contact_igs_id: str, first_impression: str
+    ):
+        db_obj = (
+            db.query(self.model)
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
+        )
+        db_obj.first_impression = first_impression
+
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+
     def remove_by_user_page_id(self, db: Session, *, user_page_id: str):
 
         contacts = (

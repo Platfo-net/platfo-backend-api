@@ -34,15 +34,32 @@ def webhook_proccessor(facebook_webhook_body):
             return None
 
         case WebhookType.MESSAGE_SEEN:
+            # services.postman.campagin_contact.update_statistics(db, contact_igs_id, mid)
             pass
 
-        case WebhookType.COMMENT:  # vase in va live comment bayad contact save beshe tahesh
-            # services.live_chat.contact.update_statistics(db, contact_id, type)
-            pass
+        case WebhookType.COMMENT:
+            save_comment(
+                from_page_id=instagram_data.sender_id,
+                to_page_id=user_page_data.facebook_page_id,
+                user_id=user_page_data.user_id,
+                instagram_page_id=instagram_data.recipient_id,
+                last_comment_count=2
+            )
+            return
 
         case WebhookType.LIVE_COMMENT:
-            # services.live_chat.contact.update_statistics(db, contact_id, type)
-            pass
+            # last_live_comment_count = 0
+            # for last_live_comment_count in range():
+            #     last_live_comment_count += 1
+            # print(last_live_comment_count)
+            save_comment(
+                from_page_id=instagram_data.sender_id,
+                to_page_id=user_page_data.facebook_page_id,
+                user_id=user_page_data.user_id,
+                instagram_page_id=instagram_data.recipient_id,
+                last_live_comment_count=2
+            )
+            return
         
         case WebhookType.DELETE_MESSAGE:
             return services.live_chat.message.remove_message_by_mid(
@@ -159,6 +176,72 @@ def webhook_proccessor(facebook_webhook_body):
         except Exception as e:
             pass
     return 0
+
+
+@celery.task
+def save_comment(
+    from_page_id: str = None,
+    to_page_id: str = None,
+    last_comment_count: int = None,
+    last_live_comment_count: int = None,
+    user_id: Any = None,
+    instagram_page_id: str = None,
+):
+    db = SessionLocal()
+    client = deps.get_redis_client()
+
+    contact = services.live_chat.contact.get_contact_by_igs_id(
+        db, contact_igs_id=from_page_id
+    )
+    if not contact:
+        contact_in = schemas.live_chat.ContactCreate(
+            contact_igs_id=from_page_id, user_page_id=to_page_id, user_id=user_id
+        )
+        new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
+
+        try:
+            user_data = cache.get_user_data(
+                client, db, instagram_page_id=instagram_page_id
+            ).to_dict()
+
+        except Exception:
+            return 0
+
+        information = graph_api.get_contact_information_from_facebook(
+            contact_igs_id=new_contact.contact_igs_id,
+            page_access_token=user_data["facebook_page_token"],
+        )
+        services.live_chat.contact.set_information(
+            db,
+            contact_igs_id=from_page_id,
+            information=information,
+        )
+        if last_comment_count:
+            services.live_chat.contact.update_last_comment(
+                db, contact_igs_id=to_page_id, last_comment_count=last_comment_count
+            )
+            services.live_chat.contact.update_first_impression(
+                        db,
+                        contact_igs_id=to_page_id,
+                        first_impression='comment'   # todo make them static
+            )
+
+        if last_live_comment_count:
+            services.live_chat.contact.update_last_live_comment(
+                db, contact_igs_id=to_page_id, last_live_comment_count=last_live_comment_count
+            )
+            services.live_chat.contact.update_first_impression(
+                        db,
+                        contact_igs_id=to_page_id,
+                        first_impression='live_comment'
+            )
+    else:
+        services.live_chat.contact.update_last_comment(
+            db, contact_igs_id=to_page_id, last_comment_count=last_comment_count
+        )
+        services.live_chat.contact.update_last_live_comment(
+            db, contact_igs_id=to_page_id, last_live_comment_count=last_live_comment_count
+        )
 
 
 @celery.task
