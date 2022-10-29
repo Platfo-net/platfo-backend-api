@@ -59,10 +59,11 @@ def campaign_terminal():
 
 @celery.task
 def campaign_handler(campaign_id):
+    from app.core.config import settings
     db = SessionLocal()
     campaign = services.postman.campaign.get(db, campaign_id)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
-        db, campaign_id=campaign_id, count=150)
+        db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT)
 
     services.postman.campaign.change_activity(
         db, campaign_id=campaign_id, is_active=True)
@@ -114,7 +115,7 @@ def campaign_handler(campaign_id):
                 user_id=instagram_page.user_id,
             )
 
-    services.postman.campaign_contact.change_is_sent_status_bulk(
+    services.postman.campaign_contact.change_send_status_bulk(
         db, sent_contacts, is_sent = True)
 
     return 0

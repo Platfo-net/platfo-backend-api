@@ -77,21 +77,21 @@ class InstagramGraphApi:
     def send_menu(
         self, data, quick_replies, from_id: str, to_id: str, page_access_token: str
     ):
-        choices = data.get('choices')
+        choices = data.get('choices', [])
         buttons = []
         for choice in choices:
             button_type = data.get("type", None)
-            if button_type == ButtonType.WEB_URL:
+            if button_type == ButtonType.WEB_URL["name"]:
                 buttons.append(
                     {
-                        "type": "web_url",
+                        "type": ButtonType.WEB_URL["value"],
                         "title": choice["text"],
                         "url": choice["url"],
                     }
                 )
             else:
                 buttons.append({
-                    "type": "postback",
+                    "type": ButtonType.POSTBACK["value"],
                     "title": choice["text"],
                     "payload": choice["id"],
                 })
@@ -100,7 +100,6 @@ class InstagramGraphApi:
             "template_type": "generic",
             "elements": [
                 {
-                    # todo keyish irad dre data['text'] ro nmishnace chun widget e na node
                     "title": data.get("title"),
                     "buttons": buttons
                 }

@@ -1,3 +1,8 @@
 class ButtonType:
-    WEB_URL = "WEB_URL"
-    POSTBACK = "POSTBACK"
+    WEB_URL = {
+        "name": "WEB_URL",
+        "value": "web_url"
+    }
+    POSTBACK = {
+        "name": "POSTBACK",
+        "value": "postback"}
