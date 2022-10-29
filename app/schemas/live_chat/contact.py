@@ -1,5 +1,6 @@
+from pydantic import Field
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import UUID4, BaseModel
 
 
@@ -32,3 +33,9 @@ class ProfileCreate(BaseModel):
 class ProfileUpdate(BaseModel):
     key: Optional[str] = None
     value: Optional[str] = None
+
+
+class SearchItem(BaseModel):
+    field: Optional[str] = None
+    operator: Optional[str] = None
+    value: Optional[int] = None

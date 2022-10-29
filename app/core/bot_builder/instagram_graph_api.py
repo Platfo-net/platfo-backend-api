@@ -1,4 +1,5 @@
 from typing import Union
+from app.constants.button_type import ButtonType
 from app.core.config import settings
 
 import requests
@@ -76,20 +77,31 @@ class InstagramGraphApi:
     def send_menu(
         self, data, quick_replies, from_id: str, to_id: str, page_access_token: str
     ):
+        choices = data.get('choices', [])
+        buttons = []
+        for choice in choices:
+            button_type = data.get("type", None)
+            if button_type == ButtonType.WEB_URL["name"]:
+                buttons.append(
+                    {
+                        "type": ButtonType.WEB_URL["value"],
+                        "title": choice["text"],
+                        "url": choice["url"],
+                    }
+                )
+            else:
+                buttons.append({
+                    "type": ButtonType.POSTBACK["value"],
+                    "title": choice["text"],
+                    "payload": choice["id"],
+                })
 
         body = {
             "template_type": "generic",
             "elements": [
                 {
-                    "title": "string",  # todo keyish irad dre data['text'] ro nmishnace chun widget e na node
-                    "buttons": [
-                        {
-                            "type": "postback",
-                            "title": choice["text"],
-                            "payload": choice["id"],
-                        }
-                        for choice in data["choices"]
-                    ],
+                    "title": data.get("title"),
+                    "buttons": buttons
                 }
             ],
         }
@@ -117,7 +129,7 @@ class InstagramGraphApi:
         res = requests.post(url=url, params=params, json=payload)
         if quick_replies:
             self.send_quick_replies(quick_replies, from_id, to_id, page_access_token)
-        
+
         mid = None
         if res.status_code == 200:
             mid = res.json()["message_id"]

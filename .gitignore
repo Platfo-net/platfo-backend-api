@@ -162,3 +162,5 @@ stage.env
 local.env
 
 .test.env
+
+*.json
