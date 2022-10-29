@@ -185,23 +185,32 @@ def search_content_by_category(
         page: int = 1,
         page_size: int = 20,
         categories_list_id: List[UUID4] = Query(None),
+        labels_list_id: List[UUID4] = Query(None),
         db: Session = Depends(deps.get_db),
 ):
     contents, pagination = services.academy.content.search(
-        db, categories_list=categories_list_id, page=page, page_size=page_size
+        db,
+        categories_list=categories_list_id,
+        labels_list=labels_list_id,
+        page=page,
+        page_size=page_size
     )
 
-    if not categories_list_id:
+    if not categories_list_id and not labels_list_id:
         content_list = schemas.academy.ContentListApi(
             contents=contents, pagination=pagination
         )
         return content_list
 
+    res = []
     for content in contents:
-        return schemas.academy.ContentSearch(contents=content, pagination=pagination)
+        res.append(schemas.academy.ContentSearch(
+            contents=content, pagination=pagination)
+        )
+    return res
 
 
-@router.get("/content/detail{id}", response_model=schemas.academy.ContentDetail)
+@router.get("/content/detail/{id}", response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*, db: Session = Depends(deps.get_db), id: UUID4):
     content, categories, labels = services.academy.content.get_by_detail(
         db, id=id)
