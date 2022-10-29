@@ -1,9 +1,15 @@
+import math
+from typing import List
+
 from pydantic import UUID4
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import subquery
+
 from app import models, schemas
 from sqlalchemy.orm import Session
 from datetime import datetime
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy import and_
 
 
 class ContactServices:
@@ -117,6 +123,62 @@ class ContactServices:
             db.delete(contact)
         db.commit()
         return
+
+    def get_bulk(
+        self,
+        db: Session,
+        *,
+        contacts_id: List[UUID4]
+    ):
+        contacts = []
+        for contact_id in contacts_id:
+            contacts.append(db.query(models.live_chat.Contact).
+                            filter(models.live_chat.Contact.id == contact_id).first())
+        return contacts
+
+    def search(
+            self,
+            db: Session,
+            *,
+            obj_in: List[schemas.live_chat.SearchItem],
+            page: int = 1,
+            page_size: int = 20
+    ):
+        total_count = db.query(self.model).count()
+        total_pages = math.ceil(total_count / page_size)
+        pagination = schemas.Pagination(
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            total_count=total_count,
+        )
+        filters = []
+        for obj in obj_in:
+            print(obj)
+            match obj.operator:
+                case "eq":
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) == obj.value)
+                case "ne":
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) != obj.value)
+                case "gt":
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) > obj.value)
+
+                case "lt":
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) < obj.value)
+
+                case "gte":
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) >= obj.value)
+
+                case "lte":
+                    filters.append(
+                        getattr(models.live_chat.Contact, obj.field) <= obj.value)
+
+        return db.query(self.model).filter(and_(*filters)).all()
 
 
 contact = ContactServices(models.live_chat.Contact)

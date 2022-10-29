@@ -1,4 +1,4 @@
-from app.schemas import academy, bot_builder, live_chat
+from app.schemas import academy, bot_builder, live_chat , postman
 from .role import Role, RoleCreate, RoleInDB, RoleUpdate
 from .token import Token, TokenPayload, Login, LoginForm
 from .user import (
