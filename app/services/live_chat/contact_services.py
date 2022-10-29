@@ -1,9 +1,11 @@
-from pydantic import UUID4
-from fastapi.encoders import jsonable_encoder
-from app import models, schemas
-from sqlalchemy.orm import Session
 from datetime import datetime
+
+from fastapi.encoders import jsonable_encoder
+from pydantic import UUID4
+from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
+
+from app import models, schemas
 
 
 class ContactServices:
@@ -11,7 +13,7 @@ class ContactServices:
         self.model = model
 
     def create(
-        self, db: Session, *, obj_in: schemas.live_chat.ContactCreate
+            self, db: Session, *, obj_in: schemas.live_chat.ContactCreate
     ) -> models.live_chat.Contact:
         obj_in = jsonable_encoder(obj_in)
         contact = self.model(**obj_in, information={}, last_message_at=datetime.now())
@@ -27,21 +29,21 @@ class ContactServices:
     def get_contact_by_igs_id(self, db: Session, *, contact_igs_id: str):
         return (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
+                .filter(self.model.contact_igs_id == contact_igs_id)
+                .first()
         )
 
     def set_information(
-        self,
-        db: Session,
-        *,
-        contact_igs_id: str,
-        information: dict,
+            self,
+            db: Session,
+            *,
+            contact_igs_id: str,
+            information: dict,
     ):
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
+                .filter(self.model.contact_igs_id == contact_igs_id)
+                .first()
         )
 
         db_obj.information = information
@@ -52,16 +54,16 @@ class ContactServices:
         return db_obj
 
     def update_information(
-        self,
-        db: Session,
-        *,
-        contact_igs_id: str,
-        data: dict,
+            self,
+            db: Session,
+            *,
+            contact_igs_id: str,
+            data: dict,
     ):
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
+                .filter(self.model.contact_igs_id == contact_igs_id)
+                .first()
         )
         db_obj.information.update(data)
         flag_modified(db_obj, "information")
@@ -71,7 +73,7 @@ class ContactServices:
         return db_obj
 
     def get_pages_contacts(
-        self, db: Session, *, page_id: str, skip: int = 0, limit: int = 100
+            self, db: Session, *, page_id: str, skip: int = 0, limit: int = 100
     ):
         """Return an specific instagram page's contacts
 
@@ -85,20 +87,19 @@ class ContactServices:
         """
         return (
             db.query(self.model)
-            .filter(self.model.user_page_id == page_id)
-            .offset(skip)
-            .limit(limit)
-            .all()
+                .filter(self.model.user_page_id == page_id)
+                .offset(skip)
+                .limit(limit)
+                .all()
         )
 
     def update_last_message(
-        self, db: Session, *, contact_igs_id: str, last_message: dict
+            self, db: Session, *, contact_igs_id: str, last_message: dict
     ):
-
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
+                .filter(self.model.contact_igs_id == contact_igs_id)
+                .first()
         )
 
         db_obj.last_message = last_message
@@ -108,50 +109,49 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_comment(
-        self, db: Session, *, contact_igs_id: str, last_comment_count: int
+    def update_last_comment_count(
+            self, db: Session, *, contact_igs_id: str
     ):
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
+                .filter(self.model.contact_igs_id == contact_igs_id)
+                .first()
         )
-        db_obj.comment_count = last_comment_count
+        db_obj.comment_count = db_obj.comment_count + 1
 
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_live_comment(
-        self, db: Session, *, contact_igs_id: str, last_live_comment_count: int
+    def update_last_live_comment_count(
+            self, db: Session, *, contact_igs_id: str
     ):
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
+                .filter(self.model.contact_igs_id == contact_igs_id)
+                .first()
         )
-        db_obj.live_comment_count = last_live_comment_count
+        db_obj.live_comment_count = db_obj.live_comment_count + 1
 
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
 
-    def update_first_impression(
-        self, db: Session, *, contact_igs_id: str, first_impression: str
+    def update_last_message_count(
+            self, db: Session, *, contact_igs_id: str
     ):
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
+                .filter(self.model.contact_igs_id == contact_igs_id)
+                .first()
         )
-        db_obj.first_impression = first_impression
+        db_obj.message_count = db_obj.message_count + 1
 
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
 
     def remove_by_user_page_id(self, db: Session, *, user_page_id: str):
-
         contacts = (
             db.query(self.model).filter(self.model.user_page_id == user_page_id).all()
         )

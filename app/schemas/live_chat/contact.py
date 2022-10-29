@@ -7,6 +7,10 @@ class ContactBase(BaseModel):
     contact_igs_id: str
     user_page_id: str
     user_id: UUID4
+    comment_count: int = 0
+    message_count: int = 0
+    live_comment_count: int = 0
+    first_impression: str = None
 
 
 class ContactCreate(ContactBase):

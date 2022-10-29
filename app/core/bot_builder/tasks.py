@@ -2,6 +2,7 @@ from typing import Any, List
 from uuid import uuid4
 from app import schemas, services
 from app.api import deps
+from app.constants.impression import Impression
 from app.db.session import SessionLocal
 from app.core import cache
 from app.core.celery import celery
@@ -182,8 +183,7 @@ def webhook_proccessor(facebook_webhook_body):
 def save_comment(
     from_page_id: str = None,
     to_page_id: str = None,
-    last_comment_count: int = None,
-    last_live_comment_count: int = None,
+
     user_id: Any = None,
     instagram_page_id: str = None,
 ):
@@ -195,7 +195,11 @@ def save_comment(
     )
     if not contact:
         contact_in = schemas.live_chat.ContactCreate(
-            contact_igs_id=from_page_id, user_page_id=to_page_id, user_id=user_id
+            contact_igs_id=from_page_id,
+            user_page_id=to_page_id,
+            user_id=user_id,
+            comment_count=1,
+            first_impression=Impression.COMMENT
         )
         new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
 
@@ -216,32 +220,60 @@ def save_comment(
             contact_igs_id=from_page_id,
             information=information,
         )
-        if last_comment_count:
-            services.live_chat.contact.update_last_comment(
-                db, contact_igs_id=to_page_id, last_comment_count=last_comment_count
-            )
-            services.live_chat.contact.update_first_impression(
-                        db,
-                        contact_igs_id=to_page_id,
-                        first_impression='comment'   # todo make them static
-            )
+        return 0
 
-        if last_live_comment_count:
-            services.live_chat.contact.update_last_live_comment(
-                db, contact_igs_id=to_page_id, last_live_comment_count=last_live_comment_count
-            )
-            services.live_chat.contact.update_first_impression(
-                        db,
-                        contact_igs_id=to_page_id,
-                        first_impression='live_comment'
-            )
-    else:
-        services.live_chat.contact.update_last_comment(
-            db, contact_igs_id=to_page_id, last_comment_count=last_comment_count
+    services.live_chat.contact.update_last_comment_count(
+                db,
+                contact_igs_id=contact.contact_igs_id
+    )
+
+
+@celery.task
+def save_live_comment(
+    from_page_id: str = None,
+    to_page_id: str = None,
+    user_id: Any = None,
+    instagram_page_id: str = None,
+):
+    db = SessionLocal()
+    client = deps.get_redis_client()
+
+    contact = services.live_chat.contact.get_contact_by_igs_id(
+        db, contact_igs_id=from_page_id
+    )
+    if not contact:
+        contact_in = schemas.live_chat.ContactCreate(
+            contact_igs_id=from_page_id,
+            user_page_id=to_page_id,
+            user_id=user_id,
+            live_comment_count=1,
+            first_impression=Impression.LIVE_COMMENT
         )
-        services.live_chat.contact.update_last_live_comment(
-            db, contact_igs_id=to_page_id, last_live_comment_count=last_live_comment_count
+        new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
+
+        try:
+            user_data = cache.get_user_data(
+                client, db, instagram_page_id=instagram_page_id
+            ).to_dict()
+
+        except Exception:
+            return 0
+
+        information = graph_api.get_contact_information_from_facebook(
+            contact_igs_id=new_contact.contact_igs_id,
+            page_access_token=user_data["facebook_page_token"],
         )
+        services.live_chat.contact.set_information(
+            db,
+            contact_igs_id=from_page_id,
+            information=information,
+        )
+        return 0
+
+    services.live_chat.contact.update_last_live_comment_count(
+                    db,
+                    contact_igs_id=contact.contact_igs_id
+    )
 
 
 @celery.task
@@ -263,7 +295,11 @@ def save_message(
         )
         if not contact:
             contact_in = schemas.live_chat.ContactCreate(
-                contact_igs_id=from_page_id, user_page_id=to_page_id, user_id=user_id
+                contact_igs_id=from_page_id,
+                user_page_id=to_page_id,
+                user_id=user_id,
+                message_count=1,
+                first_impression=Impression.MESSAGE
             )
             new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
 
@@ -284,11 +320,13 @@ def save_message(
                 contact_igs_id=from_page_id,
                 information=information,
             )
+        else:
+            services.live_chat.contact.update_last_message_count(db, contact_igs_id=from_page_id)
 
     if direction == MessageDirection.IN["name"]:
         services.live_chat.contact.update_last_message(
             db, contact_igs_id=from_page_id, last_message=content
-        )
+       )
 
     else:
         services.live_chat.contact.update_last_message(
