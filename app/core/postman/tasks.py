@@ -38,7 +38,7 @@ def save_message(
     return report
 
 
-@celery.task
+# @celery.task
 def campaign_terminal():
     db = SessionLocal()
     campaigns = services.postman.campaign.get_active_campaigns(db)
