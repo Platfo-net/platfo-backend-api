@@ -117,6 +117,6 @@ def campaign_handler(campaign_id):
             )
 
     services.postman.campaign_contact.change_send_status_bulk(
-        db, sent_contacts, is_sent=True)
+        db=db, sent_contacts=sent_contacts, is_sent=True)
 
     return 0
