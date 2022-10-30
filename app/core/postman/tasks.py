@@ -85,9 +85,11 @@ def campaign_handler(campaign_id):
         facebook_page_id=instagram_page.facebook_page_id,
         account_id=instagram_page.id
     )
-
+    print('frommmm idddddddd', instagram_page.facebook_page_id)
     sent_contacts = []
     for contact in campaign_contacts:
+        print('tooooooooooo iddddddd', contact.contact_igs_id)
+
         print('omd to looopppppppppp')
         mid = None
         if content["widget_type"] == WidgetType.TEXT["name"]:
@@ -99,14 +101,15 @@ def campaign_handler(campaign_id):
                     to_id=contact.contact_igs_id,
                     page_access_token=instagram_page.facebook_page_token
                 )
-            if mid:
-                break
+                print('middeeeeeeeee loppppppppppppi', mid)
+                if mid:
+                    break
 
         if content["widget_type"] == WidgetType.MENU["name"]:
             print('sending menu message')
             for _ in range(3):
                 mid = graph_api.send_menu(
-                    content,
+                    data=content,
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
                     page_access_token=instagram_page.facebook_page_token
