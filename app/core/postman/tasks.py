@@ -42,6 +42,7 @@ def save_message(
 def campaign_terminal():
     db = SessionLocal()
     campaigns = services.postman.campaign.get_active_campaigns(db)
+    print('first step activeeeeeeee', campaigns)
 
     if len(campaigns) == 0:
         return 0
