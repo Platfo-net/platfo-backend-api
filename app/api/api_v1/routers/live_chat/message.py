@@ -33,7 +33,7 @@ def get_archive(
     ),
 ):
 
-    messages = services.message.get_pages_messages(
+    messages = services.live_chat.message.get_pages_messages(
         db, contact_igs_id=contact_igs_id, page_id=page_id, skip=skip, limit=limit
     )
     new_messages = []
