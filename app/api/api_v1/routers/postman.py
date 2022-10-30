@@ -16,7 +16,7 @@ router = APIRouter(prefix="/postman", tags=["Postman"])
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def register_user(db: Session) -> Any:
+def test():
     from app.core.postman import tasks
     tasks.campaign_terminal()
     return 'successssssssssssssss'
