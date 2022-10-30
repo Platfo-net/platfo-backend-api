@@ -38,7 +38,7 @@ def save_message(
     return report
 
 
-@celery.task
+# @celery.task
 def campaign_terminal():
     db = SessionLocal()
     campaigns = services.postman.campaign.get_active_campaigns(db)
@@ -61,7 +61,7 @@ def campaign_terminal():
 def campaign_handler(campaign_id):
     from app.core.config import settings
     db = SessionLocal()
-    campaign = services.postman.campaign.get(db, campaign_id)
+    campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
         db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT)
 
@@ -79,32 +79,33 @@ def campaign_handler(campaign_id):
         facebook_page_id=instagram_page.facebook_page_id,
         account_id=instagram_page.id
     )
-
     sent_contacts = []
     for contact in campaign_contacts:
+
         mid = None
         if content["widget_type"] == WidgetType.TEXT["name"]:
             for _ in range(3):
+                quick_replies = [{"id": "b8203604-21af-4670-b19a-51a456421187", "text": "want it?"}]
                 mid = graph_api.send_text_message(
-                    content["text"],
+                    text=content["text"],
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
-                    page_access_token=instagram_page.facebook_page_token
+                    page_access_token=instagram_page.facebook_page_token,
+                    quick_replies=quick_replies
                 )
-            if mid:
-                break
+                if mid:
+                    break
 
         if content["widget_type"] == WidgetType.MENU["name"]:
             for _ in range(3):
                 mid = graph_api.send_menu(
-                    content,
+                    data=content,
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
                     page_access_token=instagram_page.facebook_page_token
                 )
                 if mid:
                     break
-
         if mid:
             contact.mid = mid
             sent_contacts.append(contact)
@@ -115,8 +116,7 @@ def campaign_handler(campaign_id):
                 content=content,
                 user_id=instagram_page.user_id,
             )
-
     services.postman.campaign_contact.change_send_status_bulk(
-        db, sent_contacts, is_sent=True)
+        db=db, campaign_contacts_in=sent_contacts, is_sent=True)
 
     return 0

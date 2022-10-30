@@ -46,6 +46,7 @@ class CampaignContactServices:
     def get_campaign_unsend_contacts_count(
             self,
             db: Session,
+            *,
             campaign_id: UUID4
     ):
         return db.query(models.postman.CampaignContact) \
@@ -57,6 +58,7 @@ class CampaignContactServices:
     def get_all_contacts_count(
             self,
             db: Session,
+            *,
             campaign_id: UUID4
     ):
         return db.query(models.postman.CampaignContact).\
@@ -97,6 +99,8 @@ class CampaignContactServices:
         mid: str
     ):
         db_obj = db.query(self.model).filter(self.model.mid == mid).first()
+        if not db_obj:
+            return
         db_obj.is_seen = True
         db.add(db_obj)
         db.commit()

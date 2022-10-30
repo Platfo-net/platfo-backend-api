@@ -62,7 +62,6 @@ class CampaignServices:
     def get(
         self,
         db: Session,
-        *,
         campaign_id: UUID4
     ) -> ModelType:
 
