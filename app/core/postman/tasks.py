@@ -94,7 +94,7 @@ def campaign_handler(campaign_id):
             print('sending text message')
             for _ in range(3):
                 mid = graph_api.send_text_message(
-                    content["text"],
+                    text=content["text"],
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
                     page_access_token=instagram_page.facebook_page_token
