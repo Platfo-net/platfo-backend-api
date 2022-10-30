@@ -35,7 +35,7 @@ def webhook_proccessor(facebook_webhook_body):
             return None
 
         case WebhookType.MESSAGE_SEEN:
-            services.postman.campaign_contact.seen_message(db , mid = instagram_data.mid)
+            services.postman.campaign_contact.seen_message(db, mid=instagram_data.mid)
             pass
 
         case WebhookType.COMMENT:
@@ -48,10 +48,6 @@ def webhook_proccessor(facebook_webhook_body):
             return
 
         case WebhookType.LIVE_COMMENT:
-            # last_live_comment_count = 0
-            # for last_live_comment_count in range():
-            #     last_live_comment_count += 1
-            # print(last_live_comment_count)
             save_comment(
                 from_page_id=instagram_data.sender_id,
                 to_page_id=user_page_data.facebook_page_id,

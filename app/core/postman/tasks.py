@@ -80,9 +80,9 @@ def campaign_handler(campaign_id):
         account_id=instagram_page.id
     )
 
+    sent_contacts = []
     for contact in campaign_contacts:
-        sent_contacts = []
-
+        mid = None
         if content["widget_type"] == WidgetType.TEXT["name"]:
             for _ in range(3):
                 mid = graph_api.send_text_message(

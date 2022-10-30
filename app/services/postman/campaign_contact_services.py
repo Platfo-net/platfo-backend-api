@@ -77,12 +77,12 @@ class CampaignContactServices:
         self,
         db: Session,
         *,
-        campain_contacts_in: list[ModelType],
+        campaign_contacts_in: list[ModelType],
         is_sent: bool
     ):
 
         db_objs = []
-        for campaign_contact in campain_contacts_in:
+        for campaign_contact in campaign_contacts_in:
             campaign_contact.is_sent = is_sent
             db_objs.append(campaign_contact)
 
