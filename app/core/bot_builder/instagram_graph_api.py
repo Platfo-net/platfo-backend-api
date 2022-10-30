@@ -54,17 +54,20 @@ class InstagramGraphApi:
                 "id": to_id,
             },
             "message": {
-                "text": text,
-                "quick_replies": [
-                    {
-                        "content_type": "text",
-                        "title": quick_reply["text"],
-                        "payload": quick_reply["id"],
-                    }
-                    for quick_reply in quick_replies
-                ]
+                "text": text
+
             },
         }
+        if len(quick_replies):
+
+            payload["message"]["quick_replies"] = [
+                {
+                    "content_type": "text",
+                    "title": quick_reply["text"],
+                    "payload": quick_reply["id"],
+                }
+                for quick_reply in quick_replies
+            ]
 
         params = {"access_token": page_access_token}
 

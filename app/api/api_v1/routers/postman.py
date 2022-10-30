@@ -18,7 +18,7 @@ router = APIRouter(prefix="/postman", tags=["Postman"])
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def test():
     from app.core.postman import tasks
-    tasks.campaign_terminal()
+    tasks.campaign_terminal.delay()
     return 'successssssssssssssss'
 
 
