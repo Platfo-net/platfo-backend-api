@@ -69,11 +69,11 @@ class CampaignServices:
             .filter(models.postman.Campaign.id == campaign_id).first()
 
     def change_status(
-          self,
-          db: Session,
-          *,
-          campaign_id: UUID4,
-          status: CampaignStatus.DONE,
+        self,
+        db: Session,
+        *,
+        campaign_id: UUID4,
+        status: str = CampaignStatus.DONE,
     ) -> ModelType:
 
         campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
@@ -85,11 +85,11 @@ class CampaignServices:
         return campaign
 
     def change_is_draft(
-          self,
-          db: Session,
-          *,
-          campaign_id: UUID4,
-          is_draft: bool,
+        self,
+        db: Session,
+        *,
+        campaign_id: UUID4,
+        is_draft: bool,
     ) -> ModelType:
 
         campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
@@ -101,11 +101,11 @@ class CampaignServices:
         return campaign
 
     def change_activity(
-          self,
-          db: Session,
-          *,
-          campaign_id: UUID4,
-          is_active: bool,
+        self,
+        db: Session,
+        *,
+        campaign_id: UUID4,
+        is_active: bool,
     ) -> ModelType:
 
         campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
