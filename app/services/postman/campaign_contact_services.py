@@ -99,6 +99,8 @@ class CampaignContactServices:
         mid: str
     ):
         db_obj = db.query(self.model).filter(self.model.mid == mid).first()
+        if not db_obj:
+            return
         db_obj.is_seen = True
         db.add(db_obj)
         db.commit()
