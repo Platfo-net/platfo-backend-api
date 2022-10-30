@@ -95,11 +95,13 @@ def campaign_handler(campaign_id):
         if content["widget_type"] == WidgetType.TEXT["name"]:
             print('sending text message')
             for _ in range(3):
+                quick_replies = [{"id": "b8203604-21af-4670-b19a-51a456421187", "text": "want it?"}]
                 mid = graph_api.send_text_message(
                     text=content["text"],
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
-                    page_access_token=instagram_page.facebook_page_token
+                    page_access_token=instagram_page.facebook_page_token,
+                    quick_replies=quick_replies
                 )
                 print('middeeeeeeeee loppppppppppppi', mid)
                 if mid:
