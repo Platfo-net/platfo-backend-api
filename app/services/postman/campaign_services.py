@@ -56,7 +56,7 @@ class CampaignServices:
         return db.query(models.postman.Campaign).filter(
             models.postman.Campaign.is_draft == False,
             models.postman.Campaign.status == CampaignStatus.PENDING,
-            models.postman.Campaign.is_active == False
+            models.postman.Campaign.is_active == True
         ).all()
 
     def get(
