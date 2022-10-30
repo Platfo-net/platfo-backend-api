@@ -49,6 +49,7 @@ def campaign_terminal():
     for campaign in campaigns:
         unsend_count = services.postman.campaign_contact.get_campaign_unsend_contacts_count(
             db, campaign_id=campaign.id)
+        print('uuuuuuuu', unsend_count)
         if unsend_count == 0:
             services.postman.campaign.change_status(
                 db, campaign_id=campaign.id, status=CampaignStatus.DONE)
@@ -62,6 +63,7 @@ def campaign_handler(campaign_id):
     from app.core.config import settings
     db = SessionLocal()
     campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
+    print('cccccccccccccc', campaign)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
         db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT)
 
@@ -82,6 +84,7 @@ def campaign_handler(campaign_id):
 
     sent_contacts = []
     for contact in campaign_contacts:
+        print('omd to looopppppppppp')
         mid = None
         if content["widget_type"] == WidgetType.TEXT["name"]:
             for _ in range(3):
