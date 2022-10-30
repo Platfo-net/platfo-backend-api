@@ -44,7 +44,6 @@ def webhook_proccessor(facebook_webhook_body):
                 to_page_id=user_page_data.facebook_page_id,
                 user_id=user_page_data.user_id,
                 instagram_page_id=instagram_data.recipient_id,
-                last_comment_count=2
             )
             return
 
@@ -58,7 +57,6 @@ def webhook_proccessor(facebook_webhook_body):
                 to_page_id=user_page_data.facebook_page_id,
                 user_id=user_page_data.user_id,
                 instagram_page_id=instagram_data.recipient_id,
-                last_live_comment_count=2
             )
             return
         
