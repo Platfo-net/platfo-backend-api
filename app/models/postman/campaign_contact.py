@@ -15,6 +15,7 @@ class CampaignContact(Base):
 
     is_sent = Column(Boolean(), default=False)
     is_seen = Column(Boolean(), default=False)
+    mid = Column(String(255), nullable=True)
 
     reaction = Column(String(100), nullable=True)
     

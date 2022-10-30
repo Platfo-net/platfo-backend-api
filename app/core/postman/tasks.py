@@ -106,6 +106,7 @@ def campaign_handler(campaign_id):
                     break
 
         if mid:
+            contact.mid = mid
             sent_contacts.append(contact)
             save_message(
                 from_page_id=instagram_page.facebook_page_id,
@@ -116,6 +117,6 @@ def campaign_handler(campaign_id):
             )
 
     services.postman.campaign_contact.change_send_status_bulk(
-        db, sent_contacts, is_sent = True)
+        db, sent_contacts, is_sent=True)
 
     return 0

@@ -48,8 +48,3 @@ class User(Base):
 
     campaign = relationship("Campaign", back_populates="user")
 
-    # chatroom = relationship(
-    #     "Chatroom",
-    #     back_populates="user",
-    #     cascade="all,delete"
-    # )

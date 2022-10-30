@@ -90,5 +90,17 @@ class CampaignContactServices:
         db.commit()
         return db_objs
 
+    def seen_message(
+        self,
+        db: Session,
+        *,
+        mid: str
+    ):
+        db_obj = db.query(self.model).filter(self.model.mid == mid).first()
+        db_obj.is_seen = True
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+
 
 campaign_contact = CampaignContactServices(models.postman.CampaignContact)

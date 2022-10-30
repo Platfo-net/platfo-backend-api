@@ -1,9 +1,11 @@
 
+import datetime
+
 from uuid import uuid4
 
 from app.db.base_class import Base
 from sqlalchemy import Column, ForeignKey, \
-    String, Integer, JSON, Boolean
+    String, DateTime, JSON, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.constants.campaign_status import CampaignStatus
@@ -30,6 +32,8 @@ class Campaign(Base):
         ForeignKey("users.id"),
         nullable=True,
     )
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User", back_populates="campaign")
     campaign_contacts = relationship(

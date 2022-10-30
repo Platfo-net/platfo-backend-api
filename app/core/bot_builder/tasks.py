@@ -35,7 +35,7 @@ def webhook_proccessor(facebook_webhook_body):
             return None
 
         case WebhookType.MESSAGE_SEEN:
-            # services.postman.campagin_contact.update_statistics(db, contact_igs_id, mid)
+            services.postman.campaign_contact.seen_message(db , mid = instagram_data.mid)
             pass
 
         case WebhookType.COMMENT:
