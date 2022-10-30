@@ -61,7 +61,7 @@ def campaign_terminal():
 def campaign_handler(campaign_id):
     from app.core.config import settings
     db = SessionLocal()
-    campaign = services.postman.campaign.get(db, campaign_id)
+    campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
         db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT)
 
