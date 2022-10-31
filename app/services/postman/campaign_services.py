@@ -1,3 +1,4 @@
+import math
 from typing import List, Optional
 from pydantic import UUID4
 from app import models, schemas, services
@@ -12,6 +13,25 @@ UpdateSchemaType = schemas.postman.CampaignUpdate
 class CampaignServices:
     def __init__(self, model):
         self.model = model
+
+    def get_multi(self, db: Session, *, user_id: UUID4, page: int = 1, page_size: int = 20):
+        campaigns = (
+            db.query(self.model)
+            .filter(self.model.user_id == user_id)
+            .offset(page_size * (page - 1))
+            .limit(page_size)
+            .all()
+        )
+
+        total_count = db.query(self.model).count()
+        total_page = math.ceil(total_count / page_size)
+        pagination = schemas.Pagination(
+            page=page,
+            page_size=page_size,
+            total_pages=total_page,
+            total_count=total_count,
+        )
+        return pagination, campaigns
 
     def create(
             self,

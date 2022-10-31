@@ -261,8 +261,8 @@ def disable_chatflow_for_page(
     connection = connections[0]
     connection_chatflow = (
         db.query(models.ConnectionChatflow)
-            .filter(models.ConnectionChatflow.connection_id == connection.id)
-            .first()
+        .filter(models.ConnectionChatflow.connection_id == connection.id)
+        .first()
     )
     connection_chatflow_status = True if state == "enable" else False
     connection_chatflow.is_active = connection_chatflow_status
