@@ -69,17 +69,12 @@ def get_account(
     Get list of accounts from different platforms
     """
     instagram_page = services.instagram_page.get(db, id)
-    print(instagram_page)
-    print(current_user.id)
-    print(instagram_page.id)
-    print(instagram_page.id == current_user.id)
     if not instagram_page:
-        print("-----------------------------------------")
         raise HTTPException(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
             detail=Error.ACCOUNT_NOT_FOUND["text"],
         )
-    if not instagram_page.user_id != current_user.id:
+    if instagram_page.user_id != current_user.id:
         print("-----------------------------------------")
         
         raise HTTPException(
