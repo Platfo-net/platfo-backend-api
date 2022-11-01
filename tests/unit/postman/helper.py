@@ -30,3 +30,12 @@ def create_campaign(db: Session, user_id, facebook_page_id):
         facebook_page_id=facebook_page_id,
     )
     return services.postman.campaign.create(db, obj_in=campaign_in, user_id=user_id)
+
+
+def create_group(db: Session, user_id, facebook_page_id):
+    group_in = schemas.postman.GroupCreate(
+        name="test_group",
+        description="test_group_description",
+        facebook_page_id=facebook_page_id,
+    )
+    return services.postman.group.create(db, obj_in=group_in, user_id=user_id)
