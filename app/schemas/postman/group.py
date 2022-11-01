@@ -15,7 +15,7 @@ class GroupCreate(GroupBase):
     facebook_page_id: str = None
 
 
-class GroupUpdate(GroupCreate):
+class GroupUpdate(GroupBase):
     pass
 
 
@@ -26,6 +26,12 @@ class GroupCreateApiSchemas(GroupBase):
 
 class GroupUpdateApiSchemas(GroupBase):
     contacts: List[GroupContact]
+
+
+
+class GroupUpdateApiSchemas(GroupBase):
+    contacts: List[GroupContact]
+
 
 
 class Group(GroupBase):
