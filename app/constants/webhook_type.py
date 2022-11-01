@@ -8,4 +8,3 @@ class WebhookType:
     COMMENT = "COMMENT"
     LIVE_COMMENT = "LIVE_COMMENT"
     MESSAGE_SEEN = "MESSAGE_SEEN"
-

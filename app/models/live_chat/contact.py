@@ -34,3 +34,7 @@ class Contact(Base):
     campaign_contacts = relationship(
         "CampaignContact", back_populates="contact", cascade="all,delete"
     )
+
+    group_contacts = relationship(
+        "GroupContact", back_populates="contact", cascade="all,delete"
+    )
