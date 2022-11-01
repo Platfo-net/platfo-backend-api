@@ -1,6 +1,6 @@
-from typing import List, Optional, TypeVar
+from typing import List
 from pydantic import UUID4
-from app import models, schemas, services
+from app import models, schemas
 from sqlalchemy.orm import Session
 
 ModelType = models.postman.CampaignContact
@@ -39,7 +39,7 @@ class CampaignContactServices:
 
         return db.query(models.postman.CampaignContact)\
             .filter(
-                models.postman.CampaignContact.is_sent == False,
+                models.postman.CampaignContact.is_sent == False,  # noqa
                 models.postman.CampaignContact.campaign_id == campaign_id
         ).limit(count).all()
 
@@ -51,7 +51,7 @@ class CampaignContactServices:
     ):
         return db.query(models.postman.CampaignContact) \
             .filter(
-            models.postman.CampaignContact.is_sent == False,
+            models.postman.CampaignContact.is_sent == False,  # noqa
             models.postman.CampaignContact.campaign_id == campaign_id
         ).count()
 

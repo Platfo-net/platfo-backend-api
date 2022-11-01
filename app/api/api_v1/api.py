@@ -12,7 +12,7 @@ from app.api.api_v1.routers import (
     websocket,
     live_chat_api,
     bot_builder_api,
-    postman
+    postman_api
 )
 from fastapi import APIRouter
 
@@ -28,7 +28,7 @@ api_router.include_router(bot_builder_api.router)
 api_router.include_router(webhook.router)
 api_router.include_router(notification.router)
 api_router.include_router(live_chat_api.router)
-api_router.include_router(postman.router)
+api_router.include_router(postman_api.router)
 api_router.include_router(academy.router)
 
 api_router.include_router(file.router)

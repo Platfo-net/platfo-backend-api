@@ -32,8 +32,8 @@ class ContactServices:
     def get_contact_by_igs_id(self, db: Session, *, contact_igs_id: str):
         return (
             db.query(self.model)
-                .filter(self.model.contact_igs_id == contact_igs_id)
-                .first()
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
         )
 
     def set_information(
@@ -45,8 +45,8 @@ class ContactServices:
     ):
         db_obj = (
             db.query(self.model)
-                .filter(self.model.contact_igs_id == contact_igs_id)
-                .first()
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
         )
 
         db_obj.information = information
@@ -65,8 +65,8 @@ class ContactServices:
     ):
         db_obj = (
             db.query(self.model)
-                .filter(self.model.contact_igs_id == contact_igs_id)
-                .first()
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
         )
         db_obj.information.update(data)
         flag_modified(db_obj, "information")
@@ -90,10 +90,10 @@ class ContactServices:
         """
         return (
             db.query(self.model)
-                .filter(self.model.user_page_id == page_id)
-                .offset(skip)
-                .limit(limit)
-                .all()
+            .filter(self.model.user_page_id == page_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
         )
 
     def update_last_message(
@@ -101,8 +101,8 @@ class ContactServices:
     ):
         db_obj = (
             db.query(self.model)
-                .filter(self.model.contact_igs_id == contact_igs_id)
-                .first()
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
         )
 
         db_obj.last_message = last_message
@@ -117,8 +117,8 @@ class ContactServices:
     ):
         db_obj = (
             db.query(self.model)
-                .filter(self.model.contact_igs_id == contact_igs_id)
-                .first()
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
         )
         db_obj.comment_count = db_obj.comment_count + 1
 
@@ -131,8 +131,8 @@ class ContactServices:
     ):
         db_obj = (
             db.query(self.model)
-                .filter(self.model.contact_igs_id == contact_igs_id)
-                .first()
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
         )
         db_obj.live_comment_count = db_obj.live_comment_count + 1
 
@@ -145,8 +145,8 @@ class ContactServices:
     ):
         db_obj = (
             db.query(self.model)
-                .filter(self.model.contact_igs_id == contact_igs_id)
-                .first()
+            .filter(self.model.contact_igs_id == contact_igs_id)
+            .first()
         )
         db_obj.message_count = db_obj.message_count + 1
 

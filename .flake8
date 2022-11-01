@@ -11,6 +11,7 @@ exclude =
         tests,
         webhook.py,
         websocket.py,
-        app/schemas/academy/content.py
-        stress.py
-
+        app/schemas/academy/content.py,
+        stress.py,
+        app/db/base.py,
+        app/core/bot_builder/extra_classes.py,

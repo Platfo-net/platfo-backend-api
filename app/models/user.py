@@ -47,5 +47,4 @@ class User(Base):
     content = relationship("Content", back_populates="user")
 
     campaign = relationship("Campaign", back_populates="user")
-    Group = relationship("Group", back_populates="user")
-
+    group = relationship("Group", back_populates="user")

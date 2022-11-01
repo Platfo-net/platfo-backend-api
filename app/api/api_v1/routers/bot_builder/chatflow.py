@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 from app import models, services, schemas
 from app.api import deps
 from fastapi import APIRouter, Depends, HTTPException, Security

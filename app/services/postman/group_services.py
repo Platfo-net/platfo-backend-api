@@ -1,9 +1,7 @@
 import math
-from typing import List, Optional
 from pydantic import UUID4
-from app import models, schemas, services
+from app import models, schemas
 from sqlalchemy.orm import Session
-from app.constants.campaign_status import CampaignStatus
 
 
 class GroupServices:
@@ -43,7 +41,13 @@ class GroupServices:
         )
         return pagination, groups
 
-    def create(self, db: Session, *, obj_in: schemas.postman.GroupCreate, user_id: UUID4):
+    def create(
+        self,
+        db: Session,
+        *,
+        obj_in: schemas.postman.GroupCreate,
+        user_id: UUID4
+    ):
         db_obj = self.model(
             name=obj_in.name,
             description=obj_in.description,
@@ -55,7 +59,13 @@ class GroupServices:
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: Session, *, db_obj: models.postman.Group, obj_in: schemas.postman.GroupUpdate):
+    def update(
+        self,
+        db: Session,
+        *,
+        db_obj: models.postman.Group,
+        obj_in: schemas.postman.GroupUpdate
+    ):
         db_obj.name = obj_in.name
         db_obj.description = obj_in.description
         db.add(db_obj)

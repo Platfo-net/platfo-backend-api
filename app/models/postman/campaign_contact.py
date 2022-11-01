@@ -18,7 +18,7 @@ class CampaignContact(Base):
     mid = Column(String(255), nullable=True)
 
     reaction = Column(String(100), nullable=True)
-    
+
     contact_id = Column(
         UUID(as_uuid=True),
         ForeignKey("live_chat_contacts.id"),

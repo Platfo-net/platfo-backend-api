@@ -76,7 +76,7 @@ def get_account(
         )
     if instagram_page.user_id != current_user.id:
         print("-----------------------------------------")
-        
+
         raise HTTPException(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
             detail=Error.ACCOUNT_NOT_FOUND["text"],

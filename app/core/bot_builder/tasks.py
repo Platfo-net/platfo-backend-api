@@ -27,7 +27,7 @@ def webhook_proccessor(facebook_webhook_body):
             redis_client,
             db,
             instagram_page_id=instagram_data.recipient_id)
-    except:
+    except Exception:
         return 0
 
     match instagram_data.type:
@@ -54,7 +54,7 @@ def webhook_proccessor(facebook_webhook_body):
                 instagram_page_id=instagram_data.recipient_id,
             )
             return
-        
+
         case WebhookType.DELETE_MESSAGE:
             return services.live_chat.message.remove_message_by_mid(
                 db, mid=instagram_data.mid
@@ -167,7 +167,7 @@ def webhook_proccessor(facebook_webhook_body):
                 payload=instagram_data.payload,
                 user_page_data=user_page_data.to_dict(),
             )
-        except Exception as e:
+        except Exception:
             pass
     return 0
 
@@ -216,8 +216,8 @@ def save_comment(
         return 0
 
     services.live_chat.contact.update_last_comment_count(
-                db,
-                contact_igs_id=contact.contact_igs_id
+        db,
+        contact_igs_id=contact.contact_igs_id
     )
 
 
@@ -264,8 +264,8 @@ def save_live_comment(
         return 0
 
     services.live_chat.contact.update_last_live_comment_count(
-                    db,
-                    contact_igs_id=contact.contact_igs_id
+        db,
+        contact_igs_id=contact.contact_igs_id
     )
 
 
@@ -314,12 +314,13 @@ def save_message(
                 information=information,
             )
         else:
-            services.live_chat.contact.update_last_message_count(db, contact_igs_id=from_page_id)
+            services.live_chat.contact.update_last_message_count(
+                db, contact_igs_id=from_page_id)
 
     if direction == MessageDirection.IN["name"]:
         services.live_chat.contact.update_last_message(
             db, contact_igs_id=from_page_id, last_message=content
-       )
+        )
 
     else:
         services.live_chat.contact.update_last_message(

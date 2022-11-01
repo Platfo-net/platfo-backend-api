@@ -18,6 +18,7 @@ class CampaignUpdate(BaseModel):
     content: dict = None
     is_draft: bool = False
 
+
 class Campaign(BaseModel):
     name: str = None
     description: str = None
@@ -25,7 +26,7 @@ class Campaign(BaseModel):
     status: str = None
     is_draft: bool = False
 
+
 class CampaignListApi(BaseModel):
-    pagination : Pagination
-    items : List[Campaign]
-    
+    pagination: Pagination
+    items: List[Campaign]

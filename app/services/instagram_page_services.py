@@ -29,7 +29,9 @@ class InstagramPageServices(
             db.query(self.model).filter(self.model.instagram_page_id == ig_id).delete()
         )
 
-    def get_by_facebook_page_id(self, db: Session, *, facebook_page_id: str) -> Optional[models.InstagramPage]:
+    def get_by_facebook_page_id(
+        self, db: Session, *, facebook_page_id: str
+    ) -> Optional[models.InstagramPage]:
         return (
             db.query(self.model)
             .filter(self.model.facebook_page_id == facebook_page_id)

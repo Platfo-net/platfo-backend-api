@@ -47,8 +47,10 @@ def campaign_terminal():
         return 0
 
     for campaign in campaigns:
-        unsend_count = services.postman.campaign_contact.get_campaign_unsend_contacts_count(
-            db, campaign_id=campaign.id)
+        unsend_count = services.postman.campaign_contact.\
+            get_campaign_unsend_contacts_count(
+                db, campaign_id=campaign.id
+            )
 
         if unsend_count == 0:
             services.postman.campaign.change_status(

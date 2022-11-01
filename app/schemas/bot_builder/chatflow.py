@@ -30,7 +30,6 @@ class Chatflow(ChatflowBase):
         orm_mode = True
 
 
-
 class ChatflowListApi(BaseModel):
     items: List[Chatflow]
     pagination: Pagination

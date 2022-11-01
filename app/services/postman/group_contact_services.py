@@ -1,16 +1,20 @@
-import math
-from typing import List, Optional
+from typing import List
 from pydantic import UUID4
-from app import models, schemas, services
+from app import models, schemas
 from sqlalchemy.orm import Session
-from app.constants.campaign_status import CampaignStatus
 
 
 class GroupContactServices:
     def __init__(self, model):
         self.model = model
 
-    def create_bulk(self, db: Session, *, objs_in: List[schemas.postman.GroupContact], group_id: UUID4):
+    def create_bulk(
+        self,
+        db: Session,
+        *,
+        objs_in: List[schemas.postman.GroupContact],
+        group_id: UUID4
+    ):
         db_objs = []
         for obj_in in objs_in:
             db_objs.append(

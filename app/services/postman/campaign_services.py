@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional
+from typing import List
 from pydantic import UUID4
 from app import models, schemas, services
 from sqlalchemy.orm import Session
@@ -14,7 +14,14 @@ class CampaignServices:
     def __init__(self, model):
         self.model = model
 
-    def get_multi(self, db: Session, *, user_id: UUID4, page: int = 1, page_size: int = 20):
+    def get_multi(
+        self,
+        db: Session,
+        *,
+        user_id: UUID4,
+        page: int = 1,
+        page_size: int = 20
+    ):
         campaigns = (
             db.query(self.model)
             .filter(self.model.user_id == user_id)
@@ -74,9 +81,9 @@ class CampaignServices:
 
     def get_active_campaigns(self, db: Session) -> List[ModelType]:
         return db.query(models.postman.Campaign).filter(
-            models.postman.Campaign.is_draft == False,
+            models.postman.Campaign.is_draft == False,  # noqa
             models.postman.Campaign.status == CampaignStatus.PENDING,
-            models.postman.Campaign.is_active == False
+            models.postman.Campaign.is_active == False  # noqa
         ).all()
 
     def get(

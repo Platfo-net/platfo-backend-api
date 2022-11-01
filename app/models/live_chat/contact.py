@@ -35,6 +35,6 @@ class Contact(Base):
         "CampaignContact", back_populates="contact", cascade="all,delete"
     )
 
-    group_contacts = relationship(
+    group_contact = relationship(
         "GroupContact", back_populates="contact", cascade="all,delete"
     )

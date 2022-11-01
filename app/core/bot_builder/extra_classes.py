@@ -64,67 +64,67 @@ class InstagramData:
             case {
                 "object": platform,
                 "entry": [
-                        {
-                            "id": recipient_id,
-                            "time": entry_time,
-                            "changes": [
-                                {
-                                    "field": field,
-                                    "value": {
-                                        "from": {
-                                            "id": sender_id,
-                                            "username": username
-                                        },
-                                        "media": {
-                                            "id": media_id,
-                                            "media_product_type": media_product_type
-                                        },
-                                        "id": value_id,
-                                        "parent_id": parent_id,
-                                        "text": comment_detail
-                                    }
+                    {
+                        "id": recipient_id,
+                        "time": entry_time,
+                        "changes": [
+                            {
+                                "field": field,
+                                "value": {
+                                    "from": {
+                                        "id": sender_id,
+                                        "username": username
+                                    },
+                                    "media": {
+                                        "id": media_id,
+                                        "media_product_type": media_product_type
+                                    },
+                                    "id": value_id,
+                                    "parent_id": parent_id,
+                                    "text": comment_detail
                                 }
-                            ]
-                        }
-                    ]
-                }:
-                    self.recipient_id = recipient_id
-                    self.field = field
-                    self.sender_id = sender_id
-                    self.parent_id = parent_id
-                    self.platform = platform
-                    self.username = username
-                    self.media_id = media_id
-                    self.media_product_type = media_product_type
-                    self.comment_detail = comment_detail
-                    self.value_id = value_id
-                    self.type = WebhookType.COMMENT
+                            }
+                        ]
+                    }
+                ]
+            }:
+                self.recipient_id = recipient_id
+                self.field = field
+                self.sender_id = sender_id
+                self.parent_id = parent_id
+                self.platform = platform
+                self.username = username
+                self.media_id = media_id
+                self.media_product_type = media_product_type
+                self.comment_detail = comment_detail
+                self.value_id = value_id
+                self.type = WebhookType.COMMENT
 
             case {
                 "object": platform,
                 "entry": [
-                        {
-                            "id": recipient_id,
-                            "time": entry_time,
-                            "changes": [
-                                {
-                                    "field": field,
-                                    "value": {
-                                        "from": {
-                                            "id": sender_id,
-                                            "username": username
-                                        },
-                                        "media": {
-                                            "id": media_id,
-                                            "media_product_type": media_product_type
-                                        },
-                                        "id": value_id,
-                                        "text": comment_detail
-                                    }
+                    {
+                        "id": recipient_id,
+                        "time": entry_time,
+                        "changes": [
+                            {
+                                "field": field,
+                                "value": {
+                                    "from": {
+                                        "id": sender_id,
+                                        "username": username
+                                    },
+                                    "media": {
+                                        "id": media_id,
+                                        "media_product_type": media_product_type
+                                    },
+                                    "id": value_id,
+                                    "text": comment_detail
                                 }
-                            ]
-                        }
-                    ]
+                            }
+                        ]
+                    }
+                ]
             }:
                 self.recipient_id = recipient_id
                 self.field = field

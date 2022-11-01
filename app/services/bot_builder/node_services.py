@@ -9,6 +9,7 @@ ModelType = models.bot_builder.Node
 CreateSchemaType = schemas.bot_builder.NodeCreate
 UpdateSchemaType = schemas.bot_builder.NodeUpdate
 
+
 class NodeServices(
     BaseServices[
         ModelType,
@@ -100,11 +101,9 @@ class NodeServices(
             db.query(self.model).filter(self.model.chatflow_id == chatflow_id).delete()
         )
 
-    def get_widget_chatflow_id(self, db: Session , * , widget_id: UUID4)-> UUID4:
-        node =  db.query(self.model).filter(self.model.id == id).first()
+    def get_widget_chatflow_id(self, db: Session, *, widget_id: UUID4) -> UUID4:
+        node = db.query(self.model).filter(self.model.id == id).first()
         return node.chatflow_id
 
 
 node = NodeServices(models.bot_builder.Node)
-
-

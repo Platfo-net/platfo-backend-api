@@ -1,13 +1,9 @@
-from turtle import position
-from typing import List
-
 from pydantic import UUID4
 
 from app import services, models, schemas
 from app.api import deps
-from app.constants.errors import Error
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, HTTPException, Security, status
+from fastapi import APIRouter, Depends, Security, status
 from sqlalchemy.orm import Session
 
 
@@ -112,10 +108,14 @@ def update_group(
 ):
 
     db_obj = services.postman.group.get(db, id=id)
-    group = services.postman.group.update(db, db_obj=db_obj, obj_in=schemas.postman.GroupUpdate(
-        name=obj_in.name,
-        description=obj_in.description
-    ))
+    group = services.postman.group.update(
+        db,
+        db_obj=db_obj,
+        obj_in=schemas.postman.GroupUpdate(
+            name=obj_in.name,
+            description=obj_in.description
+        )
+    )
     services.postman.group_contact.remove_bulk(db, group_id=id)
 
     services.postman.group_contact.create_bulk(

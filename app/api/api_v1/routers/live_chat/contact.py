@@ -139,7 +139,7 @@ def get_all_contact_based_on_filters(
 ):
     valid_fields = ["message_count", "comment_count", "live_comment_count"]
     valid_operators = ["lte", "lt", "gt", "gte", "ne", "eq"]
-        
+
     for obj in obj_in:
         if obj.field not in valid_fields or obj.operator not in valid_operators:
             raise HTTPException(

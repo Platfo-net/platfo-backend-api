@@ -1,4 +1,3 @@
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 import json
 
@@ -87,7 +86,8 @@ def get_connection_data(
             return None
         details = []
         for detail in connection.details:
-            details.append(dict(chatflow_id=detail['chatflow_id'], trigger=detail['trigger']))
+            details.append(
+                dict(chatflow_id=detail['chatflow_id'], trigger=detail['trigger']))
 
         data = dict(
             details=details,
