@@ -62,7 +62,7 @@ class ChatflowServices(
     ):
         db_obj = db.query(self.model).filter(
             self.model.id == id).first()
-        # connections = db.query(models.Connection)\
+        # connections = db.query(models.Connection)\  # todo ask alireza about it
         #     .filter(models.Connection.user_id == db_obj.user_id).all()
         # for connection in connections:
         #     for detail in connection.details:

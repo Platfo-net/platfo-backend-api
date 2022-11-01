@@ -14,7 +14,7 @@ def test_create_instagram_page(db: Session):
         facebook_page_id=facebook_page_id,
         facebook_page_token=facebook_page_token,
         instagram_page_id=instagram_page_id,
-        instagram_username="test",
+        username="test",
     )
     instagram_page = services.instagram_page.create(
         db, obj_in=instagram_page_in)
@@ -37,7 +37,7 @@ def test_get_instagram_page(db: Session):
         facebook_page_id=facebook_page_id,
         facebook_page_token=facebook_page_token,
         instagram_page_id=instagram_page_id,
-        instagram_username="test",
+        username="test",
     )
     instagram_page = services.instagram_page.create(
         db, obj_in=instagram_page_in)

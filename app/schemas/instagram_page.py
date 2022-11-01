@@ -7,8 +7,8 @@ class InstagramPageBase(BaseModel):
     facebook_page_id: Optional[str] = None
     facebook_page_token: str = None
     instagram_page_id: Optional[str] = None
-    instagram_username: Optional[str] = None
-    instagram_profile_picture_url: Optional[str] = None
+    username: Optional[str] = None
+    profile_picture_url: Optional[str] = None
     information: Optional[dict] = None
     facebook_user_long_lived_token: Optional[str] = None
     facebook_user_id: Optional[str] = None

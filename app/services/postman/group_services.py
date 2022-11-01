@@ -1,4 +1,6 @@
 import math
+from typing import List
+
 from pydantic import UUID4
 from app import models, schemas
 from sqlalchemy.orm import Session
@@ -46,7 +48,7 @@ class GroupServices:
         db: Session,
         *,
         obj_in: schemas.postman.GroupCreate,
-        user_id: UUID4
+        user_id: UUID4,
     ):
         db_obj = self.model(
             name=obj_in.name,
@@ -64,10 +66,13 @@ class GroupServices:
         db: Session,
         *,
         db_obj: models.postman.Group,
-        obj_in: schemas.postman.GroupUpdate
+        obj_in: schemas.postman.GroupUpdate,
+        user_id: UUID4,
     ):
+
         db_obj.name = obj_in.name
         db_obj.description = obj_in.description
+        db_obj.user_id = user_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -76,9 +81,14 @@ class GroupServices:
     def get(self, db: Session, id: UUID4):
         return db.query(self.model).filter(self.model.id == id).first()
 
-    def remove(self, db: Session, id: UUID4):
+    def remove(self, db: Session, id: UUID4, user_id: UUID4):
+        db.query(self.model).filter(
+            self.model.user_id == user_id,
+            self.model.id == id
+        ).first()
+
         db_obj = self.get(db, id)
-        db.remove(db_obj)
+        db.delete(db_obj)
         db.commit()
         return
 

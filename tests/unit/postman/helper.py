@@ -15,7 +15,7 @@ def create_instagram_account(db: Session, page_id):
         facebook_page_id=facebook_page_id,
         facebook_page_token=facebook_page_token,
         instagram_page_id=instagram_page_id,
-        instagram_username="test",
+        username="test",
     )
     instagram_page = services.instagram_page.create(
         db, obj_in=instagram_page_in)

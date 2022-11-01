@@ -41,8 +41,8 @@ def get_accounts_list(
     accounts = [
         schemas.Account(
             id=item.id,
-            username=item.instagram_username,
-            profile_image=item.instagram_profile_picture_url,
+            username=item.username,
+            profile_image=item.profile_picture_url,
             platform=Platform.INSTAGRAM["name"],
             page_id=item.facebook_page_id,
         )

@@ -56,9 +56,9 @@ def get_list_of_connections(
             schemas.Connection(
                 account=schemas.Account(
                     id=account.id,
-                    username=account.instagram_username,
+                    username=account.username,
                     platform="Instagram",
-                    profile_image=account.instagram_profile_picture_url,
+                    profile_image=account.profile_picture_url,
                     page_id=account.facebook_page_id,
                 ),
                 **jsonable_encoder(connection),

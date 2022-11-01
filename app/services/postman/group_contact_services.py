@@ -27,11 +27,9 @@ class GroupContactServices:
 
         db.add_all(db_objs)
         db.commit()
-        db.refresh(db_objs)
 
     def remove_bulk(self, db: Session, *, group_id=UUID4):
-        db.query(self.model).filter(self.model.group_id == group_id).delete()
-        return
+        return db.query(self.model).filter(self.model.group_id == group_id).delete()
 
 
 group_contact = GroupContactServices(models.postman.GroupContact)
