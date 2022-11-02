@@ -5,6 +5,9 @@ from app import models, schemas, services
 from sqlalchemy.orm import Session
 from app.constants.campaign_status import CampaignStatus
 
+from sqlalchemy import and_
+
+from fastapi.encoders import jsonable_encoder
 ModelType = models.postman.Campaign
 CreateSchemaType = schemas.postman.CampaignCreate
 UpdateSchemaType = schemas.postman.CampaignUpdate
@@ -18,19 +21,26 @@ class CampaignServices:
         self,
         db: Session,
         *,
+        facebook_page_id: str = None,
         user_id: UUID4,
         page: int = 1,
         page_size: int = 20
     ):
+        condition = [self.model.self.model.user_id == user_id]
+        if facebook_page_id:
+            condition.append(self.model.self.model.facebook_page_id == facebook_page_id)
+
         campaigns = (
             db.query(self.model)
-            .filter(self.model.user_id == user_id)
+            .filter(and_(*condition))
             .offset(page_size * (page - 1))
             .limit(page_size)
             .all()
         )
 
-        total_count = db.query(self.model).count()
+        total_count = db.query(self.model).filter(
+            and_(*condition)
+        ).count()
         total_page = math.ceil(total_count / page_size)
         pagination = schemas.Pagination(
             page=page,
@@ -47,12 +57,8 @@ class CampaignServices:
             obj_in: CreateSchemaType,
             user_id: UUID4
     ) -> ModelType:
-        db_obj = self.model(
-            name=obj_in.name,
-            description=obj_in.description,
-            facebook_page_id=obj_in.facebook_page_id,
-            user_id=user_id
-        )
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -151,6 +157,14 @@ class CampaignServices:
     ):
         return db.query(models.postman.Campaign)\
             .filter(models.postman.Campaign.id == campaign_id).delete()
+
+    def set_group_name(self, db: Session, *, campaign_id: UUID4, group_name: str) -> None:
+        db_obj = db.query(self.model).filter(id == campaign_id).first()
+        db_obj.group_name = group_name
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return
 
 
 campaign = CampaignServices(models.postman.Campaign)
