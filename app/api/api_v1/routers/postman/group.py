@@ -3,7 +3,7 @@ from pydantic import UUID4
 from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security, status
+from fastapi import APIRouter, Depends, Security, status, HTTPException
 from sqlalchemy.orm import Session
 
 
@@ -27,7 +27,12 @@ def get_groups(
 ):
 
     pagination, items = services.postman.group.get_multi(
-        db, facebook_page_id=facebook_page_id, page=page, page_size=page_size)
+        db,
+        facebook_page_id=facebook_page_id,
+        page=page,
+        page_size=page_size,
+        user_id=current_user.id
+    )
 
     groups = []
 
@@ -65,8 +70,9 @@ def create_group(
             description=obj_in.description,
             facebook_page_id=obj_in.facebook_page_id
         ),
-        user_id=current_user.id
+        user_id=current_user.id,
     )
+
     services.postman.group_contact.create_bulk(
         db, objs_in=obj_in.contacts, group_id=db_obj.id)
 
@@ -87,7 +93,7 @@ def remove_group(
     ),
 ):
     services.postman.group_contact.remove_bulk(db, group_id=id)
-    services.postman.group.remove(db, id=id)
+    services.postman.group.remove(db, id=id, user_id=current_user.id)
 
     return
 
@@ -111,10 +117,11 @@ def update_group(
     group = services.postman.group.update(
         db,
         db_obj=db_obj,
+        user_id=current_user.id,
         obj_in=schemas.postman.GroupUpdate(
             name=obj_in.name,
             description=obj_in.description
-        )
+        ),
     )
     services.postman.group_contact.remove_bulk(db, group_id=id)
 

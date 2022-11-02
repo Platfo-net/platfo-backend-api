@@ -101,8 +101,8 @@ def connect_instagram_page(
                     facebook_page_id=page.get("id", None),
                     facebook_page_token=page.get("access_token", None),
                     instagram_page_id=instagram_page_id,
-                    instagram_username=page_details.get("username", None),
-                    instagram_profile_picture_url=page_details.get(
+                    username=page_details.get("username", None),
+                    profile_picture_url=page_details.get(
                         "profile_picture_url", None
                     ),  # noqa
                     information=dict(

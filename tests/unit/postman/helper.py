@@ -15,7 +15,7 @@ def create_instagram_account(db: Session, page_id):
         facebook_page_id=facebook_page_id,
         facebook_page_token=facebook_page_token,
         instagram_page_id=instagram_page_id,
-        instagram_username="test",
+        username="test",
     )
     instagram_page = services.instagram_page.create(
         db, obj_in=instagram_page_in)
@@ -30,3 +30,12 @@ def create_campaign(db: Session, user_id, facebook_page_id):
         facebook_page_id=facebook_page_id,
     )
     return services.postman.campaign.create(db, obj_in=campaign_in, user_id=user_id)
+
+
+def create_group(db: Session, user_id, facebook_page_id):
+    group_in = schemas.postman.GroupCreate(
+        name="test_group",
+        description="test_group_description",
+        facebook_page_id=facebook_page_id,
+    )
+    return services.postman.group.create(db, obj_in=group_in, user_id=user_id)

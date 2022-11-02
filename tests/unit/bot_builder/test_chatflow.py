@@ -12,9 +12,9 @@ def test_get_user_chatflows(db: Session):
     )
 
     assert isinstance(chatflow, models.bot_builder.Chatflow)
-    assert len(chatflow_list) == 1
-    assert type(chatflow_list) == list
-    assert chatflow_list[0].user_id == chatflow.user_id
+    assert len(chatflow_list) == 2
+    assert type(chatflow_list[1]) == list
+    assert chatflow_list[1][0].user_id == chatflow.user_id
 
 
 def test_create_chatflow(db: Session):
