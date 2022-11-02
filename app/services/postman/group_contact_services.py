@@ -28,6 +28,8 @@ class GroupContactServices:
         db.add_all(db_objs)
         db.commit()
 
+        return db_objs
+
     def remove_bulk(self, db: Session, *, group_id=UUID4):
         return db.query(self.model).filter(self.model.group_id == group_id).delete()
 
