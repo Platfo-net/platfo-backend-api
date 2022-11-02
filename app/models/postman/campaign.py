@@ -19,6 +19,8 @@ class Campaign(Base):
     name = Column(String(255), nullable=True)
     description = Column(String(255), nullable=True)
 
+    group_name = Column(String(255), nullable=True)
+
     is_draft = Column(Boolean(), default=True)
 
     facebook_page_id = Column(String(100), nullable=True)

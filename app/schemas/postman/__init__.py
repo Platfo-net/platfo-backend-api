@@ -1,4 +1,4 @@
-from .campaign import CampaignCreate, CampaignUpdate, Campaign, CampaignListApi
+from .campaign import CampaignCreate, CampaignUpdate, Campaign, CampaignListApi , CampaignCreateApiSchema
 
 from .campaign_contact import CampaignContactCreate, CampaignContactUpdate
 
