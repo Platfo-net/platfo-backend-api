@@ -132,3 +132,15 @@ class Error:
         "status_code": 404,
         "code": 91,
     }
+
+    CAMPAIGN_NOT_FOUND = {
+        "text": "Campaign not found!",
+        "status_code": 404,
+        "code": 92,
+    }
+
+    CAMPAIGN_ALREADY_ACTIVE = {
+        "text": "Campaign already activated!",
+        "status_code": 400,
+        "code": 93,
+    }

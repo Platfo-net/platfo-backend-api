@@ -26,9 +26,9 @@ class CampaignServices:
         page: int = 1,
         page_size: int = 20
     ):
-        condition = [self.model.self.model.user_id == user_id]
+        condition = [self.model.user_id == user_id]
         if facebook_page_id:
-            condition.append(self.model.self.model.facebook_page_id == facebook_page_id)
+            condition.append(self.model.facebook_page_id == facebook_page_id)
 
         campaigns = (
             db.query(self.model)
@@ -59,6 +59,7 @@ class CampaignServices:
     ) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)
+        db_obj.user_id = user_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -75,7 +76,6 @@ class CampaignServices:
 
         db_obj.name = obj_in.name
         db_obj.description = obj_in.description
-        db_obj.facebook_page_id = obj_in.facebook_page_id
         db_obj.content = obj_in.content
         db_obj.is_draft = obj_in.is_draft
         db_obj.user_id = user_id
@@ -100,6 +100,30 @@ class CampaignServices:
 
         return db.query(models.postman.Campaign)\
             .filter(models.postman.Campaign.id == campaign_id).first()
+
+    def get_by_detail(
+        self,
+        db: Session,
+        campaign_id: UUID4
+    ):
+        campaign = db.query(models.postman.Campaign)\
+            .filter(models.postman.Campaign.id == campaign_id).first()
+
+        campaign_contacts = db.query(models.postman.CampaignContact)\
+            .filter(models.postman.CampaignContact.campaign_id == campaign.id).all()
+
+        sent_count = services.postman.campaign_contact.get_all_sent_count(
+            db,
+            campaign_id=campaign.id
+        )
+        seen_count = services.postman.campaign_contact.get_all_seen_count(
+            db,
+            campaign_id=campaign.id
+        )
+        total_contact_count = db.query(models.postman.CampaignContact)\
+            .filter(models.postman.CampaignContact.campaign_id == campaign.id).count()
+
+        return campaign, campaign_contacts, sent_count, seen_count, total_contact_count
 
     def change_status(
         self,
@@ -158,8 +182,15 @@ class CampaignServices:
         return db.query(models.postman.Campaign)\
             .filter(models.postman.Campaign.id == campaign_id).delete()
 
-    def set_group_name(self, db: Session, *, campaign_id: UUID4, group_name: str) -> None:
-        db_obj = db.query(self.model).filter(id == campaign_id).first()
+    def set_group_name(
+            self,
+            db: Session,
+            *,
+            campaign_id: UUID4,
+            group_name: str
+    ) -> None:
+
+        db_obj = db.query(self.model).filter(self.model.id == campaign_id).first()
         db_obj.group_name = group_name
         db.add(db_obj)
         db.commit()

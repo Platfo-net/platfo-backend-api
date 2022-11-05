@@ -33,5 +33,13 @@ class GroupContactServices:
     def remove_bulk(self, db: Session, *, group_id=UUID4):
         return db.query(self.model).filter(self.model.group_id == group_id).delete()
 
+    def get_by_group(
+            self,
+            db: Session,
+            *,
+            group_id: UUID4
+    ):
+        return db.query(self.model).filter(self.model.group_id == group_id).all()
+
 
 group_contact = GroupContactServices(models.postman.GroupContact)

@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 
 from app.schemas.pagination import Pagination
-from.campaign_contact import CampaignContactCreate
+from app.schemas.account import Account
 
 
 class CampaignCreate(BaseModel):
@@ -11,13 +11,12 @@ class CampaignCreate(BaseModel):
     description: str = None
     facebook_page_id: str = None
     is_draft: bool = True
-    content: dict = {}
+    content: dict = None
 
 
 class CampaignUpdate(BaseModel):
     name: str = None
     description: str = None
-    facebook_page_id: str = None
     content: dict = None
     is_draft: bool = False
 
@@ -29,6 +28,18 @@ class Campaign(BaseModel):
     status: str = None
     is_draft: bool = False
     group_name: str = None
+
+
+class CampaignDetail(Campaign):
+    id: UUID4
+    facebook_page_id: str = None
+    account: Account
+    content: dict = None
+    user_id: UUID4
+    contacts: List = None
+    sent_count: int = 0
+    seen_count: int = 0
+    total_contact_count: int = 0
 
 
 class CampaignListApi(BaseModel):
@@ -43,4 +54,3 @@ class CampaignCreateApiSchema(BaseModel):
     group_id: str = None
     content: dict = None
     is_draft: bool = True
-    contacts: List[CampaignContactCreate]
