@@ -6,6 +6,8 @@ from app import services, models, schemas
 from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.constants.search_operator import SearchOperator
+
 from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 
@@ -62,43 +64,6 @@ def get_contact(
     )
 
 
-@router.get("/page/{page_id}", response_model=List[schemas.live_chat.Contact])
-def get_pages_contacts(
-    *,
-    db: Session = Depends(deps.get_db),
-    page_id: str,
-    skip: int = 0,
-    limit: int = 100,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
-):
-    contacts = services.live_chat.contact.get_pages_contacts(
-        db, page_id=page_id, skip=skip, limit=limit
-    )
-
-    return [
-        schemas.live_chat.Contact(
-            contact_igs_id=contact.contact_igs_id,
-            user_page_id=contact.user_page_id,
-            id=contact.id,
-            last_message_at=contact.last_message_at,
-            information=contact.information,
-            last_message=contact.last_message,
-            user_id=contact.user_id,
-            live_comment_count=contact.live_comment_count,
-            comment_count=contact.comment_count,
-            message_count=contact.message_count
-        )
-        for contact in contacts
-        if len(contacts)
-    ]
-
-
 @router.put("/{page_id}")
 def update_page_contacts_information(
     *,
@@ -122,12 +87,13 @@ def update_page_contacts_information(
     return contacts
 
 
-@router.post("/search/all")
+@router.post("/all/{facebook_page_id}")
 def get_all_contact_based_on_filters(
     *,
     page: int = 1,
     page_size: int = 20,
     db: Session = Depends(deps.get_db),
+    facebook_page_id: str,
     obj_in: List[schemas.live_chat.SearchItem],
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -137,9 +103,37 @@ def get_all_contact_based_on_filters(
         ],
     ),
 ):
-    valid_fields = ["message_count", "comment_count", "live_comment_count"]
-    valid_operators = ["lte", "lt", "gt", "gte", "ne", "eq"]
+    """
+    Searching in contacts based on filters
+    Args:
+        
+        Valid Operators: 
+        
+            LTE: Less than or equal to
 
+            GTE: Greater than or equal to
+
+            LT: Less than
+
+            GT: Greater than
+
+            NE: Not equal to
+
+            EQ: Equal to
+
+
+
+        Valid Field Name:
+
+            message_count
+
+            comment_count
+
+            live_comment_count
+    """
+
+    valid_fields = ["message_count", "comment_count", "live_comment_count"]
+    valid_operators = SearchOperator.items
     for obj in obj_in:
         if obj.field not in valid_fields or obj.operator not in valid_operators:
             raise HTTPException(
@@ -147,7 +141,8 @@ def get_all_contact_based_on_filters(
                 detail=Error.INVALID_FIELDS_OPERATORS["text"],
             )
     contacts, pagination = services.live_chat.contact. \
-        search(db=db, obj_in=obj_in, page=page, page_size=page_size)
+        get_multi(db=db, facebook_page_id=facebook_page_id,
+                  obj_in=obj_in, page=page, page_size=page_size)
 
     contacts = [schemas.live_chat.Contact(
         contact_igs_id=contact.contact_igs_id,

@@ -20,7 +20,9 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    pass
+    phone_number: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 
 class UserUpdatePassword(BaseModel):

@@ -67,7 +67,7 @@ class Error:
 
     NO_CHATFLOW_WITH_THE_GIVEN_ID = {
         "text": "There is no chatflow with the given id.",
-        "status_code": 409,
+        "status_code": 404,
         "code": 14,
     }
     NO_NODE_WITH_THE_GIVEN_ID = {
