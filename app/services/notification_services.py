@@ -70,7 +70,7 @@ class NotificationServices(
                 title=notification.title,
                 description=notification.description,
                 created_at=notification.created_at,
-                is_readed=True if notification.id in readed_notifications else False,
+                is_read=True if notification.id in readed_notifications else False,
             )
             for notification in notifications
         ], pagination

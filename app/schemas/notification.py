@@ -28,7 +28,7 @@ class Notification(NotificationBase):
 class NotificationListItem(NotificationBase):
     id: UUID4
     created_at: Optional[datetime] = None
-    is_readed: Optional[bool] = True
+    is_read: Optional[bool] = True
 
     class Config:
         orm_mode = True

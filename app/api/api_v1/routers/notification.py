@@ -29,7 +29,7 @@ def get_notifications_list(
     """
     Get list of notifications based on role,
     if role is user, it will return status of notification
-    else status will be always is_readed=true
+    else status will be always is_read=true
 
     Args:
         page (int, optional): current page. Defaults to 1.

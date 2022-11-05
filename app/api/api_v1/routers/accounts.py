@@ -75,14 +75,19 @@ def get_account(
             detail=Error.ACCOUNT_NOT_FOUND["text"],
         )
     if instagram_page.user_id != current_user.id:
-        print("-----------------------------------------")
 
         raise HTTPException(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
             detail=Error.ACCOUNT_NOT_FOUND["text"],
         )
-
-    return instagram_page
+    return schemas.AccountDetail(
+        id=instagram_page.id,
+        facebook_page_id=instagram_page.facebook_page_id,
+        username=instagram_page.username,
+        profile_image=instagram_page.profile_picture_url,
+        information=instagram_page.information,
+        platform=Platform.INSTAGRAM["name"]
+    )
 
 
 @router.delete("/{id}")

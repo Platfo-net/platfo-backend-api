@@ -75,27 +75,6 @@ class ContactServices:
         db.refresh(db_obj)
         return db_obj
 
-    def get_pages_contacts(
-            self, db: Session, *, page_id: str, skip: int = 0, limit: int = 100
-    ):
-        """Return an specific instagram page's contacts
-
-        Args:
-            page_id (str): Id of a instagram's facebook page
-            skip (int, optional):
-            limit (int, optional):
-
-        Returns:
-            List of contacts
-        """
-        return (
-            db.query(self.model)
-            .filter(self.model.user_page_id == page_id)
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
-
     def update_last_message(
             self, db: Session, *, contact_igs_id: str, last_message: dict
     ):
@@ -175,10 +154,11 @@ class ContactServices:
                             filter(models.live_chat.Contact.id == contact_id).first())
         return contacts
 
-    def search(
+    def get_multi(
             self,
             db: Session,
             *,
+            facebook_page_id: str = None,
             obj_in: List[schemas.live_chat.SearchItem],
             page: int = 1,
             page_size: int = 20
@@ -191,31 +171,30 @@ class ContactServices:
             total_pages=total_pages,
             total_count=total_count,
         )
-        filters = []
-        for obj in obj_in:
-            print(obj)
-            match obj.operator:
-                case "eq":
-                    filters.append(
-                        getattr(models.live_chat.Contact, obj.field) == obj.value)
-                case "ne":
-                    filters.append(
-                        getattr(models.live_chat.Contact, obj.field) != obj.value)
-                case "gt":
-                    filters.append(
-                        getattr(models.live_chat.Contact, obj.field) > obj.value)
+        filters = [models.live_chat.Contact.user_page_id == facebook_page_id]
+        if len(obj_in):
+            for obj in obj_in:
+                match obj.operator:
+                    case "EQ":
+                        filters.append(
+                            getattr(models.live_chat.Contact, obj.field) == obj.value)
+                    case "NE":
+                        filters.append(
+                            getattr(models.live_chat.Contact, obj.field) != obj.value)
+                    case "GT":
+                        filters.append(
+                            getattr(models.live_chat.Contact, obj.field) > obj.value)
+                    case "LT":
+                        filters.append(
+                            getattr(models.live_chat.Contact, obj.field) < obj.value)
 
-                case "lt":
-                    filters.append(
-                        getattr(models.live_chat.Contact, obj.field) < obj.value)
+                    case "GTE":
+                        filters.append(
+                            getattr(models.live_chat.Contact, obj.field) >= obj.value)
 
-                case "gte":
-                    filters.append(
-                        getattr(models.live_chat.Contact, obj.field) >= obj.value)
-
-                case "lte":
-                    filters.append(
-                        getattr(models.live_chat.Contact, obj.field) <= obj.value)
+                    case "LTE":
+                        filters.append(
+                            getattr(models.live_chat.Contact, obj.field) <= obj.value)
 
         return db.query(self.model).filter(and_(*filters)).all(), pagination
 
