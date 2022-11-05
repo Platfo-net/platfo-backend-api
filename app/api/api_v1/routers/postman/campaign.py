@@ -52,33 +52,7 @@ def get_all_user_campaigns(
     )
 
 
-@router.get("/{id}")
-def change_campaign_is_draft(
-    *,
-    db: Session = Depends(deps.get_db),
-    id: UUID4,
-    is_draft: bool,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
-        ],
-    ),
-):
-    campaign = services.postman.campaign.get(db, campaign_id=id)
-    if not campaign:
-        raise HTTPException(
-            status_code=Error.CAMPAIGN_NOT_FOUND['status'],
-            detail=Error.CAMPAIGN_NOT_FOUND['text']
-        )
 
-    services.postman.campaign.change_is_draft(
-        db,
-        campaign_id=campaign.id,
-        is_draft=is_draft
-    )
-    return
 
 
 @router.post("/", response_model=schemas.postman.Campaign)
@@ -217,3 +191,30 @@ def get_campaign_by_id(
     )
 
 
+@router.get("/activate/{id}")
+def change_campaign_is_draft(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    is_draft: bool,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+    ),
+):
+    campaign = services.postman.campaign.get(db, campaign_id=id)
+    if not campaign:
+        raise HTTPException(
+            status_code=Error.CAMPAIGN_NOT_FOUND['status'],
+            detail=Error.CAMPAIGN_NOT_FOUND['text']
+        )
+
+    services.postman.campaign.change_is_draft(
+        db,
+        campaign_id=campaign.id,
+        is_draft=is_draft
+    )
+    return
