@@ -52,7 +52,7 @@ class CategoryListItem(BaseModel):
 
 
 class CategoryListApi(BaseModel):
-    categories: List[CategoryListItem]
+    items: List[CategoryListItem]
     pagination: Pagination
 
     class Config:

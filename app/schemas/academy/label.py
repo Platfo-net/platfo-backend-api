@@ -6,7 +6,7 @@ from app.schemas.pagination import Pagination
 
 
 class LabelBase(BaseModel):
-    label_name: Optional[str] = None
+    name: Optional[str] = None
 
 
 class LabelCreate(LabelBase):
@@ -32,13 +32,13 @@ class LabelInDB(LabelBase):
 
 
 class LabelListApi(BaseModel):
-    labels: List[LabelInDB]
+    items: List[LabelInDB]
     pagination: Pagination
 
 
 class LabelListItemContent(BaseModel):
     id: UUID4
-    label_name: Optional[str] = None
+    name: Optional[str] = None
 
     class Config:
         orm_mode = True

@@ -48,7 +48,7 @@ def create_category(db: Session):
 
 def create_label(db: Session):
     label_in = schemas.academy.LabelCreate(
-        label_name='label1'
+        name='label1'
     )
 
     return services.academy.label.create(db=db, obj_in=label_in)
