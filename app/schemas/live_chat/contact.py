@@ -23,7 +23,7 @@ class Contact(ContactBase):
     id: UUID4
     last_message_at: datetime
     information: Optional[dict] = None
-    last_message: dict
+    last_message: dict = None
 
 
 class ProfileCreate(BaseModel):
