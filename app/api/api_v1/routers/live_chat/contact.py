@@ -132,17 +132,15 @@ def get_all_contact_based_on_filters(
             live_comment_count
     """
 
-    valid_fields = ["message_count", "comment_count", "live_comment_count"]
-    valid_operators = SearchOperator.items
-    for obj in obj_in:
-        if obj.field not in valid_fields or obj.operator not in valid_operators:
-            raise HTTPException(
-                status_code=Error.INVALID_FIELDS_OPERATORS["status_code"],
-                detail=Error.INVALID_FIELDS_OPERATORS["text"],
-            )
     contacts, pagination = services.live_chat.contact. \
         get_multi(db=db, facebook_page_id=facebook_page_id,
                   obj_in=obj_in, page=page, page_size=page_size)
+
+    if not contacts:
+        raise HTTPException(
+            status_code=Error.CONTACT_NOT_FOUND['status_code'],
+            detail=Error.CONTACT_NOT_FOUND['text']
+        )
 
     contacts = [schemas.live_chat.Contact(
         contact_igs_id=contact.contact_igs_id,
