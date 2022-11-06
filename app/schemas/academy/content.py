@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, Field
 
 from app.schemas.academy.category import CategoryContent, CategoryListItemContent
 from app.schemas.academy.label import LabelListItemContent, LabelContent
@@ -143,7 +143,7 @@ class ContentDetail(BaseModel):
                             {
                                 "label": {
                                     "id": "d390bf06-eb67-4fd1-ae64-945b3895d378",
-                                    "label_name": "tagzzz",
+                                    "name": "tagzzz",
                                 }
                             }
                         ],
@@ -169,15 +169,16 @@ class ContentLabel(BaseModel):
 
 class ContentListItem(ContentBaseList):
     id: UUID4
-    content_categories: Optional[List[ContentCategory]]
-    content_labels: Optional[List[ContentLabel]]
+    content_categories: Optional[List[ContentCategory]] = Field(alias="categories")
+    content_labels: Optional[List[ContentLabel]] = Field(alias="labels")
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 
 class ContentListApi(BaseModel):
-    contents: List[ContentListItem]
+    items: List[ContentListItem]
     pagination: Pagination
 
     class Config:
@@ -214,7 +215,7 @@ class ContentListApi(BaseModel):
                             {
                                 "label": {
                                     "id": "d390bf06-eb67-4fd1-ae64-945b3895d378",
-                                    "label_name": "tagzzz",
+                                    "name": "tagzzz",
                                 }
                             }
                         ],
