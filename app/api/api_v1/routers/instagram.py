@@ -135,7 +135,7 @@ def get_page_data_by_instagram_page_id(
 
 @router.get("/get_by_facebook_page_id/{facebook_page_id}",
             response_model=schemas.InstagramPage)
-def get_page_data_by_page_id(
+def get_page_data_by_facebook_page_id(
         *,
         db: Session = Depends(deps.get_db),
         facebook_page_id: str
