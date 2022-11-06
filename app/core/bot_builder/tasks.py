@@ -14,6 +14,7 @@ from app.constants.trigger import Trigger
 from app.constants.application import Application
 from celery import shared_task
 
+
 @shared_task
 def webhook_proccessor(facebook_webhook_body):
     db = SessionLocal()

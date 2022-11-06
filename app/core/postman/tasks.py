@@ -9,6 +9,7 @@ from app.core.bot_builder.extra_classes import UserData
 from app.constants.widget_type import WidgetType
 from celery import shared_task
 
+
 @shared_task
 def save_message(
     from_page_id: str = None,
@@ -41,6 +42,7 @@ def save_message(
 def campaign_terminal():
     db = SessionLocal()
     campaigns = services.postman.campaign.get_active_campaigns(db)
+    print('campaignsssssss', campaigns)
 
     if len(campaigns) == 0:
         return 0
@@ -50,6 +52,7 @@ def campaign_terminal():
             get_campaign_unsend_contacts_count(
                 db, campaign_id=campaign.id
             )
+        print('unsend_counttttttt', unsend_count)
 
         if unsend_count == 0:
             services.postman.campaign.change_status(
@@ -64,16 +67,20 @@ def campaign_handler(campaign_id):
     from app.core.config import settings
     db = SessionLocal()
     campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
+    print('campaign isssssss', campaign)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
         db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT)
+    print('campaign_contacts isssssss', campaign_contacts)
 
     services.postman.campaign.change_activity(
         db, campaign_id=campaign_id, is_active=True)
 
     content = campaign.content
+    print('content issssssss', content)
 
     instagram_page = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=campaign.facebook_page_id)
+    print('instagram_page issssssssssss 111111111111111111', instagram_page)
 
     instagram_page = UserData(
         user_id=instagram_page.user_id,
@@ -81,9 +88,10 @@ def campaign_handler(campaign_id):
         facebook_page_id=instagram_page.facebook_page_id,
         account_id=instagram_page.id
     )
+    print('instagram_page issssssssssss 2222222222222222', instagram_page)
     sent_contacts = []
     for contact in campaign_contacts:
-
+        print('omd to foooooooooorrrrrrrrrrrr')
         mid = None
         if content["widget_type"] == WidgetType.TEXT["name"]:
             for _ in range(3):
@@ -98,6 +106,7 @@ def campaign_handler(campaign_id):
                     break
 
         if content["widget_type"] == WidgetType.MENU["name"]:
+            print('omd to sharte menuuuuuuuuuuuuuuuuuu')
             for _ in range(3):
                 mid = graph_api.send_menu(
                     data=content,
@@ -119,7 +128,7 @@ def campaign_handler(campaign_id):
             )
     services.postman.campaign_contact.change_send_status_bulk(
         db=db, campaign_contacts_in=sent_contacts, is_sent=True)
-
+    print('residdddddddeeeeeeeee yeki ba akharrrrrrrr')
     services.postman.campaign.change_activity(
         db, campaign_id=campaign_id, is_active=False)
 

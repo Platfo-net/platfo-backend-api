@@ -1,13 +1,11 @@
-from typing import Any, List
+from typing import Any
 from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
 from app.constants.errors import Error
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from sqlalchemy.orm import Session
-from pydantic.types import UUID4
-from app.core.cache import get_password_data
-from redis.client import Redis
+
 
 router = APIRouter(prefix="/user", tags=["User"])
 
