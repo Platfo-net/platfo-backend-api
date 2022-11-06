@@ -1,16 +1,15 @@
 
 from typing import Any
 from app.constants.message_direction import MessageDirection
-from app.core.celery import celery
 from app import schemas, services
 from app.db.session import SessionLocal
 from app.constants.campaign_status import CampaignStatus
 from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.bot_builder.extra_classes import UserData
 from app.constants.widget_type import WidgetType
+from celery import shared_task
 
-
-@celery.task
+@shared_task
 def save_message(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -38,7 +37,7 @@ def save_message(
     return report
 
 
-@celery.task
+@shared_task
 def campaign_terminal():
     db = SessionLocal()
     campaigns = services.postman.campaign.get_active_campaigns(db)
@@ -60,7 +59,7 @@ def campaign_terminal():
     return 0
 
 
-@celery.task
+@shared_task
 def campaign_handler(campaign_id):
     from app.core.config import settings
     db = SessionLocal()

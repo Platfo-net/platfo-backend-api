@@ -5,7 +5,6 @@ from app.api import deps
 from app.constants.impression import Impression
 from app.db.session import SessionLocal
 from app.core import cache
-from app.core.celery import celery
 from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.bot_builder.extra_classes import InstagramData
 from app.constants.message_direction import MessageDirection
@@ -13,9 +12,9 @@ from app.constants.widget_type import WidgetType
 from app.constants.webhook_type import WebhookType
 from app.constants.trigger import Trigger
 from app.constants.application import Application
+from celery import shared_task
 
-
-@celery.task
+@shared_task
 def webhook_proccessor(facebook_webhook_body):
     db = SessionLocal()
     redis_client = deps.get_redis_client()
@@ -172,7 +171,7 @@ def webhook_proccessor(facebook_webhook_body):
     return 0
 
 
-@celery.task
+@shared_task
 def save_comment(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -221,7 +220,7 @@ def save_comment(
     )
 
 
-@celery.task
+@shared_task
 def save_live_comment(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -269,7 +268,7 @@ def save_live_comment(
     )
 
 
-@celery.task
+@shared_task
 def save_message(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -341,7 +340,7 @@ def save_message(
     return report
 
 
-@celery.task
+@shared_task
 def send_widget(
     widget: dict,
     quick_replies: List[dict],
