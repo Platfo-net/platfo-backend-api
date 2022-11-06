@@ -29,7 +29,6 @@ def test_update_campaign_information(db: Session):
     obj_in = schemas.postman.CampaignUpdate(
         name="test_campaign_updated",
         description="test_campaign_description_updated",
-        facebook_page_id="14",
         content=content,
         is_draft=False,
     )

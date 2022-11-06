@@ -65,6 +65,26 @@ class CampaignContactServices:
             filter(models.postman.CampaignContact.campaign_id
                    == campaign_id).count()
 
+    def get_all_sent_count(
+            self,
+            db: Session,
+            *,
+            campaign_id: UUID4
+    ):
+        return db.query(models.postman.CampaignContact).\
+            filter(models.postman.CampaignContact.campaign_id == campaign_id,
+                   models.postman.CampaignContact.is_sent == True).count()
+
+    def get_all_seen_count(
+            self,
+            db: Session,
+            *,
+            campaign_id: UUID4
+    ):
+        return db.query(models.postman.CampaignContact).\
+            filter(models.postman.CampaignContact.campaign_id == campaign_id,
+                   models.postman.CampaignContact.is_seen == True).count()
+
     def delete_campaign_contact(
             self,
             db: Session,
@@ -105,6 +125,9 @@ class CampaignContactServices:
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+
+    def remove_bulk(self, db: Session, *, campaign_id=UUID4):
+        return db.query(self.model).filter(self.model.campaign_id == campaign_id).delete()
 
 
 campaign_contact = CampaignContactServices(models.postman.CampaignContact)

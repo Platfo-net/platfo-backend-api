@@ -140,6 +140,7 @@ class ContactServices:
         for contact in contacts:
             db.delete(contact)
         db.commit()
+
         return
 
     def get_bulk(
@@ -148,11 +149,7 @@ class ContactServices:
         *,
         contacts_id: List[UUID4]
     ):
-        contacts = []
-        for contact_id in contacts_id:
-            contacts.append(db.query(models.live_chat.Contact).
-                            filter(models.live_chat.Contact.id == contact_id).first())
-        return contacts
+        return db.query(self.model).filter(models.live_chat.Contact.id.in_(contacts_id)).all()
 
     def get_multi(
             self,
