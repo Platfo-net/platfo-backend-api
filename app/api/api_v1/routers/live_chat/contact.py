@@ -106,9 +106,7 @@ def get_all_contact_based_on_filters(
     """
     Searching in contacts based on filters
     Args:
-        
-        Valid Operators: 
-        
+        Valid Operators:
             LTE: Less than or equal to
 
             GTE: Greater than or equal to
@@ -120,7 +118,6 @@ def get_all_contact_based_on_filters(
             NE: Not equal to
 
             EQ: Equal to
-
 
 
         Valid Field Name:

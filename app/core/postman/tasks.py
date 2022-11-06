@@ -9,6 +9,7 @@ from app.core.bot_builder.extra_classes import UserData
 from app.constants.widget_type import WidgetType
 from celery import shared_task
 
+
 @shared_task
 def save_message(
     from_page_id: str = None,
@@ -50,7 +51,6 @@ def campaign_terminal():
             get_campaign_unsend_contacts_count(
                 db, campaign_id=campaign.id
             )
-
         if unsend_count == 0:
             services.postman.campaign.change_status(
                 db, campaign_id=campaign.id, status=CampaignStatus.DONE)
@@ -83,7 +83,6 @@ def campaign_handler(campaign_id):
     )
     sent_contacts = []
     for contact in campaign_contacts:
-
         mid = None
         if content["widget_type"] == WidgetType.TEXT["name"]:
             for _ in range(3):
