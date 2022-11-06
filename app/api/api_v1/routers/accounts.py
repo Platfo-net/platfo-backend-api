@@ -52,7 +52,7 @@ def get_accounts_list(
     return accounts
 
 
-@router.get("/{id}", response_model=schemas.InstagramPage)
+@router.get("/{id}", response_model=schemas.AccountDetail)
 def get_account(
     *,
     db: Session = Depends(deps.get_db),
@@ -67,6 +67,12 @@ def get_account(
 ) -> Any:
     """
     Get list of accounts from different platforms
+
+
+    Args:
+
+        Id:
+            id of an account
     """
     instagram_page = services.instagram_page.get(db, id)
     if not instagram_page:

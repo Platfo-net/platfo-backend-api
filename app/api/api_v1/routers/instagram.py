@@ -128,13 +128,19 @@ def get_page_data_by_instagram_page_id(
     *, db: Session = Depends(deps.get_db), instagram_page_id: str
 ):
     obj_instagram = services.instagram_page.get_page_by_ig_id(
-        db, ig_id=instagram_page_id
+        db, instagram_page_id=instagram_page_id
     )
     return obj_instagram
 
 
-@router.get("/get_by_page_id/{page_id}", response_model=schemas.InstagramPage)
-def get_page_data_by_page_id(*, db: Session = Depends(deps.get_db), page_id: str):
-    obj_instagram = services.instagram_page.get_by_page_id(db, page_id=page_id)
+@router.get("/get_by_facebook_page_id/{facebook_page_id}",
+            response_model=schemas.InstagramPage)
+def get_page_data_by_page_id(
+        *,
+        db: Session = Depends(deps.get_db),
+        facebook_page_id: str
+):
+    obj_instagram = services.instagram_page.\
+        get_by_facebook_page_id(db, facebook_page_id=facebook_page_id)
 
     return obj_instagram

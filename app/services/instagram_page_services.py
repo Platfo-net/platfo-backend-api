@@ -38,5 +38,14 @@ class InstagramPageServices(
             .first()
         )
 
+    def get_page_by_ig_id(
+        self, db: Session, *, instagram_page_id: str
+    ) -> Optional[models.InstagramPage]:
+        return (
+            db.query(self.model)
+            .filter(self.model.instagram_page_id == instagram_page_id)
+            .first()
+        )
+
 
 instagram_page = InstagramPageServices(models.InstagramPage)
