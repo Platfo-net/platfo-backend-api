@@ -7,28 +7,28 @@ class SearchOperator:
     }
 
     GTE = {
-        "name": "GT",
-        "description": "Greater than"
+        "name": "GTE",
+        "description": "Greater than or equal to"
     }
 
     LT = {
-        "name": "GT",
-        "description": "Greater than"
+        "name": "LT",
+        "description": "Less than"
     }
 
     LTE = {
-        "name": "GT",
-        "description": "Greater than"
+        "name": "LTE",
+        "description": "Less than or equal to"
     }
 
     EQ = {
-        "name": "GT",
-        "description": "Greater than"
+        "name": "EQ",
+        "description": "Equal to"
     }
 
     NEQ = {
-        "name": "GT",
-        "description": "Greater than"
+        "name": "NEQ",
+        "description": "Not equal to"
     }
 
     items = [GT["name"], GTE["name"], LT["name"], LTE["name"], EQ["name"], NEQ["name"]]
