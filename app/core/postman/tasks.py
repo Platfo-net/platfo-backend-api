@@ -9,6 +9,7 @@ from app.core.bot_builder.extra_classes import UserData
 from app.constants.widget_type import WidgetType
 from celery import shared_task
 
+
 @shared_task
 def save_message(
     from_page_id: str = None,
@@ -19,10 +20,15 @@ def save_message(
 ):
 
     db = SessionLocal()
+    if content["widget_type"] == WidgetType.MENU["name"]:
+        last_message = content["title"]
+    elif content["widget_type"] == WidgetType.TEXT["name"]:
+        last_message = content["message"]
+    else:
+        last_message = ""
     services.live_chat.contact.update_last_message(
-        db, contact_igs_id=to_page_id, last_message=content
+        db, contact_igs_id=to_page_id, last_message=last_message
     )
-
     report = services.live_chat.message.create(
         db,
         obj_in=schemas.live_chat.MessageCreate(

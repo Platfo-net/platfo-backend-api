@@ -23,7 +23,7 @@ class Contact(ContactBase):
     id: UUID4
     last_message_at: datetime
     information: Optional[dict] = None
-    last_message: dict = None
+    last_message: str = None
 
 
 class ProfileCreate(BaseModel):
@@ -43,5 +43,5 @@ class SearchItem(BaseModel):
 
 
 class ContactList(BaseModel):
-    contacts: List[Contact]
+    items: List[Contact]
     pagination: Pagination

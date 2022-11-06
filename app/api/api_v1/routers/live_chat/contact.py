@@ -155,4 +155,4 @@ def get_all_contact_based_on_filters(
         message_count=contact.message_count
     ) for contact in contacts if len(contacts)]
 
-    return schemas.live_chat.ContactList(contacts=contacts, pagination=pagination)
+    return schemas.live_chat.ContactList(items=contacts, pagination=pagination)

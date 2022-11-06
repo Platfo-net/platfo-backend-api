@@ -16,7 +16,7 @@ class Contact(Base):
     contact_igs_id = Column(String(64), nullable=True)
     user_page_id = Column(String(64), nullable=True)
 
-    last_message = Column(JSON, nullable=True)
+    last_message = Column(String(1024), nullable=True)
     last_message_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     information = Column(JSON, nullable=True)

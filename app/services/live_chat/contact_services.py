@@ -76,7 +76,7 @@ class ContactServices:
         return db_obj
 
     def update_last_message(
-            self, db: Session, *, contact_igs_id: str, last_message: dict
+            self, db: Session, *, contact_igs_id: str, last_message: str
     ):
         db_obj = (
             db.query(self.model)

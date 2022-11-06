@@ -116,7 +116,7 @@ def upgrade():
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('contact_igs_id', sa.String(length=64), nullable=True),
     sa.Column('user_page_id', sa.String(length=64), nullable=True),
-    sa.Column('last_message', sa.JSON(), nullable=True),
+    sa.Column('last_message', sa.String(length=1024), nullable=True),
     sa.Column('last_message_at', sa.DateTime(), nullable=True),
     sa.Column('information', sa.JSON(), nullable=True),
     sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True),
