@@ -1,9 +1,11 @@
+from app.core.postman import tasks
 import sqltap
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
+from app.core.celery import celery
 
 from prometheus_fastapi_instrumentator import Instrumentator
 

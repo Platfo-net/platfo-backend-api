@@ -69,19 +69,33 @@ services:
       - api
       - redis
 
-  # celery-flower:
-  #   image: "botinow-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-flower"
-  #   command: celery -A app.core.celery.celery flower --port=5555
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "5555:5555"
-  #   depends_on:
-  #     - db
-  #     - api-1
-  #     - redis
+  celery-beat:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-beat"
+    command: celery -A app.core.celery.celery beat
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - api
+      - redis
+
+  celery-flower:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-flower"
+    command: celery -A app.core.celery.celery flower --port=5555
+    volumes:
+      - .:/app
+    ports:
+      - "5566:5555"
+    depends_on:
+      - db
+      - api
+      - redis
+
+  
 
 volumes:
   postgres-data:
