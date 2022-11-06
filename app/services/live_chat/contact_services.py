@@ -149,7 +149,8 @@ class ContactServices:
         *,
         contacts_id: List[UUID4]
     ):
-        return db.query(self.model).filter(models.live_chat.Contact.id.in_(contacts_id)).all()
+        return db.query(self.model)\
+            .filter(models.live_chat.Contact.id.in_(contacts_id)).all()
 
     def get_multi(
             self,

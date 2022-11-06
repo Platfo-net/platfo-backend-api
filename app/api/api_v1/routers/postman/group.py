@@ -3,7 +3,7 @@ from pydantic import UUID4
 from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security, status, HTTPException
+from fastapi import APIRouter, Depends, Security, status
 from sqlalchemy.orm import Session
 
 

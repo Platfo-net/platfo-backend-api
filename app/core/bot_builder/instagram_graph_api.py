@@ -78,7 +78,12 @@ class InstagramGraphApi:
         return mid
 
     def send_menu(
-        self, data, quick_replies, from_id: str, to_id: str, page_access_token: str
+        self,
+        data,
+        from_id: str,
+        to_id: str,
+        page_access_token: str,
+        quick_replies: list = []
     ):
         choices = data.get('choices', [])
         buttons = []
@@ -114,6 +119,7 @@ class InstagramGraphApi:
             )
 
             body["elements"][0]["image_url"] = image_url
+
         url = "{}/{}/{}/messages".format(
             settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION, from_id
         )

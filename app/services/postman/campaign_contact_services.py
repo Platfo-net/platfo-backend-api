@@ -73,7 +73,7 @@ class CampaignContactServices:
     ):
         return db.query(models.postman.CampaignContact).\
             filter(models.postman.CampaignContact.campaign_id == campaign_id,
-                   models.postman.CampaignContact.is_sent == True).count()
+                   models.postman.CampaignContact.is_sent is True).count()
 
     def get_all_seen_count(
             self,
@@ -83,7 +83,7 @@ class CampaignContactServices:
     ):
         return db.query(models.postman.CampaignContact).\
             filter(models.postman.CampaignContact.campaign_id == campaign_id,
-                   models.postman.CampaignContact.is_seen == True).count()
+                   models.postman.CampaignContact.is_seen is True).count()
 
     def delete_campaign_contact(
             self,

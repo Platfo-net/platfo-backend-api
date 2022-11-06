@@ -32,7 +32,7 @@ class LabelServices(
         obj_in: schemas.academy.LabelCreate,
     ):
         db_obj = self.model(
-            label_name=obj_in.label_name,
+            name=obj_in.name,
         )
         db.add(db_obj)
         db.commit()

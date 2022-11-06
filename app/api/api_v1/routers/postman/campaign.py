@@ -52,9 +52,6 @@ def get_all_user_campaigns(
     )
 
 
-
-
-
 @router.post("/", response_model=schemas.postman.Campaign)
 def create_campaign(
     *,
@@ -76,7 +73,11 @@ def create_campaign(
         content=obj_in.content,
     )
 
-    campaign = services.postman.campaign.create(db, obj_in=campaign_obj, user_id=current_user.id)
+    campaign = services.postman.campaign.create(
+        db,
+        obj_in=campaign_obj,
+        user_id=current_user.id
+    )
 
     group = services.postman.group.get(db, id=obj_in.group_id)
     services.postman.campaign.set_group_name(
@@ -89,7 +90,11 @@ def create_campaign(
             contact_id=ele.contact_id,
             contact_igs_id=ele.contact_igs_id
         ))
-    services.postman.campaign_contact.create_bulk(db, campaign_id=campaign.id, contacts=contacts)
+    services.postman.campaign_contact.create_bulk(
+        db,
+        campaign_id=campaign.id,
+        contacts=contacts
+    )
 
     return schemas.postman.Campaign(
         name=campaign.name,

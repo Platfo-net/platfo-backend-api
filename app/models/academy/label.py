@@ -12,6 +12,6 @@ class Label(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
-    label_name = Column(String(255), nullable=True)
+    name = Column(String(255), nullable=True)
 
     content_labels = relationship("ContentLabel", back_populates="label")

@@ -1,5 +1,4 @@
 import math
-from typing import List
 
 from pydantic import UUID4
 from app import models, schemas

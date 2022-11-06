@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     S3_CHATFLOW_MEDIA_BUCKET: str
 
     CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT: int = 150
-    CAMPAIGN_PERIOD_INTERVAL_MINUTES : int = 15
+    CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

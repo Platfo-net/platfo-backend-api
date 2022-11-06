@@ -22,7 +22,7 @@ def get_labels_list(
         page_size=page_size,
     )
 
-    return schemas.academy.LabelListApi(labels=labels, pagination=pagination)
+    return schemas.academy.LabelListApi(items=labels, pagination=pagination)
 
 
 @router.post("/label/create", response_model=schemas.academy.Label)
@@ -91,7 +91,7 @@ def delete_label(
 def get_categories_list(
     *, db: Session = Depends(deps.get_db), page: int = 1, page_size: int = 20
 ):
-    categories, pagination = services.academy.category.get_multi(
+    items, pagination = services.academy.category.get_multi(
         db,
         page=page,
         page_size=page_size,
@@ -100,18 +100,18 @@ def get_categories_list(
     def categories_to_child_categories(n=None):
         categories_list = [
             {
-                "id": category.id,
-                "title": category.title,
-                "children": categories_to_child_categories(category.id),
-                "parent_id": category.parent_id,
+                "id": item.id,
+                "title": item.title,
+                "children": categories_to_child_categories(item.id),
+                "parent_id": item.parent_id,
             }
-            for category in categories
-            if category.parent_id == n
+            for item in items
+            if item.parent_id == n
         ]
         return categories_list
 
     categories_tree = schemas.academy.CategoryListApi(
-        categories=categories_to_child_categories(), pagination=pagination
+        items=categories_to_child_categories(), pagination=pagination
     )
     return categories_tree
 
@@ -188,7 +188,7 @@ def search_content_by_category(
         labels_list_id: List[UUID4] = Query(None),
         db: Session = Depends(deps.get_db),
 ):
-    contents, pagination = services.academy.content.search(
+    items, pagination = services.academy.content.search(
         db,
         categories_list=categories_list_id,
         labels_list=labels_list_id,
@@ -198,12 +198,12 @@ def search_content_by_category(
 
     if not categories_list_id and not labels_list_id:
         content_list = schemas.academy.ContentListApi(
-            contents=contents, pagination=pagination
+            items=items, pagination=pagination
         )
         return content_list
 
     res = []
-    for content in contents:
+    for content in items:
         res.append(schemas.academy.ContentSearch(
             contents=content, pagination=pagination)
         )
