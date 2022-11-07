@@ -201,7 +201,7 @@ class InstagramGraphApi:
                 username=data.get('username', None),
                 profile_image=data.get('profile_pic', None),
                 name=data.get('name', None),
-                follower_count=data.get('follower_count', None),
+                followers_count=data.get('follower_count', None),
                 is_verified_user=data.get('is_verified_user', None),
                 is_user_follow_business=data.get('is_user_follow_business', None),
                 is_business_follow_user=data.get('is_business_follow_user', None),
