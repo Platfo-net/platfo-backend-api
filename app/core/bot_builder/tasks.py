@@ -12,10 +12,10 @@ from app.constants.widget_type import WidgetType
 from app.constants.webhook_type import WebhookType
 from app.constants.trigger import Trigger
 from app.constants.application import Application
-from celery import shared_task
+from app.core.celery import celery
 
 
-@shared_task
+@celery.task
 def webhook_proccessor(facebook_webhook_body):
     db = SessionLocal()
     redis_client = deps.get_redis_client()
@@ -172,7 +172,7 @@ def webhook_proccessor(facebook_webhook_body):
     return 0
 
 
-@shared_task
+@celery.task
 def save_comment(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -221,7 +221,7 @@ def save_comment(
     )
 
 
-@shared_task
+@celery.task
 def save_live_comment(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -269,7 +269,7 @@ def save_live_comment(
     )
 
 
-@shared_task
+@celery.task
 def save_message(
     from_page_id: str = None,
     to_page_id: str = None,
@@ -341,7 +341,7 @@ def save_message(
     return report
 
 
-@shared_task
+@celery.task
 def send_widget(
     widget: dict,
     quick_replies: List[dict],
