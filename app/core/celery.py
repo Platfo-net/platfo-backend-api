@@ -11,9 +11,9 @@ celery.conf.broker_url = settings.CELERY_URI
 celery.conf.result_backend = settings.CELERY_URI
 
 
-@celery.on_after_configure.connect
-def schedule_task(sender, **kwargs):
-    sender.add_periodic_task(
-        settings.CAMPAIGN_PERIOD_INTERVAL_MINUTES * 60,
-        campaign_terminal.s(), expires=10
-        )
+# @celery.on_after_configure.connect
+# def schedule_task(sender, **kwargs):
+#     sender.add_periodic_task(
+#         settings.CAMPAIGN_PERIOD_INTERVAL_MINUTES * 60,
+#         campaign_terminal.s(), expires=10
+#         )
