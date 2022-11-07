@@ -149,7 +149,8 @@ def get_all_contact_based_on_filters(
         user_id=contact.user_id,
         live_comment_count=contact.live_comment_count,
         comment_count=contact.comment_count,
-        message_count=contact.message_count
+        message_count=contact.message_count,
+        first_impression=contact.first_impression
     ) for contact in contacts if len(contacts)]
 
     return schemas.live_chat.ContactList(items=contacts, pagination=pagination)
