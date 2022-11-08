@@ -318,13 +318,11 @@ def save_message(
                 db, contact_igs_id=from_page_id)
 
     if direction == MessageDirection.IN["name"]:
-        print('vared if shod')
         services.live_chat.contact.update_last_message(
             db, contact_igs_id=from_page_id, last_message=str(content)
         )
 
     else:
-        print('vared else shod')
         services.live_chat.contact.update_last_message(
             db, contact_igs_id=to_page_id, last_message=str(content)
         )
