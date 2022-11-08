@@ -314,26 +314,20 @@ def save_message(
                 information=information,
             )
         else:
-            print('vared else shod')
             services.live_chat.contact.update_last_message_count(
                 db, contact_igs_id=from_page_id)
-            services.live_chat.contact.update_last_message(
-                db, contact_igs_id=from_page_id, last_message=str(content)
-            )
 
     if direction == MessageDirection.IN["name"]:
         print('vared if shod')
         services.live_chat.contact.update_last_message(
             db, contact_igs_id=from_page_id, last_message=str(content)
         )
-        services.live_chat.contact.update_last_message_count(
-            db, contact_igs_id=from_page_id)
 
-    # else:
-    #     print('vared else shod')
-    #     services.live_chat.contact.update_last_message(
-    #         db, contact_igs_id=to_page_id, last_message=str(content)
-    #     )
+    else:
+        print('vared else shod')
+        services.live_chat.contact.update_last_message(
+            db, contact_igs_id=to_page_id, last_message=str(content)
+        )
 
     report = services.live_chat.message.create(
         db,
