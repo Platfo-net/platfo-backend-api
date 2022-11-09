@@ -57,7 +57,7 @@ def get_contact(
         id=contact.id,
         last_message_at=contact.last_message_at,
         information=contact.information,
-        last_message=contact.last_message,
+        last_message=str(contact.last_message),
         live_comment_count=contact.live_comment_count,
         comment_count=contact.comment_count,
         message_count=contact.message_count
