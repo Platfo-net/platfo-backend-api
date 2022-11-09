@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT: int = 150
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15
 
+    SAMPLE_FACEBOOK_PAGE_ID: int = 20
+    SAMPLE_CONTACT_IGS_ID: int = 10
+
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):

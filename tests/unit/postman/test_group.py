@@ -6,7 +6,7 @@ from tests.unit.postman import helper
 
 def test_create_group(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
-    account = helper.create_instagram_account(db, page_id="1")
+    account = helper.create_instagram_account(db, facebook_page_id="1")
     group = helper.create_group(db, user.id, account.facebook_page_id)
 
     assert isinstance(group, models.postman.Group)
@@ -16,7 +16,7 @@ def test_create_group(db: Session):
 
 def test_update_group(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
-    account = helper.create_instagram_account(db, page_id="2")
+    account = helper.create_instagram_account(db, facebook_page_id="2")
     db_obj = helper.create_group(db, user.id, account.facebook_page_id)
 
     obj_in = schemas.postman.GroupUpdate(
@@ -39,7 +39,7 @@ def test_update_group(db: Session):
 
 def test_delete_content(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
-    account = helper.create_instagram_account(db, page_id="2")
+    account = helper.create_instagram_account(db, facebook_page_id="2")
     group = helper.create_group(
         db,
         user_id=user.id,
@@ -55,7 +55,7 @@ def test_delete_content(db: Session):
 
 def test_get_groups(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
-    account = helper.create_instagram_account(db, page_id="4")
+    account = helper.create_instagram_account(db, facebook_page_id="4")
     group = helper.create_group(
         db=db,
         user_id=user.id,
