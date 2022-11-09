@@ -64,3 +64,20 @@ def test_get_groups(
     assert len(json_response["items"]) >= 1
     assert json_response["items"][0]["name"] == "group_test"
     assert json_response["pagination"]
+
+
+def test_delete_group(
+        client: TestClient,
+        db: Session
+):
+    headers = get_user_token_headers(client)
+    user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
+    account = helper.create_instagram_account(db, facebook_page_id="4")
+    group = helper.create_group(db, user.id, account.facebook_page_id)
+
+    r = client.delete(
+        f"{settings.API_V1_STR}/postman/group/{group.id}", headers=headers
+    )
+
+    assert r.status_code == 200
+    assert r.json() is None

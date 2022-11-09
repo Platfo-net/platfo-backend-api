@@ -79,7 +79,7 @@ def create_group(
     return schemas.postman.Group(name=db_obj.name, description=db_obj.description)
 
 
-@router.delete("/{id}", status_code=status.HTTP_201_CREATED)
+@router.delete("/{id}")
 def remove_group(
     *,
     db: Session = Depends(deps.get_db),

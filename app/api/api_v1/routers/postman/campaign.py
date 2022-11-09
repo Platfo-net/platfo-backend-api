@@ -146,7 +146,7 @@ def update_campaign(
     )
 
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=schemas.postman.CampaignDetail)
 def get_campaign_by_id(
         *,
         db: Session = Depends(deps.get_db),
