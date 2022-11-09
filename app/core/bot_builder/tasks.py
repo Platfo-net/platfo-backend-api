@@ -204,10 +204,15 @@ def save_comment(
         except Exception:
             return 0
 
-        information = graph_api.get_contact_information_from_facebook(
-            contact_igs_id=new_contact.contact_igs_id,
-            page_access_token=user_data["facebook_page_token"],
-        )
+        information = {
+            "username": "unknown",
+            "profile_image": "404",
+            "name": "unknown",
+            "followers_count": 0,
+            "is_verified_user": False,
+            "is_user_follow_business": False,
+            "is_business_follow_user": False
+        }
         services.live_chat.contact.set_information(
             db,
             contact_igs_id=from_page_id,
