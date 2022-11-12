@@ -1,40 +1,37 @@
+from app.schemas import academy, bot_builder, live_chat, postman
 from .role import Role, RoleCreate, RoleInDB, RoleUpdate
 from .token import Token, TokenPayload, Login, LoginForm
-from .user import User, UserCreate, \
-    UserInDB, UserUpdate, UserRegister,\
-    UserBase, ForgetPassword, ChangePassword
+from .user import (
+    User,
+    UserCreate,
+    UserInDB,
+    UserUpdate,
+    UserRegister,
+    UserBase,
+    ForgetPassword,
+    ChangePassword,
+    UserUpdatePassword,
+)
+
+from .instagram_page import (
+    InstagramPageCreate,
+    InstagramPageUpdate,
+    InstagramPage,
+    ConnectPage
+)
 
 
-from .facebook_account import FacebookAccount,\
-    FacebookAccountCreate, FacebookAccountUpdate
+from .account import Account, AccountDetail
 
-from .instagram_page import InstagramPageCreate,\
-    InstagramPageUpdate, InstagramPage, ConnectPage
+from .connection import Connection, ConnectionCreate, ConnectionUpdate
 
-from .plan import PlanCreate, PlanUpdate, Plan
+from .pagination import Pagination
+from .notification import (
+    Notification,
+    NotificationCreate,
+    NotificationUpdate,
+    NotificationListApi,
+    NotificationListItem,
+)
 
-from .transaction import TransactionCreate,\
-    Transaction, TransactionUpdate
-
-
-from .account import Account
-
-from .connection import Connection, ConnectionCreate, \
-    ConnectionUpdate, ConnectionInDB
-from .trigger import TriggerCreate, TriggerUpdate, Trigger
-
-
-from .connection_chatflow import ConnectionChatflow, ConnectionChatflowCreate
-
-
-from .chatflow import Chatflow, ChatflowCreate, ChatflowUpdate
-
-
-from .node import NodeCreate, NodeUpdate,\
-    Node, MessageWidgetCreate, MenuWidgetCreate, FullNodeCreate
-
-
-
-from .contact import Contact , ContactCreate
-
-from .message import MessageCreate , Message
+from .file import FileUpload

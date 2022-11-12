@@ -1,3 +1,17 @@
 [flake8]
-max-line-length = 79
-exclude = .git,__pycache__,__init__.py,.mypy_cache,.pytest_cache,venv,alembic,tests,webhook.py
+max-line-length = 90
+exclude = 
+        .git,
+        __pycache__,
+        __init__.py,
+        .mypy_cache,
+        .pytest_cache,
+        venv,
+        alembic,
+        tests,
+        webhook.py,
+        websocket.py,
+        app/schemas/academy/content.py,
+        stress.py,
+        app/db/base.py,
+        app/core/bot_builder/extra_classes.py,

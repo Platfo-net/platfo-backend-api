@@ -1,0 +1,5 @@
+class FirstImpression:
+    MESSAGE = "MESSAGE"
+    COMMENT = "COMMENT"
+    LIVE_COMMENT = "LIVE_COMMENT"
+    STORY_REPLY = "STORY_REPLY"

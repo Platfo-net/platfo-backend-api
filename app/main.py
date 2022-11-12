@@ -1,19 +1,20 @@
+import sqltap
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
 
-from debug_toolbar.middleware import DebugToolbarMiddleware
-
-settings.ENVIRONMENT
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    debug=False if settings.ENVIRONMENT == "prod" else True
+    debug=False if settings.ENVIRONMENT == "prod" else True,
+    docs_url=None if settings.ENVIRONMENT == "prod" else "/docs",
+    redoc_url=None if settings.ENVIRONMENT == "prod" else "/redoc",
 )
-import sqltap
+
 
 @app.middleware("http")
 async def add_sql_tap(request: Request, call_next):
@@ -22,7 +23,6 @@ async def add_sql_tap(request: Request, call_next):
     statistics = profiler.collect()
     sqltap.report(statistics, "report.txt", report_format="text")
     return response
-
 
 
 app.add_middleware(
@@ -39,3 +39,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/health", tags=["health-check"])
 async def health():
     return {"message": "ok!"}
+
+
+if not settings.ENVIRONMENT == "test":
+    Instrumentator().instrument(app).expose(app)

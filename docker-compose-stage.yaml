@@ -1,0 +1,123 @@
+x-api-common:
+  &api-common
+  build:
+    context: .
+    args:
+      - ENVIRONMENT=${ENVIRONMENT}
+  image: "botinow-backend-app"
+  volumes:
+    - .:/app
+  command: /app/runserver.sh
+  env_file:
+    - .env
+  depends_on:
+    - db
+    - minio
+  restart: unless-stopped
+
+x-celery-worker-common:
+  &celery-worker-common
+  image: "botinow-backend-app"
+  build:
+    context: .
+    args:
+      - ENVIRONMENT=${ENVIRONMENT}
+  volumes:
+    - .:/app
+  depends_on:
+    - redis
+
+services:
+  api-1:
+    <<: *api-common
+    container_name: "${APP_NAME}-api-1"
+    ports:
+      - "${API_PORT_FIRST_THREE_DIGITS}1:8000"
+
+  api-2:
+    <<: *api-common
+    container_name: "${APP_NAME}-api-2"
+    ports:
+      - "${API_PORT_FIRST_THREE_DIGITS}2:8000"
+
+  api-3:
+    <<: *api-common
+    container_name: "${APP_NAME}-api-3"
+    ports:
+      - "${API_PORT_FIRST_THREE_DIGITS}3:8000"
+
+  api-4:
+    <<: *api-common
+    container_name: "${APP_NAME}-api-4"
+    ports:
+      - "${API_PORT_FIRST_THREE_DIGITS}4:8000"
+  db:
+    container_name: "${APP_NAME}-database"
+    image: postgres:14
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    container_name: "${APP_NAME}-redis"
+    restart: unless-stopped
+    image: redis:6.2.7
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $REDIS_PASSWORD --appendonly yes"
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+  minio:
+    image: bitnami/minio:2022.8.26
+    ports:
+      - '${S3_PORT}:9000'
+      - '${MINIO_ADMIN_PANEL_PORT}:9001'
+    volumes:
+      - minio-data:/data
+
+    environment:
+      MINIO_ROOT_USER: "${S3_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
+
+  celery-worker-1:
+    <<: *celery-worker-common
+    container_name: "${APP_NAME}-celery-worker-1"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-1
+
+  celery-worker-2:
+    <<: *celery-worker-common
+    container_name: "${APP_NAME}-celery-worker-2"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-2
+
+  celery-worker-3:
+    <<: *celery-worker-common
+    container_name: "${APP_NAME}-celery-worker-3"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-3
+
+  celery-worker-4:
+    <<: *celery-worker-common
+    container_name: "${APP_NAME}-celery-worker-4"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-4
+
+  celery-flower:
+    image: "botinow-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-flower"
+    command: celery -A app.core.celery.celery flower --port=5555
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:

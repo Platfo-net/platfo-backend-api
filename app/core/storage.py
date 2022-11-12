@@ -1,4 +1,3 @@
-
 from minio import Minio
 from minio.error import S3Error
 
@@ -30,21 +29,9 @@ def get_object_url(object_name, bucket_name):
         if object_name in ["", None]:
             return ""
         url = client.get_presigned_url(
-            "GET",
-            bucket_name,
-            object_name,
-            expires=timedelta(days=1)
+            "GET", bucket_name, object_name, expires=timedelta(days=1)
         )
         return url
-    except S3Error as exc:
-        raise Exception(f"Error happen on getting object: {exc}")
-
-
-def get_object_file_from_s3(object_name, bucket_name):
-    try:
-        client = create_client()
-        file = client.get_object(bucket_name, object_name)
-        return file
     except S3Error as exc:
         raise Exception(f"Error happen on getting object: {exc}")
 
@@ -52,10 +39,10 @@ def get_object_file_from_s3(object_name, bucket_name):
 def create_client():
     try:
         client = Minio(
-            f"{settings.S3_HOST}:{settings.S3_API_PORT}",
+            f"{settings.S3_HOST}:{settings.S3_PORT}",
             access_key=settings.S3_ROOT_USER,
             secret_key=settings.S3_ROOT_PASSWORD,
-            secure=False
+            secure=False,
         )
         return client
     except S3Error as exc:

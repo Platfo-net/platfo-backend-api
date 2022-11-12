@@ -20,7 +20,9 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    pass
+    phone_number: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 
 class UserUpdatePassword(BaseModel):
@@ -58,4 +60,4 @@ class ForgetPassword(BaseModel):
 class ChangePassword(BaseModel):
     email: EmailStr
     code: str
-    new_password: str
+    password: str

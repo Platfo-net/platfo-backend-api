@@ -6,5 +6,14 @@ class Account(BaseModel):
     id: UUID4
     username: Optional[str] = None
     platform: Optional[str] = None
-    profile_image_url: Optional[str] = None
+    profile_image: Optional[str] = None
     page_id: Optional[str] = None
+
+
+class AccountDetail(BaseModel):
+    id: UUID4
+    username: Optional[str] = None
+    platform: Optional[str] = None
+    profile_image: Optional[str] = None
+    facebook_page_id: Optional[str] = None
+    information: Optional[dict] = None

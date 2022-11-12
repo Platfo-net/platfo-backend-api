@@ -13,9 +13,7 @@ class User(Base):
     """
 
     __tablename__ = "users"
-    id = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
     email = Column(String(100), unique=True, nullable=False)
@@ -37,12 +35,16 @@ class User(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
-    role = relationship(
-        "Role", back_populates="user")
+    role = relationship("Role", back_populates="user")
 
-    facebook_account = relationship("FacebookAccount", back_populates="user")
-    transaction = relationship("Transaction", back_populates="user")
-    credit = relationship("Credit", back_populates="user")
+    instagram_page = relationship("InstagramPage", back_populates="user")
 
     connection = relationship("Connection", back_populates="user")
     chatflow = relationship("Chatflow", back_populates="user")
+
+    notification_user = relationship("NotificationUser", back_populates="user")
+
+    content = relationship("Content", back_populates="user")
+
+    campaign = relationship("Campaign", back_populates="user")
+    group = relationship("Group", back_populates="user")
