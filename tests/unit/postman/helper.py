@@ -5,9 +5,9 @@ from app.core.config import settings
 import uuid
 
 
-def create_instagram_account(db: Session, page_id):
+def create_instagram_account(db: Session, facebook_page_id):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
-    facebook_page_id = page_id
+    facebook_page_id = facebook_page_id
     facebook_page_token = str(uuid.uuid4())
     instagram_page_id = "5789427549321078"
     instagram_page_in = schemas.InstagramPageCreate(

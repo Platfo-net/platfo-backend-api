@@ -6,7 +6,7 @@ from tests.unit.postman import helper
 
 def test_add_contacts_to_group(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
-    account = helper.create_instagram_account(db, page_id="20")
+    account = helper.create_instagram_account(db, facebook_page_id="20")
 
     group = helper.create_group(db, user.id, account.facebook_page_id)
 

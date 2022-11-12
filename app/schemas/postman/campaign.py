@@ -43,8 +43,8 @@ class CampaignDetail(Campaign):
 
 
 class CampaignListApi(BaseModel):
-    pagination: Pagination
     items: List[Campaign]
+    pagination: Pagination
 
 
 class CampaignCreateApiSchema(BaseModel):

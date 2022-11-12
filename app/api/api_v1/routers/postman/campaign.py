@@ -5,13 +5,13 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.platform import Platform
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security, status, HTTPException
+from fastapi import APIRouter, Depends, Security, HTTPException
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/campaign")
 
 
-@router.get("/all", status_code=status.HTTP_201_CREATED)
+@router.get("/all", response_model=schemas.postman.CampaignListApi)
 def get_all_user_campaigns(
     *,
     db: Session = Depends(deps.get_db),
@@ -47,8 +47,8 @@ def get_all_user_campaigns(
             ))
 
     return schemas.postman.CampaignListApi(
+        items=campaigns,
         pagination=pagination,
-        items=campaigns
     )
 
 
@@ -146,7 +146,7 @@ def update_campaign(
     )
 
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=schemas.postman.CampaignDetail)
 def get_campaign_by_id(
         *,
         db: Session = Depends(deps.get_db),
