@@ -6,7 +6,6 @@ from app import services, models, schemas
 from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
-from app.constants.search_operator import SearchOperator
 
 from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session

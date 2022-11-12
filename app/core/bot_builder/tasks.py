@@ -181,7 +181,6 @@ def save_comment(
     instagram_page_id: str = None,
 ):
     db = SessionLocal()
-    client = deps.get_redis_client()
 
     contact = services.live_chat.contact.get_contact_by_igs_id(
         db, contact_igs_id=from_page_id
@@ -194,15 +193,7 @@ def save_comment(
             comment_count=1,
             first_impression=Impression.COMMENT
         )
-        new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
-
-        try:
-            user_data = cache.get_user_data(
-                client, db, instagram_page_id=instagram_page_id
-            ).to_dict()
-
-        except Exception:
-            return 0
+        services.live_chat.contact.create(db, obj_in=contact_in)
 
         information = {
             "username": "unknown",
