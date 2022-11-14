@@ -14,3 +14,9 @@ class GroupContactListItem(GroupContact):
 
     class Config:
         orm_mode = True
+
+
+
+class ContactSample(BaseModel):
+    profile_image: str = None
+    username: str = None
