@@ -46,11 +46,6 @@ services:
     ports:
       - "${API_PORT_FIRST_THREE_DIGITS}3:8000"
 
-  api-4:
-    <<: *api-common
-    container_name: "${APP_NAME}-api-4"
-    ports:
-      - "${API_PORT_FIRST_THREE_DIGITS}4:8000"
   db:
     container_name: "${APP_NAME}-database"
     image: postgres:14
@@ -100,20 +95,15 @@ services:
     container_name: "${APP_NAME}-celery-worker-3"
     command: celery -A app.core.celery.celery worker --loglevel=info -n worker-3
 
-  celery-worker-4:
-    <<: *celery-worker-common
-    container_name: "${APP_NAME}-celery-worker-4"
-    command: celery -A app.core.celery.celery worker --loglevel=info -n worker-4
-
   celery-flower:
     image: "botinow-backend-app"
     build: .
     container_name: "${APP_NAME}-celery-flower"
-    command: celery -A app.core.celery.celery flower --port=5555
+    command: celery -A app.core.celery.celery flower --port=5566
     volumes:
       - .:/app
     ports:
-      - "5555:5555"
+      - "5566:5566"
     depends_on:
       - redis
 
