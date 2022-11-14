@@ -195,6 +195,7 @@ class ContactServices:
                             getattr(models.live_chat.Contact, obj.field) <= obj.value)
 
         return db.query(self.model).filter(and_(*filters)).all(), pagination
+    
 
 
 contact = ContactServices(models.live_chat.Contact)

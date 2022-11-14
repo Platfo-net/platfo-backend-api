@@ -45,3 +45,4 @@ class SearchItem(BaseModel):
 class ContactList(BaseModel):
     items: List[Contact]
     pagination: Pagination
+

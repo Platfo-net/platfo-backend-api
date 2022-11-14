@@ -37,10 +37,27 @@ def get_groups(
     groups = []
 
     for item in items:
+        sample_contacts = services.postman.group_contact.get_by_group_and_count(
+            db, group_id=item.id, count=4)
+
+        sample_contacts_id = [contact.id for contact in sample_contacts]
+
+        group_sample_contacts = services.live_chat.contact.get_bulk(
+            db, contacts_id=sample_contacts_id)
+        samples = []
+        for sample in group_sample_contacts:
+            samples.append(
+                schemas.postman.ContactSample(
+                    profile_image=sample.information.get('profile_image', None),
+                    username=sample.information.get('username', None),
+                )
+            )
         groups.append(
             schemas.postman.Group(
+                id=item.id,
                 name=item.name,
-                description=item.description
+                description=item.description,
+                contacts=samples
             )
         )
 
@@ -76,7 +93,11 @@ def create_group(
     services.postman.group_contact.create_bulk(
         db, objs_in=obj_in.contacts, group_id=db_obj.id)
 
-    return schemas.postman.Group(name=db_obj.name, description=db_obj.description)
+    return schemas.postman.Group(
+        id=db_obj.id,
+        name=db_obj.name,
+        description=db_obj.description
+    )
 
 
 @router.delete("/{id}")

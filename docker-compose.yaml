@@ -85,11 +85,11 @@ services:
     image: "botinow-backend-app"
     build: .
     container_name: "${APP_NAME}-celery-flower"
-    command: celery -A app.core.celery.celery flower --port=5555
+    command: celery -A app.core.celery.celery flower --port=5566
     volumes:
       - .:/app
     ports:
-      - "5566:5555"
+      - "5566:5566"
     depends_on:
       - db
       - api
