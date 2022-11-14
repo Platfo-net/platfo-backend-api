@@ -1,8 +1,8 @@
 
 
 from app.schemas.pagination import Pagination
-from typing import List
-from pydantic import BaseModel
+from typing import List , Optional
+from pydantic import BaseModel, UUID4 
 from .group_contact import GroupContact
 
 
@@ -29,7 +29,7 @@ class GroupUpdateApiSchemas(GroupBase):
 
 
 class Group(GroupBase):
-    pass
+    id: Optional[UUID4]
 
 
 class GroupListApi(BaseModel):

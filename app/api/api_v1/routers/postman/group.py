@@ -39,6 +39,7 @@ def get_groups(
     for item in items:
         groups.append(
             schemas.postman.Group(
+                id=item.id,
                 name=item.name,
                 description=item.description
             )
@@ -76,7 +77,11 @@ def create_group(
     services.postman.group_contact.create_bulk(
         db, objs_in=obj_in.contacts, group_id=db_obj.id)
 
-    return schemas.postman.Group(name=db_obj.name, description=db_obj.description)
+    return schemas.postman.Group(
+        id=db_obj.id,
+        name=db_obj.name,
+        description=db_obj.description
+    )
 
 
 @router.delete("/{id}")
