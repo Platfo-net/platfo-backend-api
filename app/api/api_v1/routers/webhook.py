@@ -29,6 +29,6 @@ def instagram_webhook_listener(
 ):
     print('rrrrrrrrrrrrrrr', request.values())
     print(request.body())
-    print('wwwwwwwwwwwwwwww', facebook_webhook_body)
+    # print('wwwwwwwwwwwwwwww', facebook_webhook_body)
     # tasks.webhook_proccessor.delay(facebook_webhook_body)
     return
