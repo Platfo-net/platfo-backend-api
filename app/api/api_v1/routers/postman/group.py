@@ -37,10 +37,11 @@ def get_groups(
     groups = []
 
     for item in items:
-        sample_contacts = services.postman.group_contact.get_by_group_and_count(
+        sample_group_contacts = services.postman.group_contact.get_by_group_and_count(
             db, group_id=item.id, count=4)
 
-        sample_contacts_id = [contact.id for contact in sample_contacts]
+        sample_contacts_id = [group_contact.contact_id for
+                              group_contact in sample_group_contacts]
 
         group_sample_contacts = services.live_chat.contact.get_bulk(
             db, contacts_id=sample_contacts_id)
@@ -53,7 +54,7 @@ def get_groups(
                 )
             )
         groups.append(
-            schemas.postman.Group(
+            schemas.postman.GroupContactSample(
                 id=item.id,
                 name=item.name,
                 description=item.description,
@@ -149,4 +150,8 @@ def update_group(
     services.postman.group_contact.create_bulk(
         db, objs_in=obj_in.contacts, group_id=db_obj.id)
 
-    return schemas.postman.Group(name=group.name, description=group.description)
+    return schemas.postman.Group(
+        id=group.id,
+        name=group.name,
+        description=group.description
+    )

@@ -48,6 +48,8 @@ class GroupContactServices:
             group_id: UUID4,
             count: int = 4
     ):
-        return db.query(self.model).filter(self.model.group_id == group_id).limit(count).all()
+        return db.query(self.model)\
+            .filter(self.model.group_id == group_id).limit(count).all()
+
 
 group_contact = GroupContactServices(models.postman.GroupContact)
