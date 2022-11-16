@@ -24,10 +24,10 @@ def instagram_subscription_webhook(request: Request):
 @router.post("/instagram", status_code=status.HTTP_200_OK)
 def instagram_webhook_listener(
     *,
-    request: Request,
-    facebook_webhook_body: dict,
+    request: Request
 ):
     print(request.headers)
-    print('wwwwwwwwwwwwwwww', facebook_webhook_body)
+    # print('wwwwwwwwwwwwwwww', facebook_webhook_body)
+    print(request.get_data())
     # tasks.webhook_proccessor.delay(facebook_webhook_body)
     return
