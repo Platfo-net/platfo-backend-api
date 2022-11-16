@@ -30,7 +30,6 @@ def instagram_webhook_listener(
     print('rrrrrrrrrrrrrrr', request.values())
     print(request.body())
     print(request.json())
-    print(request.session)
     print(request.client.host)
     print(request.client)
     print(request.url)
