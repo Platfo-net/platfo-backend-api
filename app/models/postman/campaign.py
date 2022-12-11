@@ -23,7 +23,7 @@ class Campaign(Base):
 
     is_draft = Column(Boolean(), default=True)
 
-    facebook_page_id = Column(String(100), nullable=True)
+    facebook_page_id = Column(String(100), nullable=True , index = True)
     status = Column(String(255), nullable=True, default=CampaignStatus.PENDING)
     is_active = Column(Boolean(), default=False)
 
