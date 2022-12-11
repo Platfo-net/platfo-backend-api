@@ -6,6 +6,7 @@ from app.constants.errors import Error
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from sqlalchemy.orm import Session
 
+from app.db.session import SessionLocal
 
 router = APIRouter(prefix="/user", tags=["User"])
 
@@ -19,6 +20,7 @@ def register_user(
     """
     register user
     """
+
     user = services.user.get_by_email(db, email=user_in.email)
     if user:
         raise HTTPException(

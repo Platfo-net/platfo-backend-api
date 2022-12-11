@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     FIRST_USER_PASSWORD: str = None
 
     DB_HOST: str
-    DB_PORT: int = 5432
+    DB_PORT: int = 6432
 
     POSTGRES_PASSWORD: str
     POSTGRES_USER: str
@@ -73,6 +73,7 @@ class Settings(BaseSettings):
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("DB_HOST"),
+            port=str(values.get("DB_PORT")),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
