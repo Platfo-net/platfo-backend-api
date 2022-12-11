@@ -281,7 +281,7 @@ class InstagramData:
                 self.type = WebhookType.STORY_MENTION
 
             case _:
-                raise Exception()
+                pass
 
     def to_dict(self):
         return dict(

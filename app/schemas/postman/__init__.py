@@ -3,7 +3,7 @@ from .campaign import CampaignCreate, CampaignUpdate,\
 
 from .campaign_contact import CampaignContactCreate, CampaignContactUpdate
 
-
-from .group import Group, GroupListApi, GroupCreate, GroupUpdate,\
+from .group import Group, GroupContactSample, GroupListApi, GroupCreate, GroupUpdate,\
     GroupCreateApiSchemas, GroupUpdateApiSchemas
+
 from .group_contact import GroupContact, GroupContactListItem , ContactSample
