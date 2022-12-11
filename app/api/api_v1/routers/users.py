@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any , List
 from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
@@ -29,6 +29,28 @@ def register_user(
         )
     user = services.user.register(db, obj_in=user_in)
     return
+
+@router.get("/all" , response_model=List[schemas.User])
+def get_users(
+    *,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
+) -> Any:
+    """
+    register user
+    """
+
+    users = services.user.get_multi(db, skip = 100 , limit = 20)
+    return users
+    
+
+
 
 
 def update_user_me(
