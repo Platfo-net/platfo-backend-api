@@ -17,16 +17,16 @@ router = APIRouter(prefix="/connection", tags=["Connection"])
 
 @router.get("/all", response_model=List[schemas.Connection])
 def get_list_of_connections(
-        *,
-        db: Session = Depends(deps.get_db),
-        account_id: UUID4 = None,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    account_id: UUID4 = None,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     """
     Endpoint for getting list of a user connections.
@@ -69,16 +69,16 @@ def get_list_of_connections(
 
 @router.post("/", response_model=schemas.Connection)
 def create_connection(
-        *,
-        db: Session = Depends(deps.get_db),
-        obj_in: schemas.ConnectionCreate,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.ConnectionCreate,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     """
     Endpoint for creating connection
@@ -96,24 +96,23 @@ def create_connection(
             detail=Error.CONNECTION_EXIST["text"],
         )
 
-    connection = services.connection.create(
-        db, obj_in=obj_in, user_id=current_user.id)
+    connection = services.connection.create(db, obj_in=obj_in, user_id=current_user.id)
 
     return connection
 
 
 @router.get("/{connection_id}", response_model=schemas.Connection)
 def get_connection_by_id(
-        *,
-        db: Session = Depends(deps.get_db),
-        connection_id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    connection_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     """
     Get a connection and it's detail by connecion id.
@@ -144,17 +143,17 @@ def get_connection_by_id(
 
 @router.delete("/{connection_id}", status_code=status.HTTP_200_OK)
 def delete_connection(
-        *,
-        db: Session = Depends(deps.get_db),
-        redis_client: Redis = Depends(deps.get_redis_client),
-        connection_id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    redis_client: Redis = Depends(deps.get_redis_client),
+    connection_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     """
     Endpoint for delete a user connection
@@ -178,18 +177,18 @@ def delete_connection(
 
 @router.put("/{connection_id}", response_model=schemas.Connection)
 def update_connection(
-        *,
-        db: Session = Depends(deps.get_db),
-        obj_in: schemas.ConnectionUpdate,
-        redis_client: Redis = Depends(deps.get_redis_client),
-        connection_id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.ConnectionUpdate,
+    redis_client: Redis = Depends(deps.get_redis_client),
+    connection_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     """
     Endpoint for update a connection
@@ -231,17 +230,17 @@ def update_connection(
 
 @router.put("/chatflow/{state}/{page_id}/")
 def disable_chatflow_for_page(
-        *,
-        db: Session = Depends(deps.get_db),
-        page_id: str,
-        state: str = None,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    page_id: str,
+    state: str = None,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     """
     Args:
@@ -252,9 +251,7 @@ def disable_chatflow_for_page(
 
     account = services.instagram_page.get_by_page_id(db, page_id=page_id)
     connections = services.connection.get_page_connections(
-        db,
-        account_id=account.id,
-        application_name=Application.BOT_BUILDER["name"]
+        db, account_id=account.id, application_name=Application.BOT_BUILDER["name"]
     )
     if not len(connections):
         return

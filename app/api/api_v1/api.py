@@ -12,7 +12,7 @@ from app.api.api_v1.routers import (
     websocket,
     live_chat_api,
     bot_builder_api,
-    postman_api
+    postman_api,
 )
 from fastapi import APIRouter
 

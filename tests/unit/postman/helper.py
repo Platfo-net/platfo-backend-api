@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm import Session
 from app import services, schemas
 from app.core.config import settings
@@ -17,8 +16,7 @@ def create_instagram_account(db: Session, facebook_page_id):
         instagram_page_id=instagram_page_id,
         username="test",
     )
-    instagram_page = services.instagram_page.create(
-        db, obj_in=instagram_page_in)
+    instagram_page = services.instagram_page.create(db, obj_in=instagram_page_in)
 
     return instagram_page
 

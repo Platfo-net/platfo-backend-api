@@ -20,9 +20,7 @@ def get_admin_token_headers(client: TestClient) -> Dict[str, str]:
         "email": settings.FIRST_ADMIN_EMAIL,
         "password": settings.FIRST_ADMIN_PASSWORD,
     }
-    r = client.post(
-        f"{settings.API_V1_STR}/auth/access-token", json=login_data
-    )
+    r = client.post(f"{settings.API_V1_STR}/auth/access-token", json=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
@@ -34,9 +32,7 @@ def get_user_token_headers(client: TestClient) -> Dict[str, str]:
         "email": settings.FIRST_USER_EMAIL,
         "password": settings.FIRST_USER_PASSWORD,
     }
-    r = client.post(
-        f"{settings.API_V1_STR}/auth/access-token", json=login_data
-    )
+    r = client.post(f"{settings.API_V1_STR}/auth/access-token", json=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}

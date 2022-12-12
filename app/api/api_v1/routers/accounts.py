@@ -92,7 +92,7 @@ def get_account(
         username=instagram_page.username,
         profile_image=instagram_page.profile_picture_url,
         information=instagram_page.information,
-        platform=Platform.INSTAGRAM["name"]
+        platform=Platform.INSTAGRAM["name"],
     )
 
 

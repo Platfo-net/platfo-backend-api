@@ -9,5 +9,5 @@ class TestWebhook(HttpUser):
             "/api/v1/user/all",
             headers={
                 "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzA3NzUxNzMsImlkIjoiZjNhYmEzMjQtNDBjZS00ZWZhLWEzZjEtMWVhOTlmNTAyYTQxIiwicm9sZSI6IkFETUlOIn0.5FdpX0fdJQSAQ4xOvWvLt3PuXgBpIocBgi01Uyb4AWw"
-            }
+            },
         )

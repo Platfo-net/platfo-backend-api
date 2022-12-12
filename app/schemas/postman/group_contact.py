@@ -1,5 +1,3 @@
-
-
 from pydantic import BaseModel, UUID4
 from app.schemas.live_chat import Contact
 

@@ -36,13 +36,11 @@ def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
 
     objs.append(obj)
 
-    nodes = [node for node in nodes if node.id not in [
-        start_node.id, head_node.id]]
+    nodes = [node for node in nodes if node.id not in [start_node.id, head_node.id]]
 
     for node in nodes:
         widget, quick_replies = widget_mapper(node.data, node.id)
-        from_widget = [str(edge.from_widget)
-                       for edge in edges if edge.to_id == node.id]
+        from_widget = [str(edge.from_widget) for edge in edges if edge.to_id == node.id]
 
         obj = models.bot_builder.Node(
             id=node.id,

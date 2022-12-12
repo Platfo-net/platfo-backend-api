@@ -1,4 +1,4 @@
-from .chatflow import Chatflow, ChatflowCreate, ChatflowUpdate , ChatflowListApi
+from .chatflow import Chatflow, ChatflowCreate, ChatflowUpdate, ChatflowListApi
 
 
 from .node import (

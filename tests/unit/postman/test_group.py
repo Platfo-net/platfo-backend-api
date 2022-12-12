@@ -25,10 +25,7 @@ def test_update_group(db: Session):
     )
 
     group = services.postman.group.update(
-            db,
-            user_id=user.id,
-            db_obj=db_obj,
-            obj_in=obj_in
+        db, user_id=user.id, db_obj=db_obj, obj_in=obj_in
     )
 
     assert isinstance(group, models.postman.Group)
@@ -41,9 +38,7 @@ def test_delete_content(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
     account = helper.create_instagram_account(db, facebook_page_id="2")
     group = helper.create_group(
-        db,
-        user_id=user.id,
-        facebook_page_id=account.facebook_page_id
+        db, user_id=user.id, facebook_page_id=account.facebook_page_id
     )
 
     services.postman.group.remove(db, id=group.id, user_id=user.id)
@@ -57,15 +52,11 @@ def test_get_groups(db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
     account = helper.create_instagram_account(db, facebook_page_id="4")
     group = helper.create_group(
-        db=db,
-        user_id=user.id,
-        facebook_page_id=account.facebook_page_id
+        db=db, user_id=user.id, facebook_page_id=account.facebook_page_id
     )
 
     groups_list = services.postman.group.get_multi(
-        db=db,
-        facebook_page_id=group.facebook_page_id,
-        user_id=user.id
+        db=db, facebook_page_id=group.facebook_page_id, user_id=user.id
     )
 
     assert isinstance(group, models.postman.Group)

@@ -59,7 +59,7 @@ def get_contact(
         last_message=str(contact.last_message),
         live_comment_count=contact.live_comment_count,
         comment_count=contact.comment_count,
-        message_count=contact.message_count
+        message_count=contact.message_count,
     )
 
 
@@ -128,28 +128,36 @@ def get_all_contact_based_on_filters(
             live_comment_count
     """
 
-    contacts, pagination = services.live_chat.contact. \
-        get_multi(db=db, facebook_page_id=facebook_page_id,
-                  obj_in=obj_in, page=page, page_size=page_size)
+    contacts, pagination = services.live_chat.contact.get_multi(
+        db=db,
+        facebook_page_id=facebook_page_id,
+        obj_in=obj_in,
+        page=page,
+        page_size=page_size,
+    )
 
     if not contacts:
         raise HTTPException(
-            status_code=Error.CONTACT_NOT_FOUND['status_code'],
-            detail=Error.CONTACT_NOT_FOUND['text']
+            status_code=Error.CONTACT_NOT_FOUND["status_code"],
+            detail=Error.CONTACT_NOT_FOUND["text"],
         )
 
-    contacts = [schemas.live_chat.Contact(
-        contact_igs_id=contact.contact_igs_id,
-        user_page_id=contact.user_page_id,
-        id=contact.id,
-        last_message_at=contact.last_message_at,
-        information=contact.information,
-        last_message=contact.last_message,
-        user_id=contact.user_id,
-        live_comment_count=contact.live_comment_count,
-        comment_count=contact.comment_count,
-        message_count=contact.message_count,
-        first_impression=contact.first_impression
-    ) for contact in contacts if len(contacts)]
+    contacts = [
+        schemas.live_chat.Contact(
+            contact_igs_id=contact.contact_igs_id,
+            user_page_id=contact.user_page_id,
+            id=contact.id,
+            last_message_at=contact.last_message_at,
+            information=contact.information,
+            last_message=contact.last_message,
+            user_id=contact.user_id,
+            live_comment_count=contact.live_comment_count,
+            comment_count=contact.comment_count,
+            message_count=contact.message_count,
+            first_impression=contact.first_impression,
+        )
+        for contact in contacts
+        if len(contacts)
+    ]
 
     return schemas.live_chat.ContactList(items=contacts, pagination=pagination)

@@ -17,13 +17,7 @@ class ContentServices(
         schemas.academy.ContentUpdate,
     ]
 ):
-    def get_multi(
-        self,
-        db: Session,
-        *,
-        page: int = 1,
-        page_size: int = 20
-    ):
+    def get_multi(self, db: Session, *, page: int = 1, page_size: int = 20):
 
         contents = (
             db.query(self.model)
@@ -48,12 +42,7 @@ class ContentServices(
         return contents, pagination
 
     def get_by_detail(
-        self,
-        db: Session,
-        *,
-        id: str,
-        page: int = 1,
-        page_size: int = 20
+        self, db: Session, *, id: str, page: int = 1, page_size: int = 20
     ):
 
         content = (
@@ -110,11 +99,7 @@ class ContentServices(
             for label in labels_list:
                 contents.append(
                     db.query(models.academy.Content)
-                        .filter(
-                        models.academy.Content.content_labels.any(
-                            label_id=label
-                        )
-                    )
+                    .filter(models.academy.Content.content_labels.any(label_id=label))
                     .offset(page_size * (page - 1))
                     .limit(page_size)
                     .all()
@@ -122,7 +107,7 @@ class ContentServices(
             for category in categories_list:
                 contents.append(
                     db.query(models.academy.Content)
-                        .filter(
+                    .filter(
                         models.academy.Content.content_categories.any(
                             category_id=category
                         )
@@ -136,7 +121,7 @@ class ContentServices(
             for category in categories_list:
                 contents.append(
                     db.query(models.academy.Content)
-                        .filter(
+                    .filter(
                         models.academy.Content.content_categories.any(
                             category_id=category
                         )
@@ -150,11 +135,7 @@ class ContentServices(
             for label in labels_list:
                 contents.append(
                     db.query(models.academy.Content)
-                        .filter(
-                        models.academy.Content.content_labels.any(
-                            label_id=label
-                        )
-                    )
+                    .filter(models.academy.Content.content_labels.any(label_id=label))
                     .offset(page_size * (page - 1))
                     .limit(page_size)
                     .all()
@@ -164,24 +145,19 @@ class ContentServices(
                 db.query(self.model)
                 .order_by(desc(self.model.created_at))
                 .options(
-                        joinedload(self.model.content_categories),
-                        joinedload(self.model.content_labels),
+                    joinedload(self.model.content_categories),
+                    joinedload(self.model.content_labels),
                 )
                 .offset(page_size * (page - 1))
                 .limit(page_size)
                 .all()
-                )
+            )
             return contents, pagination
 
         return contents, pagination
 
-
     def create(  # noqa
-        self,
-        db: Session,
-        *,
-        obj_in: schemas.academy.ContentCreate,
-        user_id: UUID4
+        self, db: Session, *, obj_in: schemas.academy.ContentCreate, user_id: UUID4
     ):
         sub_data = []
         for item in obj_in.blocks:

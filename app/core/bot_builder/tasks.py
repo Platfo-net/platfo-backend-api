@@ -24,9 +24,8 @@ def webhook_proccessor(facebook_webhook_body):
 
     try:
         user_page_data = cache.get_user_data(
-            redis_client,
-            db,
-            instagram_page_id=instagram_data.recipient_id)
+            redis_client, db, instagram_page_id=instagram_data.recipient_id
+        )
     except Exception:
         return 0
 
@@ -112,14 +111,15 @@ def webhook_proccessor(facebook_webhook_body):
     )
     if instagram_data.payload:
         chatflow_id = cache.get_node_chatflow_id(
-            db, redis_client, widget_id=instagram_data.payload)
+            db, redis_client, widget_id=instagram_data.payload
+        )
         if not chatflow_id:
             return None
         connection = cache.get_connection_data(
             db,
             redis_client,
             application_name=Application.BOT_BUILDER["name"],
-            account_id=user_page_data.account_id
+            account_id=user_page_data.account_id,
         )
         if not connection:
             return None
@@ -176,7 +176,6 @@ def webhook_proccessor(facebook_webhook_body):
 def save_comment(
     from_page_id: str = None,
     to_page_id: str = None,
-
     user_id: Any = None,
     instagram_page_id: str = None,
 ):
@@ -191,7 +190,7 @@ def save_comment(
             user_page_id=to_page_id,
             user_id=user_id,
             comment_count=1,
-            first_impression=Impression.COMMENT
+            first_impression=Impression.COMMENT,
         )
         services.live_chat.contact.create(db, obj_in=contact_in)
 
@@ -202,7 +201,7 @@ def save_comment(
             "followers_count": 0,
             "is_verified_user": False,
             "is_user_follow_business": False,
-            "is_business_follow_user": False
+            "is_business_follow_user": False,
         }
         services.live_chat.contact.set_information(
             db,
@@ -212,8 +211,7 @@ def save_comment(
         return 0
 
     services.live_chat.contact.update_last_comment_count(
-        db,
-        contact_igs_id=contact.contact_igs_id
+        db, contact_igs_id=contact.contact_igs_id
     )
 
 
@@ -236,7 +234,7 @@ def save_live_comment(
             user_page_id=to_page_id,
             user_id=user_id,
             live_comment_count=1,
-            first_impression=Impression.LIVE_COMMENT
+            first_impression=Impression.LIVE_COMMENT,
         )
         new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
 
@@ -260,8 +258,7 @@ def save_live_comment(
         return 0
 
     services.live_chat.contact.update_last_live_comment_count(
-        db,
-        contact_igs_id=contact.contact_igs_id
+        db, contact_igs_id=contact.contact_igs_id
     )
 
 
@@ -288,7 +285,7 @@ def save_message(
                 user_page_id=to_page_id,
                 user_id=user_id,
                 message_count=1,
-                first_impression=Impression.MESSAGE
+                first_impression=Impression.MESSAGE,
             )
             new_contact = services.live_chat.contact.create(db, obj_in=contact_in)
 
@@ -311,7 +308,8 @@ def save_message(
             )
         else:
             services.live_chat.contact.update_last_message_count(
-                db, contact_igs_id=from_page_id)
+                db, contact_igs_id=from_page_id
+            )
 
     if direction == MessageDirection.IN["name"]:
         services.live_chat.contact.update_last_message(
@@ -363,7 +361,6 @@ def send_widget(
                 to_id=contact_igs_id,
                 page_access_token=user_page_data["facebook_page_token"],
                 quick_replies=quick_replies,
-
             )
         save_message(
             from_page_id=user_page_data["facebook_page_id"],

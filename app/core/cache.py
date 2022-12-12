@@ -68,26 +68,22 @@ def get_password_data(client: Redis, *, code: str = None):
 
 
 def get_connection_data(
-    db: Session,
-    client: Redis,
-    *,
-    application_name: str = None,
-    account_id: str = None
+    db: Session, client: Redis, *, application_name: str = None, account_id: str = None
 ):
     key = f"{application_name}+{str(account_id)}"
     data = get_data_from_cache(client, key)
     if data is None:
         connection = services.connection.get_by_application_name_and_account_id(
-            db,
-            account_id=account_id,
-            application_name=application_name)
+            db, account_id=account_id, application_name=application_name
+        )
 
         if not connection:
             return None
         details = []
         for detail in connection.details:
             details.append(
-                dict(chatflow_id=detail['chatflow_id'], trigger=detail['trigger']))
+                dict(chatflow_id=detail["chatflow_id"], trigger=detail["trigger"])
+            )
 
         data = dict(
             details=details,
@@ -102,22 +98,16 @@ def get_connection_data(
     return ConnectionData(
         account_id=account_id,
         application_name=application_name,
-        details=data.get('details'),
+        details=data.get("details"),
     )
 
 
-def get_node_chatflow_id(
-    db: Session,
-    client: Redis,
-    *,
-    widget_id: str = None
-):
+def get_node_chatflow_id(db: Session, client: Redis, *, widget_id: str = None):
     data = get_data_from_cache(client, widget_id)
     data = str(data).strip("',/b")
-    if data == 'None':
+    if data == "None":
         try:
-            node = services.bot_builder.node.get_next_node(
-                db, from_id=widget_id)
+            node = services.bot_builder.node.get_next_node(db, from_id=widget_id)
         except Exception:
             return None
 

@@ -16,7 +16,7 @@ class ContactServices:
         self.model = model
 
     def create(
-            self, db: Session, *, obj_in: schemas.live_chat.ContactCreate
+        self, db: Session, *, obj_in: schemas.live_chat.ContactCreate
     ) -> models.live_chat.Contact:
         obj_in = jsonable_encoder(obj_in)
         contact = self.model(**obj_in, information={}, last_message_at=datetime.now())
@@ -37,11 +37,11 @@ class ContactServices:
         )
 
     def set_information(
-            self,
-            db: Session,
-            *,
-            contact_igs_id: str,
-            information: dict,
+        self,
+        db: Session,
+        *,
+        contact_igs_id: str,
+        information: dict,
     ):
         db_obj = (
             db.query(self.model)
@@ -57,11 +57,11 @@ class ContactServices:
         return db_obj
 
     def update_information(
-            self,
-            db: Session,
-            *,
-            contact_igs_id: str,
-            data: dict,
+        self,
+        db: Session,
+        *,
+        contact_igs_id: str,
+        data: dict,
     ):
         db_obj = (
             db.query(self.model)
@@ -76,7 +76,7 @@ class ContactServices:
         return db_obj
 
     def update_last_message(
-            self, db: Session, *, contact_igs_id: str, last_message: str
+        self, db: Session, *, contact_igs_id: str, last_message: str
     ):
         db_obj = (
             db.query(self.model)
@@ -91,9 +91,7 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_comment_count(
-            self, db: Session, *, contact_igs_id: str
-    ):
+    def update_last_comment_count(self, db: Session, *, contact_igs_id: str):
         db_obj = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
@@ -105,9 +103,7 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_live_comment_count(
-            self, db: Session, *, contact_igs_id: str
-    ):
+    def update_last_live_comment_count(self, db: Session, *, contact_igs_id: str):
         db_obj = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
@@ -119,9 +115,7 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_message_count(
-            self, db: Session, *, contact_igs_id: str
-    ):
+    def update_last_message_count(self, db: Session, *, contact_igs_id: str):
         db_obj = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
@@ -143,23 +137,21 @@ class ContactServices:
 
         return
 
-    def get_bulk(
+    def get_bulk(self, db: Session, *, contacts_id: List[UUID4]):
+        return (
+            db.query(self.model)
+            .filter(models.live_chat.Contact.id.in_(contacts_id))
+            .all()
+        )
+
+    def get_multi(
         self,
         db: Session,
         *,
-        contacts_id: List[UUID4]
-    ):
-        return db.query(self.model)\
-            .filter(models.live_chat.Contact.id.in_(contacts_id)).all()
-
-    def get_multi(
-            self,
-            db: Session,
-            *,
-            facebook_page_id: str = None,
-            obj_in: List[schemas.live_chat.SearchItem],
-            page: int = 1,
-            page_size: int = 20
+        facebook_page_id: str = None,
+        obj_in: List[schemas.live_chat.SearchItem],
+        page: int = 1,
+        page_size: int = 20,
     ):
         total_count = db.query(self.model).count()
         total_pages = math.ceil(total_count / page_size)
@@ -175,24 +167,30 @@ class ContactServices:
                 match obj.operator:
                     case "EQ":
                         filters.append(
-                            getattr(models.live_chat.Contact, obj.field) == obj.value)
+                            getattr(models.live_chat.Contact, obj.field) == obj.value
+                        )
                     case "NE":
                         filters.append(
-                            getattr(models.live_chat.Contact, obj.field) != obj.value)
+                            getattr(models.live_chat.Contact, obj.field) != obj.value
+                        )
                     case "GT":
                         filters.append(
-                            getattr(models.live_chat.Contact, obj.field) > obj.value)
+                            getattr(models.live_chat.Contact, obj.field) > obj.value
+                        )
                     case "LT":
                         filters.append(
-                            getattr(models.live_chat.Contact, obj.field) < obj.value)
+                            getattr(models.live_chat.Contact, obj.field) < obj.value
+                        )
 
                     case "GTE":
                         filters.append(
-                            getattr(models.live_chat.Contact, obj.field) >= obj.value)
+                            getattr(models.live_chat.Contact, obj.field) >= obj.value
+                        )
 
                     case "LTE":
                         filters.append(
-                            getattr(models.live_chat.Contact, obj.field) <= obj.value)
+                            getattr(models.live_chat.Contact, obj.field) <= obj.value
+                        )
 
         return db.query(self.model).filter(and_(*filters)).all(), pagination
 

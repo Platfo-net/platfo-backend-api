@@ -10,8 +10,8 @@ class Message(Base):
     __tablename__ = "live_chat_messages"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
-    from_page_id = Column(String(64), nullable=True , index = True)
-    to_page_id = Column(String(64), nullable=True , index = True)
+    from_page_id = Column(String(64), nullable=True, index=True)
+    to_page_id = Column(String(64), nullable=True, index=True)
 
     content = Column(JSON, nullable=True)
     mid = Column(String(256), nullable=True)

@@ -19,8 +19,8 @@ class InstagramPage(Base):
         primary_key=False,
         nullable=True,
     )
-    facebook_page_id = Column(String(255), nullable=True , index = True)
-    instagram_page_id = Column(String(255), nullable=True , index = True)
+    facebook_page_id = Column(String(255), nullable=True, index=True)
+    instagram_page_id = Column(String(255), nullable=True, index=True)
     facebook_page_token = Column(String(255), nullable=True)
     username = Column(String(255), nullable=True)
     profile_picture_url = Column(String(1024), nullable=True)

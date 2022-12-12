@@ -34,10 +34,7 @@ def test_update_campaign_information(db: Session):
     )
 
     campaign = services.postman.campaign.update(
-            db,
-            user_id=user.id,
-            db_obj=db_obj,
-            obj_in=obj_in
+        db, user_id=user.id, db_obj=db_obj, obj_in=obj_in
     )
     assert isinstance(campaign, models.postman.Campaign)
     assert campaign.name == "test_campaign_updated"
@@ -53,7 +50,8 @@ def test_change_campaign_status(db: Session):
     campaign = helper.create_campaign(db, user.id, account.facebook_page_id)
 
     services.postman.campaign.change_status(
-        db, campaign_id=campaign.id, status=CampaignStatus.DONE)
+        db, campaign_id=campaign.id, status=CampaignStatus.DONE
+    )
 
     new_campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 
@@ -66,7 +64,9 @@ def test_change_campaign_is_draft(db: Session):
 
     campaign = helper.create_campaign(db, user.id, account.facebook_page_id)
 
-    services.postman.campaign.change_is_draft(db, campaign_id=campaign.id, is_draft=True)
+    services.postman.campaign.change_is_draft(
+        db, campaign_id=campaign.id, is_draft=True
+    )
 
     new_campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 
@@ -80,14 +80,16 @@ def test_change_campaign_activity(db: Session):
     campaign = helper.create_campaign(db, user.id, account.facebook_page_id)
 
     services.postman.campaign.change_activity(
-        db, campaign_id=campaign.id, is_active=True)
+        db, campaign_id=campaign.id, is_active=True
+    )
 
     campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 
     assert campaign.is_active is True
 
     services.postman.campaign.change_activity(
-        db, campaign_id=campaign.id, is_active=False)
+        db, campaign_id=campaign.id, is_active=False
+    )
 
     campaign = services.postman.campaign.get(db=db, campaign_id=campaign.id)
 

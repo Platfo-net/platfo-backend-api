@@ -16,22 +16,24 @@ class GroupServices:
         facebook_page_id: str,
         user_id: UUID4,
         page: int = 1,
-        page_size: int = 20
+        page_size: int = 20,
     ):
         groups = (
             db.query(self.model)
             .filter(
                 self.model.facebook_page_id == facebook_page_id,
-                self.model.user_id == user_id
+                self.model.user_id == user_id,
             )
             .offset(page_size * (page - 1))
             .limit(page_size)
             .all()
         )
 
-        total_count = db.query(self.model).filter(
-            self.model.facebook_page_id == facebook_page_id
-        ).count()
+        total_count = (
+            db.query(self.model)
+            .filter(self.model.facebook_page_id == facebook_page_id)
+            .count()
+        )
 
         total_page = math.ceil(total_count / page_size)
         pagination = schemas.Pagination(
@@ -53,7 +55,7 @@ class GroupServices:
             name=obj_in.name,
             description=obj_in.description,
             facebook_page_id=obj_in.facebook_page_id,
-            user_id=user_id
+            user_id=user_id,
         )
         db.add(db_obj)
         db.commit()
@@ -82,8 +84,7 @@ class GroupServices:
 
     def remove(self, db: Session, id: UUID4, user_id: UUID4):
         db.query(self.model).filter(
-            self.model.user_id == user_id,
-            self.model.id == id
+            self.model.user_id == user_id, self.model.id == id
         ).first()
 
         db_obj = self.get(db, id)

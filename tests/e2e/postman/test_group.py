@@ -7,22 +7,18 @@ from tests.unit.postman import helper
 from tests.utils.user import get_user_token_headers
 
 
-def test_create_group(
-        client: TestClient,
-        db: Session
-):
+def test_create_group(client: TestClient, db: Session):
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
     account = helper.create_instagram_account(
-        db,
-        facebook_page_id=settings.SAMPLE_FACEBOOK_PAGE_ID
+        db, facebook_page_id=settings.SAMPLE_FACEBOOK_PAGE_ID
     )
     contact_1 = services.live_chat.contact.create(
         db,
         obj_in=schemas.live_chat.ContactCreate(
             user_page_id=account.facebook_page_id,
             user_id=user.id,
-            contact_igs_id=settings.SAMPLE_CONTACT_IGS_ID
-        )
+            contact_igs_id=settings.SAMPLE_CONTACT_IGS_ID,
+        ),
     )
     headers = get_user_token_headers(client)
 
@@ -30,29 +26,24 @@ def test_create_group(
     description = "this is a description"
     facebook_page_id = contact_1.user_page_id
     contacts = [
-        {
-            "contact_igs_id": contact_1.contact_igs_id,
-            "contact_id": str(contact_1.id)
-        }
+        {"contact_igs_id": contact_1.contact_igs_id, "contact_id": str(contact_1.id)}
     ]
     r = client.post(
-        f"{settings.API_V1_STR}/postman/group/", json={
+        f"{settings.API_V1_STR}/postman/group/",
+        json={
             "name": name,
             "description": description,
             "facebook_page_id": facebook_page_id,
-            "contacts": contacts
+            "contacts": contacts,
         },
-        headers=headers
+        headers=headers,
     )
     json_response = r.json()
     assert r.status_code == 200
     assert json_response["name"] == name
 
 
-def test_get_groups(
-        client: TestClient,
-        db: Session
-):
+def test_get_groups(client: TestClient, db: Session):
     headers = get_user_token_headers(client)
     facebook_page_id = settings.SAMPLE_FACEBOOK_PAGE_ID
 
@@ -66,10 +57,7 @@ def test_get_groups(
     assert json_response["pagination"]
 
 
-def test_delete_group(
-        client: TestClient,
-        db: Session
-):
+def test_delete_group(client: TestClient, db: Session):
     headers = get_user_token_headers(client)
     user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
     account = helper.create_instagram_account(db, facebook_page_id="4")

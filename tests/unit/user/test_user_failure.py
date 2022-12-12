@@ -12,9 +12,7 @@ def test_duplicate_user_creation_fail(db: Session):
         user_test_password = "test@123"
         role = services.role.get_by_name(db, name=Role.USER["name"])
         user_in = schemas.UserCreate(
-            email=user_test_email,
-            password=user_test_password,
-            role_id=role.id
+            email=user_test_email, password=user_test_password, role_id=role.id
         )
         services.user.create(db, obj_in=user_in)
 
@@ -27,9 +25,7 @@ def test_not_existed_user_login_fail(db: Session):
     wrong_user_password = "wrong@123"
 
     user = services.user.authenticate(
-        db,
-        email=wrong_user_email,
-        password=wrong_user_password
+        db, email=wrong_user_email, password=wrong_user_password
     )
     assert user is None
 
@@ -38,8 +34,6 @@ def test_existed_user_login_with_wrong_credential_fail(db: Session):
     wrong_user_password = "wrong@123"
 
     user = services.user.authenticate(
-        db,
-        email=settings.FIRST_USER_EMAIL,
-        password=wrong_user_password
+        db, email=settings.FIRST_USER_EMAIL, password=wrong_user_password
     )
     assert user is None

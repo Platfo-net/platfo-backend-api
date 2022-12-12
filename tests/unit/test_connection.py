@@ -26,19 +26,11 @@ def test_update_connection_success(db: Session):
         description="test_updated",
         application_name=Application.BOT_BUILDER["name"],
         account_id=test_new_account_id,
-        details=[
-            {
-                "chatflow_id": chatflow_id,
-                "trigger": Trigger.Message["name"]
-            }
-        ]
+        details=[{"chatflow_id": chatflow_id, "trigger": Trigger.Message["name"]}],
     )
 
     connection = services.connection.update(
-        db,
-        user_id=db_connection.user_id,
-        db_obj=db_connection,
-        obj_in=connection_in
+        db, user_id=db_connection.user_id, db_obj=db_connection, obj_in=connection_in
     )
     assert isinstance(connection, models.Connection)
     assert connection.account_id == test_new_account_id
@@ -62,20 +54,18 @@ def test_delete_connection_success(db: Session):
 def test_get_connection_by_account_id_and_app_name(db: Session):
     test_account_id = uuid.uuid4()
     helper.create_connection(db, test_account_id)
-    existed_connection = services.connection\
-        .get_by_application_name_and_account_id(
-            db,
-            account_id=str(test_account_id),
-            application_name=Application.BOT_BUILDER["name"])
+    existed_connection = services.connection.get_by_application_name_and_account_id(
+        db,
+        account_id=str(test_account_id),
+        application_name=Application.BOT_BUILDER["name"],
+    )
 
-    not_existed_connection = services.connection\
-        .get_by_application_name_and_account_id(
-            db,
-            account_id=str(uuid.uuid4()),
-            application_name=Application.BOT_BUILDER["name"]
-        )
+    not_existed_connection = services.connection.get_by_application_name_and_account_id(
+        db,
+        account_id=str(uuid.uuid4()),
+        application_name=Application.BOT_BUILDER["name"],
+    )
     assert not_existed_connection is None
-    assert existed_connection.application_name == \
-        Application.BOT_BUILDER["name"]
+    assert existed_connection.application_name == Application.BOT_BUILDER["name"]
     assert existed_connection.account_id == test_account_id
     assert len(existed_connection.details) == 1

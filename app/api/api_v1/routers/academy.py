@@ -151,8 +151,7 @@ def update_category(
             status_code=Error.CATEGORY_NOT_FOUND["status_code"],
             detail=Error.CATEGORY_NOT_FOUND["text"],
         )
-    category = services.academy.category.update(
-        db, db_obj=category, obj_in=obj_in)
+    category = services.academy.category.update(db, db_obj=category, obj_in=obj_in)
 
     return category
 
@@ -181,19 +180,19 @@ def delete_category(
 
 @router.get("/search/all")
 def search_content_by_category(
-        *,
-        page: int = 1,
-        page_size: int = 20,
-        categories_list_id: List[UUID4] = Query(None),
-        labels_list_id: List[UUID4] = Query(None),
-        db: Session = Depends(deps.get_db),
+    *,
+    page: int = 1,
+    page_size: int = 20,
+    categories_list_id: List[UUID4] = Query(None),
+    labels_list_id: List[UUID4] = Query(None),
+    db: Session = Depends(deps.get_db),
 ):
     items, pagination = services.academy.content.search(
         db,
         categories_list=categories_list_id,
         labels_list=labels_list_id,
         page=page,
-        page_size=page_size
+        page_size=page_size,
     )
 
     if not categories_list_id and not labels_list_id:
@@ -204,16 +203,15 @@ def search_content_by_category(
 
     res = []
     for content in items:
-        res.append(schemas.academy.ContentSearch(
-            contents=content, pagination=pagination)
+        res.append(
+            schemas.academy.ContentSearch(contents=content, pagination=pagination)
         )
     return res
 
 
 @router.get("/content/detail/{id}", response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*, db: Session = Depends(deps.get_db), id: UUID4):
-    content, categories, labels = services.academy.content.get_by_detail(
-        db, id=id)
+    content, categories, labels = services.academy.content.get_by_detail(db, id=id)
 
     if not content:
         raise HTTPException(

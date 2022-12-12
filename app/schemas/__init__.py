@@ -17,7 +17,7 @@ from .instagram_page import (
     InstagramPageCreate,
     InstagramPageUpdate,
     InstagramPage,
-    ConnectPage
+    ConnectPage,
 )
 
 

@@ -108,15 +108,13 @@ def connect_instagram_page(
                     information=dict(
                         website=page_details.get("website", None),
                         ig_id=page_details.get("ig_id", None),
-                        followers_count=page_details.get(
-                            "followers_count", None),
+                        followers_count=page_details.get("followers_count", None),
                         follows_count=page_details.get("follows_count", None),
                         biography=page_details.get("biography", None),
                         name=page_details.get("name", None),
                     ),
                 )
-                services.instagram_page.create(
-                    db, obj_in=instagram_page_in)
+                services.instagram_page.create(db, obj_in=instagram_page_in)
         except Exception:
             pass
 
@@ -133,14 +131,14 @@ def get_page_data_by_instagram_page_id(
     return obj_instagram
 
 
-@router.get("/get_by_facebook_page_id/{facebook_page_id}",
-            response_model=schemas.InstagramPage)
+@router.get(
+    "/get_by_facebook_page_id/{facebook_page_id}", response_model=schemas.InstagramPage
+)
 def get_page_data_by_facebook_page_id(
-        *,
-        db: Session = Depends(deps.get_db),
-        facebook_page_id: str
+    *, db: Session = Depends(deps.get_db), facebook_page_id: str
 ):
-    obj_instagram = services.instagram_page.\
-        get_by_facebook_page_id(db, facebook_page_id=facebook_page_id)
+    obj_instagram = services.instagram_page.get_by_facebook_page_id(
+        db, facebook_page_id=facebook_page_id
+    )
 
     return obj_instagram

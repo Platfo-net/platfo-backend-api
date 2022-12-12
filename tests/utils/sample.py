@@ -5,16 +5,16 @@ from tests.utils.utils import random_lower_string
 
 
 def create_sample_user(db: Session):
-    email = "user@example.com",
-    is_active = True,
-    full_name = random_lower_string(),
-    phone_number = "09123456789",
+    email = ("user@example.com",)
+    is_active = (True,)
+    full_name = (random_lower_string(),)
+    phone_number = ("09123456789",)
     password = "Abcd@1234"
     user_in = UserCreate(
         email=email,
         is_active=is_active,
         full_name=full_name,
         phone_number=phone_number,
-        password=password
+        password=password,
     )
     return services.user.create(db, obj_in=user_in)

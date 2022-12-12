@@ -1,4 +1,3 @@
-
 from typing import Any
 from app.constants.message_direction import MessageDirection
 from app import schemas, services
@@ -52,13 +51,15 @@ def campaign_terminal():
         return 0
 
     for campaign in campaigns:
-        unsend_count = services.postman.campaign_contact.\
-            get_campaign_unsend_contacts_count(
+        unsend_count = (
+            services.postman.campaign_contact.get_campaign_unsend_contacts_count(
                 db, campaign_id=campaign.id
             )
+        )
         if unsend_count == 0:
             services.postman.campaign.change_status(
-                db, campaign_id=campaign.id, status=CampaignStatus.DONE)
+                db, campaign_id=campaign.id, status=CampaignStatus.DONE
+            )
         else:
             campaign_handler.delay(campaign.id)
     return 0
@@ -67,24 +68,28 @@ def campaign_terminal():
 @shared_task
 def campaign_handler(campaign_id):
     from app.core.config import settings
+
     db = SessionLocal()
     campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
-        db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT)
+        db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT
+    )
 
     services.postman.campaign.change_activity(
-        db, campaign_id=campaign_id, is_active=True)
+        db, campaign_id=campaign_id, is_active=True
+    )
 
     content = campaign.content
 
     instagram_page = services.instagram_page.get_by_facebook_page_id(
-        db, facebook_page_id=campaign.facebook_page_id)
+        db, facebook_page_id=campaign.facebook_page_id
+    )
 
     instagram_page = UserData(
         user_id=instagram_page.user_id,
         facebook_page_token=instagram_page.facebook_page_token,
         facebook_page_id=instagram_page.facebook_page_id,
-        account_id=instagram_page.id
+        account_id=instagram_page.id,
     )
     sent_contacts = []
     for contact in campaign_contacts:
@@ -96,7 +101,7 @@ def campaign_handler(campaign_id):
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
                     page_access_token=instagram_page.facebook_page_token,
-                    quick_replies=[]
+                    quick_replies=[],
                 )
                 if mid:
                     break
@@ -107,7 +112,7 @@ def campaign_handler(campaign_id):
                     data=content,
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
-                    page_access_token=instagram_page.facebook_page_token
+                    page_access_token=instagram_page.facebook_page_token,
                 )
                 if mid:
                     break
@@ -122,9 +127,11 @@ def campaign_handler(campaign_id):
                 user_id=instagram_page.user_id,
             )
     services.postman.campaign_contact.change_send_status_bulk(
-        db=db, campaign_contacts_in=sent_contacts, is_sent=True)
+        db=db, campaign_contacts_in=sent_contacts, is_sent=True
+    )
 
     services.postman.campaign.change_activity(
-        db, campaign_id=campaign_id, is_active=False)
+        db, campaign_id=campaign_id, is_active=False
+    )
 
     return 0

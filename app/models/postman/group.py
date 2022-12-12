@@ -1,4 +1,3 @@
-
 from uuid import uuid4
 
 from app.db.base_class import Base
@@ -19,7 +18,7 @@ class Group(Base):
         nullable=True,
     )
 
-    facebook_page_id = Column(String(255), nullable=True , index = True)
+    facebook_page_id = Column(String(255), nullable=True, index=True)
 
     user = relationship("User", back_populates="group")
     group_contact = relationship("GroupContact", back_populates="group")

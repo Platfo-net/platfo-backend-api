@@ -43,7 +43,7 @@ class InstagramGraphApi:
         from_id: str,
         to_id: str,
         page_access_token: str,
-        quick_replies: list = []
+        quick_replies: list = [],
     ):
         url = "{}/{}/{}/messages".format(
             settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION, from_id
@@ -53,10 +53,7 @@ class InstagramGraphApi:
             "recipient": {
                 "id": to_id,
             },
-            "message": {
-                "text": text
-
-            },
+            "message": {"text": text},
         }
         if len(quick_replies):
 
@@ -83,9 +80,9 @@ class InstagramGraphApi:
         from_id: str,
         to_id: str,
         page_access_token: str,
-        quick_replies: list = []
+        quick_replies: list = [],
     ):
-        choices = data.get('choices', [])
+        choices = data.get("choices", [])
         buttons = []
         for choice in choices:
             button_type = data.get("type", None)
@@ -98,20 +95,17 @@ class InstagramGraphApi:
                     }
                 )
             else:
-                buttons.append({
-                    "type": ButtonType.POSTBACK["value"],
-                    "title": choice["text"],
-                    "payload": choice["id"],
-                })
+                buttons.append(
+                    {
+                        "type": ButtonType.POSTBACK["value"],
+                        "title": choice["text"],
+                        "payload": choice["id"],
+                    }
+                )
 
         body = {
             "template_type": "generic",
-            "elements": [
-                {
-                    "title": data.get("title"),
-                    "buttons": buttons
-                }
-            ],
+            "elements": [{"title": data.get("title"), "buttons": buttons}],
         }
         if "image" in data:
             image_url = storage.get_object_url(
@@ -198,13 +192,13 @@ class InstagramGraphApi:
         if res.status_code == 200:
             data = res.json()
             return dict(
-                username=data.get('username', None),
-                profile_image=data.get('profile_pic', None),
-                name=data.get('name', None),
-                followers_count=data.get('follower_count', None),
-                is_verified_user=data.get('is_verified_user', None),
-                is_user_follow_business=data.get('is_user_follow_business', None),
-                is_business_follow_user=data.get('is_business_follow_user', None),
+                username=data.get("username", None),
+                profile_image=data.get("profile_pic", None),
+                name=data.get("name", None),
+                followers_count=data.get("follower_count", None),
+                is_verified_user=data.get("is_verified_user", None),
+                is_user_follow_business=data.get("is_user_follow_business", None),
+                is_business_follow_user=data.get("is_business_follow_user", None),
             )
         return None
 

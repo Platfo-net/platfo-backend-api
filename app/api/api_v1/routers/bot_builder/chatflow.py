@@ -82,8 +82,10 @@ def get_user_chatflows(
             user_id=chatflow.user_id,
             created_at=chatflow.created_at,
             updated_at=chatflow.updated_at,
-            id=chatflow.id
-        ) for chatflow in chatflows if len(chatflows) > 0
+            id=chatflow.id,
+        )
+        for chatflow in chatflows
+        if len(chatflows) > 0
     ]
 
     return schemas.bot_builder.ChatflowListApi(items=items, pagination=pagination)

@@ -19,5 +19,9 @@ def random_email() -> str:
 
 
 def random_widget_type() -> str:
-    list_widget_type = ["MENU", "TEXT", "MEDIA", ]
+    list_widget_type = [
+        "MENU",
+        "TEXT",
+        "MEDIA",
+    ]
     return random.choice(list_widget_type)

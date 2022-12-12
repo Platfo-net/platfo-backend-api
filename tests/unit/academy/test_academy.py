@@ -6,8 +6,7 @@ from tests.unit import helper
 
 def test_get_categories(db: Session):
     category = helper.create_category(db=db)
-    categories_list = services.academy.\
-        category.get_multi(db=db)
+    categories_list = services.academy.category.get_multi(db=db)
 
     assert isinstance(category, models.academy.Category)
     assert len(categories_list) >= 1
@@ -91,22 +90,11 @@ def test_update_content(db: Session):
         time="1663757930863",
         slug="مقاله-تستی",
         cover_image="test_image_updated",
-        categories=[  # noqa
-            {
-                "category_id": "418f667a-6f82-4611-a764-ad7ea12100fb"
-            }
-        ],
-        labels=[  # noqa
-            {
-                "label_id": "df4939b0-f4c6-4b8b-8085-a7b4030898at"
-            }
-        ]
+        categories=[{"category_id": "418f667a-6f82-4611-a764-ad7ea12100fb"}],  # noqa
+        labels=[{"label_id": "df4939b0-f4c6-4b8b-8085-a7b4030898at"}],  # noqa
     )
     content = services.academy.content.update(
-        db=db,
-        user_id=old_content.user_id,
-        db_obj=old_content,
-        obj_in=content_in
+        db=db, user_id=old_content.user_id, db_obj=old_content, obj_in=content_in
     )
     assert isinstance(content, models.academy.Content)
     assert content.user_id == old_content.user_id

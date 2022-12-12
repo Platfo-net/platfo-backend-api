@@ -3,7 +3,7 @@ from app.core.bot_builder import tasks
 from app.core.config import settings
 
 
-router = APIRouter(prefix="/webhook", tags=["Webhook"] , include_in_schema=False)
+router = APIRouter(prefix="/webhook", tags=["Webhook"], include_in_schema=False)
 
 
 @router.get("/d2774e8d-a1df-4f86-bb13-ad223537c64f")
@@ -22,12 +22,8 @@ def instagram_subscription_webhook(request: Request):
 
 
 @router.post("/d2774e8d-a1df-4f86-bb13-ad223537c64f", status_code=status.HTTP_200_OK)
-async def instagram_webhook_listener(
-    *,
-    request: Request,
-    facebook_webhook_body: dict
-):
+async def instagram_webhook_listener(*, request: Request, facebook_webhook_body: dict):
     print(request.headers)
-    print('wwwwwwwwwwwwwwww', facebook_webhook_body)
+    print("wwwwwwwwwwwwwwww", facebook_webhook_body)
     tasks.webhook_proccessor.delay(facebook_webhook_body)
     return

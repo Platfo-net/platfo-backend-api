@@ -31,7 +31,7 @@ def get_all_user_campaigns(
         user_id=current_user.id,
         facebook_page_id=facebook_page_id,
         page=page,
-        page_size=page_size
+        page_size=page_size,
     )
 
     campaigns = []
@@ -43,8 +43,9 @@ def get_all_user_campaigns(
                 created_at=item.created_at,
                 status=item.status,
                 is_draft=item.is_draft,
-                group_name=item.group_name
-            ))
+                group_name=item.group_name,
+            )
+        )
 
     return schemas.postman.CampaignListApi(
         items=campaigns,
@@ -63,7 +64,7 @@ def create_campaign(
             Role.USER["name"],
             Role.ADMIN["name"],
         ],
-    )
+    ),
 ):
     campaign_obj = schemas.postman.CampaignCreate(
         name=obj_in.name,
@@ -74,26 +75,24 @@ def create_campaign(
     )
 
     campaign = services.postman.campaign.create(
-        db,
-        obj_in=campaign_obj,
-        user_id=current_user.id
+        db, obj_in=campaign_obj, user_id=current_user.id
     )
 
     group = services.postman.group.get(db, id=obj_in.group_id)
     services.postman.campaign.set_group_name(
-        db, campaign_id=campaign.id, group_name=group.name)
+        db, campaign_id=campaign.id, group_name=group.name
+    )
 
     group_contacts = services.postman.group_contact.get_by_group(db, group_id=group.id)
     contacts = []
     for ele in group_contacts:
-        contacts.append(schemas.postman.CampaignContactCreate(
-            contact_id=ele.contact_id,
-            contact_igs_id=ele.contact_igs_id
-        ))
+        contacts.append(
+            schemas.postman.CampaignContactCreate(
+                contact_id=ele.contact_id, contact_igs_id=ele.contact_igs_id
+            )
+        )
     services.postman.campaign_contact.create_bulk(
-        db,
-        campaign_id=campaign.id,
-        contacts=contacts
+        db, campaign_id=campaign.id, contacts=contacts
     )
 
     return schemas.postman.Campaign(
@@ -102,7 +101,7 @@ def create_campaign(
         created_at=campaign.created_at,
         is_draft=campaign.is_draft,
         status=campaign.status,
-        group_name=group.name
+        group_name=group.name,
     )
 
 
@@ -124,8 +123,8 @@ def update_campaign(
 
     if db_obj.is_draft is False:
         raise HTTPException(
-            status_code=Error.CAMPAIGN_ALREADY_ACTIVE['status'],
-            detail=Error.CAMPAIGN_ALREADY_ACTIVE['text']
+            status_code=Error.CAMPAIGN_ALREADY_ACTIVE["status"],
+            detail=Error.CAMPAIGN_ALREADY_ACTIVE["text"],
         )
     campaign = services.postman.campaign.update(
         db,
@@ -135,33 +134,37 @@ def update_campaign(
             name=obj_in.name,
             description=obj_in.description,
             content=obj_in.content,
-            is_draft=obj_in.is_draft
+            is_draft=obj_in.is_draft,
         ),
     )
     return schemas.postman.CampaignUpdate(
         name=campaign.name,
         description=campaign.description,
         content=campaign.content,
-        is_draft=campaign.is_draft
+        is_draft=campaign.is_draft,
     )
 
 
 @router.get("/{id}", response_model=schemas.postman.CampaignDetail)
 def get_campaign_by_id(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
-    campaign, campaign_contacts, sent_count,\
-        seen_count, total_contact_count = services.postman.campaign.\
-        get_by_detail(db, campaign_id=id)
+    (
+        campaign,
+        campaign_contacts,
+        sent_count,
+        seen_count,
+        total_contact_count,
+    ) = services.postman.campaign.get_by_detail(db, campaign_id=id)
     contacts_id = []
     for campaign_contact in campaign_contacts:
         contacts_id.append(campaign_contact.contact_id)
@@ -175,7 +178,7 @@ def get_campaign_by_id(
         username=instagram_page.username,
         profile_image=instagram_page.profile_picture_url,
         platform=Platform.INSTAGRAM["name"],
-        page_id=instagram_page.facebook_page_id
+        page_id=instagram_page.facebook_page_id,
     )
     return schemas.postman.CampaignDetail(
         id=campaign.id,
@@ -192,7 +195,7 @@ def get_campaign_by_id(
         account=account,
         sent_count=sent_count,
         seen_count=seen_count,
-        total_contact_count=total_contact_count
+        total_contact_count=total_contact_count,
     )
 
 
@@ -213,13 +216,11 @@ def change_campaign_is_draft(
     campaign = services.postman.campaign.get(db, campaign_id=id)
     if not campaign:
         raise HTTPException(
-            status_code=Error.CAMPAIGN_NOT_FOUND['status'],
-            detail=Error.CAMPAIGN_NOT_FOUND['text']
+            status_code=Error.CAMPAIGN_NOT_FOUND["status"],
+            detail=Error.CAMPAIGN_NOT_FOUND["text"],
         )
 
     services.postman.campaign.change_is_draft(
-        db,
-        campaign_id=campaign.id,
-        is_draft=is_draft
+        db, campaign_id=campaign.id, is_draft=is_draft
     )
     return

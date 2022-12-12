@@ -71,22 +71,19 @@ class InstagramData:
                             {
                                 "field": field,
                                 "value": {
-                                    "from": {
-                                        "id": sender_id,
-                                        "username": username
-                                    },
+                                    "from": {"id": sender_id, "username": username},
                                     "media": {
                                         "id": media_id,
-                                        "media_product_type": media_product_type
+                                        "media_product_type": media_product_type,
                                     },
                                     "id": value_id,
                                     "parent_id": parent_id,
-                                    "text": comment_detail
-                                }
+                                    "text": comment_detail,
+                                },
                             }
-                        ]
+                        ],
                     }
-                ]
+                ],
             }:
                 self.recipient_id = recipient_id
                 self.field = field
@@ -110,21 +107,18 @@ class InstagramData:
                             {
                                 "field": field,
                                 "value": {
-                                    "from": {
-                                        "id": sender_id,
-                                        "username": username
-                                    },
+                                    "from": {"id": sender_id, "username": username},
                                     "media": {
                                         "id": media_id,
-                                        "media_product_type": media_product_type
+                                        "media_product_type": media_product_type,
                                     },
                                     "id": value_id,
-                                    "text": comment_detail
-                                }
+                                    "text": comment_detail,
+                                },
                             }
-                        ]
+                        ],
                     }
-                ]
+                ],
             }:
                 self.recipient_id = recipient_id
                 self.field = field
@@ -138,28 +132,21 @@ class InstagramData:
                 self.type = WebhookType.LIVE_COMMENT
 
             case {
-                    "object": platform,
-                    "entry": [
-                        {
-                            "time": entry_time,
-                            "id": entry__id,
-                            "messaging": [
-                                {
-                                    "sender": {
-                                        "id": sender_id
-                                    },
-                                    "recipient": {
-                                        "id": recipient_id
-                                    },
-                                    "timestamp": timestamp,
-                                    "read": {
-                                        "mid": mid
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-
+                "object": platform,
+                "entry": [
+                    {
+                        "time": entry_time,
+                        "id": entry__id,
+                        "messaging": [
+                            {
+                                "sender": {"id": sender_id},
+                                "recipient": {"id": recipient_id},
+                                "timestamp": timestamp,
+                                "read": {"mid": mid},
+                            }
+                        ],
+                    }
+                ],
             }:
                 self.platform = platform
                 self.sender_id = sender_id
@@ -306,7 +293,7 @@ class InstagramData:
             media_product_type=self.media_product_type,
             username=self.username,
             value_id=self.value_id,
-            parent_id=self.parent_id
+            parent_id=self.parent_id,
         )
 
 

@@ -22,8 +22,7 @@ def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
-    user = services.user.authenticate(
-        db, email=data.email, password=data.password)
+    user = services.user.authenticate(db, email=data.email, password=data.password)
     if not user:
         raise HTTPException(
             status_code=Error.USER_PASS_WRONG_ERROR["status_code"],
@@ -34,8 +33,7 @@ def login_access_token(
             status_code=Error.INACTIVE_USER["status_code"],
             detail=Error.INACTIVE_USER["text"],
         )
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     if not user.role_id:
         role = "GUEST"
@@ -75,8 +73,7 @@ def login_access_token_swagger(
             status_code=Error.INACTIVE_USER["status_code"],
             detail=Error.INACTIVE_USER["text"],
         )
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     if not user.role_id:
         role = "GUEST"
