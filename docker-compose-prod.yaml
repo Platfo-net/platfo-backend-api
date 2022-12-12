@@ -46,6 +46,12 @@ services:
     ports:
       - "${API_PORT_FIRST_THREE_DIGITS}3:8000"
 
+  api-4:
+    <<: *api-common
+    container_name: "${APP_NAME}-api-4"
+    ports:
+      - "${API_PORT_FIRST_THREE_DIGITS}4:8000"
+
   db:
     container_name: "${APP_NAME}-database"
     image: postgres:14
