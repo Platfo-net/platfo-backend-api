@@ -66,7 +66,7 @@ class InstagramData:
                 "entry": [
                     {
                         "id": recipient_id,
-                        "time": entry_time,
+                        "time": entry_time,  # noqa
                         "changes": [
                             {
                                 "field": field,
@@ -102,7 +102,7 @@ class InstagramData:
                 "entry": [
                     {
                         "id": recipient_id,
-                        "time": entry_time,
+                        "time": entry_time,  # noqa
                         "changes": [
                             {
                                 "field": field,
@@ -135,8 +135,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": entry_time,
-                        "id": entry__id,
+                        "time": entry_time,  # noqa
+                        "id": entry__id,  # noqa
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -214,8 +214,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": entry_time,
-                        "id": entry_id,
+                        "time": entry_time,  # noqa
+                        "id": entry_id,  # noqa
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},
@@ -239,8 +239,8 @@ class InstagramData:
                 "object": platform,
                 "entry": [
                     {
-                        "time": entry_time,
-                        "id": entry_id,
+                        "time": entry_time,  # noqa
+                        "id": entry_id,  # noqa
                         "messaging": [
                             {
                                 "sender": {"id": sender_id},

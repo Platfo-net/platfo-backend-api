@@ -91,66 +91,6 @@ class ContentDetail(BaseModel):
 
     class Config:
         orm_mode = True
-        schema_extra = {
-            "example": {
-                "contents": [
-                    {
-                        "title": "مقاله تستی",
-                        "blocks": [
-                            {
-                                "id": "1234567",
-                                "type": "paragraph",
-                                "data": {
-                                    "text": "hello this is a sample text",
-                                    "level": "null",
-                                    "items": "null",
-                                    "style": "null",
-                                    "file": "null",
-                                    "caption": "null",
-                                    "withBorder": False,
-                                    "stretched": False,
-                                    "withBackground": False,
-                                },
-                            }
-                        ],
-                        "caption": "this is a good article",
-                        "created_at": "2022-09-21T12:20:55.139295",
-                        "updated_at": "2022-09-21T12:20:55.139298",
-                        "is_published": "true",
-                        "version": "2.24.3",
-                        "time": "1663757930863",
-                        "user_id": "4c4b3ea1-ec54-4f52-bc64-409e91bd690b",
-                        "slug": "مقاله-تستی",
-                        "cover_image": "http://minio:9000/academy-attachment-bucket/"
-                        "a13efb7c-a36e-4c21-8eab-343f00eef94a-images.jpeg?"
-                        "X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="
-                        "botinow%2F20220921%2Fus-east-1%2Fs3%2Faws4_request"
-                        "&X-Amz-Date=20220921T122003Z&X-Amz-Expires=86"
-                        "400&X-Amz-SignedHeaders=host&X-Amz-Signature=ef6f55"
-                        "0e1a97d13f109a92478cc00944d075f4"
-                        "0829573793dd13e4593f2c22e3",
-                        "id": "a6c1bad7-9d9d-4b41-b03c-957f5715b100",
-                        "content_categories": [
-                            {
-                                "category": {
-                                    "id": "faa00882-d293-4732-86af-6418e34c337a",
-                                    "title": "cat 1",
-                                    "parent_id": "5e60a8ed-869a-42f3-803f-5c0cac749808",
-                                }
-                            }
-                        ],
-                        "content_labels": [
-                            {
-                                "label": {
-                                    "id": "d390bf06-eb67-4fd1-ae64-945b3895d378",
-                                    "name": "tagzzz",
-                                }
-                            }
-                        ],
-                    }
-                ]
-            }
-        }
 
 
 class ContentCategory(BaseModel):
@@ -183,46 +123,6 @@ class ContentListApi(BaseModel):
 
     class Config:
         orm_mode = True
-        schema_extra = {
-            "example": {
-                "contents": [
-                    {
-                        "title": "مقاله تستی",
-                        "caption": "this is a good article",
-                        "created_at": "2022-09-21T12:20:55.139295",
-                        "updated_at": "2022-09-21T12:20:55.139298",
-                        "is_published": "true",
-                        "slug": "مقاله-تستی",
-                        "cover_image": "http://minio:9000/academy-attachment-bucket/"
-                        "a13efb7c-a36e-4c21-8eab-343f00eef94a-images.jpeg?"
-                        "X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="
-                        "botinow%2F20220921%2Fus-east-1%2Fs3%2Faws4_request"
-                        "&X-Amz-Date=20220921T122003Z&X-Amz-Expires=86"
-                        "400&X-Amz-SignedHeaders=host&X-Amz-Signature=ef6f55"
-                        "0e1a97d13f109a92478cc00944d075f4"
-                        "0829573793dd13e4593f2c22e3",
-                        "id": "a6c1bad7-9d9d-4b41-b03c-957f5715b100",
-                        "content_categories": [
-                            {
-                                "category": {
-                                    "id": "faa00882-d293-4732-86af-6418e34c337a",
-                                    "title": "cat 1",
-                                    "parent_id": "5e60a8ed-869a-42f3-803f-5c0cac749808",
-                                }
-                            }
-                        ],
-                        "content_labels": [
-                            {
-                                "label": {
-                                    "id": "d390bf06-eb67-4fd1-ae64-945b3895d378",
-                                    "name": "tagzzz",
-                                }
-                            }
-                        ],
-                    }
-                ]
-            }
-        }
 
 
 class ContentSearch(BaseModel):
