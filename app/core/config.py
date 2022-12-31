@@ -93,8 +93,6 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
 
-        # env_file = ".env"
-
 
 @lru_cache()
 def get_settings():

@@ -1,0 +1,47 @@
+services:
+  api:
+    container_name: "${APP_NAME}-api"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "botinow-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: unless-stopped
+    env_file:
+      - .env.test
+
+  db:
+    container_name: "${APP_NAME}-database"
+    image: postgres:14
+    restart: unless-stopped
+    env_file:
+      - .env.test
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    container_name: "${APP_NAME}-redis"
+    restart: unless-stopped
+    image: redis:6.2.7
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass test_password --appendonly yes"
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+
+volumes:
+  postgres-data:
+  redis-data:
