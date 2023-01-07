@@ -1,12 +1,12 @@
 x-api-common:
   &api-common
   build:
-    context: .
+    context: ..
     args:
       - ENVIRONMENT=${ENVIRONMENT}
   image: "botinow-backend-app"
   volumes:
-    - .:/app
+    - ..:/app
   command: /app/runserver.sh 8000
   env_file:
     - .env
