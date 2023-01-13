@@ -13,12 +13,12 @@ from app.constants.webhook_type import WebhookType
 from app.constants.trigger import Trigger
 from app.constants.application import Application
 from app.core.celery import celery
-
+from sqlalchemy.orm import Session
 
 @celery.task
 def webhook_proccessor(facebook_webhook_body):
-    db = SessionLocal()
-    redis_client = deps.get_redis_client()
+    db : Session = SessionLocal()
+    redis_client = deps.get_redSessionLocalis_client()
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
 
@@ -27,15 +27,16 @@ def webhook_proccessor(facebook_webhook_body):
             redis_client, db, instagram_page_id=instagram_data.recipient_id
         )
     except Exception:
+        db.close()
         return 0
 
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:
             return None
-
         case WebhookType.MESSAGE_SEEN:
             services.postman.campaign_contact.seen_message(db, mid=instagram_data.mid)
-            return
+            db.close()
+            return None
         case WebhookType.COMMENT:
             save_comment(
                 from_page_id=instagram_data.sender_id,
@@ -43,7 +44,8 @@ def webhook_proccessor(facebook_webhook_body):
                 user_id=user_page_data.user_id,
                 instagram_page_id=instagram_data.recipient_id,
             )
-            return
+            db.close()
+            return None
 
         case WebhookType.LIVE_COMMENT:
             save_comment(
@@ -52,7 +54,8 @@ def webhook_proccessor(facebook_webhook_body):
                 user_id=user_page_data.user_id,
                 instagram_page_id=instagram_data.recipient_id,
             )
-            return
+            db.close()
+            return None
 
         case WebhookType.DELETE_MESSAGE:
             return services.live_chat.message.remove_message_by_mid(
@@ -75,6 +78,7 @@ def webhook_proccessor(facebook_webhook_body):
                 direction=MessageDirection.IN["name"],
                 instagram_page_id=instagram_data.recipient_id,
             )
+            db.close()
             return None
         case WebhookType.STORY_REPLY:
             saved_data = {
@@ -92,7 +96,8 @@ def webhook_proccessor(facebook_webhook_body):
                 direction=MessageDirection.IN["name"],
                 instagram_page_id=instagram_data.recipient_id,
             )
-            return
+            db.close()
+            return None
 
     saved_data = {
         "message": instagram_data.text,
@@ -114,6 +119,7 @@ def webhook_proccessor(facebook_webhook_body):
             db, redis_client, widget_id=instagram_data.payload
         )
         if not chatflow_id:
+            db.close()
             return None
         connection = cache.get_connection_data(
             db,
@@ -122,12 +128,14 @@ def webhook_proccessor(facebook_webhook_body):
             account_id=user_page_data.account_id,
         )
         if not connection:
+            db.close()
             return None
         connection_exist = False
         for detail in connection.details:
             if detail["chatflow_id"] == chatflow_id:
                 connection_exist = True
         if not connection_exist:
+            db.close()
             return None
 
         node = services.bot_builder.node.get_next_node(
@@ -146,6 +154,7 @@ def webhook_proccessor(facebook_webhook_body):
             db, account_id=user_page_data.account_id, application_name="BOT_BUILDER"
         )
         if connections is None:
+            db.close()
             return None
 
         for connection in connections:
@@ -155,6 +164,7 @@ def webhook_proccessor(facebook_webhook_body):
                     chatflow_id = detail["chatflow_id"]
 
         if chatflow_id is None:
+            db.close()
             return None
         try:
             node = services.bot_builder.node.get_chatflow_head_node(
@@ -169,6 +179,7 @@ def webhook_proccessor(facebook_webhook_body):
             )
         except Exception:
             pass
+    db.close()
     return 0
 
 
@@ -208,11 +219,14 @@ def save_comment(
             contact_igs_id=from_page_id,
             information=information,
         )
+        db.close()
         return 0
 
     services.live_chat.contact.update_last_comment_count(
         db, contact_igs_id=contact.contact_igs_id
     )
+    db.close()
+    return 0
 
 
 @celery.task
@@ -244,6 +258,7 @@ def save_live_comment(
             ).to_dict()
 
         except Exception:
+            db.close()
             return 0
 
         information = graph_api.get_contact_information_from_facebook(
@@ -255,11 +270,14 @@ def save_live_comment(
             contact_igs_id=from_page_id,
             information=information,
         )
+        db.close()
         return 0
 
     services.live_chat.contact.update_last_live_comment_count(
         db, contact_igs_id=contact.contact_igs_id
     )
+    db.close()
+    return 0
 
 
 @celery.task
@@ -295,6 +313,7 @@ def save_message(
                 ).to_dict()
 
             except Exception:
+                db.close()
                 return 0
 
             information = graph_api.get_contact_information_from_facebook(
@@ -332,6 +351,7 @@ def save_message(
             direction=direction,
         ),
     )
+    db.close()
     return report
 
 
@@ -343,7 +363,7 @@ def send_widget(
     payload: str,
     user_page_data: dict,
 ):
-    db = SessionLocal()
+    db :Session = SessionLocal()
 
     while widget["widget_type"] in (WidgetType.TEXT["name"], WidgetType.MEDIA["name"]):
         if widget["widget_type"] == WidgetType.MEDIA["name"]:
@@ -394,4 +414,5 @@ def send_widget(
             user_id=user_page_data["user_id"],
             direction=MessageDirection.OUT["name"],
         )
+    db.close()
     return widget

@@ -39,6 +39,7 @@ def save_message(
             direction=MessageDirection.OUT["name"],
         ),
     )
+    db.close()
     return report
 
 
@@ -48,6 +49,7 @@ def campaign_terminal():
     campaigns = services.postman.campaign.get_active_campaigns(db)
 
     if len(campaigns) == 0:
+        db.close()
         return 0
 
     for campaign in campaigns:
@@ -62,6 +64,7 @@ def campaign_terminal():
             )
         else:
             campaign_handler.delay(campaign.id)
+    db.close()
     return 0
 
 
@@ -133,5 +136,5 @@ def campaign_handler(campaign_id):
     services.postman.campaign.change_activity(
         db, campaign_id=campaign_id, is_active=False
     )
-
+    db.close()
     return 0
