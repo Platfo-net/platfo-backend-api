@@ -32,7 +32,7 @@ def connect_instagram_page(
         grant_type="fb_exchange_token",
         client_id=settings.FACEBOOK_APP_ID,
         client_secret=settings.FACEBOOK_APP_SECRET,
-        redirect_uri="https://botinow.com/api/auth/callback/facebook",
+        redirect_uri="https://platfo.net/api/auth/callback/facebook",
         fb_exchange_token=obj_in.facebook_user_token,
     )
 
