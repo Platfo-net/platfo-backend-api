@@ -2,7 +2,7 @@ import datetime
 from uuid import uuid4
 
 from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey , BigInteger
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -13,7 +13,6 @@ class User(Base):
     """
 
     __tablename__ = "users"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
     email = Column(String(100), unique=True, nullable=False)
@@ -22,7 +21,7 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
 
     role_id = Column(
-        UUID(as_uuid=True),
+        BigInteger,
         ForeignKey("roles.id"),
         primary_key=False,
         nullable=False,

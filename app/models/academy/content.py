@@ -4,7 +4,7 @@ from uuid import uuid4
 from slugify import slugify
 
 from sqlalchemy import event
-from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON
+from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON , BigInteger
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 
@@ -31,7 +31,7 @@ class Content(Base):
             target.slug = slugify(value, allow_unicode=True)
 
     user_id = Column(
-        UUID(as_uuid=True),
+        BigInteger,
         ForeignKey("users.id"),
         primary_key=False,
         nullable=True,
