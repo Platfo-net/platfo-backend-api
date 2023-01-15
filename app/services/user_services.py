@@ -78,9 +78,5 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         db.refresh(user)
         return user
 
-    def get(self, db: Session, id: UUID4) -> Optional[models.User]:
-        user = db.query(models.User).filter(models.User.id == id).first()
-        return user
-
 
 user = UserServices(models.User)
