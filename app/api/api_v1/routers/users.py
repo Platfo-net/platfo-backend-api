@@ -45,8 +45,13 @@ def get_users(
     register user
     """
 
-    users = services.user.get_multi(db, skip=100, limit=20)
-    return users
+    users = services.user.get_multi(db, skip=0, limit=20)
+    new_users = []
+    for user in users:
+        user.id = user.uuid
+        user.role.id = user.role.uuid
+        new_users.append(user)
+    return new_users
 
 
 def update_user_me(
@@ -99,4 +104,6 @@ def get_user_me(
     ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
+    user.id = user.uuid
+    user.role.id = user.role.uuid
     return user
