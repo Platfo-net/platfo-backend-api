@@ -23,22 +23,10 @@ def get_chatflow_nodes_edges(
         ],
     ),
 ):
-    chatflow = (
-        db.query(models.bot_builder.Chatflow)
-        .filter(models.bot_builder.Chatflow.id == chatflow_id)
-        .first()
-    )
+    chatflow = services.bot_builder.chatflow.get(db , id = chatflow_id , user_id = current_user.id)
 
-    nodes = (
-        db.query(models.bot_builder.NodeUI)
-        .filter(models.bot_builder.NodeUI.chatflow_id == chatflow_id)
-        .all()
-    )
-    edges = (
-        db.query(models.bot_builder.Edge)
-        .filter(models.bot_builder.Edge.chatflow_id == chatflow_id)
-        .all()
-    )
+    nodes = services.bot_builder.chatflow_ui.get_node_ui(db , chatflow_id = chatflow_id)
+    edges = services.bot_builder.chatflow_ui.get_edge_ui(db , chatflow_id = chatflow_id)
 
     nodes = [
         schemas.bot_builder.NodeUI(
