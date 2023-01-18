@@ -53,7 +53,7 @@ def get_redis_client():
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
-            db=1,
+            db=settings.REDIS_DB_CACHE,
         )
         ping = client.ping()
         if ping is True:

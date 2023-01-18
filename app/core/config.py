@@ -46,8 +46,9 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: str
     REDIS_PORT: str
     REDIS_DB_CELERY: str
+    REDIS_DB_CACHE: str
 
-    CELERY_URI: str
+    CELERY_URI: Optional[str] = None
 
     S3_ROOT_USER: str
 
@@ -87,6 +88,7 @@ class Settings(BaseSettings):
             scheme="redis",
             host=values.get("REDIS_HOST"),
             port=values.get("REDIS_PORT"),
+            password=values.get("REDIS_PASSWORD"),
             path=f"/{values.get('REDIS_DB_CELERY') or ''}",
         )
 
