@@ -30,7 +30,7 @@ class UserUpdatePassword(BaseModel):
 
 
 class UserInDBBase(UserBase):
-    id : Any
+    id : int
     created_at: datetime
     updated_at: datetime
     role : Optional[Role]
