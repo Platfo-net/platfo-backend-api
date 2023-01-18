@@ -4,7 +4,7 @@ x-api-common:
     context: .
     args:
       - ENVIRONMENT=${ENVIRONMENT}
-  image: "botinow-backend-app"
+  image: "platfo-backend-app"
   volumes:
     - .:/app
   command: /app/runserver.sh 8000
@@ -17,7 +17,7 @@ x-api-common:
 
 x-celery-worker-common:
   &celery-worker-common
-  image: "botinow-backend-app"
+  image: "platfo-backend-app"
   build:
     context: .
     args:
@@ -102,7 +102,7 @@ services:
     command: celery -A app.core.celery.celery worker --loglevel=info -n worker-3
 
   celery-flower:
-    image: "botinow-backend-app"
+    image: "platfo-backend-app"
     build: .
     container_name: "${APP_NAME}-celery-flower"
     command: celery -A app.core.celery.celery flower --port=5566

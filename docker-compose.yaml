@@ -5,7 +5,7 @@ services:
       context: .
       args:
         - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app"
+    image: "platfo-backend-app"
     volumes:
       - .:/app
     command: /app/startup.sh 8000
@@ -58,7 +58,7 @@ services:
       MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
 
   celery-worker:
-    image: "botinow-backend-app"
+    image: "platfo-backend-app"
     build: .
     container_name: "${APP_NAME}-celery-worker-1"
     command: celery -A app.core.celery.celery worker --loglevel=info -n w1
@@ -70,7 +70,7 @@ services:
       - redis
 
   celery-beat:
-    image: "botinow-backend-app"
+    image: "platfo-backend-app"
     build: .
     container_name: "${APP_NAME}-celery-beat"
     command: celery -A app.core.celery.celery beat
@@ -82,7 +82,7 @@ services:
       - redis
 
   celery-flower:
-    image: "botinow-backend-app"
+    image: "platfo-backend-app"
     build: .
     container_name: "${APP_NAME}-celery-flower"
     command: celery -A app.core.celery.celery flower --port=5566
