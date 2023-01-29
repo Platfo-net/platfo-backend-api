@@ -40,11 +40,11 @@ def get_accounts_list(
 
     accounts = [
         schemas.Account(
-            id=item.id,
+            id=item.uuid,
             username=item.username,
             profile_image=item.profile_picture_url,
             platform=Platform.INSTAGRAM["name"],
-            page_id=item.facebook_page_id,
+            facebook_page_id=item.facebook_page_id,
         )
         for item in instagram_pages
         if len(instagram_pages) > 0
@@ -65,16 +65,7 @@ def get_account(
         ],
     ),
 ) -> Any:
-    """
-    Get list of accounts from different platforms
-
-
-    Args:
-
-        Id:
-            id of an account
-    """
-    instagram_page = services.instagram_page.get(db, id)
+    instagram_page = services.instagram_page.get_by_uuid(db, uuid=id)
     if not instagram_page:
         raise HTTPException(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
@@ -87,7 +78,7 @@ def get_account(
             detail=Error.ACCOUNT_NOT_FOUND["text"],
         )
     return schemas.AccountDetail(
-        id=instagram_page.id,
+        id=instagram_page.uuid,
         facebook_page_id=instagram_page.facebook_page_id,
         username=instagram_page.username,
         profile_image=instagram_page.profile_picture_url,
@@ -110,7 +101,7 @@ def delete_account(
         ],
     ),
 ) -> Any:
-    instagram_page = services.instagram_page.get(db, id)
+    instagram_page = services.instagram_page.get_by_uuid(db, id)
 
     if not instagram_page:
         raise HTTPException(
