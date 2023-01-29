@@ -12,26 +12,32 @@ class InstagramPageBase(BaseModel):
     information: Optional[dict] = None
     facebook_user_long_lived_token: Optional[str] = None
     facebook_user_id: Optional[str] = None
-    user_id: UUID4
 
 
 class InstagramPageCreate(InstagramPageBase):
-    pass
+    user_id: int
+    
 
 
 class InstagramPageUpdate(InstagramPageBase):
-    pass
+    user_id: int
+
 
 
 class InstagramPageInDBBase(InstagramPageBase):
-    id: Optional[int]
+    id: Optional[UUID4]
 
     class Config:
         orm_mode = True
 
 
-class InstagramPage(InstagramPageInDBBase):
-    pass
+class InstagramPage(BaseModel):
+    id: Optional[UUID4]
+    facebook_page_id: Optional[int] = None
+    instagram_page_id: Optional[int] = None
+    username: Optional[str] = None
+    profile_picture_url: Optional[str] = None
+    information: Optional[dict] = None
 
 
 class InstagramPageInDB(InstagramPageInDBBase):

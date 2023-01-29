@@ -1,3 +1,4 @@
+from app.constants.errors import Error
 import requests
 
 from typing import Any
@@ -8,6 +9,7 @@ from app.constants.role import Role
 from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 from app.core.config import settings
+from fastapi.exceptions import HTTPException
 
 router = APIRouter(prefix="/instagram", tags=["Instagram"])
 
@@ -115,8 +117,8 @@ def connect_instagram_page(
                     ),
                 )
                 services.instagram_page.create(db, obj_in=instagram_page_in)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
     return
 
@@ -128,7 +130,19 @@ def get_page_data_by_instagram_page_id(
     obj_instagram = services.instagram_page.get_page_by_ig_id(
         db, instagram_page_id=instagram_page_id
     )
-    return obj_instagram
+    if not obj_instagram:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
+    return schemas.InstagramPage(
+        id=obj_instagram.uuid,
+        facebook_page_id=obj_instagram.facebook_page_id,
+        instagram_page_id=obj_instagram.instagram_page_id,
+        username=obj_instagram.username,
+        information=obj_instagram.information,
+        profile_picture_url=obj_instagram.profile_picture_url
+    )
 
 
 @router.get(
@@ -141,4 +155,17 @@ def get_page_data_by_facebook_page_id(
         db, facebook_page_id=facebook_page_id
     )
 
-    return obj_instagram
+    if not obj_instagram:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
+
+    return schemas.InstagramPage(
+        id=obj_instagram.uuid,
+        facebook_page_id=obj_instagram.facebook_page_id,
+        instagram_page_id=obj_instagram.instagram_page_id,
+        username=obj_instagram.username,
+        information=obj_instagram.information,
+        profile_picture_url=obj_instagram.profile_picture_url
+    )
