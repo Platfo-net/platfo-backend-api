@@ -8,7 +8,7 @@ services:
     image: "platfo-backend-app"
     volumes:
       - .:/app
-    command: /app/startup.sh 8000
+    command: /app/startup.sh
     ports:
       - "8000:8000"
     depends_on:
