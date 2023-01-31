@@ -18,7 +18,7 @@ class NotificationUpdate(NotificationBase):
 
 
 class Notification(NotificationBase):
-    id: int
+    id: UUID4
     created_at: Optional[datetime] = None
 
     class Config:
@@ -26,7 +26,7 @@ class Notification(NotificationBase):
 
 
 class NotificationListItem(NotificationBase):
-    id: int
+    id: UUID4
     created_at: Optional[datetime] = None
     is_read: Optional[bool] = True
 
