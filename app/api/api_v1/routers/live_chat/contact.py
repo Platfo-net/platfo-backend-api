@@ -10,22 +10,21 @@ from app.constants.role import Role
 from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 
-
 router = APIRouter(prefix="/contact")
 
 
 @router.get("/{id}", response_model=schemas.live_chat.Contact)
 def get_contact(
-    *,
-    db: Session = Depends(deps.get_db),
-    id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     """
         Api for getting and specific contact data
@@ -65,17 +64,17 @@ def get_contact(
 
 @router.put("/{page_id}")
 def update_page_contacts_information(
-    *,
-    db: Session = Depends(deps.get_db),
-    contact_igs_id: str,
-    obj_in: schemas.live_chat.ProfileUpdate,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        contact_igs_id: str,
+        obj_in: schemas.live_chat.ProfileUpdate,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     data = dict()
     data[obj_in.key] = obj_in.value
@@ -88,19 +87,19 @@ def update_page_contacts_information(
 
 @router.post("/all/{facebook_page_id}")
 def get_all_contact_based_on_filters(
-    *,
-    page: int = 1,
-    page_size: int = 20,
-    db: Session = Depends(deps.get_db),
-    facebook_page_id: str,
-    obj_in: List[schemas.live_chat.SearchItem],
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        page: int = 1,
+        page_size: int = 20,
+        db: Session = Depends(deps.get_db),
+        facebook_page_id: str,
+        obj_in: List[schemas.live_chat.SearchItem],
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     """
     Searching in contacts based on filters
@@ -137,9 +136,9 @@ def get_all_contact_based_on_filters(
     )
 
     if not contacts:
-        raise HTTPException(
-            status_code=Error.CONTACT_NOT_FOUND["status_code"],
-            detail=Error.CONTACT_NOT_FOUND["text"],
+        return schemas.live_chat.ContactList(
+            items=[],
+            pagination=schemas.Pagination(),
         )
 
     contacts = [
