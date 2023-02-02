@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 @celery.task
 def webhook_proccessor(facebook_webhook_body):
     db : Session = SessionLocal()
-    redis_client = deps.get_redSessionLocalis_client()
+    redis_client = deps.get_redis_client()
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
 
