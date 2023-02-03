@@ -53,7 +53,7 @@ def get_redis_client():
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
-            db=1,
+            db=settings.REDIS_DB_CACHE,
         )
         ping = client.ping()
         if ping is True:
@@ -74,6 +74,7 @@ def get_user_from_cache(
         data = dict(
             id=user.id,
             uuid = str(user.uuid),
+            role_id = user.role_id,
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
@@ -92,6 +93,7 @@ def get_user_from_cache(
     return models.User(
         id=user.get("id"),
         uuid=UUID4(user.get("uuid")),
+        role_id=user.get("role_id"),
         first_name=user.get("first_name", None),
         last_name=user.get("last_name", None),
         email=user.get("email", None),

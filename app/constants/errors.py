@@ -8,6 +8,7 @@ class Error:
         "status_code": 409,
         "code": 1,
     }
+
     PERMISSION_DENIED_ERROR = {
         "text": "Permission denied",
         "status_code": 401,
@@ -115,7 +116,11 @@ class Error:
         "status_code": 400,
         "code": 80,
     }
-
+    INVALID_DETAILS = {
+        "text": "Invalid Detail",
+        "status_code": 400,
+        "code": 81
+    }
     INVALID_FIELDS_OPERATORS = {
         "text": "Invalid fields or operators",
         "status_code": 400,

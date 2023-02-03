@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 @celery.task
 def webhook_proccessor(facebook_webhook_body):
     db : Session = SessionLocal()
-    redis_client = deps.get_redSessionLocalis_client()
+    redis_client = deps.get_redis_client()
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
 
@@ -29,6 +29,8 @@ def webhook_proccessor(facebook_webhook_body):
     except Exception:
         db.close()
         return 0
+
+    print(instagram_data.type)
 
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:
@@ -101,10 +103,10 @@ def webhook_proccessor(facebook_webhook_body):
 
     saved_data = {
         "message": instagram_data.text,
-        "widget_type": WidgetType.TEXT["name"],
+            "widget_type": WidgetType.TEXT["name"],
         "id": str(uuid4()),
     }
-
+    print("-*------------------------------------------")
     save_message(
         from_page_id=instagram_data.sender_id,
         to_page_id=user_page_data.facebook_page_id,
@@ -185,10 +187,10 @@ def webhook_proccessor(facebook_webhook_body):
 
 @celery.task
 def save_comment(
-    from_page_id: str = None,
-    to_page_id: str = None,
-    user_id: Any = None,
-    instagram_page_id: str = None,
+    from_page_id: int = None,
+    to_page_id: int = None,
+    user_id: int = None,
+    instagram_page_id: int = None,
 ):
     db = SessionLocal()
 

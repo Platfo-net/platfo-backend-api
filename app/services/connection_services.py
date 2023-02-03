@@ -12,16 +12,22 @@ UpdateSchemaType = schemas.ConnectionUpdate
 
 class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaType]):
     def create(
-        self, db: Session, *, obj_in: CreateSchemaType, user_id: UUID4
+        self,
+        db: Session,
+        *,
+        obj_in: CreateSchemaType,
+        details: List[dict],
+        account_id: int,
+        user_id: int
     ) -> Optional[ModelType]:
 
         db_obj = self.model(
             name=obj_in.name,
             description=obj_in.description,
-            account_id=obj_in.account_id,
+            account_id=account_id,
             application_name=obj_in.application_name,
             user_id=user_id,
-            details=obj_in.details,
+            details=details,
         )
         db.add(db_obj)
         db.commit()
@@ -32,7 +38,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         self,
         db: Session,
         *,
-        user_id: UUID4,
+        user_id: int,
         account_id: UUID4 = None,
     ) -> List[ModelType]:
         connections = db.query(self.model).filter(self.model.user_id == user_id)
@@ -62,7 +68,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         return db_obj
 
     def get_page_connections(
-        self, db: Session, *, account_id: str, application_name: str
+        self, db: Session, *, account_id: int, application_name: str
     ) -> List[ModelType]:
         return (
             db.query(self.model)
@@ -74,7 +80,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         )
 
     def get_by_application_name_and_account_id(
-        self, db: Session, *, account_id: str, application_name: str
+        self, db: Session, *, account_id: int, application_name: str
     ) -> Optional[ModelType]:
         return (
             db.query(self.model)

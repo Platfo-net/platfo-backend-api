@@ -6,12 +6,12 @@ class ConnectionBase(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     application_name: Optional[str] = None
-    account_id: Optional[int] = None
     details: List[dict]
 
 
 class ConnectionCreate(ConnectionBase):
-    pass
+    account_id: Optional[UUID4] = None
+    
 
 
 class ConnectionUpdate(ConnectionCreate):
@@ -19,8 +19,8 @@ class ConnectionUpdate(ConnectionCreate):
 
 
 class ConnectionInDBBase(ConnectionBase):
-    id: int
-
+    id: UUID4
+    account_id: Optional[UUID4] = None
     class Config:
         orm_mode = True
 

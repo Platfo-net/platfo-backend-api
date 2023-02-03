@@ -11,7 +11,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.cache import remove_data_from_cache
-
+import copy
 router = APIRouter(prefix="/connection", tags=["Connection"])
 
 
@@ -44,9 +44,10 @@ def get_list_of_connections(
 
         List of a user connection
     """
+    account = services.instagram_page.get_by_uuid(db, account_id)
 
     connections = services.connection.get_by_user_and_account_id(
-        db, user_id=current_user.id, account_id=account_id
+        db, user_id=current_user.id, account_id=account.id
     )
     new_connections = []
 
@@ -80,15 +81,14 @@ def create_connection(
         ],
     ),
 ):
-    """
-    Endpoint for creating connection
-    detail: [{
-        "trigger": "string",
-        "chatflow_id": "string"
-      }]
-    """
+    account = services.instagram_page.get_by_uuid(db, obj_in.account_id)
+    if not account:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
     connection = services.connection.get_by_application_name_and_account_id(
-        db, application_name=obj_in.application_name, account_id=obj_in.account_id
+        db, application_name=obj_in.application_name, account_id=account.id
     )
     if connection:
         raise HTTPException(
@@ -96,9 +96,34 @@ def create_connection(
             detail=Error.CONNECTION_EXIST["text"],
         )
 
-    connection = services.connection.create(db, obj_in=obj_in, user_id=current_user.id)
+    changed_detail_chatflow_id_obj_in = []
+    try:
+        details = copy.deepcopy(obj_in.details)
+        for detail in details:
+            chatflow = services.bot_builder.chatflow.get_by_uuid(db, detail["chatflow_id"])
+            detail["chatflow_id"] = chatflow.id
 
-    return connection
+    except KeyError:
+        raise HTTPException(
+            status_code=Error.INVALID_DETAILS["status_code"],
+            detail=Error.INVALID_DETAILS["text"],
+        )
+    connection = services.connection.create(
+        db,
+        obj_in=obj_in,
+        account_id=account.id,
+        details=details,
+        user_id=current_user.id
+    )
+
+    return schemas.Connection(
+        id=connection.uuid,
+        name=connection.name,
+        description=connection.description,
+        application_name=connection.application_name,
+        details=obj_in.details,
+        account_id=obj_in.account_id
+    )
 
 
 @router.get("/{connection_id}", response_model=schemas.Connection)
@@ -114,28 +139,27 @@ def get_connection_by_id(
         ],
     ),
 ):
-    """
-    Get a connection and it's detail by connecion id.
-        all connection chatflows will return in this API
 
-    Be Careful: Send all of connection chatflows in this endpoint
+    connection = services.connection.get_by_uuid(db, connection_id)
 
-    Args:
-
-    connection_id (UUID4, optional): Id of a connection
-    """
-
-    connection = services.connection.get(db, id=connection_id)
     if not connection:
         raise HTTPException(
             status_code=Error.INVALID_CONNECTION_ID["status_code"],
             detail=Error.INVALID_CONNECTION_ID["text"],
         )
+    changed_detail_chatflow_id = []
+
+    for detail in connection.details:
+        chatflow = services.bot_builder.chatflow.get(
+            db, id=detail["chatflow_id"], user_id=current_user.id)
+        detail["chatflow_id"] = chatflow.uuid
+
+    account = services.instagram_page.get(db, connection.account_id)
     return schemas.Connection(
-        id=connection.id,
+        id=connection.uuid,
         name=connection.name,
         description=connection.description,
-        account_id=connection.account_id,
+        account_id=account.uuid,
         application_name=connection.application_name,
         details=connection.details,
     )
@@ -155,12 +179,7 @@ def delete_connection(
         ],
     ),
 ):
-    """
-    Endpoint for delete a user connection
-    Args:
-        connection_id (UUID4): Id of a connection related to a user
-    """
-    connection = services.connection.get(db, id=connection_id)
+    connection = services.connection.get_by_uuid(db, connection_id)
     key = f"{connection.application_name}+{str(connection.account_id)}"
 
     remove_data_from_cache(redis_client, key=key)
@@ -171,7 +190,7 @@ def delete_connection(
             detail=Error.CONNECTION_NOT_FOUND["detail"],
         )
 
-    services.connection.remove(db, id=connection_id)
+    services.connection.remove(db, id=connection.id)
     return
 
 
@@ -190,25 +209,24 @@ def update_connection(
         ],
     ),
 ):
-    """
-    Endpoint for update a connection
-    Args:
-        connection_id (UUID4): Id of a connection related to a user
-    """
+    account = services.instagram_page.get_by_uuid(db, obj_in.account_id)
+    if not account:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
     connection = services.connection.get_by_application_name_and_account_id(
-        db, application_name=obj_in.application_name, account_id=obj_in.account_id
+        db, application_name=obj_in.application_name, account_id=account.id
     )
 
-    if connection:
+    if connection and connection.uuid != connection_id:
         raise HTTPException(
             status_code=Error.CONNECTION_EXIST["status_code"],
             detail=Error.CONNECTION_EXIST["text"],
         )
 
-    old_connection = services.connection.get(db, id=connection_id)
+    old_connection = services.connection.get_by_uuid(db, connection_id)
     key = f"{old_connection.application_name}+{str(old_connection.account_id)}"
-
-    remove_data_from_cache(redis_client, key=key)
 
     if old_connection.user_id != current_user.id:
         raise HTTPException(
@@ -220,15 +238,30 @@ def update_connection(
             status_code=Error.CONNECTION_NOT_FOUND["status_code"],
             detail=Error.CONNECTION_NOT_FOUND["text"],
         )
+    remove_data_from_cache(redis_client, key=key)
+
+    obj_in.account_id = account.id
+    details = copy.deepcopy(obj_in.details)
+
+    for detail in obj_in.details:
+        chatflow = services.bot_builder.chatflow.get_by_uuid(db, detail["chatflow_id"])
+        detail["chatflow_id"] = chatflow.id
 
     connection = services.connection.update(
         db, db_obj=old_connection, obj_in=obj_in, user_id=current_user.id
     )
 
-    return connection
+    return schemas.Connection(
+        id=connection.uuid,
+        name=obj_in.name,
+        description=obj_in.description,
+        application_name=obj_in.application_name,
+        details=details,
+        account_id=account.uuid,
+    )
 
 
-@router.put("/chatflow/{state}/{page_id}/")
+# @router.put("/chatflow/{state}/{page_id}/" , deprecated=True)
 def disable_chatflow_for_page(
     *,
     db: Session = Depends(deps.get_db),
