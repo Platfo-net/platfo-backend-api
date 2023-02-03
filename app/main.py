@@ -14,6 +14,7 @@ app = FastAPI(
     redoc_url=None if settings.ENVIRONMENT == "prod" else "/redoc",
 )
 
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,7 +24,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/health", tags=["health-check"])
