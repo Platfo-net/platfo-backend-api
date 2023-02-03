@@ -52,7 +52,7 @@ def get_contact(
         contact_igs_id=contact.contact_igs_id,
         user_page_id=contact.user_page_id,
         user_id=contact.user_id,
-        id=contact.id,
+        id=contact.uuid,
         last_message_at=contact.last_message_at,
         information=contact.information,
         last_message=str(contact.last_message),
@@ -62,7 +62,7 @@ def get_contact(
     )
 
 
-@router.put("/{page_id}")
+@router.put("/{page_id}" , deprecated=True)
 def update_page_contacts_information(
         *,
         db: Session = Depends(deps.get_db),
@@ -91,7 +91,7 @@ def get_all_contact_based_on_filters(
         page: int = 1,
         page_size: int = 20,
         db: Session = Depends(deps.get_db),
-        facebook_page_id: str,
+        facebook_page_id: int,
         obj_in: List[schemas.live_chat.SearchItem],
         current_user: models.User = Security(
             deps.get_current_active_user,
@@ -126,7 +126,17 @@ def get_all_contact_based_on_filters(
 
             live_comment_count
     """
-
+    account = services.instagram_page.get_by_facebook_page_id(db , facebook_page_id=facebook_page_id)
+    if account.user_id != current_user.id :
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
+    if not account:
+        raise HTTPException(
+            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
+            detail=Error.ACCOUNT_NOT_FOUND["text"],
+        )
     contacts, pagination = services.live_chat.contact.get_multi(
         db=db,
         facebook_page_id=facebook_page_id,
@@ -145,7 +155,7 @@ def get_all_contact_based_on_filters(
         schemas.live_chat.Contact(
             contact_igs_id=contact.contact_igs_id,
             user_page_id=contact.user_page_id,
-            id=contact.id,
+            id=contact.uuid,
             last_message_at=contact.last_message_at,
             information=contact.information,
             last_message=contact.last_message,
@@ -156,7 +166,6 @@ def get_all_contact_based_on_filters(
             first_impression=contact.first_impression,
         )
         for contact in contacts
-        if len(contacts)
     ]
 
     return schemas.live_chat.ContactList(items=contacts, pagination=pagination)

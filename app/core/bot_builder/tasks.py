@@ -284,13 +284,13 @@ def save_live_comment(
 
 @celery.task
 def save_message(
-    from_page_id: str = None,
-    to_page_id: str = None,
+    from_page_id: int = None,
+    to_page_id: int = None,
     mid: str = None,
     content: dict = None,
-    user_id: Any = None,
+    user_id: int = None,
     direction: str = None,
-    instagram_page_id: str = None,
+    instagram_page_id: int = None,
 ):
 
     db = SessionLocal()
@@ -418,3 +418,4 @@ def send_widget(
         )
     db.close()
     return widget
+
