@@ -16,6 +16,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         db: Session,
         *,
         obj_in: CreateSchemaType,
+        details: List[dict],
         account_id: int,
         user_id: int
     ) -> Optional[ModelType]:
@@ -26,7 +27,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
             account_id=account_id,
             application_name=obj_in.application_name,
             user_id=user_id,
-            details=obj_in.details,
+            details=details,
         )
         db.add(db_obj)
         db.commit()
@@ -37,7 +38,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         self,
         db: Session,
         *,
-        user_id: UUID4,
+        user_id: int,
         account_id: UUID4 = None,
     ) -> List[ModelType]:
         connections = db.query(self.model).filter(self.model.user_id == user_id)

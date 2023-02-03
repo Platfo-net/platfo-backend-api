@@ -6,8 +6,8 @@ from app.schemas.pagination import Pagination
 
 
 class ContactBase(BaseModel):
-    contact_igs_id: str
-    user_page_id: str
+    contact_igs_id: int
+    user_page_id: int
     user_id: UUID4
     comment_count: int = 0
     message_count: int = 0

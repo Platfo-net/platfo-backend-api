@@ -40,7 +40,7 @@ def get_contact(
 
     """
 
-    contact = services.live_chat.contact.get(db, id=id)
+    contact = services.live_chat.contact.get_by_uuid(db, id)
 
     if not contact:
         raise HTTPException(

@@ -37,7 +37,7 @@ class ChatflowServices:
             .first()
         )
 
-    def get_by_uuid(self, db: Session, *, uuid):
+    def get_by_uuid(self, db: Session,uuid):
         return db.query(self.model).filter(self.model.uuid == uuid).first()
 
     def get_multi(
