@@ -95,7 +95,7 @@ class CampaignServices:
 
         return (
             db.query(models.postman.Campaign)
-            .filter(models.postman.Campaign.id == campaign_id)
+            .filter(models.postman.Campaign.id == id)
             .first()
         )
 
