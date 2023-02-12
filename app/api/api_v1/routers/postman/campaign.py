@@ -17,7 +17,7 @@ def get_all_user_campaigns(
     db: Session = Depends(deps.get_db),
     page: int = 1,
     page_size: int = 20,
-    facebook_page_id: str = None,
+    facebook_page_id: int = None,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[

@@ -17,6 +17,7 @@ from .group import (
     GroupUpdate,
     GroupCreateApiSchemas,
     GroupUpdateApiSchemas,
+    GroupContactCreate,
 )
 
 from .group_contact import GroupContact, GroupContactListItem, ContactSample

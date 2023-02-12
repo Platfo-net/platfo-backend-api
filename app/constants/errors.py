@@ -144,3 +144,21 @@ class Error:
         "status_code": 400,
         "code": 93,
     }
+
+    GROUP_NOT_FOUND = {
+        "text": "Group not found!",
+        "status_code": 404,
+        "code": 101,
+    }
+
+    GROUP_NOT_FOUND_ACCESS_DENIED = {
+        "text": "Group not found!",
+        "status_code": 404,
+        "code": 102,
+    }
+
+    GROUP_EMPTY_CONTACT = {
+        "text": "Group contacts cannot be empty!",
+        "status_code": 400,
+        "code": 103,
+    }

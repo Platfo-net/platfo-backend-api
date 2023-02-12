@@ -1,9 +1,10 @@
+from app.constants.errors import Error
 from pydantic import UUID4
 
 from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 
 
@@ -14,7 +15,7 @@ router = APIRouter(prefix="/group")
 def get_groups(
     *,
     db: Session = Depends(deps.get_db),
-    facebook_page_id: str,
+    facebook_page_id: int,
     page: int = 1,
     page_size: int = 20,
     current_user: models.User = Security(
@@ -58,7 +59,7 @@ def get_groups(
             )
         groups.append(
             schemas.postman.GroupContactSample(
-                id=item.id,
+                id=item.uuid,
                 name=item.name,
                 description=item.description,
                 contacts=samples,
@@ -81,6 +82,12 @@ def create_group(
         ],
     ),
 ):
+    if not obj_in.contacts:
+        raise HTTPException(
+            status_code=Error.GROUP_EMPTY_CONTACT["status_code"],
+            detail=Error.GROUP_EMPTY_CONTACT["text"],
+        )
+
     db_obj = services.postman.group.create(
         db,
         obj_in=schemas.postman.GroupCreate(
@@ -91,12 +98,23 @@ def create_group(
         user_id=current_user.id,
     )
 
+    contacts_uuid = [item.contact_id for item in obj_in.contacts]
+    contacts = services.live_chat.contact.get_bulk_by_uuid(db, contacts_id=contacts_uuid)
+
+    contacts_in = [
+        schemas.postman.GroupContactCreate(
+            contact_id=item.id,
+            contact_igs_id=item.contact_igs_id,
+        )for item in contacts
+    ]
     services.postman.group_contact.create_bulk(
-        db, objs_in=obj_in.contacts, group_id=db_obj.id
+        db, objs_in=contacts_in, group_id=db_obj.id
     )
 
     return schemas.postman.Group(
-        id=db_obj.id, name=db_obj.name, description=db_obj.description
+        id=db_obj.uuid,
+        name=db_obj.name,
+        description=db_obj.description
     )
 
 
@@ -113,8 +131,20 @@ def remove_group(
         ],
     ),
 ):
-    services.postman.group_contact.remove_bulk(db, group_id=id)
-    services.postman.group.remove(db, id=id, user_id=current_user.id)
+    group = services.postman.group.get_by_uuid(db, id)
+    if not group:
+        raise HTTPException(
+            status_code=Error.GROUP_NOT_FOUND["status_code"],
+            detail=Error.GROUP_NOT_FOUND["text"],
+        )
+    if group.user_id != current_user.id:
+        raise HTTPException(
+            status_code=Error.GROUP_NOT_FOUND_ACCESS_DENIED["status_code"],
+            detail=Error.GROUP_NOT_FOUND_ACCESS_DENIED["text"],
+        )
+
+    services.postman.group_contact.remove_bulk(db, group_id=group.id)
+    services.postman.group.remove(db, id=group.id)
 
     return
 
@@ -133,8 +163,14 @@ def update_group(
         ],
     ),
 ):
+    if not obj_in.contacts:
+        raise HTTPException(
+            status_code=Error.GROUP_EMPTY_CONTACT["status_code"],
+            detail=Error.GROUP_EMPTY_CONTACT["text"],
+        )
 
-    db_obj = services.postman.group.get(db, id=id)
+    db_obj = services.postman.group.get_by_uuid(db, id)
+
     group = services.postman.group.update(
         db,
         db_obj=db_obj,
@@ -143,12 +179,21 @@ def update_group(
             name=obj_in.name, description=obj_in.description
         ),
     )
-    services.postman.group_contact.remove_bulk(db, group_id=id)
+    services.postman.group_contact.remove_bulk(db, group_id=group.id)
 
+    contacts_uuid = [item.contact_id for item in obj_in.contacts]
+    contacts = services.live_chat.contact.get_bulk_by_uuid(db, contacts_id=contacts_uuid)
+
+    contacts_in = [
+        schemas.postman.GroupContactCreate(
+            contact_id=item.id,
+            contact_igs_id=item.contact_igs_id,
+        )for item in contacts
+    ]
     services.postman.group_contact.create_bulk(
-        db, objs_in=obj_in.contacts, group_id=db_obj.id
+        db, objs_in=contacts_in, group_id=db_obj.id
     )
 
     return schemas.postman.Group(
-        id=group.id, name=group.name, description=group.description
+        id=group.uuid, name=group.name, description=group.description
     )

@@ -38,3 +38,8 @@ class GroupContactSample(GroupBase):
 class GroupListApi(BaseModel):
     items: List[GroupContactSample]
     pagination: Pagination
+
+
+class GroupContactCreate(BaseModel):
+    contact_id: Optional[int]
+    contact_igs_id: Optional[int]

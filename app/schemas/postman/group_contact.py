@@ -3,7 +3,7 @@ from app.schemas.live_chat import Contact
 
 
 class GroupContact(BaseModel):
-    contact_igs_id: str
+    contact_igs_id: int
     contact_id: UUID4
 
 

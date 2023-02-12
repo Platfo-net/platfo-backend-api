@@ -22,8 +22,8 @@ class CampaignServices:
         self,
         db: Session,
         *,
-        facebook_page_id: str = None,
-        user_id: UUID4,
+        facebook_page_id: int = None,
+        user_id: int,
         page: int = 1,
         page_size: int = 20,
     ):
@@ -50,7 +50,7 @@ class CampaignServices:
         return pagination, campaigns
 
     def create(
-        self, db: Session, *, obj_in: CreateSchemaType, user_id: UUID4
+        self, db: Session, *, obj_in: CreateSchemaType, user_id: int
     ) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)
@@ -91,7 +91,7 @@ class CampaignServices:
             .all()
         )
 
-    def get(self, db: Session, campaign_id: UUID4) -> ModelType:
+    def get(self, db: Session, id: int) -> ModelType:
 
         return (
             db.query(models.postman.Campaign)
@@ -99,16 +99,24 @@ class CampaignServices:
             .first()
         )
 
-    def get_by_detail(self, db: Session, campaign_id: UUID4):
+    def get_by_uuid(self, db: Session, uuid: UUID4) -> ModelType:
+
+        return (
+            db.query(models.postman.Campaign)
+            .filter(models.postman.Campaign.uuid == uuid)
+            .first()
+        )
+
+    def get_by_detail(self, db: Session, id: int):
         campaign = (
             db.query(models.postman.Campaign)
-            .filter(models.postman.Campaign.id == campaign_id)
+            .filter(models.postman.Campaign.id == id)
             .first()
         )
 
         campaign_contacts = (
             db.query(models.postman.CampaignContact)
-            .filter(models.postman.CampaignContact.campaign_id == campaign.id)
+            .filter(models.postman.CampaignContact.campaign_id == id)
             .all()
         )
 
@@ -130,11 +138,11 @@ class CampaignServices:
         self,
         db: Session,
         *,
-        campaign_id: UUID4,
+        id: int,
         status: str = CampaignStatus.DONE,
     ) -> ModelType:
 
-        campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
+        campaign = services.postman.campaign.get(db=db, campaign_id=id)
         campaign.status = status
 
         db.add(campaign)
@@ -146,11 +154,11 @@ class CampaignServices:
         self,
         db: Session,
         *,
-        campaign_id: UUID4,
+        id: int,
         is_draft: bool,
     ) -> ModelType:
 
-        campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
+        campaign = services.postman.campaign.get(db=db, campaign_id=id)
         campaign.is_draft = is_draft
 
         db.add(campaign)
