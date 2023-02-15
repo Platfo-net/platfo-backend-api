@@ -28,7 +28,7 @@ class ContactServices:
 
     def get(self, db: Session, id: int):
         return db.query(self.model).filter(self.model.id == id).first()
-    
+
     def get_by_uuid(self, db: Session, uuid: UUID4):
         return db.query(self.model).filter(self.model.uuid == uuid).first()
 
@@ -146,6 +146,11 @@ class ContactServices:
             .filter(models.live_chat.Contact.id.in_(contacts_id))
             .all()
         )
+
+    def get_bulk_by_uuid(self, db: Session, *, contacts_id: List[UUID4]):
+        return db.query(self.model).filter(
+            models.live_chat.Contact.uuid.in_(contacts_id)
+        ).all()
 
     def get_multi(
         self,

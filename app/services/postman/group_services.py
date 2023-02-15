@@ -13,8 +13,8 @@ class GroupServices:
         self,
         db: Session,
         *,
-        facebook_page_id: str,
-        user_id: UUID4,
+        facebook_page_id: int,
+        user_id: int,
         page: int = 1,
         page_size: int = 20,
     ):
@@ -49,7 +49,7 @@ class GroupServices:
         db: Session,
         *,
         obj_in: schemas.postman.GroupCreate,
-        user_id: UUID4,
+        user_id: int,
     ):
         db_obj = self.model(
             name=obj_in.name,
@@ -68,25 +68,22 @@ class GroupServices:
         *,
         db_obj: models.postman.Group,
         obj_in: schemas.postman.GroupUpdate,
-        user_id: UUID4,
     ):
 
         db_obj.name = obj_in.name
         db_obj.description = obj_in.description
-        db_obj.user_id = user_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
 
-    def get(self, db: Session, id: UUID4):
+    def get(self, db: Session, id: int):
         return db.query(self.model).filter(self.model.id == id).first()
 
-    def remove(self, db: Session, id: UUID4, user_id: UUID4):
-        db.query(self.model).filter(
-            self.model.user_id == user_id, self.model.id == id
-        ).first()
+    def get_by_uuid(self, db: Session, uuid: UUID4):
+        return db.query(self.model).filter(self.model.uuid == uuid).first()
 
+    def remove(self, db: Session, *, id: int):
         db_obj = self.get(db, id)
         db.delete(db_obj)
         db.commit()

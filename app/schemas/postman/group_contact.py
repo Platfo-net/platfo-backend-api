@@ -1,9 +1,13 @@
+from typing import List
+
 from pydantic import BaseModel, UUID4
+
+from app.schemas.pagination import Pagination
 from app.schemas.live_chat import Contact
 
 
 class GroupContact(BaseModel):
-    contact_igs_id: str
+    contact_igs_id: int
     contact_id: UUID4
 
 
@@ -17,3 +21,8 @@ class GroupContactListItem(GroupContact):
 class ContactSample(BaseModel):
     profile_image: str = None
     username: str = None
+
+
+class CampaignContactApiSchema(BaseModel):
+    items: List[ContactSample]
+    pagination: Pagination

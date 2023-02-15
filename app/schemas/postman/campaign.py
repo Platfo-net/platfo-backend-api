@@ -12,6 +12,7 @@ class CampaignCreate(BaseModel):
     facebook_page_id: str = None
     is_draft: bool = True
     content: dict = None
+    group_name: str = None
 
 
 class CampaignUpdate(BaseModel):
@@ -22,6 +23,7 @@ class CampaignUpdate(BaseModel):
 
 
 class Campaign(BaseModel):
+    id: UUID4
     name: str = None
     description: str = None
     created_at: datetime = None
@@ -36,7 +38,6 @@ class CampaignDetail(Campaign):
     account: Account
     content: dict = None
     user_id: UUID4
-    contacts: List = None
     sent_count: int = 0
     seen_count: int = 0
     total_contact_count: int = 0
@@ -50,7 +51,7 @@ class CampaignListApi(BaseModel):
 class CampaignCreateApiSchema(BaseModel):
     name: str = None
     description: str = None
-    facebook_page_id: str = None
+    facebook_page_id: int = None
     group_id: str = None
     content: dict = None
     is_draft: bool = True

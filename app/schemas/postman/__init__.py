@@ -5,6 +5,7 @@ from .campaign import (
     CampaignListApi,
     CampaignCreateApiSchema,
     CampaignDetail,
+
 )
 
 from .campaign_contact import CampaignContactCreate, CampaignContactUpdate
@@ -17,6 +18,7 @@ from .group import (
     GroupUpdate,
     GroupCreateApiSchemas,
     GroupUpdateApiSchemas,
+    GroupContactCreate,
 )
 
-from .group_contact import GroupContact, GroupContactListItem, ContactSample
+from .group_contact import GroupContact, GroupContactListItem, ContactSample, CampaignContactApiSchema
