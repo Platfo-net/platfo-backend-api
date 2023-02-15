@@ -1,14 +1,11 @@
 import datetime
-from uuid import uuid4
 
 from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey , BigInteger
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
 
 class Chatflow(Base):
-
     __tablename__ = "bot_builder_chatflows"
 
     name = Column(String(255), nullable=True)
@@ -18,7 +15,7 @@ class Chatflow(Base):
         BigInteger,
         ForeignKey("users.id"),
         nullable=True,
-        index = True
+        index=True
     )
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)

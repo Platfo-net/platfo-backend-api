@@ -62,7 +62,7 @@ def get_contact(
     )
 
 
-@router.put("/{page_id}" , deprecated=True)
+@router.put("/{page_id}", deprecated=True)
 def update_page_contacts_information(
         *,
         db: Session = Depends(deps.get_db),
@@ -101,33 +101,11 @@ def get_all_contact_based_on_filters(
             ],
         ),
 ):
-    """
-    Searching in contacts based on filters
-    Args:
-        Valid Operators:
-            LTE: Less than or equal to
-
-            GTE: Greater than or equal to
-
-            LT: Less than
-
-            GT: Greater than
-
-            NE: Not equal to
-
-            EQ: Equal to
-
-
-        Valid Field Name:
-
-            message_count
-
-            comment_count
-
-            live_comment_count
-    """
-    account = services.instagram_page.get_by_facebook_page_id(db , facebook_page_id=facebook_page_id)
-    if account.user_id != current_user.id :
+    account = services.instagram_page.get_by_facebook_page_id(
+        db,
+        facebook_page_id=facebook_page_id
+    )
+    if account.user_id != current_user.id:
         raise HTTPException(
             status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
             detail=Error.ACCOUNT_NOT_FOUND["text"],

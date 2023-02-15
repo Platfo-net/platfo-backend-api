@@ -1,12 +1,9 @@
-from uuid import uuid4
 from app.db.base_class import Base
-from sqlalchemy import Column, String, ForeignKey, JSON , BigInteger
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, ForeignKey, JSON, BigInteger
 from sqlalchemy.orm import relationship
 
 
 class InstagramPage(Base):
-
     __tablename__ = "instagram_pages"
 
     facebook_user_long_lived_token = Column(String(255), nullable=True)

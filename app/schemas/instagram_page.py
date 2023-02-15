@@ -16,12 +16,10 @@ class InstagramPageBase(BaseModel):
 
 class InstagramPageCreate(InstagramPageBase):
     user_id: int
-    
 
 
 class InstagramPageUpdate(InstagramPageBase):
     user_id: int
-
 
 
 class InstagramPageInDBBase(InstagramPageBase):

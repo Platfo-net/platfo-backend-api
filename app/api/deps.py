@@ -1,24 +1,24 @@
 import json
 import logging
-import redis
 import sys
-
 from typing import Generator, Optional
 
-from app import services, models, schemas
-from app.constants.role import Role
-from app.core import security
-from app.core.config import settings
-from app.db.session import SessionLocal
+import redis
 from fastapi import Depends, HTTPException, Security
+from fastapi import WebSocket, Request
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
-from sqlalchemy.orm import Session
-from app.constants.errors import Error
-from fastapi import WebSocket, Request
-from redis.client import Redis
-from app.core.cache import get_data_from_cache, set_data_to_cache
 from pydantic import UUID4
+from redis.client import Redis
+from sqlalchemy.orm import Session
+
+from app import services, models, schemas
+from app.constants.errors import Error
+from app.constants.role import Role
+from app.core import security
+from app.core.cache import get_data_from_cache, set_data_to_cache
+from app.core.config import settings
+from app.db.session import SessionLocal
 
 
 class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
@@ -33,7 +33,6 @@ reusable_oauth2 = CustomOAuth2PasswordBearer(
         Role.USER["name"]: Role.USER["description"],
     },
 )
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -64,7 +63,7 @@ def get_redis_client():
 
 
 def get_user_from_cache(
-    redis_client: Redis, db: Session, uuid: UUID4
+        redis_client: Redis, db: Session, uuid: UUID4
 ) -> Optional[models.User]:
     user = get_data_from_cache(redis_client, key=str(uuid))
     if user is None:
@@ -73,8 +72,8 @@ def get_user_from_cache(
             return None
         data = dict(
             id=user.id,
-            uuid = str(user.uuid),
-            role_id = user.role_id,
+            uuid=str(user.uuid),
+            role_id=user.role_id,
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
@@ -106,10 +105,10 @@ def get_user_from_cache(
 
 
 def get_current_user(
-    security_scopes: SecurityScopes,
-    db: Session = Depends(get_db),
-    token: str = Depends(reusable_oauth2),
-    redis_client: Redis = Depends(get_redis_client),
+        security_scopes: SecurityScopes,
+        db: Session = Depends(get_db),
+        token: str = Depends(reusable_oauth2),
+        redis_client: Redis = Depends(get_redis_client),
 ) -> models.User:
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
@@ -132,7 +131,7 @@ def get_current_user(
             status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["status_code"],
             detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["text"],
         )
-    
+
     user = get_user_from_cache(redis_client, db, token_data.uuid)
 
     if not user:
@@ -153,10 +152,10 @@ def get_current_user(
 
 
 def get_current_active_user(
-    current_user: models.User = Security(
-        get_current_user,
-        scopes=[],
-    ),
+        current_user: models.User = Security(
+            get_current_user,
+            scopes=[],
+        ),
 ) -> models.User:
     if not services.user.is_active(current_user):
         raise HTTPException(

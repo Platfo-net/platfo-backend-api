@@ -12,21 +12,21 @@ router = APIRouter(prefix="/chatflow-ui")
 
 @router.get("/nodes/all/{chatflow_id}")
 def get_chatflow_nodes_edges(
-    *,
-    db: Session = Depends(deps.get_db),
-    chatflow_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        chatflow_id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.ADMIN["name"],
+                Role.USER["name"],
+            ],
+        ),
 ):
-    chatflow = services.bot_builder.chatflow.get(db , id = chatflow_id , user_id = current_user.id)
+    chatflow = services.bot_builder.chatflow.get(db, id=chatflow_id, user_id=current_user.id)
 
-    nodes = services.bot_builder.chatflow_ui.get_node_ui(db , chatflow_id = chatflow_id)
-    edges = services.bot_builder.chatflow_ui.get_edge_ui(db , chatflow_id = chatflow_id)
+    nodes = services.bot_builder.chatflow_ui.get_node_ui(db, chatflow_id=chatflow_id)
+    edges = services.bot_builder.chatflow_ui.get_edge_ui(db, chatflow_id=chatflow_id)
 
     nodes = [
         schemas.bot_builder.NodeUI(
@@ -65,19 +65,18 @@ def get_chatflow_nodes_edges(
 
 @router.post("/{chatflow_id}")
 def create_chatflow_nodes_edges(
-    *,
-    db: Session = Depends(deps.get_db),
-    chatflow_id: UUID4,
-    obj_in: schemas.bot_builder.ChatflowUI,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        chatflow_id: UUID4,
+        obj_in: schemas.bot_builder.ChatflowUI,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.ADMIN["name"],
+                Role.USER["name"],
+            ],
+        ),
 ):
-
     db.query(models.bot_builder.NodeUI).filter(
         models.bot_builder.NodeUI.chatflow_id == chatflow_id
     ).delete()

@@ -96,7 +96,6 @@ def create_connection(
             detail=Error.CONNECTION_EXIST["text"],
         )
 
-    changed_detail_chatflow_id_obj_in = []
     try:
         details = copy.deepcopy(obj_in.details)
         for detail in details:
@@ -147,8 +146,6 @@ def get_connection_by_id(
             status_code=Error.INVALID_CONNECTION_ID["status_code"],
             detail=Error.INVALID_CONNECTION_ID["text"],
         )
-    changed_detail_chatflow_id = []
-
     for detail in connection.details:
         chatflow = services.bot_builder.chatflow.get(
             db, id=detail["chatflow_id"], user_id=current_user.id)

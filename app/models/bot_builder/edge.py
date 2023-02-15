@@ -1,9 +1,7 @@
-from uuid import uuid4
 from app.db.base_class import Base
-from sqlalchemy import Column, String, ForeignKey , BigInteger
+from sqlalchemy import Column, String, ForeignKey, BigInteger
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
 
 
 class Edge(Base):
@@ -35,7 +33,7 @@ class Edge(Base):
         BigInteger,
         ForeignKey("bot_builder_chatflows.id"),
         nullable=True,
-        index = True,
+        index=True,
     )
 
     chatflow = relationship("Chatflow", back_populates="edge")

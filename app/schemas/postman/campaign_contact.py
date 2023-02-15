@@ -1,4 +1,4 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
 
 
 class CampaignContactCreate(BaseModel):

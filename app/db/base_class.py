@@ -1,7 +1,5 @@
-from typing import Any
 import inflect
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
-import datetime
 from uuid import uuid4
 
 from sqlalchemy import Column , BigInteger
