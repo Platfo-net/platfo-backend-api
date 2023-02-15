@@ -11,19 +11,16 @@ class NotificationServices(
     ]
 ):
     def get_by_multi(
-        self,
-        db: Session,
-        *,
-        page: int = 1,
-        page_size: int = 20,
+            self,
+            db: Session,
+            *,
+            page: int = 1,
+            page_size: int = 20,
     ):
-        notifications = (
-            db.query(self.model)
-            .order_by(self.model.created_at.desc())
-            .offset(page_size * (page - 1))
-            .limit(page_size)
-            .all()
-        )
+        notifications = db.query(self.model).order_by(
+            self.model.created_at.desc()).offset(
+            page_size * (page - 1)
+        ).limit(page_size).all()
 
         total_count = db.query(self.model).count()
         total_page = math.ceil(total_count / page_size)
@@ -37,9 +34,8 @@ class NotificationServices(
         return notifications, pagination
 
     def get_by_multi_for_user(
-        self, db: Session, *, page: int = 1, page_size: int = 20, user_id: UUID4
+            self, db: Session, *, page: int = 1, page_size: int = 20, user_id: int
     ):
-
         notification_user = (
             db.query(models.NotificationUser)
             .filter(models.NotificationUser.user_id == user_id)
@@ -75,13 +71,6 @@ class NotificationServices(
             for notification in notifications
         ], pagination
 
-    def read(self, db: Session, *, id: UUID4, user_id: UUID4):
-        notification_user = models.NotificationUser(user_id=user_id, notification_id=id)
-        db.add(notification_user)
-        db.commit()
-        db.refresh(notification_user)
-        return None
-
 
 class NotificationUserServices:
     def __init__(self, model):
@@ -96,6 +85,12 @@ class NotificationUserServices:
             )
             .first()
         )
+
+    def create(self, db: Session, *, notification_id: int, user_id: int):
+        notification_user = self.model(user_id=user_id, notification_id=notification_id)
+        db.add(notification_user)
+        db.commit()
+        db.refresh(notification_user)
 
 
 notification = NotificationServices(models.Notification)

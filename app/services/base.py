@@ -25,8 +25,11 @@ class BaseServices(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> List[ModelType]:
         return db.query(self.model).offset(skip).limit(limit).all()
 
-    def get(self, db: Session, id: UUID4) -> Optional[ModelType]:
+    def get(self, db: Session, id: int) -> Optional[ModelType]:
         return db.query(self.model).filter(self.model.id == id).first()
+
+    def get_by_uuid(self, db: Session, uuid: UUID4) -> Optional[ModelType]:
+        return db.query(self.model).filter(self.model.uuid == uuid).first()
 
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
@@ -56,7 +59,7 @@ class BaseServices(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.refresh(db_obj)
         return db_obj
 
-    def remove(self, db: Session, *, id: UUID4) -> ModelType:
+    def remove(self, db: Session, *, id: int) -> ModelType:
         obj = db.query(self.model).get(id)
         db.delete(obj)
         db.commit()

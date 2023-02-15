@@ -2,21 +2,16 @@ from typing import List, Optional
 from pydantic import UUID4, BaseModel
 
 
-class ConnectionChatflowBase(BaseModel):
-    chatflow_id: Optional[UUID4] = None
-    trigger_id: Optional[UUID4] = None
-
-
 class ConnectionBase(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     application_name: Optional[str] = None
-    account_id: Optional[UUID4] = None
     details: List[dict]
 
 
 class ConnectionCreate(ConnectionBase):
-    pass
+    account_id: Optional[UUID4] = None
+    
 
 
 class ConnectionUpdate(ConnectionCreate):
@@ -25,7 +20,7 @@ class ConnectionUpdate(ConnectionCreate):
 
 class ConnectionInDBBase(ConnectionBase):
     id: UUID4
-
+    account_id: Optional[UUID4] = None
     class Config:
         orm_mode = True
 

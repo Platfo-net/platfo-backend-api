@@ -26,10 +26,13 @@ class ContactServices:
 
         return contact
 
-    def get(self, db: Session, *, id: UUID4):
+    def get(self, db: Session, id: int):
         return db.query(self.model).filter(self.model.id == id).first()
 
-    def get_contact_by_igs_id(self, db: Session, *, contact_igs_id: str):
+    def get_by_uuid(self, db: Session, uuid: UUID4):
+        return db.query(self.model).filter(self.model.uuid == uuid).first()
+
+    def get_contact_by_igs_id(self, db: Session, *, contact_igs_id: int):
         return (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
@@ -60,7 +63,7 @@ class ContactServices:
         self,
         db: Session,
         *,
-        contact_igs_id: str,
+        contact_igs_id: int,
         data: dict,
     ):
         db_obj = (
@@ -76,7 +79,7 @@ class ContactServices:
         return db_obj
 
     def update_last_message(
-        self, db: Session, *, contact_igs_id: str, last_message: str
+        self, db: Session, *, contact_igs_id: int, last_message: str
     ):
         db_obj = (
             db.query(self.model)
@@ -91,7 +94,7 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_comment_count(self, db: Session, *, contact_igs_id: str):
+    def update_last_comment_count(self, db: Session, *, contact_igs_id: int):
         db_obj = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
@@ -103,7 +106,7 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_live_comment_count(self, db: Session, *, contact_igs_id: str):
+    def update_last_live_comment_count(self, db: Session, *, contact_igs_id: int):
         db_obj = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
@@ -115,7 +118,7 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_message_count(self, db: Session, *, contact_igs_id: str):
+    def update_last_message_count(self, db: Session, *, contact_igs_id: int):
         db_obj = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
@@ -127,7 +130,7 @@ class ContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def remove_by_user_page_id(self, db: Session, *, user_page_id: str):
+    def remove_by_user_page_id(self, db: Session, *, user_page_id: int):
         contacts = (
             db.query(self.model).filter(self.model.user_page_id == user_page_id).all()
         )
@@ -137,18 +140,23 @@ class ContactServices:
 
         return
 
-    def get_bulk(self, db: Session, *, contacts_id: List[UUID4]):
+    def get_bulk(self, db: Session, *, contacts_id: List[int]):
         return (
             db.query(self.model)
             .filter(models.live_chat.Contact.id.in_(contacts_id))
             .all()
         )
 
+    def get_bulk_by_uuid(self, db: Session, *, contacts_id: List[UUID4]):
+        return db.query(self.model).filter(
+            models.live_chat.Contact.uuid.in_(contacts_id)
+        ).all()
+
     def get_multi(
         self,
         db: Session,
         *,
-        facebook_page_id: str = None,
+        facebook_page_id: int = None,
         obj_in: List[schemas.live_chat.SearchItem],
         page: int = 1,
         page_size: int = 20,

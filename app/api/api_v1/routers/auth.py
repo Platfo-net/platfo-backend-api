@@ -41,7 +41,7 @@ def login_access_token(
         role = services.role.get(db, id=user.role_id)
         role = role.name
     token_payload = {
-        "id": str(user.id),
+        "uuid": str(user.uuid),
         "role": role,
     }
     return {
@@ -81,7 +81,7 @@ def login_access_token_swagger(
         role = services.role.get(db, id=user.role_id)
         role = role.name
     token_payload = {
-        "id": str(user.id),
+        "uuid": str(user.uuid),
         "role": role,
     }
     return {
@@ -99,7 +99,7 @@ def test_token(
     """
     Test access token
     """
-
+    current_user.id = current_user.uuid
     return current_user
 
 

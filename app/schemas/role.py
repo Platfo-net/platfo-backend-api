@@ -1,9 +1,8 @@
-from typing import Optional
+from typing import Optional, Any
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, Field, root_validator
 
 
-# Shared properties
 class RoleBase(BaseModel):
     name: Optional[str]
     description: Optional[str]
@@ -21,13 +20,13 @@ class RoleUpdate(RoleBase):
 
 
 class RoleInDBBase(RoleBase):
-    id: UUID4
-
+    id : UUID4
     class Config:
         orm_mode = True
 
-
 # Additional properties to return via API
+
+
 class Role(RoleInDBBase):
     pass
 

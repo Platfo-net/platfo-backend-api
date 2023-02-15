@@ -7,7 +7,7 @@ class Account(BaseModel):
     username: Optional[str] = None
     platform: Optional[str] = None
     profile_image: Optional[str] = None
-    page_id: Optional[str] = None
+    facebook_page_id: Optional[int] = None
 
 
 class AccountDetail(BaseModel):
@@ -15,5 +15,5 @@ class AccountDetail(BaseModel):
     username: Optional[str] = None
     platform: Optional[str] = None
     profile_image: Optional[str] = None
-    facebook_page_id: Optional[str] = None
+    facebook_page_id: Optional[int] = None
     information: Optional[dict] = None

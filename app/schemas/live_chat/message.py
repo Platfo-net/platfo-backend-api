@@ -4,15 +4,15 @@ from pydantic import UUID4, BaseModel
 
 
 class MessageBase(BaseModel):
-    from_page_id: str
-    to_page_id: str
+    from_page_id: int
+    to_page_id: int
     content: dict
     mid: Optional[str] = None
-    user_id: UUID4
 
 
 class MessageCreate(MessageBase):
     direction: str = None
+    user_id: int = None
 
 
 class Message(MessageBase):

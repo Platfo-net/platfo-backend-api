@@ -36,10 +36,10 @@ def get_user_data(
         )
 
         data = dict(
-            user_id=str(instagram_page.user_id),
+            user_id=instagram_page.user_id,
             facebook_page_token=instagram_page.facebook_page_token,
             facebook_page_id=instagram_page.facebook_page_id,
-            account_id=str(instagram_page.id),
+            account_id=instagram_page.id,
         )
         data = json.dumps(data)
         state = set_data_to_cache(client, key=instagram_page_id, value=data)

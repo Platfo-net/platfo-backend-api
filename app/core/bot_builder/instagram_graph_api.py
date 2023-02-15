@@ -40,8 +40,8 @@ class InstagramGraphApi:
     def send_text_message(
         self,
         text: str,
-        from_id: str,
-        to_id: str,
+        from_id: int,
+        to_id: int,
         page_access_token: str,
         quick_replies: list = [],
     ):

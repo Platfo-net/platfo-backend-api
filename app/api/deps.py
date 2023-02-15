@@ -64,40 +64,42 @@ def get_redis_client():
 
 
 def get_user_from_cache(
-    redis_client: Redis, db: Session, id: UUID4
+    redis_client: Redis, db: Session, uuid: UUID4
 ) -> Optional[models.User]:
-    user = get_data_from_cache(redis_client, key=str(id))
+    user = get_data_from_cache(redis_client, key=str(uuid))
     if user is None:
-        user = services.user.get(db, id)
+        user = services.user.get_by_uuid(db, uuid)
         if not user:
             return None
         data = dict(
-            id=str(user.id),
+            id=user.id,
+            uuid = str(user.uuid),
+            role_id = user.role_id,
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
             phone_number=user.phone_number,
             hashed_password=user.hashed_password,
             is_active=user.is_active,
-            role_id=str(user.role_id),
             created_at=str(user.created_at),
             updated_at=str(user.updated_at),
         )
         data = json.dumps(data)
-        state = set_data_to_cache(redis_client, str(user.id), data)
+        state = set_data_to_cache(redis_client, str(user.uuid), data)
         if state:
-            user = get_data_from_cache(redis_client, str(user.id))
+            user = get_data_from_cache(redis_client, str(user.uuid))
 
     user = json.loads(user)
     return models.User(
-        id=UUID4(user.get("id")),
+        id=user.get("id"),
+        uuid=UUID4(user.get("uuid")),
+        role_id=user.get("role_id"),
         first_name=user.get("first_name", None),
         last_name=user.get("last_name", None),
         email=user.get("email", None),
         phone_number=user.get("phone_number", None),
         hashed_password=user.get("hashed_password"),
         is_active=user.get("is_active"),
-        role_id=UUID4(user.get("role_id")),
         created_at=user.get("created_at"),
         updated_at=user.get("updated_at"),
     )
@@ -122,7 +124,7 @@ def get_current_user(
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
-        if payload.get("id") is None:
+        if payload.get("uuid") is None:
             raise credentials_exception
         token_data = schemas.TokenPayload(**payload)
     except Exception:
@@ -130,8 +132,8 @@ def get_current_user(
             status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["status_code"],
             detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["text"],
         )
-
-    user = get_user_from_cache(redis_client, db, token_data.id)
+    
+    user = get_user_from_cache(redis_client, db, token_data.uuid)
 
     if not user:
         raise credentials_exception
