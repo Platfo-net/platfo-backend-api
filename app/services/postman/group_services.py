@@ -68,12 +68,10 @@ class GroupServices:
         *,
         db_obj: models.postman.Group,
         obj_in: schemas.postman.GroupUpdate,
-        user_id: int,
     ):
 
         db_obj.name = obj_in.name
         db_obj.description = obj_in.description
-        db_obj.user_id = user_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

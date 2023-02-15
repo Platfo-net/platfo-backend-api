@@ -19,13 +19,13 @@ class CampaignServices:
         self.model = model
 
     def get_multi(
-        self,
-        db: Session,
-        *,
-        facebook_page_id: int = None,
-        user_id: int,
-        page: int = 1,
-        page_size: int = 20,
+            self,
+            db: Session,
+            *,
+            facebook_page_id: int = None,
+            user_id: int,
+            page: int = 1,
+            page_size: int = 20,
     ):
         condition = [self.model.user_id == user_id]
         if facebook_page_id:
@@ -50,7 +50,7 @@ class CampaignServices:
         return pagination, campaigns
 
     def create(
-        self, db: Session, *, obj_in: CreateSchemaType, user_id: int
+            self, db: Session, *, obj_in: CreateSchemaType, user_id: int
     ) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)
@@ -61,14 +61,13 @@ class CampaignServices:
         return db_obj
 
     def update(
-        self,
-        db: Session,
-        *,
-        user_id: UUID4,
-        db_obj: ModelType,
-        obj_in: UpdateSchemaType,
+            self,
+            db: Session,
+            *,
+            user_id: UUID4,
+            db_obj: ModelType,
+            obj_in: UpdateSchemaType,
     ) -> ModelType:
-
         db_obj.name = obj_in.name
         db_obj.description = obj_in.description
         db_obj.content = obj_in.content
@@ -92,7 +91,6 @@ class CampaignServices:
         )
 
     def get(self, db: Session, id: int) -> ModelType:
-
         return (
             db.query(models.postman.Campaign)
             .filter(models.postman.Campaign.id == id)
@@ -100,7 +98,6 @@ class CampaignServices:
         )
 
     def get_by_uuid(self, db: Session, uuid: UUID4) -> ModelType:
-
         return (
             db.query(models.postman.Campaign)
             .filter(models.postman.Campaign.uuid == uuid)
@@ -112,12 +109,6 @@ class CampaignServices:
             db.query(models.postman.Campaign)
             .filter(models.postman.Campaign.id == id)
             .first()
-        )
-
-        campaign_contacts = (
-            db.query(models.postman.CampaignContact)
-            .filter(models.postman.CampaignContact.campaign_id == id)
-            .all()
         )
 
         sent_count = services.postman.campaign_contact.get_all_sent_count(
@@ -132,16 +123,15 @@ class CampaignServices:
             .count()
         )
 
-        return campaign, campaign_contacts, sent_count, seen_count, total_contact_count
+        return campaign, sent_count, seen_count, total_contact_count
 
     def change_status(
-        self,
-        db: Session,
-        *,
-        id: int,
-        status: str = CampaignStatus.DONE,
+            self,
+            db: Session,
+            *,
+            id: int,
+            status: str = CampaignStatus.DONE,
     ) -> ModelType:
-
         campaign = services.postman.campaign.get(db=db, campaign_id=id)
         campaign.status = status
 
@@ -151,29 +141,26 @@ class CampaignServices:
         return campaign
 
     def change_is_draft(
-        self,
-        db: Session,
-        *,
-        id: int,
-        is_draft: bool,
+            self,
+            db: Session,
+            *,
+            db_obj: ModelType,
+            is_draft: bool,
     ) -> ModelType:
+        db_obj.is_draft = is_draft
 
-        campaign = services.postman.campaign.get(db=db, campaign_id=id)
-        campaign.is_draft = is_draft
-
-        db.add(campaign)
+        db.add(db_obj)
         db.commit()
-        db.refresh(campaign)
-        return campaign
+        db.refresh(db_obj)
+        return db_obj
 
     def change_activity(
-        self,
-        db: Session,
-        *,
-        campaign_id: UUID4,
-        is_active: bool,
+            self,
+            db: Session,
+            *,
+            campaign_id: UUID4,
+            is_active: bool,
     ) -> ModelType:
-
         campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
         campaign.is_active = is_active
 
@@ -190,9 +177,8 @@ class CampaignServices:
         )
 
     def set_group_name(
-        self, db: Session, *, campaign_id: UUID4, group_name: str
+            self, db: Session, *, campaign_id: UUID4, group_name: str
     ) -> None:
-
         db_obj = db.query(self.model).filter(self.model.id == campaign_id).first()
         db_obj.group_name = group_name
         db.add(db_obj)

@@ -1,3 +1,4 @@
+import math
 from typing import List
 from pydantic import UUID4
 from app import models, schemas
@@ -12,8 +13,24 @@ class CampaignContactServices:
     def __init__(self, model):
         self.model = model
 
+    def get_campain_contacts(self, db: Session, *, campaign_id: int, page: int, page_size: int):
+        contacts = db.query(self.model).join(self.model.contact).filter(
+            self.model.campaign_id == campaign_id
+        ).offset(page_size * (page - 1)).limit(page_size).all()
+
+        total_count = db.query(self.model).count()
+        total_pages = math.ceil(total_count / page_size)
+        pagination = schemas.Pagination(
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            total_count=total_count,
+        )
+
+        return contacts, pagination
+
     def create_bulk(
-        self, db: Session, *, contacts: List[CreateSchemaType], campaign_id: UUID4
+            self, db: Session, *, contacts: List[CreateSchemaType], campaign_id: int
     ) -> List[ModelType]:
 
         db_obj = [
@@ -30,7 +47,7 @@ class CampaignContactServices:
         return db_obj
 
     def get_campaign_unsend_contacts(
-        self, db: Session, *, campaign_id: UUID4, count: int
+            self, db: Session, *, campaign_id: UUID4, count: int
     ) -> List[ModelType]:
 
         return (
@@ -88,7 +105,7 @@ class CampaignContactServices:
         )
 
     def change_send_status_bulk(
-        self, db: Session, *, campaign_contacts_in: list[ModelType], is_sent: bool
+            self, db: Session, *, campaign_contacts_in: list[ModelType], is_sent: bool
     ):
 
         db_objs = []

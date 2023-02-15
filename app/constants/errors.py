@@ -162,3 +162,8 @@ class Error:
         "status_code": 400,
         "code": 103,
     }
+    GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE = {
+        "text": "Group does not belongs to this page!",
+        "status_code": 400,
+        "code": 104,
+    }

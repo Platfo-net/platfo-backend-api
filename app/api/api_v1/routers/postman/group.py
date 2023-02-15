@@ -7,26 +7,24 @@ from app.constants.role import Role
 from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 
-
 router = APIRouter(prefix="/group")
 
 
 @router.get("/{facebook_page_id}", response_model=schemas.postman.GroupListApi)
 def get_groups(
-    *,
-    db: Session = Depends(deps.get_db),
-    facebook_page_id: int,
-    page: int = 1,
-    page_size: int = 20,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        facebook_page_id: int,
+        page: int = 1,
+        page_size: int = 20,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
-
     pagination, items = services.postman.group.get_multi(
         db,
         facebook_page_id=facebook_page_id,
@@ -71,16 +69,16 @@ def get_groups(
 
 @router.post("/", response_model=schemas.postman.Group)
 def create_group(
-    *,
-    db: Session = Depends(deps.get_db),
-    obj_in: schemas.postman.GroupCreateApiSchemas,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        obj_in: schemas.postman.GroupCreateApiSchemas,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     if not obj_in.contacts:
         raise HTTPException(
@@ -105,7 +103,7 @@ def create_group(
         schemas.postman.GroupContactCreate(
             contact_id=item.id,
             contact_igs_id=item.contact_igs_id,
-        )for item in contacts
+        ) for item in contacts
     ]
     services.postman.group_contact.create_bulk(
         db, objs_in=contacts_in, group_id=db_obj.id
@@ -120,16 +118,16 @@ def create_group(
 
 @router.delete("/{id}")
 def remove_group(
-    *,
-    db: Session = Depends(deps.get_db),
-    id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     group = services.postman.group.get_by_uuid(db, id)
     if not group:
@@ -151,30 +149,38 @@ def remove_group(
 
 @router.put("/{id}", response_model=schemas.postman.Group)
 def update_group(
-    *,
-    db: Session = Depends(deps.get_db),
-    id: UUID4,
-    obj_in: schemas.postman.GroupUpdateApiSchemas,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        obj_in: schemas.postman.GroupUpdateApiSchemas,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     if not obj_in.contacts:
         raise HTTPException(
             status_code=Error.GROUP_EMPTY_CONTACT["status_code"],
             detail=Error.GROUP_EMPTY_CONTACT["text"],
         )
-
     db_obj = services.postman.group.get_by_uuid(db, id)
+    if not db_obj:
+        raise HTTPException(
+            status_code=Error.GROUP_NOT_FOUND["status_code"],
+            detail=Error.GROUP_NOT_FOUND["text"],
+        )
+    if db_obj.user_id != current_user.id:
+        raise HTTPException(
+            status_code=Error.GROUP_NOT_FOUND["status_code"],
+            detail=Error.GROUP_NOT_FOUND["text"],
+        )
 
     group = services.postman.group.update(
         db,
         db_obj=db_obj,
-        user_id=current_user.id,
         obj_in=schemas.postman.GroupUpdate(
             name=obj_in.name, description=obj_in.description
         ),
@@ -188,7 +194,7 @@ def update_group(
         schemas.postman.GroupContactCreate(
             contact_id=item.id,
             contact_igs_id=item.contact_igs_id,
-        )for item in contacts
+        ) for item in contacts
     ]
     services.postman.group_contact.create_bulk(
         db, objs_in=contacts_in, group_id=db_obj.id
