@@ -25,7 +25,6 @@ app.add_middleware(
 )
 
 
-
 @app.get("/health", tags=["health-check"])
 async def health():
     return {"message": "ok!"}

@@ -15,9 +15,10 @@ from app.constants.application import Application
 from app.core.celery import celery
 from sqlalchemy.orm import Session
 
+
 @celery.task
 def webhook_proccessor(facebook_webhook_body):
-    db : Session = SessionLocal()
+    db: Session = SessionLocal()
     redis_client = deps.get_redis_client()
     instagram_data = InstagramData()
     instagram_data.parse(facebook_webhook_body)
@@ -103,7 +104,7 @@ def webhook_proccessor(facebook_webhook_body):
 
     saved_data = {
         "message": instagram_data.text,
-            "widget_type": WidgetType.TEXT["name"],
+        "widget_type": WidgetType.TEXT["name"],
         "id": str(uuid4()),
     }
     print("-*------------------------------------------")
@@ -187,10 +188,10 @@ def webhook_proccessor(facebook_webhook_body):
 
 @celery.task
 def save_comment(
-    from_page_id: int = None,
-    to_page_id: int = None,
-    user_id: int = None,
-    instagram_page_id: int = None,
+        from_page_id: int = None,
+        to_page_id: int = None,
+        user_id: int = None,
+        instagram_page_id: int = None,
 ):
     db = SessionLocal()
 
@@ -233,10 +234,10 @@ def save_comment(
 
 @celery.task
 def save_live_comment(
-    from_page_id: str = None,
-    to_page_id: str = None,
-    user_id: Any = None,
-    instagram_page_id: str = None,
+        from_page_id: str = None,
+        to_page_id: str = None,
+        user_id: Any = None,
+        instagram_page_id: str = None,
 ):
     db = SessionLocal()
     client = deps.get_redis_client()
@@ -284,15 +285,14 @@ def save_live_comment(
 
 @celery.task
 def save_message(
-    from_page_id: int = None,
-    to_page_id: int = None,
-    mid: str = None,
-    content: dict = None,
-    user_id: int = None,
-    direction: str = None,
-    instagram_page_id: int = None,
+        from_page_id: int = None,
+        to_page_id: int = None,
+        mid: str = None,
+        content: dict = None,
+        user_id: int = None,
+        direction: str = None,
+        instagram_page_id: int = None,
 ):
-
     db = SessionLocal()
     client = deps.get_redis_client()
     if direction == MessageDirection.IN["name"]:
@@ -359,13 +359,13 @@ def save_message(
 
 @celery.task
 def send_widget(
-    widget: dict,
-    quick_replies: List[dict],
-    contact_igs_id: str,
-    payload: str,
-    user_page_data: dict,
+        widget: dict,
+        quick_replies: List[dict],
+        contact_igs_id: str,
+        payload: str,
+        user_page_data: dict,
 ):
-    db :Session = SessionLocal()
+    db: Session = SessionLocal()
 
     while widget["widget_type"] in (WidgetType.TEXT["name"], WidgetType.MEDIA["name"]):
         if widget["widget_type"] == WidgetType.MEDIA["name"]:
@@ -418,4 +418,3 @@ def send_widget(
         )
     db.close()
     return widget
-

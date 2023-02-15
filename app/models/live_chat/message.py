@@ -1,12 +1,9 @@
 import datetime
-from uuid import uuid4
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, JSON, DateTime , BigInteger
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, BigInteger
 
 
 class Message(Base):
-
     __tablename__ = "live_chat_messages"
 
     from_page_id = Column(BigInteger, nullable=True, index=True)
@@ -21,4 +18,3 @@ class Message(Base):
         ForeignKey("users.id"),
         nullable=True,
     )
-

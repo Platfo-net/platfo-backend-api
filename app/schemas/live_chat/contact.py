@@ -16,7 +16,6 @@ class ContactBase(BaseModel):
 
 class ContactCreate(ContactBase):
     user_id: int
-    
 
 
 class Contact(ContactBase):

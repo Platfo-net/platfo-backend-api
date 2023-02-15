@@ -140,14 +140,18 @@ def read_notification(
                 Role.ADMIN["name"],
             ],
         ),
-) -> Any:
+):
     notification = services.notification.get_by_uuid(db, id)
     if not notification:
         raise HTTPException(
             status_code=Error.NOTIFICATON_NOT_FOUND["status_code"],
             detail=Error.NOTIFICATON_NOT_FOUND["text"],
         )
-    if services.notification_user.get(db, notification_id=notification.id, user_id=current_user.id):
+    if services.notification_user.get(
+            db,
+            notification_id=notification.id,
+            user_id=current_user.id
+    ):
         raise HTTPException(
             status_code=Error.NOTIFICATION_ALREADY_READED["status_code"],
             detail=Error.NOTIFICATION_ALREADY_READED["text"],

@@ -1,12 +1,9 @@
-from uuid import uuid4
-
 from app.db.base_class import Base
 from sqlalchemy import Column, ForeignKey, String, ARRAY, JSON, BigInteger
 from sqlalchemy.orm import relationship
 
 
 class Connection(Base):
-
     __tablename__ = "connections"
 
     name = Column(String(255), nullable=True)

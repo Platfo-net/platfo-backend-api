@@ -1,16 +1,11 @@
 import datetime
-
-from uuid import uuid4
-
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, DateTime, JSON, Boolean , BigInteger
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, ForeignKey, String, DateTime, JSON, Boolean, BigInteger
 from sqlalchemy.orm import relationship
 from app.constants.campaign_status import CampaignStatus
 
 
 class Campaign(Base):
-
     __tablename__ = "postman_campaigns"
 
     name = Column(String(255), nullable=True)
@@ -30,7 +25,7 @@ class Campaign(Base):
         BigInteger,
         ForeignKey("users.id"),
         nullable=True,
-        index = True
+        index=True
     )
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)

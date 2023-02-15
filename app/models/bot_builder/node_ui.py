@@ -1,7 +1,6 @@
-from uuid import uuid4
 from app.db.base_class import Base
-from sqlalchemy import Column, String, ForeignKey, JSON, Boolean, Integer , BigInteger
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy import Column, String, ForeignKey, JSON, Boolean, Integer, BigInteger
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
 
@@ -22,7 +21,7 @@ class NodeUI(Base):
         BigInteger,
         ForeignKey("bot_builder_chatflows.id"),
         nullable=True,
-        index = True
+        index=True
     )
 
     chatflow = relationship("Chatflow", back_populates="nodeui")

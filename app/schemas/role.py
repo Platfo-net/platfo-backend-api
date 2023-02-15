@@ -1,6 +1,5 @@
-from typing import Optional, Any
-
-from pydantic import UUID4, BaseModel, Field, root_validator
+from typing import Optional
+from pydantic import UUID4, BaseModel
 
 
 class RoleBase(BaseModel):
@@ -9,22 +8,19 @@ class RoleBase(BaseModel):
     persian_name: Optional[str]
 
 
-# Properties to receive via API on creation
 class RoleCreate(RoleBase):
     pass
 
 
-# Properties to receive via API on update
 class RoleUpdate(RoleBase):
     pass
 
 
 class RoleInDBBase(RoleBase):
-    id : UUID4
+    id: UUID4
+
     class Config:
         orm_mode = True
-
-# Additional properties to return via API
 
 
 class Role(RoleInDBBase):

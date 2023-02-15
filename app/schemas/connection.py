@@ -11,7 +11,6 @@ class ConnectionBase(BaseModel):
 
 class ConnectionCreate(ConnectionBase):
     account_id: Optional[UUID4] = None
-    
 
 
 class ConnectionUpdate(ConnectionCreate):
@@ -21,6 +20,7 @@ class ConnectionUpdate(ConnectionCreate):
 class ConnectionInDBBase(ConnectionBase):
     id: UUID4
     account_id: Optional[UUID4] = None
+
     class Config:
         orm_mode = True
 
