@@ -36,7 +36,7 @@ class GroupContactSample(GroupBase):
 
 
 class GroupListApi(BaseModel):
-    items: List[GroupContactSample]
+    items: List[Group]
     pagination: Pagination
 
 

@@ -10,6 +10,8 @@ from app.constants.role import Role
 from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 
+from app.core.exception import raise_http_exception
+
 router = APIRouter(prefix="/contact")
 
 
@@ -106,15 +108,11 @@ def get_all_contact_based_on_filters(
         facebook_page_id=facebook_page_id
     )
     if account.user_id != current_user.id:
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
     if not account:
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
     contacts, pagination = services.live_chat.contact.get_multi(
         db=db,
         facebook_page_id=facebook_page_id,

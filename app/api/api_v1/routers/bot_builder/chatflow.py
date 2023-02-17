@@ -7,6 +7,7 @@ from pydantic.types import UUID4
 
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/chatflow")
 
@@ -50,10 +51,7 @@ def delete_chatflow(
 ) -> Any:
     chatflow = services.bot_builder.chatflow.get_by_uuid(db, uuid=id)
     if not chatflow:
-        raise HTTPException(
-            status_code=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID["status_code"],
-            detail=Error.NO_CHATFLOW_WITH_THE_GIVEN_ID["text"],
-        )
+        raise_http_exception(Error.NO_CHATFLOW_WITH_THE_GIVEN_ID)
 
     services.bot_builder.chatflow.delete(db, id=chatflow.id)
     return
