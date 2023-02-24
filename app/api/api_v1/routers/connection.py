@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from fastapi import APIRouter, Depends, HTTPException, Security, status
+from fastapi import APIRouter, Depends, Security, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
 from redis.client import Redis
@@ -12,21 +12,24 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.cache import remove_data_from_cache
 import copy
+
+from app.core.exception import raise_http_exception
+
 router = APIRouter(prefix="/connection", tags=["Connection"])
 
 
 @router.get("/all", response_model=List[schemas.Connection])
 def get_list_of_connections(
-    *,
-    db: Session = Depends(deps.get_db),
-    account_id: UUID4 = None,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        account_id: UUID4 = None,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ) -> Any:
     """
     Endpoint for getting list of a user connections.
@@ -70,32 +73,26 @@ def get_list_of_connections(
 
 @router.post("/", response_model=schemas.Connection)
 def create_connection(
-    *,
-    db: Session = Depends(deps.get_db),
-    obj_in: schemas.ConnectionCreate,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        obj_in: schemas.ConnectionCreate,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     account = services.instagram_page.get_by_uuid(db, obj_in.account_id)
     if not account:
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
     connection = services.connection.get_by_application_name_and_account_id(
         db, application_name=obj_in.application_name, account_id=account.id
     )
     if connection:
-        raise HTTPException(
-            status_code=Error.CONNECTION_EXIST["status_code"],
-            detail=Error.CONNECTION_EXIST["text"],
-        )
-
+        raise_http_exception(Error.CONNECTION_EXIST)
+    details = None
     try:
         details = copy.deepcopy(obj_in.details)
         for detail in details:
@@ -103,10 +100,8 @@ def create_connection(
             detail["chatflow_id"] = chatflow.id
 
     except KeyError:
-        raise HTTPException(
-            status_code=Error.INVALID_DETAILS["status_code"],
-            detail=Error.INVALID_DETAILS["text"],
-        )
+        raise_http_exception(Error.INVALID_DETAILS)
+
     connection = services.connection.create(
         db,
         obj_in=obj_in,
@@ -127,25 +122,22 @@ def create_connection(
 
 @router.get("/{connection_id}", response_model=schemas.Connection)
 def get_connection_by_id(
-    *,
-    db: Session = Depends(deps.get_db),
-    connection_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        connection_id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
-
     connection = services.connection.get_by_uuid(db, connection_id)
 
     if not connection:
-        raise HTTPException(
-            status_code=Error.INVALID_CONNECTION_ID["status_code"],
-            detail=Error.INVALID_CONNECTION_ID["text"],
-        )
+        raise_http_exception(Error.INVALID_CONNECTION_ID)
+
     for detail in connection.details:
         chatflow = services.bot_builder.chatflow.get(
             db, id=detail["chatflow_id"], user_id=current_user.id)
@@ -164,17 +156,17 @@ def get_connection_by_id(
 
 @router.delete("/{connection_id}", status_code=status.HTTP_200_OK)
 def delete_connection(
-    *,
-    db: Session = Depends(deps.get_db),
-    redis_client: Redis = Depends(deps.get_redis_client),
-    connection_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        redis_client: Redis = Depends(deps.get_redis_client),
+        connection_id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     connection = services.connection.get_by_uuid(db, connection_id)
     key = f"{connection.application_name}+{str(connection.account_id)}"
@@ -182,10 +174,7 @@ def delete_connection(
     remove_data_from_cache(redis_client, key=key)
 
     if connection.user_id != current_user.id:
-        raise HTTPException(
-            status_code=Error.CONNECTION_NOT_FOUND["status_code"],
-            detail=Error.CONNECTION_NOT_FOUND["detail"],
-        )
+        raise_http_exception(Error.CONNECTION_NOT_FOUND)
 
     services.connection.remove(db, id=connection.id)
     return
@@ -193,48 +182,38 @@ def delete_connection(
 
 @router.put("/{connection_id}", response_model=schemas.Connection)
 def update_connection(
-    *,
-    db: Session = Depends(deps.get_db),
-    obj_in: schemas.ConnectionUpdate,
-    redis_client: Redis = Depends(deps.get_redis_client),
-    connection_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        obj_in: schemas.ConnectionUpdate,
+        redis_client: Redis = Depends(deps.get_redis_client),
+        connection_id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     account = services.instagram_page.get_by_uuid(db, obj_in.account_id)
     if not account:
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
     connection = services.connection.get_by_application_name_and_account_id(
         db, application_name=obj_in.application_name, account_id=account.id
     )
 
     if connection and connection.uuid != connection_id:
-        raise HTTPException(
-            status_code=Error.CONNECTION_EXIST["status_code"],
-            detail=Error.CONNECTION_EXIST["text"],
-        )
+        raise_http_exception(Error.CONNECTION_EXIST)
 
     old_connection = services.connection.get_by_uuid(db, connection_id)
     key = f"{old_connection.application_name}+{str(old_connection.account_id)}"
 
     if old_connection.user_id != current_user.id:
-        raise HTTPException(
-            status_code=Error.CONNECTION_NOT_FOUND["status_code"],
-            detail=Error.CONNECTION_NOT_FOUND["detail"],
-        )
+        raise_http_exception(Error.CONNECTION_NOT_FOUND)
     if not old_connection:
-        raise HTTPException(
-            status_code=Error.CONNECTION_NOT_FOUND["status_code"],
-            detail=Error.CONNECTION_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.CONNECTION_NOT_FOUND)
+
     remove_data_from_cache(redis_client, key=key)
 
     obj_in.account_id = account.id
@@ -260,17 +239,17 @@ def update_connection(
 
 # @router.put("/chatflow/{state}/{page_id}/" , deprecated=True)
 def disable_chatflow_for_page(
-    *,
-    db: Session = Depends(deps.get_db),
-    page_id: str,
-    state: str = None,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        page_id: str,
+        state: str = None,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
     """
     Args:

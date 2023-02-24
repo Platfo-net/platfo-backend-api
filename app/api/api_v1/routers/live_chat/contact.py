@@ -7,7 +7,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 from app.core.exception import raise_http_exception
@@ -45,10 +45,7 @@ def get_contact(
     contact = services.live_chat.contact.get_by_uuid(db, id)
 
     if not contact:
-        raise HTTPException(
-            status_code=Error.CONTACT_NOT_FOUND["status_code"],
-            detail=Error.CONTACT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.CONTACT_NOT_FOUND)
 
     return schemas.live_chat.Contact(
         contact_igs_id=contact.contact_igs_id,

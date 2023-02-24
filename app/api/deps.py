@@ -18,6 +18,7 @@ from app.constants.role import Role
 from app.core import security
 from app.core.cache import get_data_from_cache, set_data_to_cache
 from app.core.config import settings
+from app.core.exception import raise_http_exception
 from app.db.session import SessionLocal
 
 
@@ -127,26 +128,21 @@ def get_current_user(
             raise credentials_exception
         token_data = schemas.TokenPayload(**payload)
     except Exception:
-        raise HTTPException(
-            status_code=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["status_code"],
-            detail=Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR["text"],
-        )
+        raise_http_exception(Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR)
 
     user = get_user_from_cache(redis_client, db, token_data.uuid)
 
     if not user:
         raise credentials_exception
     if security_scopes.scopes and not token_data.role:
-        raise HTTPException(
-            status_code=Error.PERMISSION_DENIED_ERROR["status_code"],
-            detail=Error.PERMISSION_DENIED_ERROR["text"],
-            headers={"WWW-Authenticate": authenticate_value},
+        raise_http_exception(
+            Error.PERMISSION_DENIED_ERROR,
+            {"WWW-Authenticate": authenticate_value}
         )
     if security_scopes.scopes and token_data.role not in security_scopes.scopes:
-        raise HTTPException(
-            status_code=Error.PERMISSION_DENIED_ERROR["status_code"],
-            detail=Error.PERMISSION_DENIED_ERROR["text"],
-            headers={"WWW-Authenticate": authenticate_value},
+        raise_http_exception(
+            Error.PERMISSION_DENIED_ERROR,
+            {"WWW-Authenticate": authenticate_value}
         )
     return user
 
@@ -158,8 +154,6 @@ def get_current_active_user(
         ),
 ) -> models.User:
     if not services.user.is_active(current_user):
-        raise HTTPException(
-            status_code=Error.INACTIVE_USER["status_code"],
-            detail=Error.INACTIVE_USER["text"],
-        )
+        raise_http_exception(Error.INACTIVE_USER)
+
     return current_user

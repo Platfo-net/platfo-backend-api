@@ -1,4 +1,4 @@
-from fastapi import FastAPI , Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
@@ -26,6 +26,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 @app.middleware("http")
 async def add_sql_tap(request: Request, call_next):
     profiler = sqltap.start()
@@ -38,5 +40,3 @@ async def add_sql_tap(request: Request, call_next):
 @app.get("/health", tags=["health-check"])
 async def health():
     return {"message": "ok!"}
-
-

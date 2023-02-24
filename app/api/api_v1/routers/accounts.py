@@ -2,7 +2,6 @@ from redis.client import Redis
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, Security
-from fastapi.exceptions import HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 

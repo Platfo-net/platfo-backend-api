@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Request, status
 from app.core.bot_builder import tasks
 from app.core.config import settings
 
-
 router = APIRouter(prefix="/webhook", tags=["Webhook"], include_in_schema=False)
 
 

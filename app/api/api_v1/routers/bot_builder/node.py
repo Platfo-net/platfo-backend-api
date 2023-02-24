@@ -6,7 +6,7 @@ from pydantic import UUID4
 
 from app import models, services, schemas
 from app.api import deps
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 from app.constants.errors import Error

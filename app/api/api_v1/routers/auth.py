@@ -5,7 +5,7 @@ from app import services, models, schemas
 from app.api import deps
 from app.core import security
 from app.core.config import settings
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.constants.errors import Error
@@ -56,10 +56,7 @@ def login_access_token_swagger(
     if not user:
         raise_http_exception(Error.USER_PASS_WRONG_ERROR)
     elif not services.user.is_active(user):
-        raise HTTPException(
-            status_code=Error.INACTIVE_USER["status_code"],
-            detail=Error.INACTIVE_USER["text"],
-        )
+        raise_http_exception(Error.INACTIVE_USER)
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     if not user.role_id:

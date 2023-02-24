@@ -5,7 +5,7 @@ from app import services, models, schemas
 from app.api import deps
 from app.constants.message_direction import MessageDirection
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, HTTPException, Security, BackgroundTasks
+from fastapi import APIRouter, Depends, Security, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.bot_builder import tasks

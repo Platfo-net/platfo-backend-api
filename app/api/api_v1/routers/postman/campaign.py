@@ -5,7 +5,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.platform import Platform
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 from app.core.exception import raise_http_exception

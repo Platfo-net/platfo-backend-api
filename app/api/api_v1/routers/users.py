@@ -3,7 +3,7 @@ from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
 from app.constants.errors import Error
-from fastapi import APIRouter, Depends, HTTPException, Security, status
+from fastapi import APIRouter, Depends, Security, status
 from sqlalchemy.orm import Session
 
 from app.core.exception import raise_http_exception
