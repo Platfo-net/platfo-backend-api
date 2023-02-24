@@ -1,5 +1,5 @@
-from typing import Optional
-from pydantic import UUID4
+from typing import Optional, List
+from app.models import InstagramPage
 from app.services.base import BaseServices
 from app import models, schemas
 from sqlalchemy.orm import Session
@@ -11,12 +11,12 @@ class InstagramPageServices(
     ]
 ):
     def get_multi_by_user_id(
-        self, db: Session, *, user_id: UUID4
-    ) -> models.InstagramPage:
+            self, db: Session, *, user_id: int
+    ) -> List[InstagramPage]:
         return db.query(self.model).filter(self.model.user_id == user_id).all()
 
     def get_by_instagram_page_id(
-        self, db: Session, *, instagram_page_id: str = None
+            self, db: Session, *, instagram_page_id: int = None
     ) -> models.InstagramPage:
         return (
             db.query(self.model)
@@ -24,13 +24,13 @@ class InstagramPageServices(
             .first()
         )
 
-    def delete_by_facebook_page_id(self, db: Session, *, ig_id):
+    def delete_by_facebook_page_id(self, db: Session, *, ig_id: int):
         return (
             db.query(self.model).filter(self.model.instagram_page_id == ig_id).delete()
         )
 
     def get_by_facebook_page_id(
-        self, db: Session, *, facebook_page_id: str
+            self, db: Session, *, facebook_page_id: int
     ) -> Optional[models.InstagramPage]:
         return (
             db.query(self.model)
@@ -39,7 +39,7 @@ class InstagramPageServices(
         )
 
     def get_page_by_ig_id(
-        self, db: Session, *, instagram_page_id: str
+            self, db: Session, *, instagram_page_id: int
     ) -> Optional[models.InstagramPage]:
         return (
             db.query(self.model)

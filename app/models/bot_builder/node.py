@@ -1,20 +1,17 @@
-from uuid import uuid4
 from app.db.base_class import Base
-from sqlalchemy import Column, String, ForeignKey, JSON, Boolean
+from sqlalchemy import Column, String, ForeignKey, JSON, Boolean, BigInteger
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 
 
 class Node(Base):
-
     __tablename__ = "bot_builder_nodes"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     title = Column(String(255), nullable=True)
     chatflow_id = Column(
-        UUID(as_uuid=True),
+        BigInteger,
         ForeignKey("bot_builder_chatflows.id"),
-        primary_key=False,
         nullable=True,
+        index=True
     )
     from_widget = Column(ARRAY(UUID), nullable=True)
     widget = Column(JSON, nullable=True)

@@ -5,7 +5,7 @@ services:
       context: .
       args:
         - ENVIRONMENT=${ENVIRONMENT}
-    image: "botinow-backend-app"
+    image: "platfo-backend-app"
     volumes:
       - .:/app
     command: /app/startup.sh

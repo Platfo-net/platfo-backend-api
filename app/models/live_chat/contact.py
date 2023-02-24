@@ -1,20 +1,14 @@
 import datetime
-from uuid import uuid4
-
 from sqlalchemy.orm import relationship
-
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, Integer
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, Integer, BigInteger
 
 
 class Contact(Base):
-
     __tablename__ = "live_chat_contacts"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
-    contact_igs_id = Column(String(64), nullable=True)
-    user_page_id = Column(String(64), nullable=True)
+    contact_igs_id = Column(BigInteger, nullable=True, index=True)
+    user_page_id = Column(BigInteger, nullable=True, index=True)
 
     last_message = Column(String(1024), nullable=True)
     last_message_at = Column(DateTime, default=datetime.datetime.utcnow)
@@ -27,7 +21,7 @@ class Contact(Base):
     first_impression = Column(String(100), nullable=True)
 
     user_id = Column(
-        UUID(as_uuid=True),
+        BigInteger,
         ForeignKey("users.id"),
         nullable=True,
     )

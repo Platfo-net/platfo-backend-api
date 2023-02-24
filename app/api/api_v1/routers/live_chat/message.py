@@ -1,3 +1,4 @@
+from app.constants.errors import Error
 from typing import List
 from uuid import uuid4
 from app import services, models, schemas
@@ -9,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.bot_builder import tasks
 from app.constants.widget_type import WidgetType
+from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/message")
 
@@ -18,21 +20,20 @@ router = APIRouter(prefix="/message")
     response_model=List[schemas.live_chat.Message],
 )
 def get_archive(
-    *,
-    db: Session = Depends(deps.get_db),
-    contact_igs_id: str,
-    page_id: str,
-    skip: int = 0,
-    limit: int = 20,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        contact_igs_id: int,
+        page_id: int,
+        skip: int = 0,
+        limit: int = 20,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
-
     messages = services.live_chat.message.get_pages_messages(
         db, contact_igs_id=contact_igs_id, page_id=page_id, skip=skip, limit=limit
     )
@@ -40,7 +41,7 @@ def get_archive(
     messages = reversed(messages)
     for message in list(messages):
         new_message = schemas.live_chat.Message(
-            id=message.id,
+            id=message.uuid,
             from_page_id=message.from_page_id,
             to_page_id=message.to_page_id,
             content=message.content,
@@ -53,30 +54,33 @@ def get_archive(
     return new_messages
 
 
-@router.post("/send/{from_page_id}/{to_contact_igs_id}")
+@router.post("/send/{from_page_id}/{to_contact_igs_id}", deprecated=True)
 def send_message(
-    *,
-    db: Session = Depends(deps.get_db),
-    from_page_id: str,
-    to_contact_igs_id: str,
-    obj_in: schemas.live_chat.MessageSend,
-    backgroud: BackgroundTasks,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        from_page_id: int,
+        to_contact_igs_id: int,
+        obj_in: schemas.live_chat.MessageSend,
+        backgroud: BackgroundTasks,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ):
-
-    instagram_page = services.instagram_page.get_by_page_id(db, page_id=from_page_id)
+    instagram_page = services.instagram_page.get_by_facebook_page_id(
+        db, facebook_page_id=from_page_id)
+    if not instagram_page:
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND["status_code"])
     backgroud.add_task(
         graph_api.send_text_message,
         obj_in.text,
         from_page_id,
         to_contact_igs_id,
-        instagram_page.facebook_page_token,
+        instagram_page.facebook_page_token
+
     )
     message_in = dict(
         from_page_id=from_page_id,
@@ -86,10 +90,10 @@ def send_message(
             "widget_type": WidgetType.TEXT["name"],
             "id": str(uuid4()),
         },
-        user_id=str(current_user.id),
+        user_id=current_user.id,
         direction=MessageDirection.OUT["name"],
         mid=None,
     )
 
-    tasks.save_message(obj_in=message_in)
+    tasks.save_message(**message_in)
     return

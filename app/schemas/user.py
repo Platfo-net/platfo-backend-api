@@ -11,12 +11,12 @@ class UserBase(BaseModel):
     phone_number: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    role_id: Optional[UUID4] = None
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: Optional[str] = None
+    role_id: int
 
 
 class UserUpdate(UserBase):
@@ -31,10 +31,9 @@ class UserUpdatePassword(BaseModel):
 
 class UserInDBBase(UserBase):
     id: UUID4
-    role: Optional[Role]
-
     created_at: datetime
     updated_at: datetime
+    role: Optional[Role]
 
     class Config:
         orm_mode = True

@@ -10,7 +10,7 @@ class GroupBase(BaseModel):
 
 
 class GroupCreate(GroupBase):
-    facebook_page_id: str = None
+    facebook_page_id: int = None
 
 
 class GroupUpdate(GroupBase):
@@ -18,7 +18,7 @@ class GroupUpdate(GroupBase):
 
 
 class GroupCreateApiSchemas(GroupBase):
-    facebook_page_id: str = None
+    facebook_page_id: int = None
     contacts: List[GroupContact]
 
 
@@ -36,5 +36,10 @@ class GroupContactSample(GroupBase):
 
 
 class GroupListApi(BaseModel):
-    items: List[GroupContactSample]
+    items: List[Group]
     pagination: Pagination
+
+
+class GroupContactCreate(BaseModel):
+    contact_id: Optional[int]
+    contact_igs_id: Optional[int]

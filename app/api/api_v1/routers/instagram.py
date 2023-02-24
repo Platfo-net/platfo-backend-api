@@ -1,3 +1,4 @@
+from app.constants.errors import Error
 import requests
 
 from typing import Any
@@ -9,23 +10,24 @@ from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 from app.core.config import settings
 
+from app.core.exception import raise_http_exception
+
 router = APIRouter(prefix="/instagram", tags=["Instagram"])
 
 
 @router.post("")
 def connect_instagram_page(
-    *,
-    db: Session = Depends(deps.get_db),
-    obj_in: schemas.ConnectPage,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        obj_in: schemas.ConnectPage,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ) -> Any:
-
     # get user long lived token
 
     params = dict(
@@ -75,8 +77,8 @@ def connect_instagram_page(
             res = requests.post(subscribe_url, params=params)
             params = dict(
                 fields="username,profile_picture_url,"
-                "followers_count,follows_count,biography,"
-                "website,ig_id,name",
+                       "followers_count,follows_count,biography,"
+                       "website,ig_id,name",
                 access_token=page["access_token"],
             )
 
@@ -115,30 +117,49 @@ def connect_instagram_page(
                     ),
                 )
                 services.instagram_page.create(db, obj_in=instagram_page_in)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
     return
 
 
 @router.get("/get/{instagram_page_id}", response_model=schemas.InstagramPage)
 def get_page_data_by_instagram_page_id(
-    *, db: Session = Depends(deps.get_db), instagram_page_id: str
+        *, db: Session = Depends(deps.get_db), instagram_page_id: str
 ):
     obj_instagram = services.instagram_page.get_page_by_ig_id(
         db, instagram_page_id=instagram_page_id
     )
-    return obj_instagram
+    if not obj_instagram:
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+    return schemas.InstagramPage(
+        id=obj_instagram.uuid,
+        facebook_page_id=obj_instagram.facebook_page_id,
+        instagram_page_id=obj_instagram.instagram_page_id,
+        username=obj_instagram.username,
+        information=obj_instagram.information,
+        profile_picture_url=obj_instagram.profile_picture_url
+    )
 
 
 @router.get(
     "/get_by_facebook_page_id/{facebook_page_id}", response_model=schemas.InstagramPage
 )
 def get_page_data_by_facebook_page_id(
-    *, db: Session = Depends(deps.get_db), facebook_page_id: str
+        *, db: Session = Depends(deps.get_db), facebook_page_id: str
 ):
     obj_instagram = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=facebook_page_id
     )
 
-    return obj_instagram
+    if not obj_instagram:
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
+    return schemas.InstagramPage(
+        id=obj_instagram.uuid,
+        facebook_page_id=obj_instagram.facebook_page_id,
+        instagram_page_id=obj_instagram.instagram_page_id,
+        username=obj_instagram.username,
+        information=obj_instagram.information,
+        profile_picture_url=obj_instagram.profile_picture_url
+    )

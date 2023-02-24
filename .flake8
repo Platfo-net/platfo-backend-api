@@ -10,7 +10,6 @@ exclude =
         alembic,
         tests,
         webhook.py,
-        websocket.py,
         stress.py,
         app/db/base.py,
 

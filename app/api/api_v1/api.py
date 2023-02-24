@@ -9,7 +9,6 @@ from app.api.api_v1.routers import (
     webhook,
     notification,
     academy,
-    websocket,
     live_chat_api,
     bot_builder_api,
     postman_api,
@@ -19,7 +18,6 @@ from fastapi import APIRouter
 api_router = APIRouter()
 
 api_router.include_router(auth.router)
-api_router.include_router(websocket.router)
 api_router.include_router(users.router)
 api_router.include_router(instagram.router)
 api_router.include_router(accounts.router)

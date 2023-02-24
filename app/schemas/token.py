@@ -17,7 +17,7 @@ class Login(BaseModel):
 
 
 class TokenPayload(BaseModel):
-    id: UUID4
+    uuid: UUID4
     role: str = None
 
 

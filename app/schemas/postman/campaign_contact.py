@@ -1,8 +1,8 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
 
 
 class CampaignContactCreate(BaseModel):
-    contact_id: UUID4 = None
+    contact_id: int = None
     contact_igs_id: str = None
 
 

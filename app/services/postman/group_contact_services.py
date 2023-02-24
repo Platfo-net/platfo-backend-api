@@ -1,5 +1,4 @@
 from typing import List
-from pydantic import UUID4
 from app import models, schemas
 from sqlalchemy.orm import Session
 
@@ -9,11 +8,11 @@ class GroupContactServices:
         self.model = model
 
     def create_bulk(
-        self,
-        db: Session,
-        *,
-        objs_in: List[schemas.postman.GroupContact],
-        group_id: UUID4
+            self,
+            db: Session,
+            *,
+            objs_in: List[schemas.postman.GroupContactCreate],
+            group_id: int
     ):
         db_objs = []
         for obj_in in objs_in:
@@ -26,17 +25,16 @@ class GroupContactServices:
             )
 
         db.add_all(db_objs)
-        db.commit()
 
         return db_objs
 
-    def remove_bulk(self, db: Session, *, group_id=UUID4):
+    def remove_bulk(self, db: Session, *, group_id=int):
         return db.query(self.model).filter(self.model.group_id == group_id).delete()
 
-    def get_by_group(self, db: Session, *, group_id: UUID4):
+    def get_by_group(self, db: Session, *, group_id: int):
         return db.query(self.model).filter(self.model.group_id == group_id).all()
 
-    def get_by_group_and_count(self, db: Session, *, group_id: UUID4, count: int = 4):
+    def get_by_group_and_count(self, db: Session, *, group_id: int, count: int = 4):
         return (
             db.query(self.model)
             .filter(self.model.group_id == group_id)

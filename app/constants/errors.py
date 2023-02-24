@@ -8,6 +8,7 @@ class Error:
         "status_code": 409,
         "code": 1,
     }
+
     PERMISSION_DENIED_ERROR = {
         "text": "Permission denied",
         "status_code": 401,
@@ -115,7 +116,11 @@ class Error:
         "status_code": 400,
         "code": 80,
     }
-
+    INVALID_DETAILS = {
+        "text": "Invalid Detail",
+        "status_code": 400,
+        "code": 81
+    }
     INVALID_FIELDS_OPERATORS = {
         "text": "Invalid fields or operators",
         "status_code": 400,
@@ -138,4 +143,27 @@ class Error:
         "text": "Campaign already activated!",
         "status_code": 400,
         "code": 93,
+    }
+
+    GROUP_NOT_FOUND = {
+        "text": "Group not found!",
+        "status_code": 404,
+        "code": 101,
+    }
+
+    GROUP_NOT_FOUND_ACCESS_DENIED = {
+        "text": "Group not found!",
+        "status_code": 404,
+        "code": 102,
+    }
+
+    GROUP_EMPTY_CONTACT = {
+        "text": "Group contacts cannot be empty!",
+        "status_code": 400,
+        "code": 103,
+    }
+    GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE = {
+        "text": "Group does not belongs to this page!",
+        "status_code": 400,
+        "code": 104,
     }

@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Request, status
 from app.core.bot_builder import tasks
 from app.core.config import settings
 
-
 router = APIRouter(prefix="/webhook", tags=["Webhook"], include_in_schema=False)
 
 
@@ -22,8 +21,7 @@ def instagram_subscription_webhook(request: Request):
 
 
 @router.post("/instagram", status_code=status.HTTP_200_OK)
-async def instagram_webhook_listener(*, request: Request, facebook_webhook_body: dict):
-    print(request.headers)
-    print("wwwwwwwwwwwwwwww", facebook_webhook_body)
-    tasks.webhook_proccessor.delay(facebook_webhook_body)
+def instagram_webhook_listener(*, facebook_webhook_body: dict):
+    # tasks.webhook_proccessor.delay(facebook_webhook_body)
+    tasks.webhook_proccessor(facebook_webhook_body)
     return
