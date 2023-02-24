@@ -51,6 +51,8 @@ def create_client():
 
 
 def get_file(filename, bucket):
+    if not filename:
+        return None
     object_url = get_object_url(filename, bucket)
     return schemas.Image(
         filename=filename,
