@@ -1,5 +1,6 @@
 import logging
 
+from sqlalchemy import text
 from tenacity import (
     after_log,
     before_log,
@@ -27,7 +28,7 @@ def init() -> None:
     try:
         # Try to create session to check if DB is awake
         db = TestingSessionLocal()
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
     except Exception as e:
         logger.error(e)
         raise e
