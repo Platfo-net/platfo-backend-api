@@ -71,7 +71,7 @@ def campaign_terminal():
 @shared_task
 def campaign_handler(campaign_id):
     from app.core.config import settings
-
+    # TODO show campaign is active or not to front
     db = SessionLocal()
     campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(

@@ -5,8 +5,10 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.platform import Platform
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
+
+from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/campaign")
 
@@ -70,20 +72,13 @@ def create_campaign(
     group = services.postman.group.get_by_uuid(db, obj_in.group_id)
 
     if not group:
-        raise HTTPException(
-            status_code=Error.GROUP_NOT_FOUND["status_code"],
-            detail=Error.GROUP_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.GROUP_NOT_FOUND)
     if not group.user_id == current_user.id:
-        raise HTTPException(
-            status_code=Error.GROUP_NOT_FOUND["status_code"],
-            detail=Error.GROUP_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.GROUP_NOT_FOUND)
+
     if not group.facebook_page_id == obj_in.facebook_page_id:
-        raise HTTPException(
-            status_code=Error.GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE["status_code"],
-            detail=Error.GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE["text"],
-        )
+        raise_http_exception(Error.GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE)
+
     campaign_obj = schemas.postman.CampaignCreate(
         name=obj_in.name,
         description=obj_in.description,
@@ -139,10 +134,7 @@ def update_campaign(
     db_obj = services.postman.campaign.get_by_uuid(db, id)
 
     if db_obj.is_draft is False:
-        raise HTTPException(
-            status_code=Error.CAMPAIGN_ALREADY_ACTIVE["status"],
-            detail=Error.CAMPAIGN_ALREADY_ACTIVE["text"],
-        )
+        raise_http_exception(Error.CAMPAIGN_ALREADY_ACTIVE)
     campaign = services.postman.campaign.update(
         db,
         db_obj=db_obj,
@@ -177,10 +169,7 @@ def get_campaign_by_id(
 ):
     campaign = services.postman.campaign.get_by_uuid(db, id)
     if not campaign:
-        raise HTTPException(
-            status_code=Error.CAMPAIGN_NOT_FOUND["status"],
-            detail=Error.CAMPAIGN_NOT_FOUND["text"]
-        )
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
     (
         campaign,
         sent_count,
@@ -233,10 +222,7 @@ def get_campain_contacts(
 ):
     campaign = services.postman.campaign.get_by_uuid(db, id)
     if not campaign:
-        raise HTTPException(
-            status_code=Error.CAMPAIGN_NOT_FOUND["status"],
-            detail=Error.CAMPAIGN_NOT_FOUND["text"]
-        )
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND["status"])
     campaign_contacts, pagination = services.postman.campaign_contact.get_campain_contacts(
         db, campaign_id=campaign.id, page=page, page_size=page_size
     )
@@ -269,15 +255,9 @@ def change_campaign_is_draft(
     campaign = services.postman.campaign.get_by_uuid(db, id)
 
     if not campaign:
-        raise HTTPException(
-            status_code=Error.CAMPAIGN_NOT_FOUND["status"],
-            detail=Error.CAMPAIGN_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
     if not campaign.user_id == current_user.id:
-        raise HTTPException(
-            status_code=Error.CAMPAIGN_NOT_FOUND["status"],
-            detail=Error.CAMPAIGN_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND["status"])
 
     services.postman.campaign.change_is_draft(
         db, db_obj=campaign, is_draft=is_draft

@@ -1,12 +1,13 @@
 from typing import Any
 from app import models, services, schemas
 from app.api import deps
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 from pydantic.types import UUID4
 from app.constants.errors import Error
 
 from app.constants.role import Role
+from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
 
@@ -91,10 +92,7 @@ def update_notification(
 ):
     notification = services.notification.get_by_uuid(db, id)
     if not notification:
-        raise HTTPException(
-            status_code=Error.NOTIFICATON_NOT_FOUND["status_code"],
-            detail=Error.NOTIFICATON_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.NOTIFICATON_NOT_FOUND)
     notification = services.notification.update(db, db_obj=notification, obj_in=obj_in)
 
     return schemas.Notification(
@@ -119,10 +117,7 @@ def delete_notification(
 ) -> Any:
     notification = services.notification.get_by_uuid(db, id)
     if not notification:
-        raise HTTPException(
-            status_code=Error.NOTIFICATON_NOT_FOUND["status_code"],
-            detail=Error.NOTIFICATON_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.NOTIFICATON_NOT_FOUND)
 
     services.notification.remove(db, id=notification.id)
     return
@@ -143,19 +138,13 @@ def read_notification(
 ):
     notification = services.notification.get_by_uuid(db, id)
     if not notification:
-        raise HTTPException(
-            status_code=Error.NOTIFICATON_NOT_FOUND["status_code"],
-            detail=Error.NOTIFICATON_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.NOTIFICATON_NOT_FOUND)
     if services.notification_user.get(
             db,
             notification_id=notification.id,
             user_id=current_user.id
     ):
-        raise HTTPException(
-            status_code=Error.NOTIFICATION_ALREADY_READED["status_code"],
-            detail=Error.NOTIFICATION_ALREADY_READED["text"],
-        )
+        raise_http_exception(Error.NOTIFICATION_ALREADY_READED)
 
     services.notification_user.create(db, notification_id=notification.id, user_id=current_user.id)
     return

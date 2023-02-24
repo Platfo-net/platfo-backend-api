@@ -2,7 +2,6 @@ from redis.client import Redis
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, Security
-from fastapi.exceptions import HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -13,27 +12,23 @@ from app.constants.role import Role
 from app.constants.application import Application
 from app.constants.platform import Platform
 from app.core.cache import remove_data_from_cache
-
+from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/account", tags=["Account"])
 
 
 @router.get("/all", response_model=List[schemas.Account])
 def get_accounts_list(
-    *,
-    db: Session = Depends(deps.get_db),
-    platform: str = None,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ) -> Any:
-    """
-    Get list of accounts from different platforms
-    """
     instagram_pages = services.instagram_page.get_multi_by_user_id(
         db, user_id=current_user.id
     )
@@ -54,29 +49,22 @@ def get_accounts_list(
 
 @router.get("/{id}", response_model=schemas.AccountDetail)
 def get_account(
-    *,
-    db: Session = Depends(deps.get_db),
-    id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ) -> Any:
     instagram_page = services.instagram_page.get_by_uuid(db, uuid=id)
     if not instagram_page:
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
     if instagram_page.user_id != current_user.id:
-
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
     return schemas.AccountDetail(
         id=instagram_page.uuid,
         facebook_page_id=instagram_page.facebook_page_id,
@@ -89,30 +77,24 @@ def get_account(
 
 @router.delete("/{id}")
 def delete_account(
-    *,
-    db: Session = Depends(deps.get_db),
-    redis_client: Redis = Depends(deps.get_redis_client),
-    id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
-        ],
-    ),
+        *,
+        db: Session = Depends(deps.get_db),
+        redis_client: Redis = Depends(deps.get_redis_client),
+        id: UUID4,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER["name"],
+                Role.ADMIN["name"],
+            ],
+        ),
 ) -> Any:
     instagram_page = services.instagram_page.get_by_uuid(db, id)
 
     if not instagram_page:
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
     if instagram_page.user_id != current_user.id:
-        raise HTTPException(
-            status_code=Error.ACCOUNT_NOT_FOUND["status_code"],
-            detail=Error.ACCOUNT_NOT_FOUND["text"],
-        )
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
 
     remove_data_from_cache(redis_client, instagram_page.instagram_page_id)
 

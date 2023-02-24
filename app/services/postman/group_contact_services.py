@@ -25,7 +25,6 @@ class GroupContactServices:
             )
 
         db.add_all(db_objs)
-        db.commit()
 
         return db_objs
 
