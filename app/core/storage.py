@@ -1,6 +1,7 @@
 from minio import Minio
 from minio.error import S3Error
 
+from app import schemas
 from app.core.config import settings
 from datetime import timedelta
 
@@ -47,3 +48,11 @@ def create_client():
         return client
     except S3Error as exc:
         raise Exception(f"Error happen on connection: {exc}")
+
+
+def get_file(filename, bucket):
+    object_url = get_object_url(filename, bucket)
+    return schemas.Image(
+        filename=filename,
+        url=object_url
+    )

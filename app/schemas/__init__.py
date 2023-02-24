@@ -35,3 +35,4 @@ from .notification import (
 )
 
 from .file import FileUpload
+from .media import Image

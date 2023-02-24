@@ -8,6 +8,8 @@ from app.constants.role import Role
 from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
+from app.core import storage
+from app.core.config import settings
 from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/campaign")
@@ -38,6 +40,8 @@ def get_all_user_campaigns(
 
     campaigns = []
     for item in items:
+        image = storage.get_file(item.image, settings.S3_CAMPAIGN_BUCKET)
+        print(item.image)
         campaigns.append(
             schemas.postman.Campaign(
                 id=item.uuid,
@@ -47,6 +51,8 @@ def get_all_user_campaigns(
                 status=item.status,
                 is_draft=item.is_draft,
                 group_name=item.group_name,
+                image=image
+
             )
         )
 
@@ -85,7 +91,8 @@ def create_campaign(
         facebook_page_id=obj_in.facebook_page_id,
         is_draft=obj_in.is_draft,
         content=obj_in.content,
-        group_name=group.name
+        group_name=group.name,
+        image=obj_in.image,
     )
 
     campaign = services.postman.campaign.create(
@@ -105,6 +112,7 @@ def create_campaign(
     services.postman.campaign_contact.create_bulk(
         db, campaign_id=campaign.id, contacts=contacts
     )
+    image = storage.get_file(campaign.image, settings.S3_CAMPAIGN_BUCKET)
 
     return schemas.postman.Campaign(
         id=campaign.uuid,
@@ -114,6 +122,7 @@ def create_campaign(
         is_draft=campaign.is_draft,
         status=campaign.status,
         group_name=group.name,
+        image=image,
     )
 
 
@@ -144,13 +153,16 @@ def update_campaign(
             description=obj_in.description,
             content=obj_in.content,
             is_draft=obj_in.is_draft,
+            image=obj_in.image,
         ),
     )
+    image = storage.get_file(obj_in.image, settings.S3_CAMPAIGN_BUCKET)
     return schemas.postman.CampaignUpdate(
         name=campaign.name,
         description=campaign.description,
         content=campaign.content,
         is_draft=campaign.is_draft,
+        image=image,
     )
 
 
@@ -187,6 +199,7 @@ def get_campaign_by_id(
         platform=Platform.INSTAGRAM["name"],
         page_id=instagram_page.facebook_page_id,
     )
+    image = storage.get_file(campaign.image, settings.S3_CAMPAIGN_BUCKET)
     return schemas.postman.CampaignDetail(
         id=campaign.uuid,
         name=campaign.name,
@@ -202,6 +215,7 @@ def get_campaign_by_id(
         sent_count=sent_count,
         seen_count=seen_count,
         total_contact_count=total_contact_count,
+        image=image
     )
 
 

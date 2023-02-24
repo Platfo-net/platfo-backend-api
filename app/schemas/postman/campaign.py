@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, UUID4
 
+from app.schemas.media import Image
 from app.schemas.pagination import Pagination
 from app.schemas.account import Account
 
@@ -13,6 +14,7 @@ class CampaignCreate(BaseModel):
     is_draft: bool = True
     content: dict = None
     group_name: str = None
+    image: str = None
 
 
 class CampaignUpdate(BaseModel):
@@ -20,6 +22,7 @@ class CampaignUpdate(BaseModel):
     description: str = None
     content: dict = None
     is_draft: bool = False
+    image: str = None
 
 
 class Campaign(BaseModel):
@@ -30,6 +33,7 @@ class Campaign(BaseModel):
     status: str = None
     is_draft: bool = False
     group_name: str = None
+    image: Optional[Image] = None
 
 
 class CampaignDetail(Campaign):
@@ -55,3 +59,4 @@ class CampaignCreateApiSchema(BaseModel):
     group_id: str = None
     content: dict = None
     is_draft: bool = True
+    image: str = None

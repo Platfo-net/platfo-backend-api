@@ -9,7 +9,7 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/notification", tags=["Notification"])
+router = APIRouter(prefix="/notification", tags=["Notification"], include_in_schema=False)
 
 
 @router.get("/all", response_model=schemas.NotificationListApi)
