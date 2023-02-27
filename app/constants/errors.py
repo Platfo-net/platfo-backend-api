@@ -139,6 +139,12 @@ class Error:
         "code": 92,
     }
 
+    CAMPAIGN_NOT_FOUND_ACCESS_DENIED = {
+        "text": "Campaign not found!",
+        "status_code": 404,
+        "code": 93,
+    }
+
     CAMPAIGN_ALREADY_ACTIVE = {
         "text": "Campaign already activated!",
         "status_code": 400,

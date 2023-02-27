@@ -1,6 +1,5 @@
 import math
 from typing import List
-from pydantic import UUID4
 from app import models, schemas
 from sqlalchemy.orm import Session
 
@@ -14,9 +13,9 @@ class CampaignContactServices:
         self.model = model
 
     def get_campain_contacts(self, db: Session, *, campaign_id: int, page: int, page_size: int):
-        contacts = db.query(self.model).join(self.model.contact).filter(
+        contacts = db.query(self.model).filter(
             self.model.campaign_id == campaign_id
-        ).offset(page_size * (page - 1)).limit(page_size).all()
+        ).join(self.model.contact).offset(page_size * (page - 1)).limit(page_size).all()
 
         total_count = db.query(self.model).count()
         total_pages = math.ceil(total_count / page_size)
@@ -47,60 +46,55 @@ class CampaignContactServices:
         return db_obj
 
     def get_campaign_unsend_contacts(
-            self, db: Session, *, campaign_id: UUID4, count: int
-    ) -> List[ModelType]:
+            self, db: Session, *, campaign_id: int, count: int
+    ):
 
+        return db.query(self.model).filter(
+            self.model.is_sent == False,  # noqa
+            self.model.campaign_id == campaign_id,
+        ).join(self.model.contact).limit(count).all()
+
+    def get_campaign_unsend_contacts_count(self, db: Session, *, campaign_id: int):
         return (
             db.query(models.postman.CampaignContact)
             .filter(
                 models.postman.CampaignContact.is_sent == False,  # noqa
                 models.postman.CampaignContact.campaign_id == campaign_id,
             )
-            .limit(count)
-            .all()
+            .count()
         )
 
-    def get_campaign_unsend_contacts_count(self, db: Session, *, campaign_id: UUID4):
+    def get_all_contacts_count(self, db: Session, campaign_id: int):
         return (
-            db.query(models.postman.CampaignContact)
+            db.query(self.model)
+            .filter(self.model.campaign_id == campaign_id)
+            .count()
+        )
+
+    def get_all_sent_count(self, db: Session, campaign_id: int):
+        return (
+            db.query(self.model)
             .filter(
-                models.postman.CampaignContact.is_sent == False,  # noqa
-                models.postman.CampaignContact.campaign_id == campaign_id,
+                self.model.campaign_id == campaign_id,
+                self.model.is_sent == True,  # noqa
             )
             .count()
         )
 
-    def get_all_contacts_count(self, db: Session, *, campaign_id: UUID4):
-        return (
-            db.query(models.postman.CampaignContact)
-            .filter(models.postman.CampaignContact.campaign_id == campaign_id)
-            .count()
-        )
-
-    def get_all_sent_count(self, db: Session, *, campaign_id: UUID4):
+    def get_all_seen_count(self, db: Session, campaign_id: int):
         return (
             db.query(models.postman.CampaignContact)
             .filter(
-                models.postman.CampaignContact.campaign_id == campaign_id,
-                models.postman.CampaignContact.is_sent is True,
+                self.model.campaign_id == campaign_id,
+                self.model.is_seen == True  # noqa
             )
             .count()
         )
 
-    def get_all_seen_count(self, db: Session, *, campaign_id: UUID4):
+    def delete_campaign_contact(self, db: Session, *, campaign_contact_id: int):
         return (
-            db.query(models.postman.CampaignContact)
-            .filter(
-                models.postman.CampaignContact.campaign_id == campaign_id,
-                models.postman.CampaignContact.is_seen is True,
-            )
-            .count()
-        )
-
-    def delete_campaign_contact(self, db: Session, *, campaign_contact_id: UUID4):
-        return (
-            db.query(models.postman.CampaignContact)
-            .filter(models.postman.CampaignContact.id == campaign_contact_id)
+            db.query(self.model)
+            .filter(self.model.CampaignContact.id == campaign_contact_id)
             .delete()
         )
 
@@ -126,7 +120,7 @@ class CampaignContactServices:
         db.commit()
         db.refresh(db_obj)
 
-    def remove_bulk(self, db: Session, *, campaign_id=UUID4):
+    def remove_bulk(self, db: Session, *, campaign_id: int):
         return (
             db.query(self.model).filter(self.model.campaign_id == campaign_id).delete()
         )

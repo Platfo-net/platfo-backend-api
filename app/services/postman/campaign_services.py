@@ -1,5 +1,4 @@
 import math
-from typing import List
 from pydantic import UUID4
 from app import models, schemas, services
 from sqlalchemy.orm import Session
@@ -79,51 +78,24 @@ class CampaignServices:
         db.refresh(db_obj)
         return db_obj
 
-    def get_active_campaigns(self, db: Session) -> List[ModelType]:
+    def get_active_campaigns(self, db: Session):
         return (
-            db.query(models.postman.Campaign)
+            db.query(self.model)
             .filter(
-                models.postman.Campaign.is_draft == False,  # noqa
-                models.postman.Campaign.status == CampaignStatus.PENDING,
-                models.postman.Campaign.is_active == False,  # noqa
+                self.model.is_draft == False,  # noqa
+                self.model.status == CampaignStatus.PENDING,
+                self.model.is_active == False,  # noqa
             )
             .all()
         )
 
-    def get(self, db: Session, id: int) -> ModelType:
-        return (
-            db.query(models.postman.Campaign)
-            .filter(models.postman.Campaign.id == id)
-            .first()
-        )
+    def get(self, db: Session, id: int):
+        return db.query(self.model).filter(
+            self.model.id == id
+        ).first()
 
-    def get_by_uuid(self, db: Session, uuid: UUID4) -> ModelType:
-        return (
-            db.query(models.postman.Campaign)
-            .filter(models.postman.Campaign.uuid == uuid)
-            .first()
-        )
-
-    def get_by_detail(self, db: Session, id: int):
-        campaign = (
-            db.query(models.postman.Campaign)
-            .filter(models.postman.Campaign.id == id)
-            .first()
-        )
-
-        sent_count = services.postman.campaign_contact.get_all_sent_count(
-            db, campaign_id=campaign.id
-        )
-        seen_count = services.postman.campaign_contact.get_all_seen_count(
-            db, campaign_id=campaign.id
-        )
-        total_contact_count = (
-            db.query(models.postman.CampaignContact)
-            .filter(models.postman.CampaignContact.campaign_id == campaign.id)
-            .count()
-        )
-
-        return campaign, sent_count, seen_count, total_contact_count
+    def get_by_uuid(self, db: Session, uuid: UUID4):
+        return db.query(self.model).filter(self.model.uuid == uuid).first()
 
     def change_status(
             self,
@@ -171,8 +143,8 @@ class CampaignServices:
 
     def delete_campaign(self, db: Session, *, campaign_id: UUID4):
         return (
-            db.query(models.postman.Campaign)
-            .filter(models.postman.Campaign.id == campaign_id)
+            db.query(self.model)
+            .filter(self.model.id == campaign_id)
             .delete()
         )
 
