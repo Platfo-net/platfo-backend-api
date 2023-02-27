@@ -15,7 +15,7 @@ import copy
 
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/connection", tags=["Connection"])
+router = APIRouter(prefix="/connection", tags=["Connection"], include_in_schema=False)
 
 
 @router.get("/all", response_model=List[schemas.Connection])
