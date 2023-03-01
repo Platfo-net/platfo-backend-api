@@ -80,7 +80,7 @@ def create_campaign(
     if not group:
         raise_http_exception(Error.GROUP_NOT_FOUND)
     if not group.user_id == current_user.id:
-        raise_http_exception(Error.GROUP_NOT_FOUND)
+        raise_http_exception(Error.GROUP_NOT_FOUND_ACCESS_DENIED)
 
     if not group.facebook_page_id == obj_in.facebook_page_id:
         raise_http_exception(Error.GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE)
@@ -182,12 +182,10 @@ def get_campaign_by_id(
     campaign = services.postman.campaign.get_by_uuid(db, id)
     if not campaign:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
-    (
-        campaign,
-        sent_count,
-        seen_count,
-        total_contact_count,
-    ) = services.postman.campaign.get_by_detail(db, campaign.id)
+
+    sent_count = services.postman.campaign_contact.get_all_sent_count(db, campaign.id)
+    seen_count = services.postman.campaign_contact.get_all_seen_count(db, campaign.id)
+    contact_count = services.postman.campaign_contact.get_all_contacts_count(db, campaign.id)
     instagram_page = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=campaign.facebook_page_id
     )
@@ -214,7 +212,7 @@ def get_campaign_by_id(
         account=account,
         sent_count=sent_count,
         seen_count=seen_count,
-        total_contact_count=total_contact_count,
+        total_contact_count=contact_count,
         image=image
     )
 
@@ -235,8 +233,12 @@ def get_campain_contacts(
         ),
 ):
     campaign = services.postman.campaign.get_by_uuid(db, id)
+
     if not campaign:
-        raise_http_exception(Error.CAMPAIGN_NOT_FOUND["status"])
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
+    if not campaign.id == current_user.id:
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
+
     campaign_contacts, pagination = services.postman.campaign_contact.get_campain_contacts(
         db, campaign_id=campaign.id, page=page, page_size=page_size
     )
@@ -271,7 +273,7 @@ def change_campaign_is_draft(
     if not campaign:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
     if not campaign.user_id == current_user.id:
-        raise_http_exception(Error.CAMPAIGN_NOT_FOUND["status"])
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
     services.postman.campaign.change_is_draft(
         db, db_obj=campaign, is_draft=is_draft

@@ -1,5 +1,6 @@
 from app.constants.errors import Error
 from pydantic import UUID4
+from app.core.transaction import AtomicTransaction
 
 from app import services, models, schemas
 from app.api import deps
@@ -8,36 +9,6 @@ from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
 from app.core.exception import raise_http_exception
-
-
-class AtomicTransaction:
-    def __init__(self, db):
-        self.db = db
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type:
-            self._rollback()
-        else:
-            self._commit()
-
-    def _commit(self):
-        self.db.commit()
-
-    def _rollback(self):
-        self.db.rollback()
-
-    def add(self, item):
-        self.db.add(item)
-
-    def delete(self, item):
-        self.db.delete(item)
-
-    def add_all(self, items):
-        self.db.add_all(items)
-
 
 router = APIRouter(prefix="/group")
 
@@ -92,7 +63,6 @@ def create_group(
 ):
     if not obj_in.contacts:
         raise_http_exception(Error.GROUP_EMPTY_CONTACT)
-
     with AtomicTransaction(db) as session:
         db_obj = services.postman.group.create(
             session,
