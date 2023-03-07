@@ -11,7 +11,7 @@ from app.core.config import settings
 def create_connection(db: Session, test_account_id):
     connection_in = schemas.ConnectionCreate(
         name="test",
-        application_name=Application.BOT_BUILDER["name"],
+        application_name=Application.BOT_BUILDER,
         description="test",
         account_id=test_account_id,
         details=[

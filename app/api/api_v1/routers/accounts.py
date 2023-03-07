@@ -109,7 +109,7 @@ def delete_account(
     connections = services.connection.get_page_connections(
         db,
         account_id=instagram_page.id,
-        application_name=Application.BOT_BUILDER["name"],
+        application_name=Application.BOT_BUILDER,
     )
 
     for connection in connections:

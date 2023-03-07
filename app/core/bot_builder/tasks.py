@@ -1,12 +1,15 @@
 from typing import Any, List
 from uuid import uuid4
+
+from redis.client import Redis
+
 from app import schemas, services
 from app.api import deps
 from app.constants.impression import Impression
 from app.db.session import SessionLocal
 from app.core import cache
 from app.core.bot_builder.instagram_graph_api import graph_api
-from app.core.bot_builder.extra_classes import InstagramData
+from app.core.bot_builder.extra_classes import InstagramData, SavedMessage
 from app.constants.message_direction import MessageDirection
 from app.constants.widget_type import WidgetType
 from app.constants.webhook_type import WebhookType
@@ -31,8 +34,6 @@ def webhook_proccessor(facebook_webhook_body):
         db.close()
         return 0
 
-    print(instagram_data.type)
-
     match instagram_data.type:
         case WebhookType.CONTACT_MESSAGE_ECHO:
             return None
@@ -41,21 +42,19 @@ def webhook_proccessor(facebook_webhook_body):
             db.close()
             return None
         case WebhookType.COMMENT:
-            save_comment(
+            save_comment.delay(
                 from_page_id=instagram_data.sender_id,
                 to_page_id=user_page_data.facebook_page_id,
                 user_id=user_page_data.user_id,
-                instagram_page_id=instagram_data.recipient_id,
             )
             db.close()
             return None
 
         case WebhookType.LIVE_COMMENT:
-            save_comment(
+            save_comment.delay(
                 from_page_id=instagram_data.sender_id,
                 to_page_id=user_page_data.facebook_page_id,
                 user_id=user_page_data.user_id,
-                instagram_page_id=instagram_data.recipient_id,
             )
             db.close()
             return None
@@ -71,16 +70,16 @@ def webhook_proccessor(facebook_webhook_body):
                 "widget_type": "STORY_MENTION",
                 "id": str(uuid4()),
             }
-
-            save_message(
+            saved_message = SavedMessage(
                 from_page_id=instagram_data.sender_id,
                 to_page_id=user_page_data.facebook_page_id,
                 mid=instagram_data.mid,
                 content=saved_data,
                 user_id=user_page_data.user_id,
-                direction=MessageDirection.IN["name"],
-                instagram_page_id=instagram_data.recipient_id,
+                direction=MessageDirection.IN,
+                instagram_page_id=instagram_data.recipient_id
             )
+            save_message(db, redis_client, saved_message)
             db.close()
             return None
         case WebhookType.STORY_REPLY:
@@ -90,33 +89,35 @@ def webhook_proccessor(facebook_webhook_body):
                 "message": instagram_data.message_detail,
                 "id": str(uuid4()),
             }
-            save_message(
+            saved_message = SavedMessage(
                 from_page_id=instagram_data.sender_id,
                 to_page_id=user_page_data.facebook_page_id,
                 mid=instagram_data.mid,
                 content=saved_data,
                 user_id=user_page_data.user_id,
-                direction=MessageDirection.IN["name"],
+                direction=MessageDirection.IN,
                 instagram_page_id=instagram_data.recipient_id,
             )
+            save_message(db, redis_client, saved_message)
             db.close()
             return None
 
     saved_data = {
         "message": instagram_data.text,
-        "widget_type": WidgetType.TEXT["name"],
+        "widget_type": WidgetType.TEXT,
         "id": str(uuid4()),
     }
-    print("-*------------------------------------------")
-    save_message(
+    saved_message = SavedMessage(
         from_page_id=instagram_data.sender_id,
         to_page_id=user_page_data.facebook_page_id,
         mid=instagram_data.mid,
         content=saved_data,
         user_id=user_page_data.user_id,
-        direction=MessageDirection.IN["name"],
+        direction=MessageDirection.IN,
         instagram_page_id=instagram_data.recipient_id,
     )
+
+    save_message(db, redis_client, saved_message)
     if instagram_data.payload:
         chatflow_id = cache.get_node_chatflow_id(
             db, redis_client, widget_id=instagram_data.payload
@@ -127,7 +128,7 @@ def webhook_proccessor(facebook_webhook_body):
         connection = cache.get_connection_data(
             db,
             redis_client,
-            application_name=Application.BOT_BUILDER["name"],
+            application_name=Application.BOT_BUILDER,
             account_id=user_page_data.account_id,
         )
         if not connection:
@@ -148,13 +149,12 @@ def webhook_proccessor(facebook_webhook_body):
             widget=node.widget,
             quick_replies=node.quick_replies,
             contact_igs_id=instagram_data.sender_id,
-            payload=instagram_data.payload,
             user_page_data=user_page_data.to_dict(),
         )
     else:
         chatflow_id = None
         connections = services.connection.get_page_connections(
-            db, account_id=user_page_data.account_id, application_name="BOT_BUILDER"
+            db, account_id=user_page_data.account_id, application_name=Application.BOT_BUILDER
         )
         if connections is None:
             db.close()
@@ -177,7 +177,6 @@ def webhook_proccessor(facebook_webhook_body):
                 widget=node.widget,
                 quick_replies=node.quick_replies,
                 contact_igs_id=instagram_data.sender_id,
-                payload=instagram_data.payload,
                 user_page_data=user_page_data.to_dict(),
             )
         except Exception:
@@ -191,7 +190,6 @@ def save_comment(
         from_page_id: int = None,
         to_page_id: int = None,
         user_id: int = None,
-        instagram_page_id: int = None,
 ):
     db = SessionLocal()
 
@@ -283,27 +281,16 @@ def save_live_comment(
     return 0
 
 
-@celery.task
-def save_message(
-        from_page_id: int = None,
-        to_page_id: int = None,
-        mid: str = None,
-        content: dict = None,
-        user_id: int = None,
-        direction: str = None,
-        instagram_page_id: int = None,
-):
-    db = SessionLocal()
-    client = deps.get_redis_client()
-    if direction == MessageDirection.IN["name"]:
+def save_message(db: Session, client: Redis, message: SavedMessage):
+    if message.direction == MessageDirection.IN:
         contact = services.live_chat.contact.get_contact_by_igs_id(
-            db, contact_igs_id=from_page_id
+            db, contact_igs_id=message.from_page_id
         )
         if not contact:
             contact_in = schemas.live_chat.ContactCreate(
-                contact_igs_id=from_page_id,
-                user_page_id=to_page_id,
-                user_id=user_id,
+                contact_igs_id=message.from_page_id,
+                user_page_id=message.to_page_id,
+                user_id=message.user_id,
                 message_count=1,
                 first_impression=Impression.MESSAGE,
             )
@@ -311,7 +298,7 @@ def save_message(
 
             try:
                 user_data = cache.get_user_data(
-                    client, db, instagram_page_id=instagram_page_id
+                    client, db, instagram_page_id=message.instagram_page_id
                 ).to_dict()
 
             except Exception:
@@ -324,36 +311,35 @@ def save_message(
             )
             services.live_chat.contact.set_information(
                 db,
-                contact_igs_id=from_page_id,
+                contact_igs_id=message.from_page_id,
                 information=information,
             )
         else:
             services.live_chat.contact.update_last_message_count(
-                db, contact_igs_id=from_page_id
+                db, contact_igs_id=message.from_page_id
             )
 
-    if direction == MessageDirection.IN["name"]:
+    if message.direction == MessageDirection.IN:
         services.live_chat.contact.update_last_message(
-            db, contact_igs_id=from_page_id, last_message=str(content)
+            db, contact_igs_id=message.from_page_id, last_message=str(message.content)
         )
 
     else:
         services.live_chat.contact.update_last_message(
-            db, contact_igs_id=to_page_id, last_message=str(content)
+            db, contact_igs_id=message.to_page_id, last_message=str(message.content)
         )
 
     report = services.live_chat.message.create(
         db,
         obj_in=schemas.live_chat.MessageCreate(
-            from_page_id=from_page_id,
-            to_page_id=to_page_id,
-            content=content,
-            mid=mid,
-            user_id=user_id,
-            direction=direction,
+            from_page_id=message.from_page_id,
+            to_page_id=message.to_page_id,
+            content=message.content,
+            mid=message.mid,
+            user_id=message.user_id,
+            direction=message.direction,
         ),
     )
-    db.close()
     return report
 
 
@@ -361,14 +347,15 @@ def save_message(
 def send_widget(
         widget: dict,
         quick_replies: List[dict],
-        contact_igs_id: str,
-        payload: str,
+        contact_igs_id: int,
         user_page_data: dict,
 ):
     db: Session = SessionLocal()
+    redis_client = deps.get_redis_client()
 
-    while widget["widget_type"] in (WidgetType.TEXT["name"], WidgetType.MEDIA["name"]):
-        if widget["widget_type"] == WidgetType.MEDIA["name"]:
+    while widget["widget_type"] in (WidgetType.TEXT, WidgetType.MEDIA):
+        mid = None
+        if widget["widget_type"] == WidgetType.MEDIA:
             mid = graph_api.send_media(
                 widget["title"],
                 widget["image"],
@@ -376,7 +363,7 @@ def send_widget(
                 to_id=contact_igs_id,
                 page_access_token=user_page_data["facebook_page_token"],
             )
-        if widget["widget_type"] == WidgetType.TEXT["name"]:
+        if widget["widget_type"] == WidgetType.TEXT:
             mid = graph_api.send_text_message(
                 text=widget["message"],
                 from_id=user_page_data["facebook_page_id"],
@@ -384,13 +371,16 @@ def send_widget(
                 page_access_token=user_page_data["facebook_page_token"],
                 quick_replies=quick_replies,
             )
-        save_message(
+        saved_message = SavedMessage(
             from_page_id=user_page_data["facebook_page_id"],
             to_page_id=contact_igs_id,
             mid=mid,
             content=widget,
             user_id=user_page_data["user_id"],
-            direction=MessageDirection.OUT["name"],
+            direction=MessageDirection.OUT
+        )
+        save_message(
+            db, redis_client, saved_message
         )
 
         payload = widget["id"]
@@ -408,13 +398,14 @@ def send_widget(
             to_id=contact_igs_id,
             page_access_token=user_page_data["facebook_page_token"],
         )
-        save_message(
+        saved_message = SavedMessage(
             from_page_id=user_page_data["facebook_page_id"],
             to_page_id=contact_igs_id,
             mid=mid,
             content=widget,
             user_id=user_page_data["user_id"],
-            direction=MessageDirection.OUT["name"],
+            direction=MessageDirection.OUT,
         )
+        save_message(db, redis_client, saved_message)
     db.close()
     return widget

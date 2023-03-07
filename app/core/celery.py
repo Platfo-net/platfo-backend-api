@@ -9,7 +9,11 @@ celery = Celery(
 
 celery.conf.broker_url = settings.CELERY_URI
 celery.conf.result_backend = settings.CELERY_URI
-
+celery.conf.update(
+    task_serializer="json",
+    result_serializer="json",
+    accept_content=["json"],
+)
 
 # @celery.on_after_configure.connect
 # def schedule_task(sender, **kwargs):

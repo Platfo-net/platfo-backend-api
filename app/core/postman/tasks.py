@@ -19,9 +19,9 @@ def save_message(
 ):
 
     db = SessionLocal()
-    if content["widget_type"] == WidgetType.MENU["name"]:
+    if content["widget_type"] == WidgetType.MENU:
         last_message = content["title"]
-    elif content["widget_type"] == WidgetType.TEXT["name"]:
+    elif content["widget_type"] == WidgetType.TEXT:
         last_message = content["message"]
     else:
         last_message = ""
@@ -36,7 +36,7 @@ def save_message(
             content=content,
             mid=mid,
             user_id=user_id,
-            direction=MessageDirection.OUT["name"],
+            direction=MessageDirection.OUT,
         ),
     )
     db.close()
@@ -97,7 +97,7 @@ def campaign_handler(campaign_id):
     sent_contacts = []
     for contact in campaign_contacts:
         mid = None
-        if content["widget_type"] == WidgetType.TEXT["name"]:
+        if content["widget_type"] == WidgetType.TEXT:
             for _ in range(3):
                 mid = graph_api.send_text_message(
                     text=content["text"],
@@ -109,7 +109,7 @@ def campaign_handler(campaign_id):
                 if mid:
                     break
 
-        if content["widget_type"] == WidgetType.MENU["name"]:
+        if content["widget_type"] == WidgetType.MENU:
             for _ in range(3):
                 mid = graph_api.send_menu(
                     data=content,

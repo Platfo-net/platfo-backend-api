@@ -87,11 +87,11 @@ def send_message(
         to_page_id=to_contact_igs_id,
         content={
             "message": obj_in.text,
-            "widget_type": WidgetType.TEXT["name"],
+            "widget_type": WidgetType.TEXT,
             "id": str(uuid4()),
         },
         user_id=current_user.id,
-        direction=MessageDirection.OUT["name"],
+        direction=MessageDirection.OUT,
         mid=None,
     )
 
