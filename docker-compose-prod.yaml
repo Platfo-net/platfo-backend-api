@@ -69,7 +69,7 @@ services:
     image: redis:6.2.7
     command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $REDIS_PASSWORD --appendonly yes"
     ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
+      - "${REDIS_PORT}:6379"
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
@@ -111,6 +111,17 @@ services:
     ports:
       - "5566:5566"
     depends_on:
+      - redis
+
+  celery-beat:
+    image: "platfo-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-beat"
+    command: celery -A app.core.celery.celery beat
+    volumes:
+      - .:/app
+    depends_on:
+      - db
       - redis
 
 volumes:
