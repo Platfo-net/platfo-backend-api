@@ -8,6 +8,7 @@ class MessageBase(BaseModel):
     to_page_id: int
     content: dict
     mid: Optional[str] = None
+    type: Optional[str] = None
 
 
 class MessageCreate(MessageBase):

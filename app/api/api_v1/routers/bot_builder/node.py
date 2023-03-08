@@ -69,24 +69,24 @@ def create_full_node(
 
     node = services.bot_builder.node.create(db, obj_in=node_in)
 
-    if obj_in.widget_type == WidgetType.TEXT["name"]:
+    if obj_in.widget_type == WidgetType.TEXT:
         obj_in = dict(
             id=str(uuid.uuid4()),
-            widget_type=WidgetType.TEXT["name"],
+            widget_type=WidgetType.TEXT,
             **jsonable_encoder(obj_in.widget),
         )
 
-    elif obj_in.widget_type == WidgetType.MEDIA["name"]:
+    elif obj_in.widget_type == WidgetType.MEDIA:
         obj_in = dict(
             id=str(uuid.uuid4()),
-            widget_type=WidgetType.MEDIA["name"],
+            widget_type=WidgetType.MEDIA,
             title=obj_in.widget["title"],
             image=obj_in.widget["image"],
         )
 
-    elif obj_in.widget_type == WidgetType.MENU["name"]:
+    elif obj_in.widget_type == WidgetType.MENU:
         obj_in = jsonable_encoder(obj_in.widget)
-        obj_in["widget_type"] = WidgetType.MENU["name"]
+        obj_in["widget_type"] = WidgetType.MENU
         obj_in["choices"] = [
             dict(id=str(uuid.uuid4()), text=ch["text"]) for ch in obj_in["choices"]
         ]

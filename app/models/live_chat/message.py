@@ -8,7 +8,7 @@ class Message(Base):
 
     from_page_id = Column(BigInteger, nullable=True, index=True)
     to_page_id = Column(BigInteger, nullable=True, index=True)
-
+    type = Column(String(32), nullable=True)
     content = Column(JSON, nullable=True)
     mid = Column(String(256), nullable=True)
     send_at = Column(DateTime, default=datetime.datetime.utcnow)

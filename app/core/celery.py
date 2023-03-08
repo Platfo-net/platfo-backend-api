@@ -9,11 +9,15 @@ celery = Celery(
 
 celery.conf.broker_url = settings.CELERY_URI
 celery.conf.result_backend = settings.CELERY_URI
+celery.conf.update(
+    task_serializer="json",
+    result_serializer="json",
+    accept_content=["json"],
+)
 
-
-# @celery.on_after_configure.connect
-# def schedule_task(sender, **kwargs):
-#     sender.add_periodic_task(
-#         settings.CAMPAIGN_PERIOD_INTERVAL_MINUTES * 60,
-#         campaign_terminal.s(), expires=10
-#         )
+celery.conf.beat_schedule = {
+    'campaign-terminal-every-1-hour': {
+        'task': 'app.core.postman.tasks.campaign_terminal',
+        'schedule': 3600,
+    },
+}

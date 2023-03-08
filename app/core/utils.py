@@ -1,6 +1,8 @@
 from pydantic import UUID4
-
-from app import models
+from sqlalchemy.orm import Session
+from app import models, services, schemas
+from app.constants.message_type import MessageType
+from app.core.bot_builder.extra_classes import SavedMessage
 
 
 def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
@@ -83,3 +85,26 @@ def widget_mapper(data, node_id):
         {"id": reply["value"], "text": reply["label"]} for reply in replies
     ]
     return widget, quick_replies
+
+
+def save_message(
+        db: Session,
+        saved_message: SavedMessage
+):
+    services.live_chat.contact.update_last_message(
+        db, contact_igs_id=saved_message.to_page_id,
+        last_message=saved_message.content.get("text", None)
+    )
+    report = services.live_chat.message.create(
+        db,
+        obj_in=schemas.live_chat.MessageCreate(
+            from_page_id=saved_message.from_page_id,
+            to_page_id=saved_message.to_page_id,
+            content=saved_message.content,
+            mid=saved_message.mid,
+            user_id=saved_message.user_id,
+            direction=saved_message.direction,
+            type=MessageType.TEXT
+        ),
+    )
+    return report

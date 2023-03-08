@@ -1,46 +1,12 @@
-from typing import Any
 from app.constants.message_direction import MessageDirection
-from app import schemas, services
+from app import services
+from app.core import utils, storage
 from app.db.session import SessionLocal
 from app.constants.campaign_status import CampaignStatus
 from app.core.bot_builder.instagram_graph_api import graph_api
-from app.core.bot_builder.extra_classes import UserData
-from app.constants.widget_type import WidgetType
+from app.core.bot_builder.extra_classes import UserData, SavedMessage
 from celery import shared_task
-
-
-@shared_task
-def save_message(
-    from_page_id: str = None,
-    to_page_id: str = None,
-    mid: str = None,
-    content: dict = None,
-    user_id: Any = None,
-):
-
-    db = SessionLocal()
-    if content["widget_type"] == WidgetType.MENU["name"]:
-        last_message = content["title"]
-    elif content["widget_type"] == WidgetType.TEXT["name"]:
-        last_message = content["message"]
-    else:
-        last_message = ""
-    services.live_chat.contact.update_last_message(
-        db, contact_igs_id=to_page_id, last_message=last_message
-    )
-    report = services.live_chat.message.create(
-        db,
-        obj_in=schemas.live_chat.MessageCreate(
-            from_page_id=from_page_id,
-            to_page_id=to_page_id,
-            content=content,
-            mid=mid,
-            user_id=user_id,
-            direction=MessageDirection.OUT["name"],
-        ),
-    )
-    db.close()
-    return report
+from app.core.config import settings
 
 
 @shared_task
@@ -70,8 +36,6 @@ def campaign_terminal():
 
 @shared_task
 def campaign_handler(campaign_id):
-    from app.core.config import settings
-    # TODO show campaign is active or not to front
     db = SessionLocal()
     campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
     campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
@@ -82,7 +46,13 @@ def campaign_handler(campaign_id):
         db, campaign_id=campaign_id, is_active=True
     )
 
-    content = campaign.content
+    campaign_text = campaign.content.get("text", None)
+    if not campaign_text:
+        return None
+    campaign_image = campaign.image
+    campaign_image_url = None
+    if campaign_image:
+        campaign_image_url = storage.get_file(campaign_image, settings.S3_CAMPAIGN_BUCKET).url
 
     instagram_page = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=campaign.facebook_page_id
@@ -95,40 +65,42 @@ def campaign_handler(campaign_id):
         account_id=instagram_page.id,
     )
     sent_contacts = []
+
     for contact in campaign_contacts:
         mid = None
-        if content["widget_type"] == WidgetType.TEXT["name"]:
-            for _ in range(3):
+        for _ in range(3):
+            if campaign_image_url:
+                mid = graph_api.send_media(
+                    text=campaign_text,
+                    image_url=campaign_image_url,
+                    from_id=instagram_page.facebook_page_id,
+                    to_id=contact.contact_igs_id,
+                    page_access_token=instagram_page.facebook_page_token,
+                )
+            else:
                 mid = graph_api.send_text_message(
-                    text=content["text"],
+                    text=campaign_text,
                     from_id=instagram_page.facebook_page_id,
                     to_id=contact.contact_igs_id,
                     page_access_token=instagram_page.facebook_page_token,
                     quick_replies=[],
                 )
-                if mid:
-                    break
+            if mid:
+                break
 
-        if content["widget_type"] == WidgetType.MENU["name"]:
-            for _ in range(3):
-                mid = graph_api.send_menu(
-                    data=content,
-                    from_id=instagram_page.facebook_page_id,
-                    to_id=contact.contact_igs_id,
-                    page_access_token=instagram_page.facebook_page_token,
-                )
-                if mid:
-                    break
         if mid:
             contact.mid = mid
             sent_contacts.append(contact)
-            save_message(
+            saved_message = SavedMessage(
                 from_page_id=instagram_page.facebook_page_id,
                 to_page_id=contact.contact_igs_id,
                 mid=mid,
-                content=content,
+                content={"text": campaign_text},
                 user_id=instagram_page.user_id,
+                direction=MessageDirection.OUT
             )
+            utils.save_message(db, saved_message)
+
     services.postman.campaign_contact.change_send_status_bulk(
         db=db, campaign_contacts_in=sent_contacts, is_sent=True
     )

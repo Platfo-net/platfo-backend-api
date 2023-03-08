@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from app.constants.webhook_type import WebhookType
 
 
@@ -325,3 +327,15 @@ class ConnectionData:
             application_name=self.application_name,
             details=self.details,
         )
+
+
+@dataclass(init=True)
+class SavedMessage:
+    from_page_id: int = None
+    to_page_id: int = None
+    mid: str = None
+    content: dict = None
+    user_id: int = None
+    direction: str = None
+    instagram_page_id: int = None
+    type : str = None

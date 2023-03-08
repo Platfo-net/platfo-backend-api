@@ -26,7 +26,7 @@ def remove_data_from_cache(client: Redis, key: str = None):
 
 
 def get_user_data(
-    client: Redis, db: Session, *, instagram_page_id: str = None
+    client: Redis, db: Session, *, instagram_page_id: int = None
 ) -> UserData:
     data = get_data_from_cache(client, key=instagram_page_id)
 
