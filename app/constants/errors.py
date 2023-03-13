@@ -85,6 +85,11 @@ class Error:
         "status_code": 400,
         "code": 15,
     }
+    NOT_ACCEPTABLE_PASSWORD = {
+        "text": "Your password is not acceptable",
+        "status_code": 400,
+        "code": 16,
+    }
 
     NO_CHATFLOW_WITH_THE_GIVEN_ID = {
         "text": "There is no chatflow with the given id.",

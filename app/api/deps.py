@@ -185,7 +185,7 @@ def get_current_active_user(
             scopes=[],
         ),
 ) -> models.User:
-    if not services.user.is_active(current_user):
+    if not current_user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
 
     return current_user

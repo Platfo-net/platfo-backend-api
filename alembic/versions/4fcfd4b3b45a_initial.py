@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: b1cf1eb7ec63
+Revision ID: 4fcfd4b3b45a
 Revises: 
-Create Date: 2023-03-08 09:22:41.237827
+Create Date: 2023-03-13 17:21:53.254175
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'b1cf1eb7ec63'
+revision = '4fcfd4b3b45a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -54,10 +54,12 @@ def upgrade():
     op.create_table('users',
     sa.Column('first_name', sa.String(length=255), nullable=True),
     sa.Column('last_name', sa.String(length=255), nullable=True),
-    sa.Column('email', sa.String(length=100), nullable=False),
+    sa.Column('email', sa.String(length=100), nullable=True),
     sa.Column('phone_number', sa.String(length=13), nullable=True),
+    sa.Column('phone_country_code', sa.String(length=5), nullable=True),
     sa.Column('hashed_password', sa.String(length=255), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('is_email_verified', sa.Boolean(), nullable=True),
     sa.Column('role_id', sa.BigInteger(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
@@ -66,7 +68,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('phone_number')
+    sa.UniqueConstraint('phone_country_code', 'phone_number', name='_phone_number_phone_code_unique_constraint')
     )
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_table('academy_contents',

@@ -1,8 +1,12 @@
+from datetime import timedelta
+import re
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 from app import models, services, schemas
 from app.constants.message_type import MessageType
+from app.core import security
 from app.core.bot_builder.extra_classes import SavedMessage
+from app.core.config import settings
 
 
 def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
@@ -108,3 +112,52 @@ def save_message(
         ),
     )
     return report
+
+
+def create_token(db: Session, *, user: models.User):
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    if not user.role_id:
+        role = "GUEST"
+    else:
+        role = services.role.get(db, id=user.role_id)
+        role = role.name
+    token_payload = {
+        "uuid": str(user.uuid),
+        "role": role,
+    }
+    access_token = security.create_access_token(
+        token_payload, expires_delta=access_token_expires
+    )
+    return schemas.Token(
+        access_token=access_token,
+        token_type="bearer"
+    )
+
+
+def normalize_phone_number(phone_number):
+    new_phone_number = phone_number
+    if phone_number[0] == "0":
+        new_phone_number = phone_number[1:]
+    return new_phone_number
+
+
+def normalize_phone_country_code(phone_country_code):
+    new_phone_country_code = phone_country_code
+    if phone_country_code[0:2] == "00":
+        new_phone_country_code = phone_country_code[2:]
+    if phone_country_code[0] == "+":
+        new_phone_country_code = phone_country_code[1:]
+    return new_phone_country_code
+
+
+def validate_password(password) -> bool:
+    if len(password) < 8:
+        return False
+    elif re.search('[0-9]', password) is None:
+        return False
+    elif re.search('[A-Z]', password) is None:
+        return False
+    elif re.search('[a-z]', password) is None:
+        return False
+    return True

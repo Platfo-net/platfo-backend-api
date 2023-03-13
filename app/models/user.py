@@ -1,6 +1,6 @@
 import datetime
 from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, BigInteger
+from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, BigInteger, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 
@@ -10,13 +10,15 @@ class User(Base):
     """
 
     __tablename__ = "users"
+
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
-    email = Column(String(100), unique=True, nullable=False)
-    phone_number = Column(String(13), nullable=True, unique=True)
+    email = Column(String(100), unique=True, nullable=True)
+    phone_number = Column(String(13))
+    phone_country_code = Column(String(5))
     hashed_password = Column(String(255), nullable=False)
-    is_active = Column(Boolean(), default=True)
-
+    is_active = Column(Boolean(), default=False)
+    is_email_verified = Column(Boolean(), default=False)
     role_id = Column(
         BigInteger,
         ForeignKey("roles.id"),
@@ -44,3 +46,11 @@ class User(Base):
 
     campaign = relationship("Campaign", back_populates="user")
     group = relationship("Group", back_populates="user")
+
+    __table_args__ = (
+        UniqueConstraint(
+            'phone_country_code',
+            'phone_number',
+            name='_phone_number_phone_code_unique_constraint'
+        ),
+    )

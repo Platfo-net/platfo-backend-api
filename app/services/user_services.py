@@ -4,6 +4,7 @@ from app.services.base import BaseServices
 from app.constants.role import Role
 from sqlalchemy.orm import Session
 from app import models, schemas, services
+from app.core import utils
 
 
 class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpdate]):
@@ -16,9 +17,11 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         user_role = services.role.get_by_name(db, name=Role.USER["name"])
 
         db_obj = models.User(
-            email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             role_id=user_role.id,
+            phone_number=utils.normalize_phone_number(obj_in.phone_number),
+            phone_country_code=utils.normalize_phone_country_code(obj_in.phone_country_code),
+            is_email_verified=False,
             is_active=False,
         )
         db.add(db_obj)
@@ -55,7 +58,7 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         db.refresh(db_user)
         return db_user
 
-    def authenticate(
+    def authenticate_by_email(
             self, db: Session, *, email: str, password: str
     ) -> Optional[models.User]:
         user = self.get_by_email(db, email=email)
@@ -65,8 +68,16 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             return None
         return user
 
-    def is_active(self, user) -> bool:
-        return user.is_active
+    def authenticate_by_phone_number(self, db: Session, *, phone_number: str, phone_country_code: str, password: str):
+        user = self.get_by_phone_number(db, phone_number=phone_number, phone_country_code=phone_country_code)
+        if not user:
+            return None
+        if not verify_password(password, user.hashed_password):
+            return None
+        return user
+
+        def is_active(self, user) -> bool:
+            return user.is_active
 
     def activate(self, db: Session, *, user: models.User) -> Optional[models.User]:
         user.is_active = True
@@ -74,6 +85,18 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         db.commit()
         db.refresh(user)
         return user
+    def verify_email(self ,db:Session, * , user:models.User):
+        user.is_email_verified = True
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user
+
+    def get_by_phone_number(self, db: Session, *, phone_number: str, phone_country_code: str):
+        return db.query(self.model).filter(
+            self.model.phone_number == phone_number,
+            self.model.phone_country_code == phone_country_code
+        ).first()
 
 
 user = UserServices(models.User)

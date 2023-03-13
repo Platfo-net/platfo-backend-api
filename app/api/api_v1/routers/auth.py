@@ -14,19 +14,43 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.constants.errors import Error
 from app.core.exception import raise_http_exception
+from app.core import utils
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post("/access-token", response_model=schemas.Token)
-def login_access_token(
+@router.post("/access-token-email", response_model=schemas.Token)
+def login_access_token_by_email(
         *,
         db: Session = Depends(deps.get_db),
-        data: schemas.LoginForm,
-) -> Any:
-    user = services.user.authenticate(
+        data: schemas.LoginFormByEmail,
+):
+    user = services.user.authenticate_by_email(
         db,
         email=data.email,
+        password=data.password
+    )
+
+    if not user:
+        raise_http_exception(Error.USER_PASS_WRONG_ERROR)
+    if not user.is_email_verified:
+        raise_http_exception(Error.USER_PASS_WRONG_ERROR)
+    elif not services.user.is_active(user):
+        raise_http_exception(Error.INACTIVE_USER)
+
+    return utils.create_token(db, user=user)
+
+
+@router.post("/access-token-phone-number", response_model=schemas.Token)
+def login_access_token_by_phone_number(
+        *,
+        db: Session = Depends(deps.get_db),
+        data: schemas.LoginFormByPhoneNumber,
+) -> Any:
+    user = services.user.authenticate_by_phone_number(
+        db,
+        phone_number=data.phone_number,
+        phone_country_code=data.phone_country_code,
         password=data.password
     )
 
@@ -35,23 +59,7 @@ def login_access_token(
     elif not services.user.is_active(user):
         raise_http_exception(Error.INACTIVE_USER)
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-
-    if not user.role_id:
-        role = "GUEST"
-    else:
-        role = services.role.get(db, id=user.role_id)
-        role = role.name
-    token_payload = {
-        "uuid": str(user.uuid),
-        "role": role,
-    }
-    return {
-        "access_token": security.create_access_token(
-            token_payload, expires_delta=access_token_expires
-        ),
-        "token_type": "bearer",
-    }
+    return utils.create_token(db, user=user)
 
 
 @router.post("/token-swagger", response_model=schemas.Token)
@@ -59,30 +67,15 @@ def login_access_token_swagger(
         db: Session = Depends(deps.get_db),
         form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Any:
-    user = services.user.authenticate(
+    user = services.user.authenticate_by_email(
         db, email=form_data.username, password=form_data.password
     )
     if not user:
         raise_http_exception(Error.USER_PASS_WRONG_ERROR)
-    elif not services.user.is_active(user):
+    elif not user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    if not user.role_id:
-        role = "GUEST"
-    else:
-        role = services.role.get(db, id=user.role_id)
-        role = role.name
-    token_payload = {
-        "uuid": str(user.uuid),
-        "role": role,
-    }
-    return {
-        "access_token": security.create_access_token(
-            token_payload, expires_delta=access_token_expires
-        ),
-        "token_type": "bearer",
-    }
+    return utils.create_token(db, user=user)
 
 
 @router.post("/check", response_model=schemas.User)

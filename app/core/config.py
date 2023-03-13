@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     FIRST_ADMIN_EMAIL: str
     FIRST_ADMIN_PASSWORD: str
+    FIRST_ADMIN_PHONE_NUMBER: str
+    FIRST_ADMIN_PHONE_COUNTRY_CODE: str
 
     FIRST_USER_EMAIL: str = None
     FIRST_USER_PASSWORD: str = None

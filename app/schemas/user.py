@@ -9,6 +9,7 @@ class UserBase(BaseModel):
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
     phone_number: Optional[str] = None
+    phone_country_code: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
 
@@ -17,10 +18,10 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: Optional[str] = None
     role_id: int
+    is_email_verified: bool = False
 
 
-class UserUpdate(UserBase):
-    phone_number: Optional[str] = None
+class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
 
@@ -44,8 +45,9 @@ class User(UserInDBBase):
 
 
 class UserRegister(BaseModel):
-    email: Optional[EmailStr] = None
-    password: Optional[str] = None
+    phone_number: str
+    phone_country_code: str
+    password: str
 
 
 class UserInDB(UserInDBBase):

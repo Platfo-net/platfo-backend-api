@@ -5,7 +5,7 @@ from app.constants.role import Role
 from app.constants.errors import Error
 from fastapi import APIRouter, Depends, Security, status
 from sqlalchemy.orm import Session
-
+from app.core import utils
 from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -16,47 +16,24 @@ def register_user(
         *,
         db: Session = Depends(deps.get_db),
         user_in: schemas.UserRegister,
-) -> Any:
-    """
-    register user
-    """
-
-    user = services.user.get_by_email(db, email=user_in.email)
+):
+    user = services.user.get_by_phone_number(
+        db,
+        phone_number=utils.normalize_phone_number(user_in.phone_number),
+        phone_country_code=utils.normalize_phone_country_code(user_in.phone_country_code)
+    )
 
     if user and user.is_active:
         raise_http_exception(Error.USER_EXIST_ERROR)
-    if not user.is_active:
+    if user and not user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
+    if not utils.validate_password(user_in.password):
+        raise_http_exception(Error.NOT_ACCEPTABLE_PASSWORD)
 
     services.user.register(db, obj_in=user_in)
     return
 
-
-@router.get("/all", response_model=List[schemas.User])
-def get_users(
-        *,
-        db: Session = Depends(deps.get_db),
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
-) -> Any:
-    """
-    register user
-    """
-
-    users = services.user.get_multi(db, skip=0, limit=20)
-    new_users = []
-    for user in users:
-        user.id = user.uuid
-        user.role.id = user.role.uuid
-        new_users.append(user)
-    return new_users
-
-
+@router.put("/me", response_model=schemas.User)
 def update_user_me(
         *,
         db: Session = Depends(deps.get_db),
@@ -75,7 +52,7 @@ def update_user_me(
     return user
 
 
-@router.put("/", response_model=schemas.User)
+@router.put("/me/change-password", response_model=schemas.User)
 def change_password_me(
         *,
         db: Session = Depends(deps.get_db),
@@ -89,6 +66,8 @@ def change_password_me(
         ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
+    if not utils.validate_password(user_in.password):
+        raise_http_exception(Error.NOT_ACCEPTABLE_PASSWORD)
     user = services.user.change_password(db, user_id=user.id, obj_in=user_in)
 
     return user
