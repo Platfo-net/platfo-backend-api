@@ -56,13 +56,13 @@ class Settings(BaseSettings):
     CELERY_URI: Optional[str] = None
 
     S3_ROOT_USER: str
-
     S3_ROOT_PASSWORD: str
     S3_PORT: str
     S3_HOST: str
 
     S3_CHATFLOW_MEDIA_BUCKET: str
     S3_CAMPAIGN_BUCKET: str
+    S3_USER_PROFILE_BUCKET: str
 
     CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT: int = 150
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15

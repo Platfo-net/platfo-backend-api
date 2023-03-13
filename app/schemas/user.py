@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from app.schemas.role import Role
+from .media import Image
 from pydantic import UUID4, BaseModel, EmailStr
 
 
@@ -24,6 +25,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    profile_image: Optional[str] = None
 
 
 class UserUpdatePassword(BaseModel):
@@ -41,7 +43,7 @@ class UserInDBBase(UserBase):
 
 
 class User(UserInDBBase):
-    pass
+    profile_image: Optional[Image] = None
 
 
 class UserRegister(BaseModel):

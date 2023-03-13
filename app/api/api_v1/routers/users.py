@@ -5,7 +5,8 @@ from app.constants.role import Role
 from app.constants.errors import Error
 from fastapi import APIRouter, Depends, Security, status
 from sqlalchemy.orm import Session
-from app.core import utils
+from app.core import utils, storage
+from app.core.config import settings
 from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -34,7 +35,7 @@ def register_user(
     return
 
 
-@router.put("/me", response_model=schemas.User)
+@router.put("/me", status_code=status.HTTP_200_OK)
 def update_user_me(
         *,
         db: Session = Depends(deps.get_db),
@@ -48,9 +49,9 @@ def update_user_me(
         ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
-    user = services.user.update(db, db_obj=user, obj_in=user_in)
+    services.user.update(db, db_obj=user, obj_in=user_in)
 
-    return user
+    return
 
 
 @router.put("/me/change-password", response_model=schemas.User)
@@ -89,4 +90,17 @@ def get_user_me(
     user = services.user.get(db, id=current_user.id)
     user.id = user.uuid
     user.role.id = user.role.uuid
-    return user
+    print(settings.FIRST_ADMIN_PHONE_COUNTRY_CODE)
+    return schemas.User(
+        id=user.id,
+        email=user.email,
+        is_active=user.is_active,
+        phone_number=user.phone_number,
+        phone_country_code=user.phone_country_code,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        created_at=user.created_at,
+        updated_at=user.updated_at,
+        role=user.role,
+        profile_image=storage.get_file(user.profile_image, settings.S3_USER_PROFILE_BUCKET)
+    )

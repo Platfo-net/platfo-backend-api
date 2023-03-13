@@ -39,6 +39,8 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             phone_number=obj_in.phone_number,
+            phone_country_code=obj_in.phone_country_code,
+            is_email_verified=obj_in.is_email_verified,
             is_active=obj_in.is_active,
             first_name=obj_in.first_name,
             last_name=obj_in.last_name,

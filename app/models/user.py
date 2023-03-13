@@ -19,6 +19,7 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean(), default=False)
     is_email_verified = Column(Boolean(), default=False)
+    profile_image = Column(String(255), nullable=True)
     role_id = Column(
         BigInteger,
         ForeignKey("roles.id"),
