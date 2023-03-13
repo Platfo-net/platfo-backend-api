@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     REDIS_DB_CELERY: str
     REDIS_DB_CACHE: str
 
+    REDIS_RESET_PASSWORD_DB: int = 4
+    REDIS_USER_ACTIVATION_DB: int = 5
+
     CELERY_URI: Optional[str] = None
 
     S3_ROOT_USER: str

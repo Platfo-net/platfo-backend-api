@@ -3,7 +3,6 @@ from app.core.security import get_password_hash, verify_password
 from app.services.base import BaseServices
 from app.constants.role import Role
 from sqlalchemy.orm import Session
-from pydantic.types import UUID4
 from app import models, schemas, services
 
 
@@ -20,7 +19,7 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             role_id=user_role.id,
-            is_active=True,
+            is_active=False,
         )
         db.add(db_obj)
         db.commit()
@@ -28,10 +27,10 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return db_obj
 
     def create(
-        self,
-        db: Session,
-        *,
-        obj_in: schemas.UserCreate,
+            self,
+            db: Session,
+            *,
+            obj_in: schemas.UserCreate,
     ) -> models.User:
         user_db_obj = models.User(
             email=obj_in.email,
@@ -48,17 +47,16 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return user_db_obj
 
     def change_password(
-        self, db: Session, *, user_id: UUID4, obj_in: schemas.UserUpdatePassword
+            self, db: Session, *, db_user: models.User, password: str
     ):
-        db_user = db.query(models.User).filter(models.User.id == user_id).first()
-        db_user.hashed_password = get_password_hash(obj_in.password)
+        db_user.hashed_password = get_password_hash(password)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
         return db_user
 
     def authenticate(
-        self, db: Session, *, email: str, password: str
+            self, db: Session, *, email: str, password: str
     ) -> Optional[models.User]:
         user = self.get_by_email(db, email=email)
         if not user:
@@ -70,9 +68,8 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
     def is_active(self, user) -> bool:
         return user.is_active
 
-    def change_status(self, db: Session, *, id: UUID4) -> Optional[models.User]:
-        user = db.query(models.User).filter(models.User.id == id).first()
-        user.is_active = not user.is_active
+    def activate(self, db: Session, *, user: models.User) -> Optional[models.User]:
+        user.is_active = True
         db.add(user)
         db.commit()
         db.refresh(user)

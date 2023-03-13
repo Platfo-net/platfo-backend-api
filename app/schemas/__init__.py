@@ -11,6 +11,8 @@ from .user import (
     ForgetPassword,
     ChangePassword,
     UserUpdatePassword,
+    RegisterCode,
+    ActivationData
 )
 
 from .instagram_page import (
@@ -19,7 +21,6 @@ from .instagram_page import (
     InstagramPage,
     ConnectPage,
 )
-
 
 from .account import Account, AccountDetail
 

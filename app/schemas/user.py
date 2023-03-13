@@ -58,5 +58,16 @@ class ForgetPassword(BaseModel):
 
 class ChangePassword(BaseModel):
     email: EmailStr
-    code: str
+    code: int
     password: str
+    token: str
+
+
+class RegisterCode(BaseModel):
+    token: str
+
+
+class ActivationData(BaseModel):
+    code: int
+    token: str
+    email: EmailStr

@@ -63,6 +63,38 @@ def get_redis_client():
         sys.exit(1)
 
 
+def get_redis_client_for_user_activation():
+    try:
+        client = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            password=settings.REDIS_PASSWORD,
+            db=settings.REDIS_USER_ACTIVATION_DB,
+        )
+        ping = client.ping()
+        if ping is True:
+            return client
+    except redis.AuthenticationError:
+        print("AuthenticationError")
+        sys.exit(1)
+
+
+def get_redis_client_for_reset_password():
+    try:
+        client = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            password=settings.REDIS_PASSWORD,
+            db=settings.REDIS_RESET_PASSWORD_DB,
+        )
+        ping = client.ping()
+        if ping is True:
+            return client
+    except redis.AuthenticationError:
+        print("AuthenticationError")
+        sys.exit(1)
+
+
 def get_user_from_cache(
         redis_client: Redis, db: Session, uuid: UUID4
 ) -> Optional[models.User]:

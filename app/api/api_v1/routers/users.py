@@ -22,8 +22,12 @@ def register_user(
     """
 
     user = services.user.get_by_email(db, email=user_in.email)
-    if user:
+
+    if user and user.is_active:
         raise_http_exception(Error.USER_EXIST_ERROR)
+    if not user.is_active:
+        raise_http_exception(Error.INACTIVE_USER)
+
     services.user.register(db, obj_in=user_in)
     return
 
