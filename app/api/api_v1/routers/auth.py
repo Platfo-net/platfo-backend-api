@@ -1,4 +1,3 @@
-from datetime import timedelta
 from typing import Any
 import string
 import random
@@ -8,7 +7,6 @@ from redis.client import Redis
 from app import services, models, schemas
 from app.api import deps
 from app.core import security, cache
-from app.core.config import settings
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session

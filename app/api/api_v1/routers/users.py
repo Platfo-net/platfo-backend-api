@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 from app import services, models, schemas
 from app.api import deps
 from app.constants.role import Role
@@ -32,6 +32,7 @@ def register_user(
 
     services.user.register(db, obj_in=user_in)
     return
+
 
 @router.put("/me", response_model=schemas.User)
 def update_user_me(

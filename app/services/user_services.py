@@ -68,8 +68,19 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             return None
         return user
 
-    def authenticate_by_phone_number(self, db: Session, *, phone_number: str, phone_country_code: str, password: str):
-        user = self.get_by_phone_number(db, phone_number=phone_number, phone_country_code=phone_country_code)
+    def authenticate_by_phone_number(
+            self,
+            db: Session,
+            *,
+            phone_number: str,
+            phone_country_code: str,
+            password: str
+    ):
+        user = self.get_by_phone_number(
+            db,
+            phone_number=phone_number,
+            phone_country_code=phone_country_code
+        )
         if not user:
             return None
         if not verify_password(password, user.hashed_password):
@@ -85,7 +96,8 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         db.commit()
         db.refresh(user)
         return user
-    def verify_email(self ,db:Session, * , user:models.User):
+
+    def verify_email(self, db: Session, *, user: models.User):
         user.is_email_verified = True
         db.add(user)
         db.commit()
