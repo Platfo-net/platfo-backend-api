@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from app.constants.errors import Error
 from app.core.exception import raise_http_exception
 from app.core import utils
+from app.core.tasks import send_user_reset_password_code, send_user_activation_code
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -113,10 +114,9 @@ def send_activation_sms(
     token = "".join(random.choice(f"{string.ascii_letters}0123456789") for i in range(64))
     code = random.randint(10000, 99999)
     result = cache.set_user_registeration_activation_code(redis_client, email, code, token)
-    # TODO send sms
     if not result:
         raise_http_exception(Error.UNEXPECTED_ERROR)
-
+    send_user_activation_code.delay(f"00{user.phone_country_code}{user.phone_number}", code)
     return schemas.RegisterCode(
         token=token
     )
@@ -167,10 +167,10 @@ def forgot_password(
     token = "".join(random.choice(f"{string.ascii_letters}0123456789") for i in range(64))
     code = random.randint(10000, 99999)
     result = cache.set_user_reset_password_code(redis_client, email, code, token)
-    # TODO send sms
     if not result:
         raise_http_exception(Error.UNEXPECTED_ERROR)
 
+    send_user_reset_password_code.delay(f"00{user.phone_country_code}{user.phone_number}", code)
     return schemas.RegisterCode(
         token=token
     )
