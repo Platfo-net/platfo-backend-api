@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     FIRST_ADMIN_EMAIL: str
     FIRST_ADMIN_PASSWORD: str
+    FIRST_ADMIN_PHONE_NUMBER: str
+    FIRST_ADMIN_PHONE_COUNTRY_CODE: str
 
     FIRST_USER_EMAIL: str = None
     FIRST_USER_PASSWORD: str = None
@@ -48,22 +50,29 @@ class Settings(BaseSettings):
     REDIS_DB_CELERY: str
     REDIS_DB_CACHE: str
 
+    REDIS_RESET_PASSWORD_DB: int = 4
+    REDIS_USER_ACTIVATION_DB: int = 5
+
     CELERY_URI: Optional[str] = None
 
     S3_ROOT_USER: str
-
     S3_ROOT_PASSWORD: str
     S3_PORT: str
     S3_HOST: str
 
     S3_CHATFLOW_MEDIA_BUCKET: str
     S3_CAMPAIGN_BUCKET: str
+    S3_USER_PROFILE_BUCKET: str
 
     CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT: int = 150
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15
 
     SAMPLE_FACEBOOK_PAGE_ID: int = 20
     SAMPLE_CONTACT_IGS_ID: int = 10
+    KAVE_NEGAR_BASE_URL : str
+    KAVE_NEGAR_API_KEY: str
+    KAVE_NEGAR_RESET_PASSWORD_TEMPLATE: str
+    KAVE_NEGAR_USER_ACTIVATE_TEMPLATE: str
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

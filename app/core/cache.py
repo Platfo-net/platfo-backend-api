@@ -4,6 +4,7 @@ import json
 from datetime import timedelta
 from app import services
 from redis.client import Redis
+
 from app.core.bot_builder.extra_classes import ConnectionData, UserData
 
 
@@ -13,7 +14,7 @@ def get_data_from_cache(client: Redis, key: str = None) -> str:
 
 
 def set_data_to_cache(
-    client: Redis, key: str = None, value: str = None, expire: int = 3600
+        client: Redis, key: str = None, value: str = None, expire: int = 3600
 ) -> bool:
     state = client.setex(key, timedelta(seconds=3600), value=value)  # todo time
     client.expire(key, expire)
@@ -26,7 +27,7 @@ def remove_data_from_cache(client: Redis, key: str = None):
 
 
 def get_user_data(
-    client: Redis, db: Session, *, instagram_page_id: int = None
+        client: Redis, db: Session, *, instagram_page_id: int = None
 ) -> UserData:
     data = get_data_from_cache(client, key=instagram_page_id)
 
@@ -57,7 +58,6 @@ def get_user_data(
 
 
 def get_password_data(client: Redis, *, code: str = None):
-
     data = get_data_from_cache(client, key="code")
 
     if data is None:
@@ -68,7 +68,7 @@ def get_password_data(client: Redis, *, code: str = None):
 
 
 def get_connection_data(
-    db: Session, client: Redis, *, application_name: str = None, account_id: str = None
+        db: Session, client: Redis, *, application_name: str = None, account_id: str = None
 ):
     key = f"{application_name}+{str(account_id)}"
     data = get_data_from_cache(client, key)
@@ -118,3 +118,41 @@ def get_node_chatflow_id(db: Session, client: Redis, *, widget_id: str = None):
         data = str(data).strip("',/b")
 
     return data
+
+
+def get_user_registeration_activation_code(client: Redis, email):
+    data = get_data_from_cache(client, email)
+    if data is None:
+        return None
+
+    data = json.loads(data)
+    return data
+
+
+def set_user_registeration_activation_code(client: Redis, email, code, token):
+    data = dict(
+        code=code,
+        token=token
+    )
+    data = json.dumps(data)
+    result = set_data_to_cache(client, email, data, expire=120)
+    return result
+
+
+def get_user_reset_password_code(client: Redis, email):
+    data = get_data_from_cache(client, email)
+    if data is None:
+        return None
+
+    data = json.loads(data)
+    return data
+
+
+def set_user_reset_password_code(client: Redis, email, code, token):
+    data = dict(
+        code=code,
+        token=token
+    )
+    data = json.dumps(data)
+    result = set_data_to_cache(client, email, data, expire=120)
+    return result

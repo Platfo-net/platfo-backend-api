@@ -1,6 +1,6 @@
 from app.schemas import academy, bot_builder, live_chat, postman
 from .role import Role, RoleCreate, RoleInDB, RoleUpdate
-from .token import Token, TokenPayload, Login, LoginForm
+from .token import Token, TokenPayload, Login, LoginFormByEmail, LoginFormByPhoneNumber
 from .user import (
     User,
     UserCreate,
@@ -11,6 +11,8 @@ from .user import (
     ForgetPassword,
     ChangePassword,
     UserUpdatePassword,
+    RegisterCode,
+    ActivationData
 )
 
 from .instagram_page import (
@@ -19,7 +21,6 @@ from .instagram_page import (
     InstagramPage,
     ConnectPage,
 )
-
 
 from .account import Account, AccountDetail
 

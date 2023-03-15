@@ -4,7 +4,7 @@ from app.constants.webhook_type import WebhookType
 
 
 class InstagramData:
-    def __init__(self):
+    def __init__(self , body):
         self.platform = None
         self.sender_id = None
         self.recipient_id = None
@@ -30,6 +30,7 @@ class InstagramData:
         self.username = None
         self.value_id = None
         self.parent_id = None
+        self.parse(body)
 
     def parse(self, body):
         match body:

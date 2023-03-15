@@ -2,7 +2,11 @@ class Error:
     """
     Constants for the errors
     """
-
+    UNEXPECTED_ERROR = {
+        "text": "Unexcpected error happen during the action.",
+        "status_code": 500,
+        "code": 0
+    }
     USER_EXIST_ERROR = {
         "text": "There is a user with this email",
         "status_code": 409,
@@ -65,25 +69,46 @@ class Error:
         "status_code": 404,
         "code": 13,
     }
+    INVALID_CODE_OR_TOKEN = {
+        "text": "Invalid code or token",
+        "status_code": 400,
+        "code": 14,
+    }
+
+    ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT = {
+        "text": "Activation code has been already sent to you.",
+        "status_code": 400,
+        "code": 14,
+    }
+    RESET_PASSWORD_CODE_HAVE_BEEN_ALREADY_SENT = {
+        "text": "Reset password code has been already sent to you.",
+        "status_code": 400,
+        "code": 15,
+    }
+    NOT_ACCEPTABLE_PASSWORD = {
+        "text": "Your password is not acceptable",
+        "status_code": 400,
+        "code": 16,
+    }
 
     NO_CHATFLOW_WITH_THE_GIVEN_ID = {
         "text": "There is no chatflow with the given id.",
         "status_code": 404,
-        "code": 14,
+        "code": 31,
     }
     NO_NODE_WITH_THE_GIVEN_ID = {
         "text": "There is no node with the given id.",
         "status_code": 404,
-        "code": 15,
+        "code": 32,
     }
     NO_CHATFLOW_RELATED_TO_THIS_NODE = {
         "text": "There is no chatflow related to this node.",
         "status_code": 404,
-        "code": 16,
+        "code": 33,
     }
-    NO_NEXT_MOVE = {"text": "There is no next move.", "status_code": 404, "code": 17}
-    NOT_AUTHENTICATED = {"text": "not authenticated.", "status_code": 401, "code": 18}
-    NOT_AUTHORIZED = {"text": "not authorized.", "status_code": 401, "code": 19}
+    NO_NEXT_MOVE = {"text": "There is no next move.", "status_code": 404, "code": 34}
+    NOT_AUTHENTICATED = {"text": "not authenticated.", "status_code": 401, "code": 35}
+    NOT_AUTHORIZED = {"text": "not authorized.", "status_code": 401, "code": 36}
     ACCOUNT_NOT_FOUND_PERMISSION_DENIED = {
         "text": "There is no account with the given id.",
         "status_code": 404,

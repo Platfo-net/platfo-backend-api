@@ -3,8 +3,8 @@ from app.core.security import get_password_hash, verify_password
 from app.services.base import BaseServices
 from app.constants.role import Role
 from sqlalchemy.orm import Session
-from pydantic.types import UUID4
 from app import models, schemas, services
+from app.core import utils
 
 
 class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpdate]):
@@ -17,10 +17,12 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         user_role = services.role.get_by_name(db, name=Role.USER["name"])
 
         db_obj = models.User(
-            email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             role_id=user_role.id,
-            is_active=True,
+            phone_number=utils.normalize_phone_number(obj_in.phone_number),
+            phone_country_code=utils.normalize_phone_country_code(obj_in.phone_country_code),
+            is_email_verified=False,
+            is_active=False,
         )
         db.add(db_obj)
         db.commit()
@@ -28,15 +30,17 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return db_obj
 
     def create(
-        self,
-        db: Session,
-        *,
-        obj_in: schemas.UserCreate,
+            self,
+            db: Session,
+            *,
+            obj_in: schemas.UserCreate,
     ) -> models.User:
         user_db_obj = models.User(
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             phone_number=obj_in.phone_number,
+            phone_country_code=obj_in.phone_country_code,
+            is_email_verified=obj_in.is_email_verified,
             is_active=obj_in.is_active,
             first_name=obj_in.first_name,
             last_name=obj_in.last_name,
@@ -48,17 +52,16 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return user_db_obj
 
     def change_password(
-        self, db: Session, *, user_id: UUID4, obj_in: schemas.UserUpdatePassword
+            self, db: Session, *, db_user: models.User, password: str
     ):
-        db_user = db.query(models.User).filter(models.User.id == user_id).first()
-        db_user.hashed_password = get_password_hash(obj_in.password)
+        db_user.hashed_password = get_password_hash(password)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
         return db_user
 
-    def authenticate(
-        self, db: Session, *, email: str, password: str
+    def authenticate_by_email(
+            self, db: Session, *, email: str, password: str
     ) -> Optional[models.User]:
         user = self.get_by_email(db, email=email)
         if not user:
@@ -67,16 +70,47 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             return None
         return user
 
-    def is_active(self, user) -> bool:
-        return user.is_active
+    def authenticate_by_phone_number(
+            self,
+            db: Session,
+            *,
+            phone_number: str,
+            phone_country_code: str,
+            password: str
+    ):
+        user = self.get_by_phone_number(
+            db,
+            phone_number=phone_number,
+            phone_country_code=phone_country_code
+        )
+        if not user:
+            return None
+        if not verify_password(password, user.hashed_password):
+            return None
+        return user
 
-    def change_status(self, db: Session, *, id: UUID4) -> Optional[models.User]:
-        user = db.query(models.User).filter(models.User.id == id).first()
-        user.is_active = not user.is_active
+        def is_active(self, user) -> bool:
+            return user.is_active
+
+    def activate(self, db: Session, *, user: models.User) -> Optional[models.User]:
+        user.is_active = True
         db.add(user)
         db.commit()
         db.refresh(user)
         return user
+
+    def verify_email(self, db: Session, *, user: models.User):
+        user.is_email_verified = True
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user
+
+    def get_by_phone_number(self, db: Session, *, phone_number: str, phone_country_code: str):
+        return db.query(self.model).filter(
+            self.model.phone_number == phone_number,
+            self.model.phone_country_code == phone_country_code
+        ).first()
 
 
 user = UserServices(models.User)

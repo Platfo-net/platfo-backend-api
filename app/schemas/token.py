@@ -21,6 +21,12 @@ class TokenPayload(BaseModel):
     role: str = None
 
 
-class LoginForm(BaseModel):
+class LoginFormByEmail(BaseModel):
     email: str
+    password: str
+
+
+class LoginFormByPhoneNumber(BaseModel):
+    phone_number: str
+    phone_country_code: str
     password: str
