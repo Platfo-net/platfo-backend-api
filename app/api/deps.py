@@ -111,6 +111,8 @@ def get_user_from_cache(
             last_name=user.last_name,
             email=user.email,
             phone_number=user.phone_number,
+            phone_country_code=user.phone_country_code,
+            is_email_verified=user.is_email_verified,
             hashed_password=user.hashed_password,
             is_active=user.is_active,
             created_at=str(user.created_at),
@@ -130,6 +132,8 @@ def get_user_from_cache(
         last_name=user.get("last_name", None),
         email=user.get("email", None),
         phone_number=user.get("phone_number", None),
+        phone_country_code=user.get("phone_country_code", None),
+        is_email_verified=user.get("is_email_verified", None),
         hashed_password=user.get("hashed_password"),
         is_active=user.get("is_active"),
         created_at=user.get("created_at"),
@@ -152,6 +156,7 @@ def get_current_user(
         detail=Error.USER_PASS_WRONG_ERROR["text"],
         headers={"WWW-Authenticate": authenticate_value},
     )
+    token_data = None
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
