@@ -120,8 +120,12 @@ def get_node_chatflow_id(db: Session, client: Redis, *, widget_id: str = None):
     return data
 
 
-def get_user_registeration_activation_code(client: Redis, email):
-    data = get_data_from_cache(client, email)
+def get_user_registeration_activation_code(
+        client: Redis,
+        phone_number: str,
+        phone_country_code: str
+):
+    data = get_data_from_cache(client, f"{phone_country_code}{phone_number}")
     if data is None:
         return None
 
@@ -129,13 +133,20 @@ def get_user_registeration_activation_code(client: Redis, email):
     return data
 
 
-def set_user_registeration_activation_code(client: Redis, email, code, token):
+def set_user_registeration_activation_code(
+        client: Redis,
+        phone_number: str,
+        phone_country_code: str,
+        code: int,
+        token: str
+):
     data = dict(
         code=code,
         token=token
     )
+    key = f"{phone_country_code}{phone_number}"
     data = json.dumps(data)
-    result = set_data_to_cache(client, email, data, expire=120)
+    result = set_data_to_cache(client, key, data, expire=120)
     return result
 
 

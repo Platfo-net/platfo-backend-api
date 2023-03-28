@@ -123,7 +123,7 @@ def create_token(db: Session, *, user: models.User):
         role = services.role.get(db, id=user.role_id)
         role = role.name
     token_payload = {
-        "uuid": str(user.uuid),
+        "id": user.id,
         "role": role,
     }
     access_token = security.create_access_token(

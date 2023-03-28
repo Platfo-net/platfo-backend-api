@@ -1,4 +1,4 @@
-from pydantic import UUID4, BaseModel
+from pydantic import BaseModel
 from app.schemas.role import Role
 
 
@@ -17,7 +17,7 @@ class Login(BaseModel):
 
 
 class TokenPayload(BaseModel):
-    uuid: UUID4
+    id: int
     role: str = None
 
 

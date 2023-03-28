@@ -78,17 +78,22 @@ class Error:
     ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT = {
         "text": "Activation code has been already sent to you.",
         "status_code": 400,
-        "code": 14,
+        "code": 15,
     }
     RESET_PASSWORD_CODE_HAVE_BEEN_ALREADY_SENT = {
         "text": "Reset password code has been already sent to you.",
         "status_code": 400,
-        "code": 15,
+        "code": 16,
     }
     NOT_ACCEPTABLE_PASSWORD = {
         "text": "Your password is not acceptable",
         "status_code": 400,
-        "code": 16,
+        "code": 17,
+    }
+    USER_IS_ACTIVE = {
+        "text": "User is active",
+        "status_code": 400,
+        "code": 18,
     }
 
     NO_CHATFLOW_WITH_THE_GIVEN_ID = {

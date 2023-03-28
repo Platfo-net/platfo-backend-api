@@ -74,4 +74,5 @@ class RegisterCode(BaseModel):
 class ActivationData(BaseModel):
     code: int
     token: str
-    email: EmailStr
+    phone_number: str
+    phone_country_code: str
