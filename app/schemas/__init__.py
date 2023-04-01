@@ -6,13 +6,16 @@ from .user import (
     UserCreate,
     UserInDB,
     UserUpdate,
+    UserRegisterByPhoneNumber,
+    UserRegisterByEmail,
     UserRegister,
     UserBase,
     ForgetPassword,
     ChangePassword,
     UserUpdatePassword,
     RegisterCode,
-    ActivationData
+    ActivationDataByEmail,
+    ActivationDataByPhoneNumber
 )
 
 from .instagram_page import (

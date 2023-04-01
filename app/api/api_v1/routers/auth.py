@@ -33,7 +33,7 @@ def login_access_token_by_email(
     if not user:
         raise_http_exception(Error.USER_PASS_WRONG_ERROR)
     if not user.is_email_verified:
-        raise_http_exception(Error.USER_PASS_WRONG_ERROR)
+        raise_http_exception(Error.EMAIL_NOT_VERIFIED)
     elif not user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
 
@@ -98,84 +98,6 @@ def hash_password(
     return security.get_password_hash(password)
 
 
-@router.post("/send-activation-code", response_model=schemas.RegisterCode)
-def send_activation_sms(
-        db: Session = Depends(deps.get_db),
-        redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
-        phone_number: str = Body(..., embed=True),
-        phone_country_code: str = Body(..., embed=True),
-):
-    user = services.user.get_by_phone_number(
-        db,
-        phone_number=utils.normalize_phone_number(phone_number),
-        phone_country_code=utils.normalize_phone_country_code(phone_country_code)
-    )
-    if not user:
-        raise_http_exception(Error.USER_NOT_FOUND)
-
-    if user.is_active:
-        raise_http_exception(Error.USER_IS_ACTIVE)
-
-    data = cache.get_user_registeration_activation_code(
-        redis_client, phone_number, phone_country_code)
-
-    if data:
-        raise_http_exception(Error.ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT)
-    token = "".join(random.choice(f"{string.ascii_letters}0123456789") for i in range(64))
-    code = random.randint(10000, 99999)
-    result = cache.set_user_registeration_activation_code(
-        redis_client, phone_number, phone_country_code, code, token)
-    if not result:
-        raise_http_exception(Error.UNEXPECTED_ERROR)
-    send_user_activation_code.delay(f"00{user.phone_country_code}{user.phone_number}", code)
-    return schemas.RegisterCode(
-        token=token
-    )
-
-
-@router.post("/activate", status_code=status.HTTP_200_OK)
-def activate_user(
-        *,
-        db: Session = Depends(deps.get_db),
-        redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
-        activation_data: schemas.ActivationData
-):
-    user = services.user.get_by_phone_number(
-        db,
-        phone_number=utils.normalize_phone_number(activation_data.phone_number),
-        phone_country_code=utils.normalize_phone_number(activation_data.phone_country_code)
-    )
-    if not user:
-        raise_http_exception(Error.USER_NOT_FOUND)
-
-    data = cache.get_user_registeration_activation_code(
-        redis_client,
-        activation_data.phone_number,
-        activation_data.phone_country_code
-    )
-    if not data:
-        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
-
-    code = data.get("code", None)
-    token = data.get("token", None)
-    if not (token and code):
-        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
-
-    if not token == activation_data.token:
-        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
-
-    if not code == activation_data.code:
-        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
-
-    services.user.activate(db, user=user)
-    cache.remove_data_from_cache(
-        redis_client,
-        f"{activation_data.phone_number}{activation_data.phone_country_code}"
-    )
-
-    return
-
-
 @router.post("/forgot-password", response_model=schemas.RegisterCode)
 def forgot_password(
         db: Session = Depends(deps.get_db),
@@ -227,4 +149,158 @@ def change_password(
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
     services.user.change_password(db, db_user=user, password=obj_in.password)
     cache.remove_data_from_cache(redis_client, obj_in.email)
+    return
+
+
+@router.post("/send-activation-code-by-sms", response_model=schemas.RegisterCode)
+def send_activation_code_by_sms(
+        db: Session = Depends(deps.get_db),
+        redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+        phone_number: str = Body(..., embed=True),
+        phone_country_code: str = Body(..., embed=True),
+):
+    user = services.user.get_by_phone_number(
+        db,
+        phone_number=utils.normalize_phone_number(phone_number),
+        phone_country_code=utils.normalize_phone_country_code(phone_country_code)
+    )
+    if not user:
+        raise_http_exception(Error.USER_NOT_FOUND)
+
+    if user.is_active:
+        raise_http_exception(Error.USER_IS_ACTIVE)
+
+    data = cache.get_user_registeration_activation_code(
+        redis_client, phone_number, phone_country_code)
+
+    if data:
+        raise_http_exception(Error.ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT)
+    token = "".join(random.choice(f"{string.ascii_letters}0123456789") for i in range(64))
+    code = random.randint(10000, 99999)
+    result = cache.set_user_registeration_activation_code(
+        redis_client, phone_number, phone_country_code, code, token)
+    if not result:
+        raise_http_exception(Error.UNEXPECTED_ERROR)
+    send_user_activation_code.delay(f"00{user.phone_country_code}{user.phone_number}", code)
+    return schemas.RegisterCode(
+        token=token
+    )
+
+
+@router.post("/activate-by-sms", status_code=status.HTTP_200_OK)
+def activate_user_by_sms(
+        *,
+        db: Session = Depends(deps.get_db),
+        redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+        activation_data: schemas.ActivationDataByPhoneNumber
+):
+    user = services.user.get_by_phone_number(
+        db,
+        phone_number=utils.normalize_phone_number(activation_data.phone_number),
+        phone_country_code=utils.normalize_phone_number(activation_data.phone_country_code)
+    )
+    if not user:
+        raise_http_exception(Error.USER_NOT_FOUND)
+
+    data = cache.get_user_registeration_activation_code(
+        redis_client,
+        activation_data.phone_number,
+        activation_data.phone_country_code
+    )
+    if not data:
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    code = data.get("code", None)
+    token = data.get("token", None)
+    if not (token and code):
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    if not token == activation_data.token:
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    if not code == activation_data.code:
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    services.user.activate(db, user=user)
+    cache.remove_data_from_cache(
+        redis_client,
+        f"{activation_data.phone_number}{activation_data.phone_country_code}"
+    )
+
+    return
+
+
+@router.post("/send-activation-code-by-email", response_model=schemas.RegisterCode)
+def send_activation_email(
+        db: Session = Depends(deps.get_db),
+        redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+        email: str = Body(..., embed=True),
+):
+    user = services.user.get_by_email(
+        db,
+        email=email
+    )
+    if not user:
+        raise_http_exception(Error.USER_NOT_FOUND)
+
+    if user.is_active:
+        raise_http_exception(Error.USER_IS_ACTIVE)
+
+    data = cache.get_user_registeration_activation_code_by_email(
+        redis_client, email)
+
+    if data:
+        raise_http_exception(Error.ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT)
+
+    token = "".join(random.choice(f"{string.ascii_letters}0123456789") for i in range(64))
+    code = random.randint(10000, 99999)
+    result = cache.set_user_registeration_activation_code_by_email(
+        redis_client, email, code, token)
+    if not result:
+        raise_http_exception(Error.UNEXPECTED_ERROR)
+    # TODO Send activation email
+    return schemas.RegisterCode(
+        token=token
+    )
+
+
+@router.post("/activate-by-email", status_code=status.HTTP_200_OK)
+def activate_user_by_email(
+        *,
+        db: Session = Depends(deps.get_db),
+        redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+        activation_data: schemas.ActivationDataByEmail
+):
+    user = services.user.get_by_email(
+        db,
+        email=activation_data.email
+    )
+    if not user:
+        raise_http_exception(Error.USER_NOT_FOUND)
+
+    data = cache.get_user_registeration_activation_code_by_email(
+        redis_client,
+        email=activation_data.email
+    )
+    if not data:
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    code = data.get("code", None)
+    token = data.get("token", None)
+    if not (token and code):
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    if not token == activation_data.token:
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    if not code == activation_data.code:
+        raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
+
+    services.user.activate(db, user=user)
+    services.user.verify_email(db, user=user)
+    cache.remove_data_from_cache(
+        redis_client,
+        key=activation_data.email
+    )
+
     return

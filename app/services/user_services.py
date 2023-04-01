@@ -21,6 +21,7 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             role_id=user_role.id,
             phone_number=utils.normalize_phone_number(obj_in.phone_number),
             phone_country_code=utils.normalize_phone_country_code(obj_in.phone_country_code),
+            email=obj_in.email,
             is_email_verified=False,
             is_active=False,
         )
@@ -88,9 +89,6 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         if not verify_password(password, user.hashed_password):
             return None
         return user
-
-        def is_active(self, user) -> bool:
-            return user.is_active
 
     def activate(self, db: Session, *, user: models.User) -> Optional[models.User]:
         user.is_active = True

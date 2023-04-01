@@ -69,10 +69,6 @@ class Settings(BaseSettings):
 
     SAMPLE_FACEBOOK_PAGE_ID: int = 20
     SAMPLE_CONTACT_IGS_ID: int = 10
-    KAVE_NEGAR_BASE_URL : str
-    KAVE_NEGAR_API_KEY: str
-    KAVE_NEGAR_RESET_PASSWORD_TEMPLATE: str
-    KAVE_NEGAR_USER_ACTIVATE_TEMPLATE: str
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

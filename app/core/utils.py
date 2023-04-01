@@ -136,6 +136,8 @@ def create_token(db: Session, *, user: models.User):
 
 
 def normalize_phone_number(phone_number):
+    if not phone_number:
+        return phone_number
     new_phone_number = phone_number
     if phone_number[0] == "0":
         new_phone_number = phone_number[1:]
@@ -143,6 +145,9 @@ def normalize_phone_number(phone_number):
 
 
 def normalize_phone_country_code(phone_country_code):
+    if not phone_country_code:
+        return phone_country_code
+
     new_phone_country_code = phone_country_code
     if phone_country_code[0:2] == "00":
         new_phone_country_code = phone_country_code[2:]

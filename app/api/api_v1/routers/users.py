@@ -12,11 +12,11 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix="/user", tags=["User"])
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
-def register_user(
+@router.post("/register-by-phone-number", status_code=status.HTTP_201_CREATED)
+def register_user_by_phone_number(
         *,
         db: Session = Depends(deps.get_db),
-        user_in: schemas.UserRegister,
+        user_in: schemas.UserRegisterByPhoneNumber,
 ):
     user = services.user.get_by_phone_number(
         db,
@@ -31,7 +31,37 @@ def register_user(
     if not utils.validate_password(user_in.password):
         raise_http_exception(Error.NOT_ACCEPTABLE_PASSWORD)
 
-    services.user.register(db, obj_in=user_in)
+    obj_in = schemas.UserRegister(
+        phone_number=user_in.phone_number,
+        phone_country_code=user_in.phone_country_code,
+        password=user_in.password
+    )
+    services.user.register(db, obj_in=obj_in)
+    return
+
+
+@router.post("/register-by-email", status_code=status.HTTP_201_CREATED)
+def register_user_by_email(
+        *,
+        db: Session = Depends(deps.get_db),
+        user_in: schemas.UserRegisterByEmail,
+):
+    user = services.user.get_by_email(
+        db,
+        email=user_in.email
+    )
+
+    if user and user.is_active:
+        raise_http_exception(Error.USER_EXIST_ERROR)
+    if user and not user.is_active:
+        raise_http_exception(Error.INACTIVE_USER)
+    if not utils.validate_password(user_in.password):
+        raise_http_exception(Error.NOT_ACCEPTABLE_PASSWORD)
+    obj_in = schemas.UserRegister(
+        email=user_in.email,
+        password=user_in.password
+    )
+    services.user.register(db, obj_in=obj_in)
     return
 
 
@@ -90,7 +120,6 @@ def get_user_me(
     user = services.user.get(db, id=current_user.id)
     user.id = user.uuid
     user.role.id = user.role.uuid
-    print(settings.FIRST_ADMIN_PHONE_COUNTRY_CODE)
     return schemas.User(
         id=user.id,
         email=user.email,

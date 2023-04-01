@@ -47,8 +47,20 @@ class User(UserInDBBase):
 
 
 class UserRegister(BaseModel):
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    phone_country_code: Optional[str] = None
+    password: str
+
+
+class UserRegisterByPhoneNumber(BaseModel):
     phone_number: str
     phone_country_code: str
+    password: str
+
+
+class UserRegisterByEmail(BaseModel):
+    email: EmailStr
     password: str
 
 
@@ -71,8 +83,14 @@ class RegisterCode(BaseModel):
     token: str
 
 
-class ActivationData(BaseModel):
+class ActivationDataByPhoneNumber(BaseModel):
     code: int
     token: str
     phone_number: str
     phone_country_code: str
+
+
+class ActivationDataByEmail(BaseModel):
+    code: int
+    token: str
+    email: EmailStr

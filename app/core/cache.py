@@ -167,3 +167,30 @@ def set_user_reset_password_code(client: Redis, email, code, token):
     data = json.dumps(data)
     result = set_data_to_cache(client, email, data, expire=120)
     return result
+
+
+def get_user_registeration_activation_code_by_email(
+        client: Redis,
+        email: str,
+):
+    data = get_data_from_cache(client, email)
+    if data is None:
+        return None
+
+    data = json.loads(data)
+    return data
+
+
+def set_user_registeration_activation_code_by_email(
+        client: Redis,
+        email: str,
+        code: int,
+        token: str
+):
+    data = dict(
+        code=code,
+        token=token
+    )
+    data = json.dumps(data)
+    result = set_data_to_cache(client, email, data, expire=120)
+    return result

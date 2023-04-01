@@ -95,6 +95,11 @@ class Error:
         "status_code": 400,
         "code": 18,
     }
+    EMAIL_NOT_VERIFIED = {
+        "text": "Email not verified",
+        "status_code": 400,
+        "code": 19,
+    }
 
     NO_CHATFLOW_WITH_THE_GIVEN_ID = {
         "text": "There is no chatflow with the given id.",
