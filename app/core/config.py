@@ -70,6 +70,12 @@ class Settings(BaseSettings):
     SAMPLE_FACEBOOK_PAGE_ID: int = 20
     SAMPLE_CONTACT_IGS_ID: int = 10
 
+    SMS_IR_USER_ACTIVATION_TEMPLATE_ID: int
+    SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID: int
+
+    SMS_IR_API_KEY: str
+    SMS_IR_LINE_NUMBER: str
+
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):

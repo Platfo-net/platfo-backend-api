@@ -11,9 +11,10 @@ from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.constants.errors import Error
+from app.core.config import settings
 from app.core.exception import raise_http_exception
 from app.core import utils
-from app.core.tasks import send_user_reset_password_code, send_user_activation_code
+from app.core import tasks
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -117,7 +118,8 @@ def forgot_password(
     if not result:
         raise_http_exception(Error.UNEXPECTED_ERROR)
 
-    send_user_reset_password_code.delay(f"00{user.phone_country_code}{user.phone_number}", code)
+    tasks.send_user_reset_password_code.delay(
+        f"00{user.phone_country_code}{user.phone_number}", code)
     return schemas.RegisterCode(
         token=token
     )
@@ -171,17 +173,24 @@ def send_activation_code_by_sms(
         raise_http_exception(Error.USER_IS_ACTIVE)
 
     data = cache.get_user_registeration_activation_code(
-        redis_client, phone_number, phone_country_code)
+        redis_client, user.phone_number, user.phone_country_code
+    )
 
     if data:
         raise_http_exception(Error.ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT)
-    token = "".join(random.choice(f"{string.ascii_letters}0123456789") for i in range(64))
-    code = random.randint(10000, 99999)
+
+    token = utils.generate_random_token(64)
+
+    code = utils.generate_random_code(5)
+
     result = cache.set_user_registeration_activation_code(
-        redis_client, phone_number, phone_country_code, code, token)
+        redis_client, user.phone_number, user.phone_country_code, code, token)
+
     if not result:
         raise_http_exception(Error.UNEXPECTED_ERROR)
-    send_user_activation_code.delay(f"00{user.phone_country_code}{user.phone_number}", code)
+
+    tasks.send_user_activation_code.delay(f"+{user.phone_country_code}{user.phone_number}", code)
+
     return schemas.RegisterCode(
         token=token
     )
@@ -197,15 +206,15 @@ def activate_user_by_sms(
     user = services.user.get_by_phone_number(
         db,
         phone_number=utils.normalize_phone_number(activation_data.phone_number),
-        phone_country_code=utils.normalize_phone_number(activation_data.phone_country_code)
+        phone_country_code=utils.normalize_phone_country_code(activation_data.phone_country_code)
     )
     if not user:
         raise_http_exception(Error.USER_NOT_FOUND)
 
     data = cache.get_user_registeration_activation_code(
         redis_client,
-        activation_data.phone_number,
-        activation_data.phone_country_code
+        utils.normalize_phone_number(activation_data.phone_number),
+        utils.normalize_phone_country_code(activation_data.phone_country_code)
     )
     if not data:
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
@@ -224,7 +233,10 @@ def activate_user_by_sms(
     services.user.activate(db, user=user)
     cache.remove_data_from_cache(
         redis_client,
-        f"{activation_data.phone_number}{activation_data.phone_country_code}"
+        "{}{}".format(
+            utils.normalize_phone_number(activation_data.phone_number),
+            utils.normalize_phone_country_code(activation_data.phone_country_code)
+        )
     )
 
     return
@@ -252,8 +264,8 @@ def send_activation_email(
     if data:
         raise_http_exception(Error.ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT)
 
-    token = "".join(random.choice(f"{string.ascii_letters}0123456789") for i in range(64))
-    code = random.randint(10000, 99999)
+    token = utils.generate_random_token(64)
+    code = utils.generate_random_code(6)
     result = cache.set_user_registeration_activation_code_by_email(
         redis_client, email, code, token)
     if not result:

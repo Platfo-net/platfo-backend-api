@@ -23,6 +23,11 @@ class Error:
         "status_code": 404,
         "code": 3,
     }
+    USER_NOT_FOUND_BY_PHONE = {
+        "text": "There is no user with this phone",
+        "status_code": 404,
+        "code": 20,
+    }
     CODE_EXPIRATION_OR_NOT_EXIST_ERROR = {
         "text": "Wrong or expired code",
         "status_code": 404,

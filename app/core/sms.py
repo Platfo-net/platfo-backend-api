@@ -1,17 +1,23 @@
 import requests
 
 from app.core.config import settings
+from sms_ir import SmsIr
 
 
-def send_verify_sms(receptor, code, template):
-    url = "{}/{}/verify/lookup.json".format(
-        settings.KAVE_NEGAR_BASE_URL,
-        settings.KAVE_NEGAR_API_KEY
+def send_verify_sms(receptor, code, template_id):
+    sms_ir = SmsIr(
+        api_key=settings.SMS_IR_API_KEY,
+        linenumber=str(settings.SMS_IR_LINE_NUMBER)
     )
-    body = {
-        "receptor": receptor,
-        "token": code,
-        "template": template
-    }
-    res = requests.post(url, json=body)
+    res = sms_ir.send_verify_code(
+        number=receptor,
+        template_id=template_id,
+        parameters=[
+            {
+                "name": "CODE",
+                "value": str(code)
+            }
+        ]
+    )
+    print(res.json())
     return res.status_code

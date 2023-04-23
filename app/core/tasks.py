@@ -1,14 +1,14 @@
-from celery import shared_task
+from app.core.celery import celery
 
 from app.core.config import settings
 from app.core import sms
 
 
-@shared_task
+@celery.task
 def send_user_activation_code(receptor, code):
-    sms.send_verify_sms(receptor, code, settings.KAVE_NEGAR_USER_ACTIVATE_TEMPLATE)
+    return sms.send_verify_sms(receptor, code, settings.SMS_IR_USER_ACTIVATION_TEMPLATE_ID)
 
 
-@shared_task
+@celery.task
 def send_user_reset_password_code(receptor, code):
-    sms.send_verify_sms(receptor, code, settings.KAVE_NEGAR_RESET_PASSWORD_TEMPLATE)
+    sms.send_verify_sms(receptor, code, settings.SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID)

@@ -1,5 +1,7 @@
 from datetime import timedelta
+import random
 import re
+import string
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 from app import models, services, schemas
@@ -166,3 +168,11 @@ def validate_password(password) -> bool:
     elif re.search('[a-z]', password) is None:
         return False
     return True
+
+
+def generate_random_token(length: int) -> str:
+    return "".join(random.choice(f"{string.ascii_letters}0123456789") for _ in range(64))
+
+
+def generate_random_code(length: int) -> int:
+    return random.randint(10**length, (10**(length + 1)) - 1)
