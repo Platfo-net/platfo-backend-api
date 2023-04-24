@@ -15,7 +15,8 @@ from .user import (
     UserUpdatePassword,
     RegisterCode,
     ActivationDataByEmail,
-    ActivationDataByPhoneNumber
+    ActivationDataByPhoneNumber,
+    PhoneData
 )
 
 from .instagram_page import (

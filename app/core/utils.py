@@ -140,10 +140,16 @@ def create_token(db: Session, *, user: models.User):
 def normalize_phone_number(phone_number):
     if not phone_number:
         return phone_number
-    new_phone_number = phone_number
     if phone_number[0] == "0":
-        new_phone_number = phone_number[1:]
-    return new_phone_number
+        phone_number = phone_number[1:]
+    return phone_number
+
+
+def get_full_phone_number(phone_number, phone_country_code):
+    return "{}{}".format(
+        normalize_phone_number(phone_number),
+        normalize_phone_country_code(phone_country_code)
+    )
 
 
 def normalize_phone_country_code(phone_country_code):

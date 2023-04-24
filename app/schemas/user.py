@@ -1,16 +1,32 @@
 from datetime import datetime
 from typing import Optional
+from app.core import utils
 
 from app.schemas.role import Role
 from .media import Image
-from pydantic import UUID4, BaseModel, EmailStr
+from pydantic import UUID4, BaseModel, EmailStr, validator
 
 
-class UserBase(BaseModel):
+class PhoneValidator(BaseModel):
+    phone_number: str
+    phone_country_code: str
+
+    @validator("phone_number", always=True)
+    def validate_phone_number(cls, phone_number, values):
+        return utils.normalize_phone_number(phone_number)
+
+    @validator("phone_country_code", always=True)
+    def validate_phone_country_code(cls, phone_country_code, values):
+        return utils.normalize_phone_country_code(phone_country_code)
+
+
+class PhoneData(PhoneValidator):
+    pass
+
+
+class UserBase(PhoneValidator):
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
-    phone_number: Optional[str] = None
-    phone_country_code: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
 
@@ -46,16 +62,12 @@ class User(UserInDBBase):
     profile_image: Optional[Image] = None
 
 
-class UserRegister(BaseModel):
+class UserRegister(PhoneValidator):
     email: Optional[EmailStr] = None
-    phone_number: Optional[str] = None
-    phone_country_code: Optional[str] = None
     password: str
 
 
-class UserRegisterByPhoneNumber(BaseModel):
-    phone_number: str
-    phone_country_code: str
+class UserRegisterByPhoneNumber(PhoneValidator):
     password: str
 
 
@@ -83,11 +95,9 @@ class RegisterCode(BaseModel):
     token: str
 
 
-class ActivationDataByPhoneNumber(BaseModel):
+class ActivationDataByPhoneNumber(PhoneValidator):
     code: int
     token: str
-    phone_number: str
-    phone_country_code: str
 
 
 class ActivationDataByEmail(BaseModel):
