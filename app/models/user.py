@@ -48,8 +48,8 @@ class User(Base):
     campaign = relationship("Campaign", back_populates="user")
     group = relationship("Group", back_populates="user")
     invoices = relationship("Invoice", back_populates="user")
-    credit_logs = relationship("Credit", back_populates="user")
-
+    credit_logs = relationship("CreditLog", back_populates="user")
+    credits = relationship("Credit", back_populates="user")
     __table_args__ = (
         UniqueConstraint(
             'phone_country_code',

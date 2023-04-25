@@ -65,17 +65,17 @@ services:
       - api
       - redis
 
-  celery-beat:
-    image: "platfo-backend-app"
-    build: .
-    container_name: "${APP_NAME}-celery-beat"
-    command: celery -A app.core.celery.celery beat
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-      - api
-      - redis
+  # celery-beat:
+  #   image: "platfo-backend-app"
+  #   build: .
+  #   container_name: "${APP_NAME}-celery-beat"
+  #   command: celery -A app.core.celery.celery beat
+  #   volumes:
+  #     - .:/app
+  #   depends_on:
+  #     - db
+  #     - api
+  #     - redis
 
   celery-flower:
     image: "platfo-backend-app"

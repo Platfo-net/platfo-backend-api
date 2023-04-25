@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 
 class CreditLog(Base):
 
-    __tablename__ = "credit_logs"
+    __tablename__ = "credit_credit_logs"
 
     module = Column(String(20), nullable=False)
     count = Column(Integer(), nullable=True)
@@ -13,7 +13,7 @@ class CreditLog(Base):
 
     plan_id = Column(
         BigInteger,
-        ForeignKey("plans.id"),
+        ForeignKey("credit_plans.id"),
         primary_key=False,
         nullable=False,
     )
@@ -25,7 +25,7 @@ class CreditLog(Base):
     )
     invoice_id = Column(
         BigInteger,
-        ForeignKey("invoices.id"),
+        ForeignKey("credit_invoices.id"),
         primary_key=False,
         nullable=False,
     )

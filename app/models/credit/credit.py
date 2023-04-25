@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class Credit(Base):
-    __tablename__ = "credit_logs"
+    __tablename__ = "credit_credits"
 
     module = Column(String(20), nullable=False)
     count = Column(Integer(), nullable=True)

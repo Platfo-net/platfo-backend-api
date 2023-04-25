@@ -9,13 +9,17 @@ from sqlalchemy.orm import relationship
 
 class Plan(Base):
 
-    __tablename__ = "plans"
+    __tablename__ = "credit_plans"
+
     title = Column(String(255), nullable=True)
     description = Column(Text(), nullable=True)
-    extend_days = Column(Integer(), nullable=True)
-    is_active = Column(Boolean(), default=False)
 
-    amount = Column(Float(), nullable=False, default=0.0)
+    is_active = Column(Boolean(), default=True)
+
+    extend_days = Column(Integer(), nullable=True)
+    extend_count = Column(Integer(), nullable=True)
+
+    price = Column(Float(), nullable=False, default=0.0)
     currency = Column(String(10), nullable=False, default=Currency.IRR)
 
     module = Column(String(255), nullable=False, default=Module.NOTIFIER)
@@ -28,12 +32,14 @@ class Plan(Base):
 
 
 class PlanFeature(Base):
+    __tablename__ = "credit_plan_features"
+
     title = Column(String(255), nullable=True)
     description = Column(Text(), nullable=True)
 
     plan_id = Column(
         BigInteger,
-        ForeignKey("plans.id"),
+        ForeignKey("credit_plans.id"),
         primary_key=False,
         nullable=False,
     )

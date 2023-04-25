@@ -1,5 +1,7 @@
+from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Any, Union
+from app import schemas, services
 
 from app.core.config import settings
 from jose import jwt
@@ -30,3 +32,24 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+
+def create_token(db: Session, *, user):
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    if not user.role_id:
+        role = "GUEST"
+    else:
+        role = services.role.get(db, id=user.role_id)
+        role = role.name
+    token_payload = {
+        "id": user.id,
+        "role": role,
+    }
+    access_token = create_access_token(
+        token_payload, expires_delta=access_token_expires
+    )
+    return schemas.Token(
+        access_token=access_token,
+        token_type="bearer"
+    )

@@ -34,7 +34,7 @@ def login_access_token_by_email(
     elif not user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
 
-    return utils.create_token(db, user=user)
+    return security.create_token(db, user=user)
 
 
 @router.post("/access-token-phone-number", response_model=schemas.Token)
@@ -55,7 +55,7 @@ def login_access_token_by_phone_number(
     elif not user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
 
-    return utils.create_token(db, user=user)
+    return security.create_token(db, user=user)
 
 
 @router.post("/token-swagger", response_model=schemas.Token)
@@ -71,7 +71,7 @@ def login_access_token_swagger(
     elif not user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
 
-    return utils.create_token(db, user=user)
+    return security.create_token(db, user=user)
 
 
 @router.post("/check", response_model=schemas.User)

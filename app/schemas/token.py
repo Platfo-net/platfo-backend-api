@@ -1,5 +1,4 @@
 from pydantic import BaseModel, validator
-from app.core import utils
 from app.schemas.role import Role
 
 
@@ -34,8 +33,10 @@ class LoginFormByPhoneNumber(BaseModel):
 
     @validator("phone_number", always=True)
     def validate_phone_number(cls, phone_number, values):
-        return utils.normalize_phone_number(phone_number)
+        pass
+        # return utils.normalize_phone_number(phone_number)
 
     @validator("phone_country_code", always=True)
     def validate_phone_country_code(cls, phone_country_code, values):
-        return utils.normalize_phone_country_code(phone_country_code)
+        pass
+        # return utils.normalize_phone_country_code(phone_country_code)

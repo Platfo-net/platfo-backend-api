@@ -1,4 +1,3 @@
-from datetime import timedelta
 import random
 import re
 import string
@@ -6,9 +5,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 from app import models, services, schemas
 from app.constants.message_type import MessageType
-from app.core import security
 from app.core.bot_builder.extra_classes import SavedMessage
-from app.core.config import settings
 
 
 def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
@@ -116,54 +113,6 @@ def save_message(
     return report
 
 
-def create_token(db: Session, *, user: models.User):
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-
-    if not user.role_id:
-        role = "GUEST"
-    else:
-        role = services.role.get(db, id=user.role_id)
-        role = role.name
-    token_payload = {
-        "id": user.id,
-        "role": role,
-    }
-    access_token = security.create_access_token(
-        token_payload, expires_delta=access_token_expires
-    )
-    return schemas.Token(
-        access_token=access_token,
-        token_type="bearer"
-    )
-
-
-def normalize_phone_number(phone_number):
-    if not phone_number:
-        return phone_number
-    if phone_number[0] == "0":
-        phone_number = phone_number[1:]
-    return phone_number
-
-
-def get_full_phone_number(phone_number, phone_country_code):
-    return "{}{}".format(
-        normalize_phone_number(phone_number),
-        normalize_phone_country_code(phone_country_code)
-    )
-
-
-def normalize_phone_country_code(phone_country_code):
-    if not phone_country_code:
-        return phone_country_code
-
-    new_phone_country_code = phone_country_code
-    if phone_country_code[0:2] == "00":
-        new_phone_country_code = phone_country_code[2:]
-    if phone_country_code[0] == "+":
-        new_phone_country_code = phone_country_code[1:]
-    return new_phone_country_code
-
-
 def validate_password(password) -> bool:
     if len(password) < 8:
         return False
@@ -177,7 +126,7 @@ def validate_password(password) -> bool:
 
 
 def generate_random_token(length: int) -> str:
-    return "".join(random.choice(f"{string.ascii_letters}0123456789") for _ in range(64))
+    return "".join(random.choice(f"{string.ascii_letters}0123456789") for _ in range(length))
 
 
 def generate_random_code(length: int) -> int:
