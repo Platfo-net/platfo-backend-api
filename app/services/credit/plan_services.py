@@ -17,10 +17,13 @@ class PlanServices:
             self.model.features
         ).filter(self.model.uuid == uuid).first()
 
-    def get_multi(self, db: Session, *, module: str = None):
+    def get_multi(self, db: Session, *, currency: str, module: str = None):
         if not module:
             return db.query(self.model).all()
-        return db.query(self.model).filter(self.model.module == module).all()
+        return db.query(self.model).filter(
+            self.model.module == module,
+            self.model.currency == currency,
+        ).all()
 
 
 plan = PlanServices(models.credit.Plan)

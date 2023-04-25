@@ -19,7 +19,12 @@ class Plan(Base):
     extend_days = Column(Integer(), nullable=True)
     extend_count = Column(Integer(), nullable=True)
 
-    price = Column(Float(), nullable=False, default=0.0)
+    original_price = Column(Float(), nullable=False, default=0.0)
+    discounted_price = Column(Float(), nullable=False, default=0.0)
+
+    discount_percentage = Column(Float(), nullable=False, default=0.0)
+    is_discounted = Column(Float(), nullable=False, default=0.0)
+
     currency = Column(String(10), nullable=False, default=Currency.IRR)
 
     module = Column(String(255), nullable=False, default=Module.NOTIFIER)

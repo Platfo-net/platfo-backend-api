@@ -213,3 +213,9 @@ class Error:
         "status_code": 400,
         "code": 104,
     }
+
+    PLAN_NOT_FOUND = {
+        "text": "Plan not found!",
+        "status_code": 404,
+        "code": 120,
+    }
