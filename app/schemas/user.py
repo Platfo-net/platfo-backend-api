@@ -89,15 +89,21 @@ class User(UserInDBBase):
 
 
 class UserRegister(PhoneValidator):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: Optional[EmailStr] = None
     password: str
 
 
 class UserRegisterByPhoneNumber(PhoneValidator):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     password: str
 
 
 class UserRegisterByEmail(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: EmailStr
     password: str
 

@@ -32,6 +32,8 @@ def register_user_by_phone_number(
         raise_http_exception(Error.NOT_ACCEPTABLE_PASSWORD)
 
     obj_in = schemas.UserRegister(
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
         phone_number=user_in.phone_number,
         phone_country_code=user_in.phone_country_code,
         password=user_in.password
@@ -58,6 +60,8 @@ def register_user_by_email(
     if not utils.validate_password(user_in.password):
         raise_http_exception(Error.NOT_ACCEPTABLE_PASSWORD)
     obj_in = schemas.UserRegister(
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
         email=user_in.email,
         password=user_in.password
     )
