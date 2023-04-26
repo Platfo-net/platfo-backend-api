@@ -20,8 +20,8 @@ def register_user_by_phone_number(
 ):
     user = services.user.get_by_phone_number(
         db,
-        phone_number=utils.normalize_phone_number(user_in.phone_number),
-        phone_country_code=utils.normalize_phone_country_code(user_in.phone_country_code)
+        phone_number=user_in.phone_number,
+        phone_country_code=user_in.phone_country_code
     )
 
     if user and user.is_active:
