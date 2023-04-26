@@ -234,7 +234,7 @@ def activate_user_by_sms(
 
     cache.remove_data_from_cache(
         redis_client,
-        utils.get_full_phone_number(
+        "{}{}".format(
             user.phone_number,
             user.phone_country_code,
         )
