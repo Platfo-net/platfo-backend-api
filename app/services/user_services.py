@@ -19,8 +19,8 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         db_obj = models.User(
             hashed_password=get_password_hash(obj_in.password),
             role_id=user_role.id,
-            phone_number=utils.normalize_phone_number(obj_in.phone_number),
-            phone_country_code=utils.normalize_phone_country_code(obj_in.phone_country_code),
+            phone_number=obj_in.phone_number,
+            phone_country_code=obj_in.phone_country_code,
             email=obj_in.email,
             is_email_verified=False,
             is_active=False,
