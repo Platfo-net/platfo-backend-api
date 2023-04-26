@@ -21,3 +21,6 @@ from app.models.academy import (
     Label,
     ContentLabel,
 )
+
+
+from app.models.credit import Credit, CreditLog, PlanFeature, Plan, Invoice

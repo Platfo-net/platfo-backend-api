@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 
 def init_db(db: Session) -> None:
-
     # Admin role
     admin_role = services.role.get_by_name(db, name=Role.ADMIN["name"])
     if not admin_role:
@@ -30,17 +29,20 @@ def init_db(db: Session) -> None:
         role = services.role.get_by_name(db, name=Role.ADMIN["name"])
         user_in = schemas.UserCreate(
             email=settings.FIRST_ADMIN_EMAIL,
+            is_active=True,
+            phone_number=settings.FIRST_ADMIN_PHONE_NUMBER,
+            phone_country_code=settings.FIRST_ADMIN_PHONE_COUNTRY_CODE,
+            is_email_verified=True,
             password=settings.FIRST_ADMIN_PASSWORD,
             role_id=role.id,
         )
-        user = services.user.create(
+        services.user.create(
             db,
             obj_in=user_in,
         )
 
 
 def init_test_db(db: Session) -> None:
-
     # Admin role
     admin_role = services.role.get_by_name(db, name=Role.ADMIN["name"])
     if not admin_role:

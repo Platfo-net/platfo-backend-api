@@ -4,7 +4,7 @@ from app.core.config import settings
 # from app.core.postman.tasks import campaign_terminal
 
 celery = Celery(
-    __name__, include=["app.core.bot_builder.tasks", "app.core.postman.tasks"]
+    __name__, include=["app.core.bot_builder.tasks", "app.core.postman.tasks" , "app.core.tasks"]
 )
 
 celery.conf.broker_url = settings.CELERY_URI

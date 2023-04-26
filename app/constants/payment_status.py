@@ -1,4 +1,4 @@
-class TransactionStatus:
+class PaymentStatus:
     """
     Constants for the transaction status
     """

@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.api_v1.api import api_router
 from app.core.config import settings
 import sqltap
-from debug_toolbar.middleware import DebugToolbarMiddleware
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -15,10 +14,6 @@ app = FastAPI(
 )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-app.add_middleware(
-    DebugToolbarMiddleware,
-    panels=["debug_toolbar.panels.sqlalchemy.SQLAlchemyPanel"],
-)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

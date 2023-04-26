@@ -5,6 +5,7 @@ from app.api.api_v1.routers import (
     instagram,
     users,
     accounts,
+    credit_api,
     constants,
     webhook,
     notification,
@@ -13,6 +14,7 @@ from app.api.api_v1.routers import (
     bot_builder_api,
     postman_api,
 )
+
 from fastapi import APIRouter
 
 api_router = APIRouter()
@@ -21,6 +23,7 @@ api_router.include_router(auth.router)
 api_router.include_router(users.router)
 api_router.include_router(instagram.router)
 api_router.include_router(accounts.router)
+api_router.include_router(credit_api.router)
 api_router.include_router(connection.router)
 api_router.include_router(bot_builder_api.router)
 api_router.include_router(webhook.router)
