@@ -97,9 +97,10 @@ def hash_password(
 
 @router.post("/forgot-password", response_model=schemas.RegisterCode)
 def forgot_password(
+        *,
         db: Session = Depends(deps.get_db),
         redis_client: Redis = Depends(deps.get_redis_client_for_reset_password),
-        email: str = Body(..., embed=True),
+        email: schemas.PhoneData,
 ):
     user = services.user.get_by_email(db, email=email)
     if not user:

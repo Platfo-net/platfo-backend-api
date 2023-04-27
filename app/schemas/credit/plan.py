@@ -24,7 +24,10 @@ class Plan(BaseModel):
     discount_percentage: float = None
     is_discounted: bool = False
 
-    module = str
+    module: str = None
+
+
+class DetailedPlan(Plan):
     features: List[Feature]
 
     class Config:

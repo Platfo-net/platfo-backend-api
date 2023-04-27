@@ -29,7 +29,6 @@ def connect_instagram_page(
         ),
 ) -> Any:
     # get user long lived token
-
     params = dict(
         grant_type="fb_exchange_token",
         client_id=settings.FACEBOOK_APP_ID,

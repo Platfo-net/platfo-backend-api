@@ -39,13 +39,19 @@ def get_plans(
         ) for feature in plan.features
         ]
         plans_out.append(
-            schemas.credit.Plan(
+            schemas.credit.DetailedPlan(
                 id=plan.uuid,
                 title=plan.title,
                 description=plan.description,
                 features=features,
                 extend_days=plan.extend_days,
                 extend_count=plan.extend_count,
+                original_price=plan.original_price,
+                discounted_price=plan.discounted_price,
+                currency=plan.currency,
+                discount_percentage=plan.discounted_price,
+                is_discounted=plan.is_discounted,
+                module=plan.module
             )
         )
     return plans_out
@@ -74,7 +80,7 @@ def get_plan(
         description=feature.description,
     ) for feature in plan.features
     ]
-    return schemas.credit.Plan(
+    return schemas.credit.DetailedPlan(
         id=plan.uuid,
         title=plan.title,
         description=plan.description,

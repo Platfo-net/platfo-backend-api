@@ -219,3 +219,21 @@ class Error:
         "status_code": 404,
         "code": 120,
     }
+
+    INVOICE_NOT_FOUND = {
+        "text": "Invoice not found!",
+        "status_code": 404,
+        "code": 130,
+    }
+
+    INVOICE_CANNOT_DELETE_STATUS_FAILED = {
+        "text": "Failed invoices cannot be deleted!",
+        "status_code": 400,
+        "code": 131,
+    }
+
+    INVOICE_CANNOT_DELETE_STATUS_SUCCESS = {
+        "text": "SUCCEED invoices cannot be deleted!",
+        "status_code": 400,
+        "code": 132,
+    }
