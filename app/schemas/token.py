@@ -1,6 +1,7 @@
 from pydantic import BaseModel, validator
 from app.schemas.role import Role
 
+
 def normalize_phone_country_code(phone_country_code):
     if not phone_country_code:
         return phone_country_code
@@ -11,6 +12,7 @@ def normalize_phone_country_code(phone_country_code):
     if phone_country_code[0] == "+":
         new_phone_country_code = phone_country_code[1:]
     return new_phone_country_code
+
 
 def normalize_phone_number(phone_number):
     if not phone_number:

@@ -219,6 +219,11 @@ class Error:
         "status_code": 404,
         "code": 120,
     }
+    PLAN_NOT_ACTIVE = {
+        "text": "Plan not active!",
+        "status_code": 404,
+        "code": 120,
+    }
 
     INVOICE_NOT_FOUND = {
         "text": "Invoice not found!",

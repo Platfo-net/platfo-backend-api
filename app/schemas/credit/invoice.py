@@ -3,29 +3,30 @@
 from app.schemas.pagination import Pagination
 from typing import List
 from pydantic import UUID4, BaseModel
-from .plan import Plan
 
 
 class InvoiceCreateAPI(BaseModel):
     plan_id: UUID4
 
 
-class InvoiceCreate(BaseModel):
+class InvoiceBase(BaseModel):
+    amount: float
+    currency: str
+    bought_on_discount: bool = False
+
+    plan_name: str
+    module: str
+    extend_days: int
+    extend_count: int
+
+
+class InvoiceCreate(InvoiceBase):
     plan_id: int
     user_id: int
-    amount: float
-    currency: str
-    bought_on_discount: bool = False
 
 
-class Invoice(BaseModel):
+class Invoice(InvoiceBase):
     id: UUID4
-    plan_id: int
-    amount: float
-    currency: str
-    bought_on_discount: bool = False
-
-    plan: Plan
 
     class Config:
         orm_mode = True
@@ -37,6 +38,7 @@ class InvoiceListItem(BaseModel):
     currency: str
     plan_name: str
     status: str
+    module: str
 
     class Config:
         orm_mode = True

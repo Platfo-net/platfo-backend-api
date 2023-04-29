@@ -28,6 +28,8 @@ def create_invoice(
     plan = services.credit.plan.get_by_uuid(db, uuid=obj_in.plan_id)
     if not plan:
         return raise_http_exception(Error.PLAN_NOT_FOUND)
+    if not plan.is_active:
+        return raise_http_exception(Error.PLAN_NOT_ACTIVE)
 
     invoice_in = schemas.credit.InvoiceCreate(
         plan_id=plan.id,
@@ -35,6 +37,10 @@ def create_invoice(
         amount=plan.discounted_price,
         currency=plan.currency,
         bought_on_discount=plan.is_discounted,
+        plan_name=plan.title,
+        module=plan.module,
+        extend_days=plan.extend_days,
+        extend_count=plan.extend_count,
     )
     db_invoice = services.credit.invoice.create(db, obj_in=invoice_in)
 
@@ -43,19 +49,10 @@ def create_invoice(
         amount=db_invoice.amount,
         currency=db_invoice.currency,
         bought_on_discount=db_invoice.bought_on_discount,
-        plan=schemas.credit.Plan(
-            id=db_invoice.plan.uuid,
-            title=plan.title,
-            description=plan.description,
-            extend_days=plan.extend_days,
-            extend_count=plan.extend_count,
-            original_price=plan.original_price,
-            discounted_price=plan.discounted_price,
-            currency=plan.currency,
-            discount_percentage=plan.discounted_price,
-            is_discounted=plan.is_discounted,
-            module=plan.module
-        )
+        plan_name=plan.title,
+        module=plan.module,
+        extend_days=plan.extend_days,
+        extend_count=plan.extend_count,
     )
 
 
@@ -107,10 +104,11 @@ def get_invoices(
 
     items = [
         schemas.credit.InvoiceListItem(
-            plan_name=f"{invoice.plan.description}",
+            plan_name=invoice.plan_name,
             amount=invoice.amount,
             currency=invoice.currency,
             status=invoice.status,
+            module=invoice.module,
         ) for invoice in invoices
     ]
 
@@ -142,17 +140,8 @@ def get_invoice(
         amount=invoice.amount,
         currency=invoice.currency,
         bought_on_discount=invoice.bought_on_discount,
-        plan=schemas.credit.Plan(
-            id=invoice.plan.uuid,
-            title=invoice.plan.title,
-            description=invoice.plan.description,
-            extend_days=invoice.plan.extend_days,
-            extend_count=invoice.plan.extend_count,
-            original_price=invoice.plan.original_price,
-            discounted_price=invoice.plan.discounted_price,
-            currency=invoice.plan.currency,
-            discount_percentage=invoice.plan.discounted_price,
-            is_discounted=invoice.plan.is_discounted,
-            module=invoice.plan.module
-        )
+        plan_name=invoice.plan.title,
+        extend_days=invoice.plan.extend_days,
+        extend_count=invoice.plan.extend_count,
+        module=invoice.plan.module
     )

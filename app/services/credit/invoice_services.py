@@ -36,6 +36,10 @@ class InvoiceServices:
             amount=obj_in.amount,
             currency=obj_in.currency,
             bought_on_discount=obj_in.bought_on_discount,
+            plan_name=obj_in.plan_name,
+            module=obj_in.module,
+            extend_days=obj_in.extend_days,
+            extend_count=obj_in.extend_count,
         )
         db.add(db_obj)
         db.commit()
