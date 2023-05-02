@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 69fb8ad8f2e4
+Revision ID: c63f5242a29b
 Revises: 
-Create Date: 2023-04-01 16:55:38.861485
+Create Date: 2023-05-02 15:02:40.946217
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '69fb8ad8f2e4'
+revision = 'c63f5242a29b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,6 +32,24 @@ def upgrade():
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('credit_plans',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('extend_days', sa.Integer(), nullable=True),
+    sa.Column('extend_count', sa.Integer(), nullable=True),
+    sa.Column('original_price', sa.Float(), nullable=False),
+    sa.Column('discounted_price', sa.Float(), nullable=False),
+    sa.Column('discount_percentage', sa.Float(), nullable=False),
+    sa.Column('is_discounted', sa.Float(), nullable=False),
+    sa.Column('currency', sa.String(length=10), nullable=False),
+    sa.Column('module', sa.String(length=255), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_credit_plans_id'), 'credit_plans', ['id'], unique=False)
     op.create_table('notifications',
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
@@ -51,6 +69,16 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
+    op.create_table('credit_plan_features',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('plan_id', sa.BigInteger(), nullable=False),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['plan_id'], ['credit_plans.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_credit_plan_features_id'), 'credit_plan_features', ['id'], unique=False)
     op.create_table('users',
     sa.Column('first_name', sa.String(length=255), nullable=True),
     sa.Column('last_name', sa.String(length=255), nullable=True),
@@ -117,6 +145,35 @@ def upgrade():
     op.create_index(op.f('ix_connections_account_id'), 'connections', ['account_id'], unique=False)
     op.create_index(op.f('ix_connections_id'), 'connections', ['id'], unique=False)
     op.create_index(op.f('ix_connections_user_id'), 'connections', ['user_id'], unique=False)
+    op.create_table('credit_credits',
+    sa.Column('module', sa.String(length=20), nullable=False),
+    sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('expires_at', sa.DateTime(), nullable=True),
+    sa.Column('user_id', sa.BigInteger(), nullable=False),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_credit_credits_id'), 'credit_credits', ['id'], unique=False)
+    op.create_table('credit_invoices',
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('payed_at', sa.DateTime(), nullable=True),
+    sa.Column('amount', sa.Float(), nullable=False),
+    sa.Column('currency', sa.String(length=10), nullable=False),
+    sa.Column('bought_on_discount', sa.Boolean(), nullable=True),
+    sa.Column('plan_name', sa.String(length=255), nullable=True),
+    sa.Column('module', sa.String(length=255), nullable=True),
+    sa.Column('extend_days', sa.Integer(), nullable=True),
+    sa.Column('extend_count', sa.Integer(), nullable=True),
+    sa.Column('status', sa.String(length=10), nullable=True),
+    sa.Column('user_id', sa.BigInteger(), nullable=False),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_credit_invoices_id'), 'credit_invoices', ['id'], unique=False)
     op.create_table('instagram_pages',
     sa.Column('facebook_user_long_lived_token', sa.String(length=255), nullable=True),
     sa.Column('facebook_user_id', sa.String(length=255), nullable=True),
@@ -275,6 +332,21 @@ def upgrade():
     )
     op.create_index(op.f('ix_bot_builder_nodeuies_chatflow_id'), 'bot_builder_nodeuies', ['chatflow_id'], unique=False)
     op.create_index(op.f('ix_bot_builder_nodeuies_id'), 'bot_builder_nodeuies', ['id'], unique=False)
+    op.create_table('credit_credit_logs',
+    sa.Column('module', sa.String(length=20), nullable=False),
+    sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('days_added', sa.Integer(), nullable=True),
+    sa.Column('plan_id', sa.BigInteger(), nullable=False),
+    sa.Column('user_id', sa.BigInteger(), nullable=False),
+    sa.Column('invoice_id', sa.BigInteger(), nullable=False),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['invoice_id'], ['credit_invoices.id'], ),
+    sa.ForeignKeyConstraint(['plan_id'], ['credit_plans.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_credit_credit_logs_id'), 'credit_credit_logs', ['id'], unique=False)
     op.create_table('postman_campaign_contacts',
     sa.Column('contact_igs_id', sa.BigInteger(), nullable=True),
     sa.Column('is_sent', sa.Boolean(), nullable=True),
@@ -314,6 +386,8 @@ def downgrade():
     op.drop_index(op.f('ix_postman_campaign_contacts_id'), table_name='postman_campaign_contacts')
     op.drop_index(op.f('ix_postman_campaign_contacts_campaign_id'), table_name='postman_campaign_contacts')
     op.drop_table('postman_campaign_contacts')
+    op.drop_index(op.f('ix_credit_credit_logs_id'), table_name='credit_credit_logs')
+    op.drop_table('credit_credit_logs')
     op.drop_index(op.f('ix_bot_builder_nodeuies_id'), table_name='bot_builder_nodeuies')
     op.drop_index(op.f('ix_bot_builder_nodeuies_chatflow_id'), table_name='bot_builder_nodeuies')
     op.drop_table('bot_builder_nodeuies')
@@ -346,6 +420,10 @@ def downgrade():
     op.drop_index(op.f('ix_instagram_pages_id'), table_name='instagram_pages')
     op.drop_index(op.f('ix_instagram_pages_facebook_page_id'), table_name='instagram_pages')
     op.drop_table('instagram_pages')
+    op.drop_index(op.f('ix_credit_invoices_id'), table_name='credit_invoices')
+    op.drop_table('credit_invoices')
+    op.drop_index(op.f('ix_credit_credits_id'), table_name='credit_credits')
+    op.drop_table('credit_credits')
     op.drop_index(op.f('ix_connections_user_id'), table_name='connections')
     op.drop_index(op.f('ix_connections_id'), table_name='connections')
     op.drop_index(op.f('ix_connections_account_id'), table_name='connections')
@@ -356,10 +434,14 @@ def downgrade():
     op.drop_table('academy_contents')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_table('users')
+    op.drop_index(op.f('ix_credit_plan_features_id'), table_name='credit_plan_features')
+    op.drop_table('credit_plan_features')
     op.drop_index(op.f('ix_roles_id'), table_name='roles')
     op.drop_table('roles')
     op.drop_index(op.f('ix_notifications_id'), table_name='notifications')
     op.drop_table('notifications')
+    op.drop_index(op.f('ix_credit_plans_id'), table_name='credit_plans')
+    op.drop_table('credit_plans')
     op.drop_table('academy_labels')
     op.drop_table('academy_categories')
     # ### end Alembic commands ###
