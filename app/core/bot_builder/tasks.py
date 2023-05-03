@@ -30,7 +30,7 @@ def webhook_proccessor(facebook_webhook_body):
 
     match instagram_data.type:
         case WebhookType.MESSAGE_SEEN:
-            services.postman.campaign_contact.seen_message(db, mid=instagram_data.mid)
+            services.notifier.campaign_contact.seen_message(db, mid=instagram_data.mid)
         case WebhookType.COMMENT:
             save_comment(
                 db=db,

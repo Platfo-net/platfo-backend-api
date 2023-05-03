@@ -22,18 +22,18 @@ def create_instagram_account(db: Session, facebook_page_id):
 
 
 def create_campaign(db: Session, user_id, facebook_page_id):
-    campaign_in = schemas.postman.CampaignCreate(
+    campaign_in = schemas.notifier.CampaignCreate(
         name="test_campaign",
         description="test_campaign_description",
         facebook_page_id=facebook_page_id,
     )
-    return services.postman.campaign.create(db, obj_in=campaign_in, user_id=user_id)
+    return services.notifier.campaign.create(db, obj_in=campaign_in, user_id=user_id)
 
 
 def create_group(db: Session, user_id, facebook_page_id):
-    group_in = schemas.postman.GroupCreate(
+    group_in = schemas.notifier.GroupCreate(
         name="test_group",
         description="test_group_description",
         facebook_page_id=facebook_page_id,
     )
-    return services.postman.group.create(db, obj_in=group_in, user_id=user_id)
+    return services.notifier.group.create(db, obj_in=group_in, user_id=user_id)

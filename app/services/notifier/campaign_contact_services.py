@@ -3,9 +3,9 @@ from typing import List
 from app import models, schemas
 from sqlalchemy.orm import Session
 
-ModelType = models.postman.CampaignContact
-CreateSchemaType = schemas.postman.CampaignContactCreate
-UpdateSchemaType = schemas.postman.CampaignContactUpdate
+ModelType = models.notifier.CampaignContact
+CreateSchemaType = schemas.notifier.CampaignContactCreate
+UpdateSchemaType = schemas.notifier.CampaignContactUpdate
 
 
 class CampaignContactServices:
@@ -56,10 +56,10 @@ class CampaignContactServices:
 
     def get_campaign_unsend_contacts_count(self, db: Session, *, campaign_id: int):
         return (
-            db.query(models.postman.CampaignContact)
+            db.query(models.notifier.CampaignContact)
             .filter(
-                models.postman.CampaignContact.is_sent == False,  # noqa
-                models.postman.CampaignContact.campaign_id == campaign_id,
+                models.notifier.CampaignContact.is_sent == False,  # noqa
+                models.notifier.CampaignContact.campaign_id == campaign_id,
             )
             .count()
         )
@@ -83,7 +83,7 @@ class CampaignContactServices:
 
     def get_all_seen_count(self, db: Session, campaign_id: int):
         return (
-            db.query(models.postman.CampaignContact)
+            db.query(models.notifier.CampaignContact)
             .filter(
                 self.model.campaign_id == campaign_id,
                 self.model.is_seen == True  # noqa
@@ -126,4 +126,4 @@ class CampaignContactServices:
         )
 
 
-campaign_contact = CampaignContactServices(models.postman.CampaignContact)
+campaign_contact = CampaignContactServices(models.notifier.CampaignContact)

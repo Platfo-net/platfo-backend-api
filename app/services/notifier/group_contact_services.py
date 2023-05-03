@@ -11,7 +11,7 @@ class GroupContactServices:
             self,
             db: Session,
             *,
-            objs_in: List[schemas.postman.GroupContactCreate],
+            objs_in: List[schemas.notifier.GroupContactCreate],
             group_id: int
     ):
         db_objs = []
@@ -43,4 +43,4 @@ class GroupContactServices:
         )
 
 
-group_contact = GroupContactServices(models.postman.GroupContact)
+group_contact = GroupContactServices(models.notifier.GroupContact)

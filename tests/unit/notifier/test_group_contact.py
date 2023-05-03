@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app import services, schemas, models
 from app.core.config import settings
-from tests.unit.postman import helper
+from tests.unit.notifier import helper
 
 
 def test_add_contacts_to_group(db: Session):
@@ -29,20 +29,20 @@ def test_add_contacts_to_group(db: Session):
         ),
     )
 
-    schemas.postman.GroupContact(
+    schemas.notifier.GroupContact(
         contact_igs_id=contact_1.contact_igs_id, contact_id=contact_1.id
     )
 
     contacts_in = [
-        schemas.postman.GroupContact(
+        schemas.notifier.GroupContact(
             contact_id=contact_1.id,
             contact_igs_id=contact_1.contact_igs_id,
         ),
-        schemas.postman.GroupContact(
+        schemas.notifier.GroupContact(
             contact_id=contact_2.id,
             contact_igs_id=contact_2.contact_igs_id,
         ),
-        schemas.postman.GroupContact(
+        schemas.notifier.GroupContact(
             contact_id=contact_3.id,
             contact_igs_id=contact_3.contact_igs_id,
         ),
@@ -66,7 +66,7 @@ def test_add_contacts_to_group(db: Session):
 
     assert type(group_contacts) == list
     for group_contact in group_contacts:
-        assert isinstance(group_contact, models.postman.GroupContact)
+        assert isinstance(group_contact, models.notifier.GroupContact)
 
     db_group_contatcs_igs_id = [g.contact_igs_id for g in group_contacts]
 

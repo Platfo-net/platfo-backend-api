@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app import services
 from app.core.config import settings
-from tests.unit.postman import helper
+from tests.unit.notifier import helper
 from tests.utils.user import get_user_token_headers
 
 
@@ -26,7 +26,7 @@ def test_create_campaign(client: TestClient, db: Session):
     )
 
     r = client.post(
-        f"{settings.API_V1_STR}/postman/campaign/",
+        f"{settings.API_V1_STR}/notifier/campaign/",
         json={
             "name": name,
             "description": description,
@@ -46,7 +46,7 @@ def test_create_campaign(client: TestClient, db: Session):
 def test_get_campaigns(client: TestClient, db: Session):
     headers = get_user_token_headers(client)
 
-    r = client.get(f"{settings.API_V1_STR}/postman/campaign/all", headers=headers)
+    r = client.get(f"{settings.API_V1_STR}/notifier/campaign/all", headers=headers)
     json_response = r.json()
     assert r.status_code == 200
     assert len(json_response["items"]) >= 1
@@ -61,7 +61,7 @@ def test_get_campaign_detail(client: TestClient, db: Session):
     campaign = helper.create_campaign(db, user.id, account.facebook_page_id)
 
     r = client.get(
-        f"{settings.API_V1_STR}/postman/campaign/{campaign.id}", headers=headers
+        f"{settings.API_V1_STR}/notifier/campaign/{campaign.id}", headers=headers
     )
     json_response = r.json()
     assert r.status_code == 200

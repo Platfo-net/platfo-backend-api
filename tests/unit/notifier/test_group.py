@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app import services, schemas, models
 from app.core.config import settings
-from tests.unit.postman import helper
+from tests.unit.notifier import helper
 
 
 def test_create_group(db: Session):
@@ -9,7 +9,7 @@ def test_create_group(db: Session):
     account = helper.create_instagram_account(db, facebook_page_id="1")
     group = helper.create_group(db, user.id, account.facebook_page_id)
 
-    assert isinstance(group, models.postman.Group)
+    assert isinstance(group, models.notifier.Group)
     assert group.user_id == user.id
     assert group.facebook_page_id == "1"
 
@@ -19,7 +19,7 @@ def test_update_group(db: Session):
     account = helper.create_instagram_account(db, facebook_page_id="2")
     db_obj = helper.create_group(db, user.id, account.facebook_page_id)
 
-    obj_in = schemas.postman.GroupUpdate(
+    obj_in = schemas.notifier.GroupUpdate(
         name="test_group_updated",
         description="test_group_description_updated",
     )
@@ -28,7 +28,7 @@ def test_update_group(db: Session):
         db, user_id=user.id, db_obj=db_obj, obj_in=obj_in
     )
 
-    assert isinstance(group, models.postman.Group)
+    assert isinstance(group, models.notifier.Group)
     assert group.name == "test_group_updated"
     assert group.description == "test_group_description_updated"
     assert group.user_id == db_obj.user_id
@@ -59,7 +59,7 @@ def test_get_groups(db: Session):
         db=db, facebook_page_id=group.facebook_page_id, user_id=user.id
     )
 
-    assert isinstance(group, models.postman.Group)
+    assert isinstance(group, models.notifier.Group)
     assert len(groups_list) >= 1
     assert type(groups_list[1]) == list
     assert groups_list[1][0].id == group.id

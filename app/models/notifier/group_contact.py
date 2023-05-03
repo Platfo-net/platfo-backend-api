@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class GroupContact(Base):
-    __tablename__ = "postman_group_contacts"
+    __tablename__ = "notifier_group_contacts"
 
     contact_igs_id = Column(BigInteger, nullable=True)
 
@@ -16,7 +16,7 @@ class GroupContact(Base):
 
     group_id = Column(
         BigInteger,
-        ForeignKey("postman_groups.id"),
+        ForeignKey("notifier_groups.id"),
         nullable=True,
         index=True,
     )

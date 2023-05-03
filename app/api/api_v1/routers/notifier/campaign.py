@@ -15,7 +15,7 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix="/campaign")
 
 
-@router.get("/all", response_model=schemas.postman.CampaignListApi)
+@router.get("/all", response_model=schemas.notifier.CampaignListApi)
 def get_all_user_campaigns(
         *,
         db: Session = Depends(deps.get_db),
@@ -30,7 +30,7 @@ def get_all_user_campaigns(
             ],
         ),
 ):
-    pagination, items = services.postman.campaign.get_multi(
+    pagination, items = services.notifier.campaign.get_multi(
         db,
         user_id=current_user.id,
         facebook_page_id=facebook_page_id,
@@ -43,7 +43,7 @@ def get_all_user_campaigns(
         image = storage.get_file(item.image, settings.S3_CAMPAIGN_BUCKET)
         print(item.image)
         campaigns.append(
-            schemas.postman.Campaign(
+            schemas.notifier.Campaign(
                 id=item.uuid,
                 name=item.name,
                 description=item.description,
@@ -56,17 +56,17 @@ def get_all_user_campaigns(
             )
         )
 
-    return schemas.postman.CampaignListApi(
+    return schemas.notifier.CampaignListApi(
         items=campaigns,
         pagination=pagination,
     )
 
 
-@router.post("/", response_model=schemas.postman.Campaign)
+@router.post("/", response_model=schemas.notifier.Campaign)
 def create_campaign(
         *,
         db: Session = Depends(deps.get_db),
-        obj_in: schemas.postman.CampaignCreateApiSchema,
+        obj_in: schemas.notifier.CampaignCreateApiSchema,
         current_user: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -75,7 +75,7 @@ def create_campaign(
             ],
         ),
 ):
-    group = services.postman.group.get_by_uuid(db, obj_in.group_id)
+    group = services.notifier.group.get_by_uuid(db, obj_in.group_id)
 
     if not group:
         raise_http_exception(Error.GROUP_NOT_FOUND)
@@ -85,7 +85,7 @@ def create_campaign(
     if not group.facebook_page_id == obj_in.facebook_page_id:
         raise_http_exception(Error.GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE)
 
-    campaign_obj = schemas.postman.CampaignCreate(
+    campaign_obj = schemas.notifier.CampaignCreate(
         name=obj_in.name,
         description=obj_in.description,
         facebook_page_id=obj_in.facebook_page_id,
@@ -95,26 +95,26 @@ def create_campaign(
         image=obj_in.image,
     )
 
-    campaign = services.postman.campaign.create(
+    campaign = services.notifier.campaign.create(
         db, obj_in=campaign_obj, user_id=current_user.id
     )
 
-    group_contacts = services.postman.group_contact.get_by_group(db, group_id=group.id)
+    group_contacts = services.notifier.group_contact.get_by_group(db, group_id=group.id)
     contacts = []
     for contact in group_contacts:
         contacts.append(
-            schemas.postman.CampaignContactCreate(
+            schemas.notifier.CampaignContactCreate(
                 contact_id=contact.contact_id,
                 contact_igs_id=contact.contact_igs_id
             )
         )
 
-    services.postman.campaign_contact.create_bulk(
+    services.notifier.campaign_contact.create_bulk(
         db, campaign_id=campaign.id, contacts=contacts
     )
     image = storage.get_file(campaign.image, settings.S3_CAMPAIGN_BUCKET)
 
-    return schemas.postman.Campaign(
+    return schemas.notifier.Campaign(
         id=campaign.uuid,
         name=campaign.name,
         description=campaign.description,
@@ -126,12 +126,12 @@ def create_campaign(
     )
 
 
-@router.put("/{id}", response_model=schemas.postman.CampaignUpdate)
+@router.put("/{id}", response_model=schemas.notifier.CampaignUpdate)
 def update_campaign(
         *,
         db: Session = Depends(deps.get_db),
         id: UUID4,
-        obj_in: schemas.postman.CampaignUpdate,
+        obj_in: schemas.notifier.CampaignUpdate,
         current_user: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -140,15 +140,15 @@ def update_campaign(
             ],
         ),
 ):
-    db_obj = services.postman.campaign.get_by_uuid(db, id)
+    db_obj = services.notifier.campaign.get_by_uuid(db, id)
 
     if db_obj.is_draft is False:
         raise_http_exception(Error.CAMPAIGN_ALREADY_ACTIVE)
-    campaign = services.postman.campaign.update(
+    campaign = services.notifier.campaign.update(
         db,
         db_obj=db_obj,
         user_id=current_user.id,
-        obj_in=schemas.postman.CampaignUpdate(
+        obj_in=schemas.notifier.CampaignUpdate(
             name=obj_in.name,
             description=obj_in.description,
             content=obj_in.content,
@@ -157,7 +157,7 @@ def update_campaign(
         ),
     )
     image = storage.get_file(obj_in.image, settings.S3_CAMPAIGN_BUCKET)
-    return schemas.postman.CampaignUpdate(
+    return schemas.notifier.CampaignUpdate(
         name=campaign.name,
         description=campaign.description,
         content=campaign.content,
@@ -166,7 +166,7 @@ def update_campaign(
     )
 
 
-@router.get("/{id}", response_model=schemas.postman.CampaignDetail)
+@router.get("/{id}", response_model=schemas.notifier.CampaignDetail)
 def get_campaign_by_id(
         *,
         db: Session = Depends(deps.get_db),
@@ -179,13 +179,13 @@ def get_campaign_by_id(
             ],
         ),
 ):
-    campaign = services.postman.campaign.get_by_uuid(db, id)
+    campaign = services.notifier.campaign.get_by_uuid(db, id)
     if not campaign:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
 
-    sent_count = services.postman.campaign_contact.get_all_sent_count(db, campaign.id)
-    seen_count = services.postman.campaign_contact.get_all_seen_count(db, campaign.id)
-    contact_count = services.postman.campaign_contact.get_all_contacts_count(db, campaign.id)
+    sent_count = services.notifier.campaign_contact.get_all_sent_count(db, campaign.id)
+    seen_count = services.notifier.campaign_contact.get_all_seen_count(db, campaign.id)
+    contact_count = services.notifier.campaign_contact.get_all_contacts_count(db, campaign.id)
     instagram_page = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=campaign.facebook_page_id
     )
@@ -198,7 +198,7 @@ def get_campaign_by_id(
         page_id=instagram_page.facebook_page_id,
     )
     image = storage.get_file(campaign.image, settings.S3_CAMPAIGN_BUCKET)
-    return schemas.postman.CampaignDetail(
+    return schemas.notifier.CampaignDetail(
         id=campaign.uuid,
         name=campaign.name,
         description=campaign.description,
@@ -232,23 +232,23 @@ def get_campain_contacts(
             ],
         ),
 ):
-    campaign = services.postman.campaign.get_by_uuid(db, id)
+    campaign = services.notifier.campaign.get_by_uuid(db, id)
 
     if not campaign:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
     if not campaign.id == current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
-    campaign_contacts, pagination = services.postman.campaign_contact.get_campain_contacts(
+    campaign_contacts, pagination = services.notifier.campaign_contact.get_campain_contacts(
         db, campaign_id=campaign.id, page=page, page_size=page_size
     )
     contacts = []
     for contact in campaign_contacts:
-        contacts.append(schemas.postman.ContactSample(
+        contacts.append(schemas.notifier.ContactSample(
             profile_image=contact.contact.information.get("profile_image"),
             username=contact.contact.information.get("username")
         ))
-    return schemas.postman.CampaignContactApiSchema(
+    return schemas.notifier.CampaignContactApiSchema(
         items=contacts,
         pagination=pagination
     )
@@ -268,14 +268,14 @@ def change_campaign_is_draft(
             ],
         ),
 ):
-    campaign = services.postman.campaign.get_by_uuid(db, id)
+    campaign = services.notifier.campaign.get_by_uuid(db, id)
 
     if not campaign:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
     if not campaign.user_id == current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
-    services.postman.campaign.change_is_draft(
+    services.notifier.campaign.change_is_draft(
         db, db_obj=campaign, is_draft=is_draft
     )
     return

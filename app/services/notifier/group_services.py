@@ -48,7 +48,7 @@ class GroupServices:
         self,
         db: Session,
         *,
-        obj_in: schemas.postman.GroupCreate,
+        obj_in: schemas.notifier.GroupCreate,
         user_id: int,
     ):
         db_obj = self.model(
@@ -64,8 +64,8 @@ class GroupServices:
         self,
         db: Session,
         *,
-        db_obj: models.postman.Group,
-        obj_in: schemas.postman.GroupUpdate,
+        db_obj: models.notifier.Group,
+        obj_in: schemas.notifier.GroupUpdate,
     ):
 
         db_obj.name = obj_in.name
@@ -88,4 +88,4 @@ class GroupServices:
         return
 
 
-group = GroupServices(models.postman.Group)
+group = GroupServices(models.notifier.Group)

@@ -8,9 +8,9 @@ from app.models.bot_builder import Chatflow, Node, NodeUI, Edge
 
 
 from app.models.live_chat import Contact, Message
-from app.models.postman.campaign_contact import CampaignContact
-from app.models.postman.campaign import Campaign
-from app.models.postman import Campaign, CampaignContact, Group, GroupContact
+from app.models.notifier.campaign_contact import CampaignContact
+from app.models.notifier.campaign import Campaign
+from app.models.notifier import Campaign, CampaignContact, Group, GroupContact
 from app.models.notification import Notification, NotificationUser
 
 

@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class Group(Base):
-    __tablename__ = "postman_groups"
+    __tablename__ = "notifier_groups"
     name = Column(String(255), nullable=True)
     description = Column(String(255), nullable=True)
 

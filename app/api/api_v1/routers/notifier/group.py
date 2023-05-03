@@ -13,7 +13,7 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix="/group")
 
 
-@router.get("/{facebook_page_id}", response_model=schemas.postman.GroupListApi)
+@router.get("/{facebook_page_id}", response_model=schemas.notifier.GroupListApi)
 def get_groups(
         *,
         db: Session = Depends(deps.get_db),
@@ -28,7 +28,7 @@ def get_groups(
             ],
         ),
 ):
-    pagination, items = services.postman.group.get_multi(
+    pagination, items = services.notifier.group.get_multi(
         db,
         facebook_page_id=facebook_page_id,
         page=page,
@@ -38,21 +38,21 @@ def get_groups(
     groups = []
     for item in items:
         groups.append(
-            schemas.postman.Group(
+            schemas.notifier.Group(
                 id=item.uuid,
                 name=item.name,
                 description=item.description
             )
 
         )
-    return schemas.postman.GroupListApi(pagination=pagination, items=groups)
+    return schemas.notifier.GroupListApi(pagination=pagination, items=groups)
 
 
-@router.post("/", response_model=schemas.postman.Group)
+@router.post("/", response_model=schemas.notifier.Group)
 def create_group(
         *,
         db: Session = Depends(deps.get_db),
-        obj_in: schemas.postman.GroupCreateApiSchemas,
+        obj_in: schemas.notifier.GroupCreateApiSchemas,
         current_user: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -64,9 +64,9 @@ def create_group(
     if not obj_in.contacts:
         raise_http_exception(Error.GROUP_EMPTY_CONTACT)
     with AtomicTransaction(db) as session:
-        db_obj = services.postman.group.create(
+        db_obj = services.v.group.create(
             session,
-            obj_in=schemas.postman.GroupCreate(
+            obj_in=schemas.notifier.GroupCreate(
                 name=obj_in.name,
                 description=obj_in.description,
                 facebook_page_id=obj_in.facebook_page_id,
@@ -78,16 +78,16 @@ def create_group(
         contacts = services.live_chat.contact.get_bulk_by_uuid(db, contacts_id=contacts_uuid)
 
         contacts_in = [
-            schemas.postman.GroupContactCreate(
+            schemas.notifier.GroupContactCreate(
                 contact_id=item.id,
                 contact_igs_id=item.contact_igs_id,
             ) for item in contacts
         ]
-        services.postman.group_contact.create_bulk(
+        services.notifier.group_contact.create_bulk(
             session, objs_in=contacts_in, group_id=db_obj.id
         )
 
-    return schemas.postman.Group(
+    return schemas.notifier.Group(
         id=db_obj.uuid,
         name=db_obj.name,
         description=db_obj.description
@@ -107,24 +107,24 @@ def remove_group(
             ],
         ),
 ):
-    group = services.postman.group.get_by_uuid(db, id)
+    group = services.notifier.group.get_by_uuid(db, id)
     if not group:
         raise_http_exception(Error.GROUP_NOT_FOUND)
     if group.user_id != current_user.id:
         raise_http_exception(Error.GROUP_NOT_FOUND_ACCESS_DENIED)
 
-    services.postman.group_contact.remove_bulk(db, group_id=group.id)
-    services.postman.group.remove(db, id=group.id)
+    services.notifier.group_contact.remove_bulk(db, group_id=group.id)
+    services.notifier.group.remove(db, id=group.id)
 
     return
 
 
-@router.put("/{id}", response_model=schemas.postman.Group)
+@router.put("/{id}", response_model=schemas.notifier.Group)
 def update_group(
         *,
         db: Session = Depends(deps.get_db),
         id: UUID4,
-        obj_in: schemas.postman.GroupUpdateApiSchemas,
+        obj_in: schemas.notifier.GroupUpdateApiSchemas,
         current_user: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -135,35 +135,35 @@ def update_group(
 ):
     if not obj_in.contacts:
         raise_http_exception(Error.GROUP_EMPTY_CONTACT)
-    db_obj = services.postman.group.get_by_uuid(db, id)
+    db_obj = services.notifier.group.get_by_uuid(db, id)
     if not db_obj:
         raise_http_exception(Error.GROUP_NOT_FOUND)
 
     if db_obj.user_id != current_user.id:
         raise_http_exception(Error.GROUP_NOT_FOUND)
 
-    group = services.postman.group.update(
+    group = services.notifier.group.update(
         db,
         db_obj=db_obj,
-        obj_in=schemas.postman.GroupUpdate(
+        obj_in=schemas.notifier.GroupUpdate(
             name=obj_in.name, description=obj_in.description
         ),
     )
-    services.postman.group_contact.remove_bulk(db, group_id=group.id)
+    services.notifier.group_contact.remove_bulk(db, group_id=group.id)
 
     contacts_uuid = [item.contact_id for item in obj_in.contacts]
     contacts = services.live_chat.contact.get_bulk_by_uuid(db, contacts_id=contacts_uuid)
 
     contacts_in = [
-        schemas.postman.GroupContactCreate(
+        schemas.notifier.GroupContactCreate(
             contact_id=item.id,
             contact_igs_id=item.contact_igs_id,
         ) for item in contacts
     ]
-    services.postman.group_contact.create_bulk(
+    services.notifier.group_contact.create_bulk(
         db, objs_in=contacts_in, group_id=db_obj.id
     )
 
-    return schemas.postman.Group(
+    return schemas.notifier.Group(
         id=group.uuid, name=group.name, description=group.description
     )

@@ -6,7 +6,7 @@ from app.constants.campaign_status import CampaignStatus
 
 
 class Campaign(Base):
-    __tablename__ = "postman_campaigns"
+    __tablename__ = "notifier_campaigns"
 
     name = Column(String(255), nullable=True)
     description = Column(String(255), nullable=True)

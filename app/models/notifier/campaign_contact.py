@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class CampaignContact(Base):
-    __tablename__ = "postman_campaign_contacts"
+    __tablename__ = "notifier_campaign_contacts"
 
     contact_igs_id = Column(BigInteger, nullable=True)
 
@@ -21,7 +21,7 @@ class CampaignContact(Base):
     )
     campaign_id = Column(
         BigInteger,
-        ForeignKey("postman_campaigns.id"),
+        ForeignKey("notifier_campaigns.id"),
         nullable=True,
         index=True
     )
