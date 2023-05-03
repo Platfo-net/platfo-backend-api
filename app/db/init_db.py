@@ -46,8 +46,8 @@ def init_db(db: Session) -> None:
         user_in = schemas.UserCreate(
             email="ramzinex@gmail.com",
             is_active=True,
-            phone_number="98",
-            phone_country_code="9912345678",
+            phone_number="9912345678",
+            phone_country_code="98",
             is_email_verified=True,
             password="Ramzinex@123",
             role_id=role.id,
