@@ -15,7 +15,7 @@ from app.core import tasks
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post("/access-token-email", response_model=schemas.Token)
+@router.post("/access-token", response_model=schemas.Token)
 def login_access_token_by_email(
         *,
         db: Session = Depends(deps.get_db),
