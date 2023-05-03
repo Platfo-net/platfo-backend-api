@@ -40,6 +40,22 @@ def init_db(db: Session) -> None:
             db,
             obj_in=user_in,
         )
+    ramzinex_user = services.user.get_by_email(db, email="ramzinex@gmail.com")
+    if not ramzinex_user:
+        role = services.role.get_by_name(db, name=Role.USER["name"])
+        user_in = schemas.UserCreate(
+            email="ramzinex@gmail.com",
+            is_active=True,
+            phone_number="98",
+            phone_country_code="9912345678",
+            is_email_verified=True,
+            password="Ramzinex@123",
+            role_id=role.id,
+        )
+        services.user.create(
+            db,
+            obj_in=user_in,
+        )
 
 
 def init_test_db(db: Session) -> None:
