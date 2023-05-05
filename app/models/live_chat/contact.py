@@ -25,10 +25,13 @@ class Contact(Base):
         ForeignKey("users.id"),
         nullable=True,
     )
+
+    user = relationship("User" , back_populates="contacts")
+
     campaign_contacts = relationship(
-        "CampaignContact", back_populates="contact", cascade="all,delete"
+        "CampaignContact", back_populates="contacts", cascade="all,delete"
     )
 
-    group_contact = relationship(
-        "GroupContact", back_populates="contact", cascade="all,delete"
+    group_contacts = relationship(
+        "GroupContact", back_populates="contacts", cascade="all,delete"
     )

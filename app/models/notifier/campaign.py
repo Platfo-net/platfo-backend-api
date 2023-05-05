@@ -30,5 +30,5 @@ class Campaign(Base):
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    user = relationship("User", back_populates="campaign")
+    user = relationship("User", back_populates="campaigns")
     campaign_contacts = relationship("CampaignContact", back_populates="campaign")

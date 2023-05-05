@@ -34,22 +34,23 @@ class User(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
-    role = relationship("Role", back_populates="user")
+    role = relationship("Role", back_populates="users")
 
-    instagram_page = relationship("InstagramPage", back_populates="user")
+    instagram_pages = relationship("InstagramPage", back_populates="user")
 
-    connection = relationship("Connection", back_populates="user")
-    chatflow = relationship("Chatflow", back_populates="user")
+    connections = relationship("Connection", back_populates="user")
+    chatflows = relationship("Chatflow", back_populates="user")
 
-    notification_user = relationship("NotificationUser", back_populates="user")
+    user_notifications = relationship("NotificationUser", back_populates="user")
 
     content = relationship("Content", back_populates="user")
 
-    campaign = relationship("Campaign", back_populates="user")
-    group = relationship("Group", back_populates="user")
+    campaigns = relationship("Campaign", back_populates="user")
+    groups = relationship("Group", back_populates="user")
     invoices = relationship("Invoice", back_populates="user")
     credit_logs = relationship("CreditLog", back_populates="user")
     credits = relationship("Credit", back_populates="user")
+
     __table_args__ = (
         UniqueConstraint(
             'phone_country_code',

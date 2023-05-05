@@ -20,6 +20,7 @@ class InstagramPage(Base):
     facebook_page_token = Column(String(255), nullable=True)
     username = Column(String(255), nullable=True)
     profile_picture_url = Column(String(1024), nullable=True)
+    
     information = Column(JSON, nullable=True)
 
-    user = relationship("User", back_populates="instagram_page")
+    user = relationship("User", back_populates="instagram_pages")

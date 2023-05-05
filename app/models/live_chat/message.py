@@ -1,6 +1,7 @@
 import datetime
 from app.db.base_class import Base
 from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, BigInteger
+from sqlalchemy.orm import relationship
 
 
 class Message(Base):
@@ -18,3 +19,6 @@ class Message(Base):
         ForeignKey("users.id"),
         nullable=True,
     )
+
+
+    user = relationship("User" , back_populates="messages")

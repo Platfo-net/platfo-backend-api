@@ -16,5 +16,5 @@ class Group(Base):
 
     facebook_page_id = Column(BigInteger, nullable=True, index=True)
 
-    user = relationship("User", back_populates="group")
-    group_contact = relationship("GroupContact", back_populates="group")
+    user = relationship("User", back_populates="groups")
+    group_contacts = relationship("GroupContact", back_populates="group")

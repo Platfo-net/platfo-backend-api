@@ -20,5 +20,5 @@ class GroupContact(Base):
         nullable=True,
         index=True,
     )
-    group = relationship("Group", back_populates="group_contact")
-    contact = relationship("Contact", back_populates="group_contact")
+    group = relationship("Group", back_populates="group_contacts")
+    contact = relationship("Contact", back_populates="group_contacts")
