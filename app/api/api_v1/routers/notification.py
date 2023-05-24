@@ -11,11 +11,11 @@ from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
 router = APIRouter(
-    prefix="/notification", tags=["Notification"], include_in_schema=False
+    prefix='/notification', tags=['Notification'], include_in_schema=False
 )
 
 
-@router.get("/all", response_model=schemas.NotificationListApi)
+@router.get('/all', response_model=schemas.NotificationListApi)
 def get_notifications_list(
     *,
     db: Session = Depends(deps.get_db),
@@ -24,13 +24,13 @@ def get_notifications_list(
     current_user: models.User = Security(
         deps.get_current_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
     current_user_role_name = services.role.get(db, current_user.role_id).name
-    if current_user_role_name == Role.ADMIN["name"]:
+    if current_user_role_name == Role.ADMIN['name']:
         notifications, pagination = services.notification.get_by_multi(
             db,
             page=page,
@@ -56,7 +56,7 @@ def get_notifications_list(
     return schemas.NotificationListApi(items=notifications, pagination=pagination)
 
 
-@router.post("", response_model=schemas.Notification)
+@router.post('', response_model=schemas.Notification)
 def create_notification(
     *,
     db: Session = Depends(deps.get_db),
@@ -64,7 +64,7 @@ def create_notification(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -80,7 +80,7 @@ def create_notification(
     )
 
 
-@router.put("/{id}", response_model=schemas.Notification)
+@router.put('/{id}', response_model=schemas.Notification)
 def update_notification(
     *,
     db: Session = Depends(deps.get_db),
@@ -89,7 +89,7 @@ def update_notification(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -106,7 +106,7 @@ def update_notification(
     )
 
 
-@router.delete("/{id}")
+@router.delete('/{id}')
 def delete_notification(
     *,
     db: Session = Depends(deps.get_db),
@@ -114,7 +114,7 @@ def delete_notification(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -126,7 +126,7 @@ def delete_notification(
     return
 
 
-@router.put("/read/{id}")
+@router.put('/read/{id}')
 def read_notification(
     *,
     db: Session = Depends(deps.get_db),
@@ -134,8 +134,8 @@ def read_notification(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):

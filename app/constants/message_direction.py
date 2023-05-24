@@ -1,3 +1,3 @@
 class MessageDirection:
-    IN = "IN"
-    OUT = "OUT"
+    IN = 'IN'
+    OUT = 'OUT'

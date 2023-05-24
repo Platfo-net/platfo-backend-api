@@ -13,10 +13,10 @@ from app.constants.role import Role
 from app.constants.widget_type import WidgetType
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/node")
+router = APIRouter(prefix='/node')
 
 
-@router.get("/all/{chatflow_id}", response_model=List[schemas.bot_builder.Node])
+@router.get('/all/{chatflow_id}', response_model=List[schemas.bot_builder.Node])
 def get_all_nodes(
     *,
     db: Session = Depends(deps.get_db),
@@ -24,8 +24,8 @@ def get_all_nodes(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -40,7 +40,7 @@ def get_all_nodes(
     return nodes
 
 
-@router.post("/full", response_model=schemas.bot_builder.Node)
+@router.post('/full', response_model=schemas.bot_builder.Node)
 def create_full_node(
     *,
     db: Session = Depends(deps.get_db),
@@ -48,8 +48,8 @@ def create_full_node(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -77,15 +77,15 @@ def create_full_node(
         obj_in = dict(
             id=str(uuid.uuid4()),
             widget_type=WidgetType.MEDIA,
-            title=obj_in.widget["title"],
-            image=obj_in.widget["image"],
+            title=obj_in.widget['title'],
+            image=obj_in.widget['image'],
         )
 
     elif obj_in.widget_type == WidgetType.MENU:
         obj_in = jsonable_encoder(obj_in.widget)
-        obj_in["widget_type"] = WidgetType.MENU
-        obj_in["choices"] = [
-            dict(id=str(uuid.uuid4()), text=ch["text"]) for ch in obj_in["choices"]
+        obj_in['widget_type'] = WidgetType.MENU
+        obj_in['choices'] = [
+            dict(id=str(uuid.uuid4()), text=ch['text']) for ch in obj_in['choices']
         ]
 
     node = services.bot_builder.node.add_widget(db, obj_in=obj_in, node_id=node.id)
@@ -95,7 +95,7 @@ def create_full_node(
     return node
 
 
-@router.get("/connect/{node_id}/{from_id}", response_model=schemas.bot_builder.Node)
+@router.get('/connect/{node_id}/{from_id}', response_model=schemas.bot_builder.Node)
 def connect_widget_to_node(
     *,
     db: Session = Depends(deps.get_db),
@@ -104,8 +104,8 @@ def connect_widget_to_node(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:

@@ -72,7 +72,7 @@ class ContactServices:
             .first()
         )
         db_obj.information.update(data)
-        flag_modified(db_obj, "information")
+        flag_modified(db_obj, 'information')
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -175,29 +175,29 @@ class ContactServices:
         if len(obj_in):
             for obj in obj_in:
                 match obj.operator:
-                    case "EQ":
+                    case 'EQ':
                         filters.append(
                             getattr(models.live_chat.Contact, obj.field) == obj.value
                         )
-                    case "NE":
+                    case 'NE':
                         filters.append(
                             getattr(models.live_chat.Contact, obj.field) != obj.value
                         )
-                    case "GT":
+                    case 'GT':
                         filters.append(
                             getattr(models.live_chat.Contact, obj.field) > obj.value
                         )
-                    case "LT":
+                    case 'LT':
                         filters.append(
                             getattr(models.live_chat.Contact, obj.field) < obj.value
                         )
 
-                    case "GTE":
+                    case 'GTE':
                         filters.append(
                             getattr(models.live_chat.Contact, obj.field) >= obj.value
                         )
 
-                    case "LTE":
+                    case 'LTE':
                         filters.append(
                             getattr(models.live_chat.Contact, obj.field) <= obj.value
                         )

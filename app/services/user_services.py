@@ -14,7 +14,7 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return user
 
     def register(self, db: Session, *, obj_in: schemas.UserRegister) -> models.User:
-        user_role = services.role.get_by_name(db, name=Role.USER["name"])
+        user_role = services.role.get_by_name(db, name=Role.USER['name'])
 
         db_obj = models.User(
             hashed_password=get_password_hash(obj_in.password),

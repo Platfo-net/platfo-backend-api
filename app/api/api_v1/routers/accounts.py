@@ -14,18 +14,18 @@ from app.constants.role import Role
 from app.core.cache import remove_data_from_cache
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/account", tags=["Account"])
+router = APIRouter(prefix='/account', tags=['Account'])
 
 
-@router.get("/all", response_model=List[schemas.Account])
+@router.get('/all', response_model=List[schemas.Account])
 def get_accounts_list(
     *,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -38,7 +38,7 @@ def get_accounts_list(
             id=item.uuid,
             username=item.username,
             profile_image=item.profile_picture_url,
-            platform=Platform.INSTAGRAM["name"],
+            platform=Platform.INSTAGRAM['name'],
             facebook_page_id=item.facebook_page_id,
         )
         for item in instagram_pages
@@ -47,7 +47,7 @@ def get_accounts_list(
     return accounts
 
 
-@router.get("/{id}", response_model=schemas.AccountDetail)
+@router.get('/{id}', response_model=schemas.AccountDetail)
 def get_account(
     *,
     db: Session = Depends(deps.get_db),
@@ -55,8 +55,8 @@ def get_account(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -71,11 +71,11 @@ def get_account(
         username=instagram_page.username,
         profile_image=instagram_page.profile_picture_url,
         information=instagram_page.information,
-        platform=Platform.INSTAGRAM["name"],
+        platform=Platform.INSTAGRAM['name'],
     )
 
 
-@router.delete("/{id}")
+@router.delete('/{id}')
 def delete_account(
     *,
     db: Session = Depends(deps.get_db),
@@ -84,8 +84,8 @@ def delete_account(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:

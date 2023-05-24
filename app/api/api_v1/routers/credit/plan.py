@@ -8,10 +8,10 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/plans")
+router = APIRouter(prefix='/plans')
 
 
-@router.get("/")
+@router.get('/')
 def get_plans(
     *,
     db: Session = Depends(deps.get_db),
@@ -20,8 +20,8 @@ def get_plans(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -57,7 +57,7 @@ def get_plans(
     return plans_out
 
 
-@router.get("/{id}")
+@router.get('/{id}')
 def get_plan(
     *,
     db: Session = Depends(deps.get_db),
@@ -65,8 +65,8 @@ def get_plan(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):

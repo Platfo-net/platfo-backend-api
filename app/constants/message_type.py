@@ -1,2 +1,2 @@
 class MessageType:
-    TEXT = "TEXT"
+    TEXT = 'TEXT'

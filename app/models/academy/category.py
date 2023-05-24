@@ -8,16 +8,16 @@ from app.db.base_class import Base
 
 
 class Category(Base):
-    __tablename__ = "academy_categories"
+    __tablename__ = 'academy_categories'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
     title = Column(String(255), nullable=True)
     parent_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("academy_categories.id"),
+        ForeignKey('academy_categories.id'),
         nullable=True,
     )
 
-    content_categories = relationship("ContentCategory", back_populates="category")
+    content_categories = relationship('ContentCategory', back_populates='category')
 
-    parent_categories = relationship("Category", cascade="all,delete")
+    parent_categories = relationship('Category', cascade='all,delete')

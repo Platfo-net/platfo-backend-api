@@ -12,7 +12,7 @@ connection = psycopg2.connect(conn_string)
 connection.autocommit = True
 cursor = connection.cursor()
 
-print("Droping test database!!!")
-query = f"DROP database {settings.POSTGRES_DB}_test;"
+print('Droping test database!!!')
+query = f'DROP database {settings.POSTGRES_DB}_test;'
 cursor.execute(query)
-print("Test database dropped!!!")
+print('Test database dropped!!!')

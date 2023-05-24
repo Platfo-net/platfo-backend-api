@@ -47,7 +47,7 @@ def campaign_handler(campaign_id):
         db, campaign_id=campaign_id, is_active=True
     )
 
-    campaign_text = campaign.content.get("text", None)
+    campaign_text = campaign.content.get('text', None)
     if not campaign_text:
         return None
     campaign_image = campaign.image
@@ -98,7 +98,7 @@ def campaign_handler(campaign_id):
                 from_page_id=instagram_page.facebook_page_id,
                 to_page_id=contact.contact_igs_id,
                 mid=mid,
-                content={"text": campaign_text},
+                content={'text': campaign_text},
                 user_id=instagram_page.user_id,
                 direction=MessageDirection.OUT,
             )

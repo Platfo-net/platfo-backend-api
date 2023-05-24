@@ -9,10 +9,10 @@ from app.constants.payment_status import PaymentStatus
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/invoice")
+router = APIRouter(prefix='/invoice')
 
 
-@router.post("/", response_model=schemas.credit.Invoice)
+@router.post('/', response_model=schemas.credit.Invoice)
 def create_invoice(
     *,
     db: Session = Depends(deps.get_db),
@@ -20,8 +20,8 @@ def create_invoice(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -56,7 +56,7 @@ def create_invoice(
     )
 
 
-@router.delete("/{id}", status_code=status.HTTP_200_OK)
+@router.delete('/{id}', status_code=status.HTTP_200_OK)
 def delete_invoice(
     *,
     db: Session = Depends(deps.get_db),
@@ -64,8 +64,8 @@ def delete_invoice(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -83,7 +83,7 @@ def delete_invoice(
     return
 
 
-@router.get("/", response_model=schemas.credit.InvoiceList)
+@router.get('/', response_model=schemas.credit.InvoiceList)
 def get_invoices(
     *,
     db: Session = Depends(deps.get_db),
@@ -92,8 +92,8 @@ def get_invoices(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -115,7 +115,7 @@ def get_invoices(
     return schemas.credit.InvoiceList(items=items, pagination=pagination)
 
 
-@router.get("/{id}", response_model=schemas.credit.Invoice)
+@router.get('/{id}', response_model=schemas.credit.Invoice)
 def get_invoice(
     *,
     db: Session = Depends(deps.get_db),
@@ -123,8 +123,8 @@ def get_invoice(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):

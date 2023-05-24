@@ -1,4 +1,4 @@
 class Platform:
     INSTAGRAM = {
-        "name": "INSTAGRAM",
+        'name': 'INSTAGRAM',
     }

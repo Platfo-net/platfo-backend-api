@@ -1,4 +1,4 @@
 class CampaignStatus:
-    DONE = "DONE"
-    PENDING = "PENDING"
-    CANCELED = "CANCELED"
+    DONE = 'DONE'
+    PENDING = 'PENDING'
+    CANCELED = 'CANCELED'

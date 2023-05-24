@@ -5,7 +5,7 @@ from app.db.base_class import Base
 
 
 class CreditLog(Base):
-    __tablename__ = "credit_credit_logs"
+    __tablename__ = 'credit_credit_logs'
 
     module = Column(String(20), nullable=False)
     count = Column(Integer(), nullable=True)
@@ -13,23 +13,23 @@ class CreditLog(Base):
 
     plan_id = Column(
         BigInteger,
-        ForeignKey("credit_plans.id"),
+        ForeignKey('credit_plans.id'),
         primary_key=False,
         nullable=False,
     )
     user_id = Column(
         BigInteger,
-        ForeignKey("users.id"),
+        ForeignKey('users.id'),
         primary_key=False,
         nullable=False,
     )
     invoice_id = Column(
         BigInteger,
-        ForeignKey("credit_invoices.id"),
+        ForeignKey('credit_invoices.id'),
         primary_key=False,
         nullable=False,
     )
 
-    user = relationship("User", back_populates="credit_logs")
-    plan = relationship("Plan", back_populates="credit_logs")
-    invoice = relationship("Invoice", back_populates="credit_logs")
+    user = relationship('User', back_populates='credit_logs')
+    plan = relationship('Plan', back_populates='credit_logs')
+    invoice = relationship('Invoice', back_populates='credit_logs')

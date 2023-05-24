@@ -7,10 +7,10 @@ from app.api import deps
 from app.constants.role import Role
 from app.core.utils import chatflow_ui_parse
 
-router = APIRouter(prefix="/chatflow-ui")
+router = APIRouter(prefix='/chatflow-ui')
 
 
-@router.get("/nodes/all/{chatflow_id}")
+@router.get('/nodes/all/{chatflow_id}')
 def get_chatflow_nodes_edges(
     *,
     db: Session = Depends(deps.get_db),
@@ -18,8 +18,8 @@ def get_chatflow_nodes_edges(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
+            Role.ADMIN['name'],
+            Role.USER['name'],
         ],
     ),
 ):
@@ -65,7 +65,7 @@ def get_chatflow_nodes_edges(
     )
 
 
-@router.post("/{chatflow_id}")
+@router.post('/{chatflow_id}')
 def create_chatflow_nodes_edges(
     *,
     db: Session = Depends(deps.get_db),
@@ -74,8 +74,8 @@ def create_chatflow_nodes_edges(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
+            Role.ADMIN['name'],
+            Role.USER['name'],
         ],
     ),
 ):

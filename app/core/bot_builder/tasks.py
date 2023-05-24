@@ -53,9 +53,9 @@ def webhook_proccessor(facebook_webhook_body):
 
         case WebhookType.STORY_MENTION:
             saved_data = {
-                "url": instagram_data.url,
-                "widget_type": "STORY_MENTION",
-                "id": str(uuid4()),
+                'url': instagram_data.url,
+                'widget_type': 'STORY_MENTION',
+                'id': str(uuid4()),
             }
             saved_message = SavedMessage(
                 from_page_id=instagram_data.sender_id,
@@ -69,10 +69,10 @@ def webhook_proccessor(facebook_webhook_body):
             save_message(db, saved_message, user_page_data)
         case WebhookType.STORY_REPLY:
             saved_data = {
-                "url": instagram_data.story_url,
-                "widget_type": "STORY_REPLY",
-                "message": instagram_data.message_detail,
-                "id": str(uuid4()),
+                'url': instagram_data.story_url,
+                'widget_type': 'STORY_REPLY',
+                'message': instagram_data.message_detail,
+                'id': str(uuid4()),
             }
             saved_message = SavedMessage(
                 from_page_id=instagram_data.sender_id,
@@ -86,9 +86,9 @@ def webhook_proccessor(facebook_webhook_body):
             save_message(db, saved_message, user_page_data)
         case WebhookType.CONTACT_MESSAGE:
             saved_data = {
-                "message": instagram_data.text,
-                "widget_type": WidgetType.TEXT,
-                "id": str(uuid4()),
+                'message': instagram_data.text,
+                'widget_type': WidgetType.TEXT,
+                'id': str(uuid4()),
             }
             saved_message = SavedMessage(
                 from_page_id=instagram_data.sender_id,
@@ -125,13 +125,13 @@ def save_comment(
         services.live_chat.contact.create(db, obj_in=contact_in)
 
         information = {
-            "username": "",
-            "profile_image": "",
-            "name": "",
-            "followers_count": 0,
-            "is_verified_user": True,
-            "is_user_follow_business": True,
-            "is_business_follow_user": False,
+            'username': '',
+            'profile_image': '',
+            'name': '',
+            'followers_count': 0,
+            'is_verified_user': True,
+            'is_user_follow_business': True,
+            'is_business_follow_user': False,
         }
         services.live_chat.contact.set_information(
             db,

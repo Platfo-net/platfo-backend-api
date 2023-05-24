@@ -22,33 +22,33 @@ def add_file_to_s3(object_name, file_path, bucket_name):
 
         return object_name
     except S3Error as exc:
-        raise Exception(f"Error happen on uploading object: {exc}")
+        raise Exception(f'Error happen on uploading object: {exc}')
 
 
 def get_object_url(object_name, bucket_name):
     try:
         client = create_client()
-        if object_name in ["", None]:
-            return ""
+        if object_name in ['', None]:
+            return ''
         url = client.get_presigned_url(
-            "GET", bucket_name, object_name, expires=timedelta(days=1)
+            'GET', bucket_name, object_name, expires=timedelta(days=1)
         )
         return url
     except S3Error as exc:
-        raise Exception(f"Error happen on getting object: {exc}")
+        raise Exception(f'Error happen on getting object: {exc}')
 
 
 def create_client():
     try:
         client = Minio(
-            f"{settings.S3_HOST}:{settings.S3_PORT}",
+            f'{settings.S3_HOST}:{settings.S3_PORT}',
             access_key=settings.S3_ROOT_USER,
             secret_key=settings.S3_ROOT_PASSWORD,
             secure=False,
         )
         return client
     except S3Error as exc:
-        raise Exception(f"Error happen on connection: {exc}")
+        raise Exception(f'Error happen on connection: {exc}')
 
 
 def get_file(filename, bucket):

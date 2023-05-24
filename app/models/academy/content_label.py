@@ -8,17 +8,17 @@ from app.db.base_class import Base
 
 
 class ContentLabel(Base):
-    __tablename__ = "academy_content_labels"
+    __tablename__ = 'academy_content_labels'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     content_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("academy_contents.id"),
+        ForeignKey('academy_contents.id'),
         nullable=True,
     )
     label_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("academy_labels.id"),
+        ForeignKey('academy_labels.id'),
         nullable=True,
     )
-    label = relationship("Label", back_populates="content_labels")
-    content = relationship("Content", back_populates="content_labels")
+    label = relationship('Label', back_populates='content_labels')
+    content = relationship('Content', back_populates='content_labels')

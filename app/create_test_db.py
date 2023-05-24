@@ -12,7 +12,7 @@ connection = psycopg2.connect(conn_string)
 connection.autocommit = True
 cursor = connection.cursor()
 
-print("Creating test database")
-query = f"CREATE database {settings.POSTGRES_DB}_test;"
+print('Creating test database')
+query = f'CREATE database {settings.POSTGRES_DB}_test;'
 cursor.execute(query)
-print("Test database created successfully")
+print('Test database created successfully')

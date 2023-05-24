@@ -14,11 +14,11 @@ from app.core.bot_builder import tasks
 from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/message")
+router = APIRouter(prefix='/message')
 
 
 @router.get(
-    "/archive/{page_id}/{contact_igs_id}",
+    '/archive/{page_id}/{contact_igs_id}',
     response_model=List[schemas.live_chat.Message],
 )
 def get_archive(
@@ -31,8 +31,8 @@ def get_archive(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -56,7 +56,7 @@ def get_archive(
     return new_messages
 
 
-@router.post("/send/{from_page_id}/{to_contact_igs_id}", deprecated=True)
+@router.post('/send/{from_page_id}/{to_contact_igs_id}', deprecated=True)
 def send_message(
     *,
     db: Session = Depends(deps.get_db),
@@ -67,8 +67,8 @@ def send_message(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -76,7 +76,7 @@ def send_message(
         db, facebook_page_id=from_page_id
     )
     if not instagram_page:
-        raise_http_exception(Error.ACCOUNT_NOT_FOUND["status_code"])
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND['status_code'])
     backgroud.add_task(
         graph_api.send_text_message,
         obj_in.text,
@@ -88,9 +88,9 @@ def send_message(
         from_page_id=from_page_id,
         to_page_id=to_contact_igs_id,
         content={
-            "message": obj_in.text,
-            "widget_type": WidgetType.TEXT,
-            "id": str(uuid4()),
+            'message': obj_in.text,
+            'widget_type': WidgetType.TEXT,
+            'id': str(uuid4()),
         },
         user_id=current_user.id,
         direction=MessageDirection.OUT,

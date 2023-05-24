@@ -10,7 +10,7 @@ class MessageServices:
 
     def create(self, db: Session, *, obj_in: schemas.live_chat.MessageCreate):
         if type(obj_in.content) == str:
-            obj_in.content = {"text": obj_in.content}
+            obj_in.content = {'text': obj_in.content}
 
         message = self.model(
             from_page_id=obj_in.from_page_id,

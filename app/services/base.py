@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 from app.db.base import Base
 
 # Define custom types for SQLAlchemy model, and Pydantic schemas
-ModelType = TypeVar("ModelType", bound=Base)
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+ModelType = TypeVar('ModelType', bound=Base)
+CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
+UpdateSchemaType = TypeVar('UpdateSchemaType', bound=BaseModel)
 
 
 class BaseServices(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):

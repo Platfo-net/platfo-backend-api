@@ -7,7 +7,7 @@ from app.db.base_class import Base
 
 
 class Message(Base):
-    __tablename__ = "live_chat_messages"
+    __tablename__ = 'live_chat_messages'
 
     from_page_id = Column(BigInteger, nullable=True, index=True)
     to_page_id = Column(BigInteger, nullable=True, index=True)
@@ -18,8 +18,8 @@ class Message(Base):
 
     user_id = Column(
         BigInteger,
-        ForeignKey("users.id"),
+        ForeignKey('users.id'),
         nullable=True,
     )
 
-    user = relationship("User", back_populates="messages")
+    user = relationship('User', back_populates='messages')

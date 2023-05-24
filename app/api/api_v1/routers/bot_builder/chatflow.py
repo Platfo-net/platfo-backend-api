@@ -10,10 +10,10 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/chatflow")
+router = APIRouter(prefix='/chatflow')
 
 
-@router.post("", response_model=schemas.bot_builder.Chatflow)
+@router.post('', response_model=schemas.bot_builder.Chatflow)
 def create_chatflow(
     *,
     db: Session = Depends(deps.get_db),
@@ -21,8 +21,8 @@ def create_chatflow(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -37,7 +37,7 @@ def create_chatflow(
     )
 
 
-@router.delete("/{id}")
+@router.delete('/{id}')
 def delete_chatflow(
     *,
     db: Session = Depends(deps.get_db),
@@ -45,8 +45,8 @@ def delete_chatflow(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -58,7 +58,7 @@ def delete_chatflow(
     return
 
 
-@router.get("/all", response_model=schemas.bot_builder.ChatflowListApi)
+@router.get('/all', response_model=schemas.bot_builder.ChatflowListApi)
 def get_user_chatflows(
     *,
     db: Session = Depends(deps.get_db),
@@ -67,8 +67,8 @@ def get_user_chatflows(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:

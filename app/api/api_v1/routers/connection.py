@@ -14,10 +14,10 @@ from app.constants.role import Role
 from app.core.cache import remove_data_from_cache
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/connection", tags=["Connection"], include_in_schema=False)
+router = APIRouter(prefix='/connection', tags=['Connection'], include_in_schema=False)
 
 
-@router.get("/all", response_model=List[schemas.Connection])
+@router.get('/all', response_model=List[schemas.Connection])
 def get_list_of_connections(
     *,
     db: Session = Depends(deps.get_db),
@@ -25,8 +25,8 @@ def get_list_of_connections(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ) -> Any:
@@ -60,7 +60,7 @@ def get_list_of_connections(
                 account=schemas.Account(
                     id=account.id,
                     username=account.username,
-                    platform="Instagram",
+                    platform='Instagram',
                     profile_image=account.profile_picture_url,
                     page_id=account.facebook_page_id,
                 ),
@@ -70,7 +70,7 @@ def get_list_of_connections(
     return new_connections
 
 
-@router.post("/", response_model=schemas.Connection)
+@router.post('/', response_model=schemas.Connection)
 def create_connection(
     *,
     db: Session = Depends(deps.get_db),
@@ -78,8 +78,8 @@ def create_connection(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -96,9 +96,9 @@ def create_connection(
         details = copy.deepcopy(obj_in.details)
         for detail in details:
             chatflow = services.bot_builder.chatflow.get_by_uuid(
-                db, detail["chatflow_id"]
+                db, detail['chatflow_id']
             )
-            detail["chatflow_id"] = chatflow.id
+            detail['chatflow_id'] = chatflow.id
 
     except KeyError:
         raise_http_exception(Error.INVALID_DETAILS)
@@ -121,7 +121,7 @@ def create_connection(
     )
 
 
-@router.get("/{connection_id}", response_model=schemas.Connection)
+@router.get('/{connection_id}', response_model=schemas.Connection)
 def get_connection_by_id(
     *,
     db: Session = Depends(deps.get_db),
@@ -129,8 +129,8 @@ def get_connection_by_id(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -141,9 +141,9 @@ def get_connection_by_id(
 
     for detail in connection.details:
         chatflow = services.bot_builder.chatflow.get(
-            db, id=detail["chatflow_id"], user_id=current_user.id
+            db, id=detail['chatflow_id'], user_id=current_user.id
         )
-        detail["chatflow_id"] = chatflow.uuid
+        detail['chatflow_id'] = chatflow.uuid
 
     account = services.instagram_page.get(db, connection.account_id)
     return schemas.Connection(
@@ -156,7 +156,7 @@ def get_connection_by_id(
     )
 
 
-@router.delete("/{connection_id}", status_code=status.HTTP_200_OK)
+@router.delete('/{connection_id}', status_code=status.HTTP_200_OK)
 def delete_connection(
     *,
     db: Session = Depends(deps.get_db),
@@ -165,13 +165,13 @@ def delete_connection(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
     connection = services.connection.get_by_uuid(db, connection_id)
-    key = f"{connection.application_name}+{str(connection.account_id)}"
+    key = f'{connection.application_name}+{str(connection.account_id)}'
 
     remove_data_from_cache(redis_client, key=key)
 
@@ -182,7 +182,7 @@ def delete_connection(
     return
 
 
-@router.put("/{connection_id}", response_model=schemas.Connection)
+@router.put('/{connection_id}', response_model=schemas.Connection)
 def update_connection(
     *,
     db: Session = Depends(deps.get_db),
@@ -192,8 +192,8 @@ def update_connection(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -209,7 +209,7 @@ def update_connection(
         raise_http_exception(Error.CONNECTION_EXIST)
 
     old_connection = services.connection.get_by_uuid(db, connection_id)
-    key = f"{old_connection.application_name}+{str(old_connection.account_id)}"
+    key = f'{old_connection.application_name}+{str(old_connection.account_id)}'
 
     if old_connection.user_id != current_user.id:
         raise_http_exception(Error.CONNECTION_NOT_FOUND)
@@ -222,8 +222,8 @@ def update_connection(
     details = copy.deepcopy(obj_in.details)
 
     for detail in obj_in.details:
-        chatflow = services.bot_builder.chatflow.get_by_uuid(db, detail["chatflow_id"])
-        detail["chatflow_id"] = chatflow.id
+        chatflow = services.bot_builder.chatflow.get_by_uuid(db, detail['chatflow_id'])
+        detail['chatflow_id'] = chatflow.id
 
     connection = services.connection.update(
         db, db_obj=old_connection, obj_in=obj_in, user_id=current_user.id

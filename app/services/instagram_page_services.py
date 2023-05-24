@@ -47,5 +47,8 @@ class InstagramPageServices(
             .first()
         )
 
+    def remove(self, db: Session, *, id: int):
+        db.query(self.model).filter(self.model.id == id).delete()
+
 
 instagram_page = InstagramPageServices(models.InstagramPage)

@@ -9,10 +9,10 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 
-router = APIRouter(prefix="/academy", tags=["Academy"], include_in_schema=False)
+router = APIRouter(prefix='/academy', tags=['Academy'], include_in_schema=False)
 
 
-@router.get("/label/all", response_model=schemas.academy.LabelListApi)
+@router.get('/label/all', response_model=schemas.academy.LabelListApi)
 def get_labels_list(
     *, db: Session = Depends(deps.get_db), page: int = 1, page_size: int = 20
 ):
@@ -25,7 +25,7 @@ def get_labels_list(
     return schemas.academy.LabelListApi(items=labels, pagination=pagination)
 
 
-@router.post("/label/create", response_model=schemas.academy.Label)
+@router.post('/label/create', response_model=schemas.academy.Label)
 def create_label(
     *,
     obj_in: schemas.academy.LabelCreate,
@@ -33,7 +33,7 @@ def create_label(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -41,7 +41,7 @@ def create_label(
     return label
 
 
-@router.put("/label/update/{id}", response_model=schemas.academy.Label)
+@router.put('/label/update/{id}', response_model=schemas.academy.Label)
 def update_label(
     *,
     obj_in: schemas.academy.LabelUpdate,
@@ -50,22 +50,22 @@ def update_label(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
     label = services.academy.label.get(db, id)
     if not label:
         raise HTTPException(
-            status_code=Error.CATEGORY_NOT_FOUND["status_code"],
-            detail=Error.CATEGORY_NOT_FOUND["text"],
+            status_code=Error.CATEGORY_NOT_FOUND['status_code'],
+            detail=Error.CATEGORY_NOT_FOUND['text'],
         )
     label = services.academy.label.update(db, db_obj=label, obj_in=obj_in)
 
     return label
 
 
-@router.delete("/label/delete/{id}")
+@router.delete('/label/delete/{id}')
 def delete_label(
     *,
     db: Session = Depends(deps.get_db),
@@ -73,21 +73,21 @@ def delete_label(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
     label = services.academy.label.get(db, id=id)
     if not label:
         raise HTTPException(
-            status_code=Error.CONTENT_NOT_FOUND["status_code"],
-            detail=Error.CONTENT_NOT_FOUND["text"],
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text'],
         )
     services.academy.label.remove(db, id=id)
     return
 
 
-@router.get("/category/all", response_model=schemas.academy.CategoryListApi)
+@router.get('/category/all', response_model=schemas.academy.CategoryListApi)
 def get_categories_list(
     *, db: Session = Depends(deps.get_db), page: int = 1, page_size: int = 20
 ):
@@ -100,10 +100,10 @@ def get_categories_list(
     def categories_to_child_categories(n=None):
         categories_list = [
             {
-                "id": item.id,
-                "title": item.title,
-                "children": categories_to_child_categories(item.id),
-                "parent_id": item.parent_id,
+                'id': item.id,
+                'title': item.title,
+                'children': categories_to_child_categories(item.id),
+                'parent_id': item.parent_id,
             }
             for item in items
             if item.parent_id == n
@@ -116,7 +116,7 @@ def get_categories_list(
     return categories_tree
 
 
-@router.post("/category/create", response_model=schemas.academy.Category)
+@router.post('/category/create', response_model=schemas.academy.Category)
 def create_category(
     *,
     obj_in: schemas.academy.CategoryCreate,
@@ -124,7 +124,7 @@ def create_category(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -132,7 +132,7 @@ def create_category(
     return category
 
 
-@router.put("/category/update/{id}", response_model=schemas.academy.Category)
+@router.put('/category/update/{id}', response_model=schemas.academy.Category)
 def update_category(
     *,
     obj_in: schemas.academy.CategoryUpdate,
@@ -141,22 +141,22 @@ def update_category(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
     category = services.academy.category.get(db, id)
     if not category:
         raise HTTPException(
-            status_code=Error.CATEGORY_NOT_FOUND["status_code"],
-            detail=Error.CATEGORY_NOT_FOUND["text"],
+            status_code=Error.CATEGORY_NOT_FOUND['status_code'],
+            detail=Error.CATEGORY_NOT_FOUND['text'],
         )
     category = services.academy.category.update(db, db_obj=category, obj_in=obj_in)
 
     return category
 
 
-@router.delete("/category/delete/{id}")
+@router.delete('/category/delete/{id}')
 def delete_category(
     *,
     db: Session = Depends(deps.get_db),
@@ -164,21 +164,21 @@ def delete_category(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
     category = services.academy.category.get(db, id=id)
     if not category:
         raise HTTPException(
-            status_code=Error.CONTENT_NOT_FOUND["status_code"],
-            detail=Error.CONTENT_NOT_FOUND["text"],
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text'],
         )
     services.academy.category.remove(db, id=id)
     return
 
 
-@router.get("/search/all")
+@router.get('/search/all')
 def search_content_by_category(
     *,
     page: int = 1,
@@ -209,14 +209,14 @@ def search_content_by_category(
     return res
 
 
-@router.get("/content/detail/{id}", response_model=schemas.academy.ContentDetail)
+@router.get('/content/detail/{id}', response_model=schemas.academy.ContentDetail)
 def get_content_by_id(*, db: Session = Depends(deps.get_db), id: UUID4):
     content, categories, labels = services.academy.content.get_by_detail(db, id=id)
 
     if not content:
         raise HTTPException(
-            status_code=Error.CONTENT_NOT_FOUND["status_code"],
-            detail=Error.CONTENT_NOT_FOUND["text"],
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text'],
         )
 
     content_detail = [
@@ -241,14 +241,14 @@ def get_content_by_id(*, db: Session = Depends(deps.get_db), id: UUID4):
     return schemas.academy.ContentDetail(content_detail=content_detail)
 
 
-@router.post("/content/create", response_model=schemas.academy.Content)
+@router.post('/content/create', response_model=schemas.academy.Content)
 def create_content(
     *,
     obj_in: schemas.academy.ContentCreate,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.ADMIN["name"], Role.WRITER["name"]],
+        scopes=[Role.ADMIN['name'], Role.WRITER['name']],
     ),
 ):
     content = services.academy.content.create(
@@ -266,7 +266,7 @@ def create_content(
     return content
 
 
-@router.put("/content/update/{id}", response_model=schemas.academy.Content)
+@router.put('/content/update/{id}', response_model=schemas.academy.Content)
 def update_content(
     *,
     db: Session = Depends(deps.get_db),
@@ -275,7 +275,7 @@ def update_content(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -283,8 +283,8 @@ def update_content(
 
     if not old_content:
         raise HTTPException(
-            status_code=Error.CONTENT_NOT_FOUND["status_code"],
-            detail=Error.CONTENT_NOT_FOUND["text"],
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text'],
         )
 
     content = services.academy.content.update(
@@ -312,7 +312,7 @@ def update_content(
     return content
 
 
-@router.delete("/content/delete/{id}")
+@router.delete('/content/delete/{id}')
 def delete_content(
     *,
     db: Session = Depends(deps.get_db),
@@ -320,15 +320,15 @@ def delete_content(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
+            Role.ADMIN['name'],
         ],
     ),
 ):
     content = services.academy.content.get(db, id=id)
     if not content:
         raise HTTPException(
-            status_code=Error.CONTENT_NOT_FOUND["status_code"],
-            detail=Error.CONTENT_NOT_FOUND["text"],
+            status_code=Error.CONTENT_NOT_FOUND['status_code'],
+            detail=Error.CONTENT_NOT_FOUND['text'],
         )
     services.academy.content.remove(db, id=id)
     return

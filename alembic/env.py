@@ -41,12 +41,12 @@ def get_url():
     password = settings.POSTGRES_PASSWORD
     host = settings.DB_HOST
     db = (
-        f"{settings.POSTGRES_DB}_test"
-        if os.environ.get("ENVIRONMENT") == "test"
+        f'{settings.POSTGRES_DB}_test'
+        if os.environ.get('ENVIRONMENT') == 'test'
         else settings.POSTGRES_DB
     )
 
-    return f"postgresql://{user}:{password}@{host}/{db}"
+    return f'postgresql://{user}:{password}@{host}/{db}'
 
 
 def run_migrations_offline():
@@ -66,7 +66,7 @@ def run_migrations_offline():
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={'paramstyle': 'named'},
     )
 
     with context.begin_transaction():
@@ -81,10 +81,10 @@ def run_migrations_online():
 
     """
     configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = get_url()
+    configuration['sqlalchemy.url'] = get_url()
     connectable = engine_from_config(
         configuration,
-        prefix="sqlalchemy.",
+        prefix='sqlalchemy.',
         poolclass=pool.NullPool,
     )
 

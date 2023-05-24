@@ -14,7 +14,7 @@ def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
     objs = []
     start_node = None
     for node in nodes:
-        if node.data["type"] == "START":
+        if node.data['type'] == 'START':
             start_node = node
 
     head_node = None
@@ -65,29 +65,29 @@ def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
 
 
 def widget_mapper(data, node_id):
-    if data["type"] == "TEXT":
+    if data['type'] == 'TEXT':
         widget = {
-            "widget_type": data["type"],
-            "id": str(node_id),
-            "message": data["value"],
+            'widget_type': data['type'],
+            'id': str(node_id),
+            'message': data['value'],
         }
 
-    if data["type"] == "MENU":
-        choices = data["choices"]
+    if data['type'] == 'MENU':
+        choices = data['choices']
         widget = {
-            "widget_type": data["type"],
-            "id": str(node_id),
-            "title": str(data["question"]),
-            "choices": [
-                {"id": str(choice["value"]), "text": choice["label"]}
+            'widget_type': data['type'],
+            'id': str(node_id),
+            'title': str(data['question']),
+            'choices': [
+                {'id': str(choice['value']), 'text': choice['label']}
                 for choice in choices
             ],
         }
 
-    replies = data["quickReplies"] if data["quickReplies"] else []
+    replies = data['quickReplies'] if data['quickReplies'] else []
 
     quick_replies = [
-        {"id": reply["value"], "text": reply["label"]} for reply in replies
+        {'id': reply['value'], 'text': reply['label']} for reply in replies
     ]
     return widget, quick_replies
 
@@ -96,7 +96,7 @@ def save_message(db: Session, saved_message: SavedMessage):
     services.live_chat.contact.update_last_message(
         db,
         contact_igs_id=saved_message.to_page_id,
-        last_message=saved_message.content.get("text", None),
+        last_message=saved_message.content.get('text', None),
     )
     report = services.live_chat.message.create(
         db,
@@ -116,18 +116,18 @@ def save_message(db: Session, saved_message: SavedMessage):
 def validate_password(password) -> bool:
     if len(password) < 8:
         return False
-    elif re.search("[0-9]", password) is None:
+    elif re.search('[0-9]', password) is None:
         return False
-    elif re.search("[A-Z]", password) is None:
+    elif re.search('[A-Z]', password) is None:
         return False
-    elif re.search("[a-z]", password) is None:
+    elif re.search('[a-z]', password) is None:
         return False
     return True
 
 
 def generate_random_token(length: int) -> str:
-    return "".join(
-        random.choice(f"{string.ascii_letters}0123456789") for _ in range(length)
+    return ''.join(
+        random.choice(f'{string.ascii_letters}0123456789') for _ in range(length)
     )
 
 

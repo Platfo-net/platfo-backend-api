@@ -35,20 +35,20 @@ class InstagramData:
     def parse(self, body):
         match body:
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "time": entry_time,
-                        "id": entry__id,
-                        "messaging": [
+                        'time': entry_time,
+                        'id': entry__id,
+                        'messaging': [
                             {
-                                "sender": {"id": sender_id},
-                                "recipient": {"id": recipient_id},
-                                "timestamp": timestamp,
-                                "postback": {
-                                    "mid": mid,
-                                    "title": title,
-                                    "payload": payload,
+                                'sender': {'id': sender_id},
+                                'recipient': {'id': recipient_id},
+                                'timestamp': timestamp,
+                                'postback': {
+                                    'mid': mid,
+                                    'title': title,
+                                    'payload': payload,
                                 },
                             }
                         ],
@@ -65,23 +65,23 @@ class InstagramData:
                 self.type = WebhookType.MESSAGE_POSTBACK
 
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "id": recipient_id,
-                        "time": entry_time,  # noqa
-                        "changes": [
+                        'id': recipient_id,
+                        'time': entry_time,  # noqa
+                        'changes': [
                             {
-                                "field": field,
-                                "value": {
-                                    "from": {"id": sender_id, "username": username},
-                                    "media": {
-                                        "id": media_id,
-                                        "media_product_type": media_product_type,
+                                'field': field,
+                                'value': {
+                                    'from': {'id': sender_id, 'username': username},
+                                    'media': {
+                                        'id': media_id,
+                                        'media_product_type': media_product_type,
                                     },
-                                    "id": value_id,
-                                    "parent_id": parent_id,
-                                    "text": comment_detail,
+                                    'id': value_id,
+                                    'parent_id': parent_id,
+                                    'text': comment_detail,
                                 },
                             }
                         ],
@@ -101,22 +101,22 @@ class InstagramData:
                 self.type = WebhookType.COMMENT
 
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "id": recipient_id,
-                        "time": entry_time,  # noqa
-                        "changes": [
+                        'id': recipient_id,
+                        'time': entry_time,  # noqa
+                        'changes': [
                             {
-                                "field": field,
-                                "value": {
-                                    "from": {"id": sender_id, "username": username},
-                                    "media": {
-                                        "id": media_id,
-                                        "media_product_type": media_product_type,
+                                'field': field,
+                                'value': {
+                                    'from': {'id': sender_id, 'username': username},
+                                    'media': {
+                                        'id': media_id,
+                                        'media_product_type': media_product_type,
                                     },
-                                    "id": value_id,
-                                    "text": comment_detail,
+                                    'id': value_id,
+                                    'text': comment_detail,
                                 },
                             }
                         ],
@@ -135,17 +135,17 @@ class InstagramData:
                 self.type = WebhookType.LIVE_COMMENT
 
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "time": entry_time,  # noqa
-                        "id": entry__id,  # noqa
-                        "messaging": [
+                        'time': entry_time,  # noqa
+                        'id': entry__id,  # noqa
+                        'messaging': [
                             {
-                                "sender": {"id": sender_id},
-                                "recipient": {"id": recipient_id},
-                                "timestamp": timestamp,
-                                "read": {"mid": mid},
+                                'sender': {'id': sender_id},
+                                'recipient': {'id': recipient_id},
+                                'timestamp': timestamp,
+                                'read': {'mid': mid},
                             }
                         ],
                     }
@@ -159,17 +159,17 @@ class InstagramData:
                 self.type = WebhookType.MESSAGE_SEEN
 
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "time": entry_time,
-                        "id": entry_id,
-                        "messaging": [
+                        'time': entry_time,
+                        'id': entry_id,
+                        'messaging': [
                             {
-                                "sender": {"id": sender_id},
-                                "recipient": {"id": recipient_id},
-                                "timestamp": timestamp,
-                                "message": {"mid": mid, "text": text},
+                                'sender': {'id': sender_id},
+                                'recipient': {'id': recipient_id},
+                                'timestamp': timestamp,
+                                'message': {'mid': mid, 'text': text},
                             }
                         ],
                     }
@@ -184,20 +184,20 @@ class InstagramData:
                 self.type = WebhookType.CONTACT_MESSAGE
 
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "time": 1663574136816,
-                        "id": "17841452052058552",
-                        "messaging": [
+                        'time': 1663574136816,
+                        'id': '17841452052058552',
+                        'messaging': [
                             {
-                                "sender": {"id": sender_id},
-                                "recipient": {"id": recipient_id},
-                                "timestamp": timestamp,
-                                "message": {
-                                    "mid": mid,
-                                    "text": text,
-                                    "is_echo": is_echo,
+                                'sender': {'id': sender_id},
+                                'recipient': {'id': recipient_id},
+                                'timestamp': timestamp,
+                                'message': {
+                                    'mid': mid,
+                                    'text': text,
+                                    'is_echo': is_echo,
                                 },
                             }
                         ],
@@ -214,17 +214,17 @@ class InstagramData:
                 self.type = WebhookType.CONTACT_MESSAGE_ECHO
 
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "time": entry_time,  # noqa
-                        "id": entry_id,  # noqa
-                        "messaging": [
+                        'time': entry_time,  # noqa
+                        'id': entry_id,  # noqa
+                        'messaging': [
                             {
-                                "sender": {"id": sender_id},
-                                "recipient": {"id": recipient_id},
-                                "timestamp": timestamp,
-                                "message": {"mid": mid, "is_deleted": is_deleted},
+                                'sender': {'id': sender_id},
+                                'recipient': {'id': recipient_id},
+                                'timestamp': timestamp,
+                                'message': {'mid': mid, 'is_deleted': is_deleted},
                             }
                         ],
                     }
@@ -239,22 +239,22 @@ class InstagramData:
                 self.type = WebhookType.DELETE_MESSAGE
 
             case {
-                "object": platform,
-                "entry": [
+                'object': platform,
+                'entry': [
                     {
-                        "time": entry_time,  # noqa
-                        "id": entry_id,  # noqa
-                        "messaging": [
+                        'time': entry_time,  # noqa
+                        'id': entry_id,  # noqa
+                        'messaging': [
                             {
-                                "sender": {"id": sender_id},
-                                "recipient": {"id": recipient_id},
-                                "timestamp": timestamp,
-                                "message": {
-                                    "mid": mid,
-                                    "attachments": [
+                                'sender': {'id': sender_id},
+                                'recipient': {'id': recipient_id},
+                                'timestamp': timestamp,
+                                'message': {
+                                    'mid': mid,
+                                    'attachments': [
                                         {
-                                            "type": "story_mention",
-                                            "payload": {"url": url},
+                                            'type': 'story_mention',
+                                            'payload': {'url': url},
                                         }
                                     ],
                                 },

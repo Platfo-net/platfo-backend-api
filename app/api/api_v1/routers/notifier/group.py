@@ -9,10 +9,10 @@ from app.constants.role import Role
 from app.core.exception import raise_http_exception
 from app.core.transaction import AtomicTransaction
 
-router = APIRouter(prefix="/group")
+router = APIRouter(prefix='/group')
 
 
-@router.get("/{facebook_page_id}", response_model=schemas.notifier.GroupListApi)
+@router.get('/{facebook_page_id}', response_model=schemas.notifier.GroupListApi)
 def get_groups(
     *,
     db: Session = Depends(deps.get_db),
@@ -22,8 +22,8 @@ def get_groups(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -44,7 +44,7 @@ def get_groups(
     return schemas.notifier.GroupListApi(pagination=pagination, items=groups)
 
 
-@router.post("/", response_model=schemas.notifier.Group)
+@router.post('/', response_model=schemas.notifier.Group)
 def create_group(
     *,
     db: Session = Depends(deps.get_db),
@@ -52,8 +52,8 @@ def create_group(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -91,7 +91,7 @@ def create_group(
     )
 
 
-@router.delete("/{id}")
+@router.delete('/{id}')
 def remove_group(
     *,
     db: Session = Depends(deps.get_db),
@@ -99,8 +99,8 @@ def remove_group(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -116,7 +116,7 @@ def remove_group(
     return
 
 
-@router.put("/{id}", response_model=schemas.notifier.Group)
+@router.put('/{id}', response_model=schemas.notifier.Group)
 def update_group(
     *,
     db: Session = Depends(deps.get_db),
@@ -125,8 +125,8 @@ def update_group(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):

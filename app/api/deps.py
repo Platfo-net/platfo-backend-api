@@ -23,10 +23,10 @@ class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
 
 
 reusable_oauth2 = CustomOAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/token-swagger",
+    tokenUrl=f'{settings.API_V1_STR}/auth/token-swagger',
     scopes={
-        Role.ADMIN["name"]: Role.ADMIN["description"],
-        Role.USER["name"]: Role.USER["description"],
+        Role.ADMIN['name']: Role.ADMIN['description'],
+        Role.USER['name']: Role.USER['description'],
     },
 )
 
@@ -54,7 +54,7 @@ def get_redis_client():
         if ping is True:
             return client
     except redis.AuthenticationError:
-        print("AuthenticationError")
+        print('AuthenticationError')
         sys.exit(1)
 
 
@@ -70,7 +70,7 @@ def get_redis_client_for_user_activation():
         if ping is True:
             return client
     except redis.AuthenticationError:
-        print("AuthenticationError")
+        print('AuthenticationError')
         sys.exit(1)
 
 
@@ -86,7 +86,7 @@ def get_redis_client_for_reset_password():
         if ping is True:
             return client
     except redis.AuthenticationError:
-        print("AuthenticationError")
+        print('AuthenticationError')
         sys.exit(1)
 
 
@@ -98,20 +98,20 @@ def get_current_user(
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
-        authenticate_value = "Bearer"
+        authenticate_value = 'Bearer'
     credentials_exception = HTTPException(
-        status_code=Error.USER_PASS_WRONG_ERROR["code"],
-        detail=Error.USER_PASS_WRONG_ERROR["text"],
-        headers={"WWW-Authenticate": authenticate_value},
+        status_code=Error.USER_PASS_WRONG_ERROR['code'],
+        detail=Error.USER_PASS_WRONG_ERROR['text'],
+        headers={'WWW-Authenticate': authenticate_value},
     )
     token_data = None
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
-        if payload.get("id") is None:
+        if payload.get('id') is None:
             raise credentials_exception
-        payload["id"] = int(payload["id"])
+        payload['id'] = int(payload['id'])
         token_data = schemas.TokenPayload(**payload)
     except Exception:
         raise_http_exception(Error.TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR)
@@ -122,11 +122,11 @@ def get_current_user(
         raise credentials_exception
     if security_scopes.scopes and not token_data.role:
         raise_http_exception(
-            Error.PERMISSION_DENIED_ERROR, {"WWW-Authenticate": authenticate_value}
+            Error.PERMISSION_DENIED_ERROR, {'WWW-Authenticate': authenticate_value}
         )
     if security_scopes.scopes and token_data.role not in security_scopes.scopes:
         raise_http_exception(
-            Error.PERMISSION_DENIED_ERROR, {"WWW-Authenticate": authenticate_value}
+            Error.PERMISSION_DENIED_ERROR, {'WWW-Authenticate': authenticate_value}
         )
     return user
 

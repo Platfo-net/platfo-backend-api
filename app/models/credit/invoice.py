@@ -18,7 +18,7 @@ from app.db.base_class import Base
 
 
 class Invoice(Base):
-    __tablename__ = "credit_invoices"
+    __tablename__ = 'credit_invoices'
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     payed_at = Column(DateTime, nullable=True)
 
@@ -31,16 +31,16 @@ class Invoice(Base):
     extend_days = Column(Integer(), nullable=True)
     extend_count = Column(Integer(), nullable=True)
 
-    status = Column(String(10), default=PaymentStatus.PENDING["name"])
+    status = Column(String(10), default=PaymentStatus.PENDING['name'])
 
     # TODO : data from ipg
 
     user_id = Column(
         BigInteger,
-        ForeignKey("users.id"),
+        ForeignKey('users.id'),
         primary_key=False,
         nullable=False,
     )
 
-    user = relationship("User", back_populates="invoices")
-    credit_logs = relationship("CreditLog", back_populates="invoice")
+    user = relationship('User', back_populates='invoices')
+    credit_logs = relationship('CreditLog', back_populates='invoice')

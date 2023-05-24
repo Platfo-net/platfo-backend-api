@@ -50,27 +50,27 @@ def get_user_data(
     data = json.loads(data)
 
     return UserData(
-        user_id=data["user_id"],
-        facebook_page_token=data["facebook_page_token"],
-        facebook_page_id=data["facebook_page_id"],
-        account_id=data["account_id"],
+        user_id=data['user_id'],
+        facebook_page_token=data['facebook_page_token'],
+        facebook_page_id=data['facebook_page_id'],
+        account_id=data['account_id'],
     )
 
 
 def get_password_data(client: Redis, *, code: str = None):
-    data = get_data_from_cache(client, key="code")
+    data = get_data_from_cache(client, key='code')
 
     if data is None:
-        state = set_data_to_cache(client, key="code", value=code)
+        state = set_data_to_cache(client, key='code', value=code)
         if state is True:
-            data = get_data_from_cache(client, key="code")
+            data = get_data_from_cache(client, key='code')
     return data
 
 
 def get_connection_data(
     db: Session, client: Redis, *, application_name: str = None, account_id: str = None
 ):
-    key = f"{application_name}+{str(account_id)}"
+    key = f'{application_name}+{str(account_id)}'
     data = get_data_from_cache(client, key)
     if data is None:
         connection = services.connection.get_by_application_name_and_account_id(
@@ -82,7 +82,7 @@ def get_connection_data(
         details = []
         for detail in connection.details:
             details.append(
-                dict(chatflow_id=detail["chatflow_id"], trigger=detail["trigger"])
+                dict(chatflow_id=detail['chatflow_id'], trigger=detail['trigger'])
             )
 
         data = dict(
@@ -98,14 +98,14 @@ def get_connection_data(
     return ConnectionData(
         account_id=account_id,
         application_name=application_name,
-        details=data.get("details"),
+        details=data.get('details'),
     )
 
 
 def get_node_chatflow_id(db: Session, client: Redis, *, widget_id: str = None):
     data = get_data_from_cache(client, widget_id)
     data = str(data).strip("',/b")
-    if data == "None":
+    if data == 'None':
         try:
             node = services.bot_builder.node.get_next_node(db, from_id=widget_id)
         except Exception:
@@ -123,7 +123,7 @@ def get_node_chatflow_id(db: Session, client: Redis, *, widget_id: str = None):
 def get_user_registeration_activation_code(
     client: Redis, phone_number: str, phone_country_code: str
 ):
-    data = get_data_from_cache(client, f"{phone_country_code}{phone_number}")
+    data = get_data_from_cache(client, f'{phone_country_code}{phone_number}')
     if data is None:
         return None
 
@@ -135,7 +135,7 @@ def set_user_registeration_activation_code(
     client: Redis, phone_number: str, phone_country_code: str, code: int, token: str
 ):
     data = dict(code=code, token=token)
-    key = f"{phone_country_code}{phone_number}"
+    key = f'{phone_country_code}{phone_number}'
     data = json.dumps(data)
     result = set_data_to_cache(client, key, data, expire=120)
     return result

@@ -5,14 +5,14 @@ from app.db.base_class import Base
 
 
 class InstagramPage(Base):
-    __tablename__ = "instagram_pages"
+    __tablename__ = 'instagram_pages'
 
     facebook_user_long_lived_token = Column(String(255), nullable=True)
     facebook_user_id = Column(String(255), nullable=True)
 
     user_id = Column(
         BigInteger,
-        ForeignKey("users.id"),
+        ForeignKey('users.id'),
         primary_key=False,
         nullable=True,
     )
@@ -29,4 +29,4 @@ class InstagramPage(Base):
     follows_count = Column(Integer, nullable=True)
     biography = Column(Text(), nullable=True)
 
-    user = relationship("User", back_populates="instagram_pages")
+    user = relationship('User', back_populates='instagram_pages')

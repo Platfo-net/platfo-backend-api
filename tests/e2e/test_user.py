@@ -7,6 +7,6 @@ from app.core.config import settings
 
 def test_register_user(client: TestClient) -> None:
     client.post(
-        f"{settings.API_V1_STR}/user/register",
-        json={"email": None, "password": None},
+        f'{settings.API_V1_STR}/user/register',
+        json={'email': None, 'password': None},
     )

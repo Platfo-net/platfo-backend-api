@@ -8,10 +8,10 @@ from app.db.base_class import Base
 
 
 class Label(Base):
-    __tablename__ = "academy_labels"
+    __tablename__ = 'academy_labels'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
     name = Column(String(255), nullable=True)
 
-    content_labels = relationship("ContentLabel", back_populates="label")
+    content_labels = relationship('ContentLabel', back_populates='label')

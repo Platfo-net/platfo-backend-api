@@ -6,7 +6,7 @@ from app.db.base_class import Base
 
 
 class Edge(Base):
-    __tablename__ = "bot_builder_edges"
+    __tablename__ = 'bot_builder_edges'
     from_id = Column(
         UUID(as_uuid=True),
         nullable=True,
@@ -32,9 +32,9 @@ class Edge(Base):
 
     chatflow_id = Column(
         BigInteger,
-        ForeignKey("bot_builder_chatflows.id"),
+        ForeignKey('bot_builder_chatflows.id'),
         nullable=True,
         index=True,
     )
 
-    chatflow = relationship("Chatflow", back_populates="edge")
+    chatflow = relationship('Chatflow', back_populates='edge')

@@ -16,12 +16,12 @@ def override_get_db():
         db.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def db() -> Generator:
     yield TestingSessionLocal()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def client() -> Generator:
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as c:

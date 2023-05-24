@@ -160,21 +160,21 @@ class ContentServices(
         sub_data = []
         for item in obj_in.blocks:
             data = None
-            if item.type == "paragraph":
+            if item.type == 'paragraph':
                 data = schemas.academy.SubData(text=item.data.text)
-            if item.type == "header":
+            if item.type == 'header':
                 data = schemas.academy.SubData(
                     text=item.data.text, level=item.data.level
                 )
-            if item.type == "heading":
+            if item.type == 'heading':
                 data = schemas.academy.SubData(
                     text=item.data.text, level=item.data.level
                 )
-            if item.type == "list":
+            if item.type == 'list':
                 data = schemas.academy.SubData(
                     style=item.data.style, items=item.data.items
                 )
-            if item.type == "image":
+            if item.type == 'image':
                 data = schemas.academy.SubData(
                     file=schemas.academy.File(url=item.data.file.url),
                     caption=item.data.caption,
@@ -185,7 +185,7 @@ class ContentServices(
             sub_data.append(schemas.academy.Data(id=item.id, type=item.type, data=data))
 
         blocks = [
-            {"id": sub.id, "type": sub.type, "data": jsonable_encoder(sub.data)}
+            {'id': sub.id, 'type': sub.type, 'data': jsonable_encoder(sub.data)}
             for sub in sub_data
         ]
 

@@ -11,10 +11,10 @@ from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/campaign")
+router = APIRouter(prefix='/campaign')
 
 
-@router.get("/all", response_model=schemas.notifier.CampaignListApi)
+@router.get('/all', response_model=schemas.notifier.CampaignListApi)
 def get_all_user_campaigns(
     *,
     db: Session = Depends(deps.get_db),
@@ -24,8 +24,8 @@ def get_all_user_campaigns(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -60,7 +60,7 @@ def get_all_user_campaigns(
     )
 
 
-@router.post("/", response_model=schemas.notifier.Campaign)
+@router.post('/', response_model=schemas.notifier.Campaign)
 def create_campaign(
     *,
     db: Session = Depends(deps.get_db),
@@ -68,8 +68,8 @@ def create_campaign(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -123,7 +123,7 @@ def create_campaign(
     )
 
 
-@router.put("/{id}", response_model=schemas.notifier.CampaignUpdate)
+@router.put('/{id}', response_model=schemas.notifier.CampaignUpdate)
 def update_campaign(
     *,
     db: Session = Depends(deps.get_db),
@@ -132,8 +132,8 @@ def update_campaign(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -163,7 +163,7 @@ def update_campaign(
     )
 
 
-@router.get("/{id}", response_model=schemas.notifier.CampaignDetail)
+@router.get('/{id}', response_model=schemas.notifier.CampaignDetail)
 def get_campaign_by_id(
     *,
     db: Session = Depends(deps.get_db),
@@ -171,8 +171,8 @@ def get_campaign_by_id(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -193,7 +193,7 @@ def get_campaign_by_id(
         id=instagram_page.uuid,
         username=instagram_page.username,
         profile_image=instagram_page.profile_picture_url,
-        platform=Platform.INSTAGRAM["name"],
+        platform=Platform.INSTAGRAM['name'],
         page_id=instagram_page.facebook_page_id,
     )
     image = storage.get_file(campaign.image, settings.S3_CAMPAIGN_BUCKET)
@@ -216,7 +216,7 @@ def get_campaign_by_id(
     )
 
 
-@router.get("/{id}/contacts")
+@router.get('/{id}/contacts')
 def get_campain_contacts(
     *,
     db: Session = Depends(deps.get_db),
@@ -226,8 +226,8 @@ def get_campain_contacts(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -248,8 +248,8 @@ def get_campain_contacts(
     for contact in campaign_contacts:
         contacts.append(
             schemas.notifier.ContactSample(
-                profile_image=contact.contact.information.get("profile_image"),
-                username=contact.contact.information.get("username"),
+                profile_image=contact.contact.information.get('profile_image'),
+                username=contact.contact.information.get('username'),
             )
         )
     return schemas.notifier.CampaignContactApiSchema(
@@ -257,7 +257,7 @@ def get_campain_contacts(
     )
 
 
-@router.get("/activate/{id}")
+@router.get('/activate/{id}')
 def change_campaign_is_draft(
     *,
     db: Session = Depends(deps.get_db),
@@ -266,8 +266,8 @@ def change_campaign_is_draft(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
+            Role.ADMIN['name'],
+            Role.USER['name'],
         ],
     ),
 ):

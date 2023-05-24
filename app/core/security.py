@@ -8,9 +8,9 @@ from sqlalchemy.orm import Session
 from app import models, schemas, services
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
-ALGORITHM = "HS256"
+ALGORITHM = 'HS256'
 
 
 def create_access_token(
@@ -22,7 +22,7 @@ def create_access_token(
         expire = datetime.utcnow() + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
-    to_encode = {"exp": expire, **subject}
+    to_encode = {'exp': expire, **subject}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -39,15 +39,15 @@ def create_token(db: Session, *, user: models.User):
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     if not user.role:
-        role = "GUEST"
+        role = 'GUEST'
     else:
         role = services.role.get(db, id=user.role_id)
         role = role.name
     token_payload = {
-        "id": user.id,
-        "role": role,
+        'id': user.id,
+        'role': role,
     }
     access_token = create_access_token(
         token_payload, expires_delta=access_token_expires
     )
-    return schemas.Token(access_token=access_token, token_type="bearer")
+    return schemas.Token(access_token=access_token, token_type='bearer')

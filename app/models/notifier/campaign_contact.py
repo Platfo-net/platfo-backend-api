@@ -5,7 +5,7 @@ from app.db.base_class import Base
 
 
 class CampaignContact(Base):
-    __tablename__ = "notifier_campaign_contacts"
+    __tablename__ = 'notifier_campaign_contacts'
 
     contact_igs_id = Column(BigInteger, nullable=True)
 
@@ -17,11 +17,11 @@ class CampaignContact(Base):
 
     contact_id = Column(
         BigInteger,
-        ForeignKey("live_chat_contacts.id"),
+        ForeignKey('live_chat_contacts.id'),
         nullable=True,
     )
     campaign_id = Column(
-        BigInteger, ForeignKey("notifier_campaigns.id"), nullable=True, index=True
+        BigInteger, ForeignKey('notifier_campaigns.id'), nullable=True, index=True
     )
-    campaign = relationship("Campaign", back_populates="campaign_contacts")
-    contact = relationship("Contact", back_populates="campaign_contacts")
+    campaign = relationship('Campaign', back_populates='campaign_contacts')
+    contact = relationship('Contact', back_populates='campaign_contacts')

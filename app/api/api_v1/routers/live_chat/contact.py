@@ -10,10 +10,10 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/contact")
+router = APIRouter(prefix='/contact')
 
 
-@router.get("/{id}", response_model=schemas.live_chat.Contact)
+@router.get('/{id}', response_model=schemas.live_chat.Contact)
 def get_contact(
     *,
     db: Session = Depends(deps.get_db),
@@ -21,8 +21,8 @@ def get_contact(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -59,7 +59,7 @@ def get_contact(
     )
 
 
-@router.put("/{page_id}", deprecated=True)
+@router.put('/{page_id}', deprecated=True)
 def update_page_contacts_information(
     *,
     db: Session = Depends(deps.get_db),
@@ -68,8 +68,8 @@ def update_page_contacts_information(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -82,7 +82,7 @@ def update_page_contacts_information(
     return contacts
 
 
-@router.post("/all/{facebook_page_id}")
+@router.post('/all/{facebook_page_id}')
 def get_all_contact_based_on_filters(
     *,
     page: int = 1,
@@ -93,8 +93,8 @@ def get_all_contact_based_on_filters(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.USER["name"],
-            Role.ADMIN["name"],
+            Role.USER['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):

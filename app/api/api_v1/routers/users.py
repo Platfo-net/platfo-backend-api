@@ -11,10 +11,10 @@ from app.core import storage, utils
 from app.core.config import settings
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/user", tags=["User"])
+router = APIRouter(prefix='/user', tags=['User'])
 
 
-@router.post("/register-by-phone-number", status_code=status.HTTP_201_CREATED)
+@router.post('/register-by-phone-number', status_code=status.HTTP_201_CREATED)
 def register_user_by_phone_number(
     *,
     db: Session = Depends(deps.get_db),
@@ -44,7 +44,7 @@ def register_user_by_phone_number(
     return
 
 
-@router.post("/register-by-email", status_code=status.HTTP_201_CREATED)
+@router.post('/register-by-email', status_code=status.HTTP_201_CREATED)
 def register_user_by_email(
     *,
     db: Session = Depends(deps.get_db),
@@ -68,7 +68,7 @@ def register_user_by_email(
     return
 
 
-@router.put("/me", status_code=status.HTTP_200_OK)
+@router.put('/me', status_code=status.HTTP_200_OK)
 def update_user_me(
     *,
     db: Session = Depends(deps.get_db),
@@ -76,8 +76,8 @@ def update_user_me(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
+            Role.ADMIN['name'],
+            Role.USER['name'],
         ],
     ),
 ) -> Any:
@@ -87,7 +87,7 @@ def update_user_me(
     return
 
 
-@router.put("/me/change-password", response_model=schemas.User)
+@router.put('/me/change-password', response_model=schemas.User)
 def change_password_me(
     *,
     db: Session = Depends(deps.get_db),
@@ -95,8 +95,8 @@ def change_password_me(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
+            Role.ADMIN['name'],
+            Role.USER['name'],
         ],
     ),
 ) -> Any:
@@ -108,15 +108,15 @@ def change_password_me(
     return user
 
 
-@router.get("/me", response_model=schemas.User)
+@router.get('/me', response_model=schemas.User)
 def get_user_me(
     *,
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN["name"],
-            Role.USER["name"],
+            Role.ADMIN['name'],
+            Role.USER['name'],
         ],
     ),
 ) -> Any:

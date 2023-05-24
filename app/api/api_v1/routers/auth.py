@@ -11,10 +11,10 @@ from app.constants.errors import Error
 from app.core import cache, security, tasks, utils
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(prefix='/auth', tags=['Auth'])
 
 
-@router.post("/access-token", response_model=schemas.Token)
+@router.post('/access-token', response_model=schemas.Token)
 def login_access_token_by_email(
     *,
     db: Session = Depends(deps.get_db),
@@ -34,7 +34,7 @@ def login_access_token_by_email(
     return security.create_token(db, user=user)
 
 
-@router.post("/access-token-phone-number", response_model=schemas.Token)
+@router.post('/access-token-phone-number', response_model=schemas.Token)
 def login_access_token_by_phone_number(
     *,
     db: Session = Depends(deps.get_db),
@@ -55,7 +55,7 @@ def login_access_token_by_phone_number(
     return security.create_token(db, user=user)
 
 
-@router.post("/token-swagger", response_model=schemas.Token)
+@router.post('/token-swagger', response_model=schemas.Token)
 def login_access_token_swagger(
     db: Session = Depends(deps.get_db),
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -71,7 +71,7 @@ def login_access_token_swagger(
     return security.create_token(db, user=user)
 
 
-@router.post("/check", response_model=schemas.User)
+@router.post('/check', response_model=schemas.User)
 def test_token(
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
@@ -82,7 +82,7 @@ def test_token(
     return current_user
 
 
-@router.post("/hash-password", response_model=str)
+@router.post('/hash-password', response_model=str)
 def hash_password(
     password: str = Body(..., embed=True),
 ) -> Any:
@@ -92,7 +92,7 @@ def hash_password(
     return security.get_password_hash(password)
 
 
-@router.post("/forgot-password", response_model=schemas.RegisterCode)
+@router.post('/forgot-password', response_model=schemas.RegisterCode)
 def forgot_password(
     *,
     db: Session = Depends(deps.get_db),
@@ -116,12 +116,12 @@ def forgot_password(
         raise_http_exception(Error.UNEXPECTED_ERROR)
 
     tasks.send_user_reset_password_code.delay(
-        f"00{user.phone_country_code}{user.phone_number}", code
+        f'00{user.phone_country_code}{user.phone_number}', code
     )
     return schemas.RegisterCode(token=token)
 
 
-@router.post("/change-password", status_code=status.HTTP_200_OK)
+@router.post('/change-password', status_code=status.HTTP_200_OK)
 def change_password(
     *,
     db: Session = Depends(deps.get_db),
@@ -136,8 +136,8 @@ def change_password(
     if not data:
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
 
-    code = data.get("code", None)
-    token = data.get("token", None)
+    code = data.get('code', None)
+    token = data.get('token', None)
     if not (token and code):
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
 
@@ -150,7 +150,7 @@ def change_password(
     return
 
 
-@router.post("/send-activation-code-by-sms", response_model=schemas.RegisterCode)
+@router.post('/send-activation-code-by-sms', response_model=schemas.RegisterCode)
 def send_activation_code_by_sms(
     *,
     db: Session = Depends(deps.get_db),
@@ -187,13 +187,13 @@ def send_activation_code_by_sms(
         raise_http_exception(Error.UNEXPECTED_ERROR)
 
     tasks.send_user_activation_code.delay(
-        f"+{user.phone_country_code}{user.phone_number}", code
+        f'+{user.phone_country_code}{user.phone_number}', code
     )
 
     return schemas.RegisterCode(token=token)
 
 
-@router.post("/activate-by-sms", status_code=status.HTTP_200_OK)
+@router.post('/activate-by-sms', status_code=status.HTTP_200_OK)
 def activate_user_by_sms(
     *,
     db: Session = Depends(deps.get_db),
@@ -214,8 +214,8 @@ def activate_user_by_sms(
     if not data:
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
 
-    code = data.get("code", None)
-    token = data.get("token", None)
+    code = data.get('code', None)
+    token = data.get('token', None)
 
     if not (token and code):
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
@@ -230,7 +230,7 @@ def activate_user_by_sms(
 
     cache.remove_data_from_cache(
         redis_client,
-        "{}{}".format(
+        '{}{}'.format(
             user.phone_number,
             user.phone_country_code,
         ),
@@ -240,7 +240,7 @@ def activate_user_by_sms(
 
 
 @router.post(
-    "/send-activation-code-by-email",
+    '/send-activation-code-by-email',
     response_model=schemas.RegisterCode,
     deprecated=True,
 )
@@ -273,7 +273,7 @@ def send_activation_email(
     return schemas.RegisterCode(token=token)
 
 
-@router.post("/activate-by-email", status_code=status.HTTP_200_OK, deprecated=True)
+@router.post('/activate-by-email', status_code=status.HTTP_200_OK, deprecated=True)
 def activate_user_by_email(
     *,
     db: Session = Depends(deps.get_db),
@@ -291,8 +291,8 @@ def activate_user_by_email(
     if not data:
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
 
-    code = data.get("code", None)
-    token = data.get("token", None)
+    code = data.get('code', None)
+    token = data.get('token', None)
     if not (token and code):
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
 

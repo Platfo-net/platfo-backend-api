@@ -10,7 +10,7 @@ def send_verify_sms(receptor, code, template_id):
     res = sms_ir.send_verify_code(
         number=receptor,
         template_id=template_id,
-        parameters=[{"name": "CODE", "value": str(code)}],
+        parameters=[{'name': 'CODE', 'value': str(code)}],
     )
     print(res.json())
     return res.status_code

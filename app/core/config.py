@@ -9,8 +9,8 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Platfo Backend Api"
-    API_V1_STR: str = "/api/v1"
+    PROJECT_NAME: str = 'Platfo Backend Api'
+    API_V1_STR: str = '/api/v1'
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     USERS_OPEN_REGISTRATION: str
@@ -77,31 +77,31 @@ class Settings(BaseSettings):
     SMS_IR_API_KEY: str
     SMS_IR_LINE_NUMBER: str
 
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
+    @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
 
         return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("DB_HOST"),
-            port=str(values.get("DB_PORT")),
+            scheme='postgresql',
+            user=values.get('POSTGRES_USER'),
+            password=values.get('POSTGRES_PASSWORD'),
+            host=values.get('DB_HOST'),
+            port=str(values.get('DB_PORT')),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
-    @validator("CELERY_URI", pre=True)
+    @validator('CELERY_URI', pre=True)
     def assemble_celery_connection(
         cls, v: Optional[str], values: Dict[str, Any]
     ) -> Any:
         if isinstance(v, str):
             return v
         return RedisDsn.build(
-            scheme="redis",
-            host=values.get("REDIS_HOST"),
-            port=values.get("REDIS_PORT"),
-            password=values.get("REDIS_PASSWORD"),
+            scheme='redis',
+            host=values.get('REDIS_HOST'),
+            port=values.get('REDIS_PORT'),
+            password=values.get('REDIS_PASSWORD'),
             path=f"/{values.get('REDIS_DB_CELERY') or ''}",
         )
 

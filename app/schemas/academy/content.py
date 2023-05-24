@@ -109,8 +109,8 @@ class ContentLabel(BaseModel):
 
 class ContentListItem(ContentBaseList):
     id: UUID4
-    content_categories: Optional[List[ContentCategory]] = Field(alias="categories")
-    content_labels: Optional[List[ContentLabel]] = Field(alias="labels")
+    content_categories: Optional[List[ContentCategory]] = Field(alias='categories')
+    content_labels: Optional[List[ContentLabel]] = Field(alias='labels')
 
     class Config:
         orm_mode = True

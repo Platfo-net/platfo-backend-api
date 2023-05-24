@@ -25,7 +25,7 @@ class InstagramPageCreate(InstagramPageBase):
 
 
 class InstagramPageUpdate(InstagramPageBase):
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class InstagramPage(BaseModel):

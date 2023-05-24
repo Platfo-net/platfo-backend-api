@@ -1,4 +1,4 @@
 class WidgetType:
-    MENU = "MENU"
-    TEXT = "TEXT"
-    MEDIA = "MEDIA"
+    MENU = 'MENU'
+    TEXT = 'TEXT'
+    MEDIA = 'MEDIA'

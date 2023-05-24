@@ -19,7 +19,7 @@ from app.db.base_class import Base
 
 
 class Plan(Base):
-    __tablename__ = "credit_plans"
+    __tablename__ = 'credit_plans'
 
     title = Column(String(255), nullable=True)
     description = Column(Text(), nullable=True)
@@ -41,20 +41,20 @@ class Plan(Base):
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    features = relationship("PlanFeature", back_populates="plan")
-    credit_logs = relationship("CreditLog", back_populates="plan")
+    features = relationship('PlanFeature', back_populates='plan')
+    credit_logs = relationship('CreditLog', back_populates='plan')
 
 
 class PlanFeature(Base):
-    __tablename__ = "credit_plan_features"
+    __tablename__ = 'credit_plan_features'
 
     title = Column(String(255), nullable=True)
     description = Column(Text(), nullable=True)
 
     plan_id = Column(
         BigInteger,
-        ForeignKey("credit_plans.id"),
+        ForeignKey('credit_plans.id'),
         primary_key=False,
         nullable=False,
     )
-    plan = relationship("Plan", back_populates="features")
+    plan = relationship('Plan', back_populates='features')

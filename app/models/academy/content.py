@@ -20,7 +20,7 @@ from app.db.base_class import Base
 
 
 class Content(Base):
-    __tablename__ = "academy_contents"
+    __tablename__ = 'academy_contents'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
@@ -40,7 +40,7 @@ class Content(Base):
 
     user_id = Column(
         BigInteger,
-        ForeignKey("users.id"),
+        ForeignKey('users.id'),
         primary_key=False,
         nullable=True,
     )
@@ -53,12 +53,12 @@ class Content(Base):
     )
 
     content_categories = relationship(
-        "ContentCategory", back_populates="content", cascade="all,delete"
+        'ContentCategory', back_populates='content', cascade='all,delete'
     )
     content_labels = relationship(
-        "ContentLabel", back_populates="content", cascade="all,delete"
+        'ContentLabel', back_populates='content', cascade='all,delete'
     )
-    user = relationship("User", back_populates="content")
+    user = relationship('User', back_populates='content')
 
 
-event.listen(Content.title, "set", Content.generate_slug, retval=False)
+event.listen(Content.title, 'set', Content.generate_slug, retval=False)
