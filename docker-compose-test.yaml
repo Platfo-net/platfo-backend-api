@@ -1,10 +1,10 @@
 services:
   api:
-    container_name: "${APP_NAME}-api"
+    container_name: "api"
     build:
       context: .
       args:
-        - ENVIRONMENT=${ENVIRONMENT}
+        - ENVIRONMENT=test
     image: "platfo-backend-app"
     volumes:
       - .:/app
@@ -15,10 +15,10 @@ services:
       - db
     restart: unless-stopped
     environment:
-      - ENVIRONMENT=${ENVIRONMENT}
+      - ENVIRONMENT=test
 
   db:
-    container_name: "${APP_NAME}-database"
+    container_name: "database"
     image: postgres:14
     restart: unless-stopped
     env_file:
