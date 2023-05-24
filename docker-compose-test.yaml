@@ -14,8 +14,11 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+    env_file:
+      - .env.test
     environment:
       - ENVIRONMENT=test
+    
 
   db:
     container_name: "database"
