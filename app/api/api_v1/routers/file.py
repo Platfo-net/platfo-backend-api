@@ -12,8 +12,8 @@ from app.core.config import settings
 router = APIRouter(prefix="/file", tags=["File"])
 
 
-@router.post("/upload/postman/campaign", response_model=schemas.Image)
-async def upload_postman_campaign_image(
+@router.post("/upload/notifier/campaign", response_model=schemas.Image)
+async def upload_notifier_campaign_image(
         file: UploadFile = File(...),
         _: models.User = Security(
             deps.get_current_active_user,

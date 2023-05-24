@@ -1,19 +1,25 @@
 import datetime
 from sqlalchemy.orm import relationship
 from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, Integer, BigInteger
+from sqlalchemy import Boolean, Column, ForeignKey, String, DateTime, Integer, BigInteger
 
 
 class Contact(Base):
     __tablename__ = "live_chat_contacts"
 
     contact_igs_id = Column(BigInteger, nullable=True, index=True)
-    user_page_id = Column(BigInteger, nullable=True, index=True)
+    facebook_page_id = Column(BigInteger, nullable=True, index=True)
 
     last_message = Column(String(1024), nullable=True)
     last_message_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    information = Column(JSON, nullable=True)
+    username = Column(String(255), nullable=True)
+    profile_image = Column(String(1024), nullable=True)
+    name = Column(String(128), nullable=True)
+    followers_count = Column(Integer, nullable=True)
+    is_verified_user = Column(Boolean, nullable=True)
+    is_user_follow_business = Column(Boolean, nullable=True)
+    is_business_follow_user = Column(Boolean, nullable=True)
 
     message_count = Column(Integer(), nullable=True, default=0)
     comment_count = Column(Integer(), nullable=True, default=0)
@@ -25,10 +31,13 @@ class Contact(Base):
         ForeignKey("users.id"),
         nullable=True,
     )
+
+    user = relationship("User", back_populates="contacts")
+
     campaign_contacts = relationship(
         "CampaignContact", back_populates="contact", cascade="all,delete"
     )
 
-    group_contact = relationship(
+    group_contacts = relationship(
         "GroupContact", back_populates="contact", cascade="all,delete"
     )

@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: c63f5242a29b
+Revision ID: 4f2be4e44ed9
 Revises: 
-Create Date: 2023-05-02 15:02:40.946217
+Create Date: 2023-05-24 11:19:41.307456
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'c63f5242a29b'
+revision = '4f2be4e44ed9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -69,16 +69,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
-    op.create_table('credit_plan_features',
-    sa.Column('title', sa.String(length=255), nullable=True),
-    sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('plan_id', sa.BigInteger(), nullable=False),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['plan_id'], ['credit_plans.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_credit_plan_features_id'), 'credit_plan_features', ['id'], unique=False)
     op.create_table('users',
     sa.Column('first_name', sa.String(length=255), nullable=True),
     sa.Column('last_name', sa.String(length=255), nullable=True),
@@ -89,12 +79,10 @@ def upgrade():
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('is_email_verified', sa.Boolean(), nullable=True),
     sa.Column('profile_image', sa.String(length=255), nullable=True),
-    sa.Column('role_id', sa.BigInteger(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('phone_country_code', 'phone_number', name='_phone_number_phone_code_unique_constraint')
@@ -174,6 +162,16 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_credit_invoices_id'), 'credit_invoices', ['id'], unique=False)
+    op.create_table('credit_plan_features',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('plan_id', sa.BigInteger(), nullable=False),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['plan_id'], ['credit_plans.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_credit_plan_features_id'), 'credit_plan_features', ['id'], unique=False)
     op.create_table('instagram_pages',
     sa.Column('facebook_user_long_lived_token', sa.String(length=255), nullable=True),
     sa.Column('facebook_user_id', sa.String(length=255), nullable=True),
@@ -183,7 +181,12 @@ def upgrade():
     sa.Column('facebook_page_token', sa.String(length=255), nullable=True),
     sa.Column('username', sa.String(length=255), nullable=True),
     sa.Column('profile_picture_url', sa.String(length=1024), nullable=True),
-    sa.Column('information', sa.JSON(), nullable=True),
+    sa.Column('name', sa.String(length=128), nullable=True),
+    sa.Column('website', sa.String(length=128), nullable=True),
+    sa.Column('ig_id', sa.String(length=128), nullable=True),
+    sa.Column('followers_count', sa.Integer(), nullable=True),
+    sa.Column('follows_count', sa.Integer(), nullable=True),
+    sa.Column('biography', sa.Text(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -194,10 +197,16 @@ def upgrade():
     op.create_index(op.f('ix_instagram_pages_instagram_page_id'), 'instagram_pages', ['instagram_page_id'], unique=False)
     op.create_table('live_chat_contacts',
     sa.Column('contact_igs_id', sa.BigInteger(), nullable=True),
-    sa.Column('user_page_id', sa.BigInteger(), nullable=True),
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('last_message', sa.String(length=1024), nullable=True),
     sa.Column('last_message_at', sa.DateTime(), nullable=True),
-    sa.Column('information', sa.JSON(), nullable=True),
+    sa.Column('username', sa.String(length=255), nullable=True),
+    sa.Column('profile_image', sa.String(length=1024), nullable=True),
+    sa.Column('name', sa.String(length=128), nullable=True),
+    sa.Column('followers_count', sa.Integer(), nullable=True),
+    sa.Column('is_verified_user', sa.Boolean(), nullable=True),
+    sa.Column('is_user_follow_business', sa.Boolean(), nullable=True),
+    sa.Column('is_business_follow_user', sa.Boolean(), nullable=True),
     sa.Column('message_count', sa.Integer(), nullable=True),
     sa.Column('comment_count', sa.Integer(), nullable=True),
     sa.Column('live_comment_count', sa.Integer(), nullable=True),
@@ -209,8 +218,8 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_live_chat_contacts_contact_igs_id'), 'live_chat_contacts', ['contact_igs_id'], unique=False)
+    op.create_index(op.f('ix_live_chat_contacts_facebook_page_id'), 'live_chat_contacts', ['facebook_page_id'], unique=False)
     op.create_index(op.f('ix_live_chat_contacts_id'), 'live_chat_contacts', ['id'], unique=False)
-    op.create_index(op.f('ix_live_chat_contacts_user_page_id'), 'live_chat_contacts', ['user_page_id'], unique=False)
     op.create_table('live_chat_messages',
     sa.Column('from_page_id', sa.BigInteger(), nullable=True),
     sa.Column('to_page_id', sa.BigInteger(), nullable=True),
@@ -237,7 +246,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_notification_users_id'), 'notification_users', ['id'], unique=False)
-    op.create_table('postman_campaigns',
+    op.create_table('notifier_campaigns',
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('description', sa.String(length=255), nullable=True),
     sa.Column('image', sa.String(length=255), nullable=True),
@@ -254,10 +263,10 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_postman_campaigns_facebook_page_id'), 'postman_campaigns', ['facebook_page_id'], unique=False)
-    op.create_index(op.f('ix_postman_campaigns_id'), 'postman_campaigns', ['id'], unique=False)
-    op.create_index(op.f('ix_postman_campaigns_user_id'), 'postman_campaigns', ['user_id'], unique=False)
-    op.create_table('postman_groups',
+    op.create_index(op.f('ix_notifier_campaigns_facebook_page_id'), 'notifier_campaigns', ['facebook_page_id'], unique=False)
+    op.create_index(op.f('ix_notifier_campaigns_id'), 'notifier_campaigns', ['id'], unique=False)
+    op.create_index(op.f('ix_notifier_campaigns_user_id'), 'notifier_campaigns', ['user_id'], unique=False)
+    op.create_table('notifier_groups',
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('description', sa.String(length=255), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
@@ -267,8 +276,8 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_postman_groups_facebook_page_id'), 'postman_groups', ['facebook_page_id'], unique=False)
-    op.create_index(op.f('ix_postman_groups_id'), 'postman_groups', ['id'], unique=False)
+    op.create_index(op.f('ix_notifier_groups_facebook_page_id'), 'notifier_groups', ['facebook_page_id'], unique=False)
+    op.create_index(op.f('ix_notifier_groups_id'), 'notifier_groups', ['id'], unique=False)
     op.create_table('academy_content_categories',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('content_id', sa.UUID(), nullable=True),
@@ -347,7 +356,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_credit_credit_logs_id'), 'credit_credit_logs', ['id'], unique=False)
-    op.create_table('postman_campaign_contacts',
+    op.create_table('notifier_campaign_contacts',
     sa.Column('contact_igs_id', sa.BigInteger(), nullable=True),
     sa.Column('is_sent', sa.Boolean(), nullable=True),
     sa.Column('is_seen', sa.Boolean(), nullable=True),
@@ -357,35 +366,35 @@ def upgrade():
     sa.Column('campaign_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['campaign_id'], ['postman_campaigns.id'], ),
+    sa.ForeignKeyConstraint(['campaign_id'], ['notifier_campaigns.id'], ),
     sa.ForeignKeyConstraint(['contact_id'], ['live_chat_contacts.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_postman_campaign_contacts_campaign_id'), 'postman_campaign_contacts', ['campaign_id'], unique=False)
-    op.create_index(op.f('ix_postman_campaign_contacts_id'), 'postman_campaign_contacts', ['id'], unique=False)
-    op.create_table('postman_group_contacts',
+    op.create_index(op.f('ix_notifier_campaign_contacts_campaign_id'), 'notifier_campaign_contacts', ['campaign_id'], unique=False)
+    op.create_index(op.f('ix_notifier_campaign_contacts_id'), 'notifier_campaign_contacts', ['id'], unique=False)
+    op.create_table('notifier_group_contacts',
     sa.Column('contact_igs_id', sa.BigInteger(), nullable=True),
     sa.Column('contact_id', sa.BigInteger(), nullable=True),
     sa.Column('group_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['contact_id'], ['live_chat_contacts.id'], ),
-    sa.ForeignKeyConstraint(['group_id'], ['postman_groups.id'], ),
+    sa.ForeignKeyConstraint(['group_id'], ['notifier_groups.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_postman_group_contacts_group_id'), 'postman_group_contacts', ['group_id'], unique=False)
-    op.create_index(op.f('ix_postman_group_contacts_id'), 'postman_group_contacts', ['id'], unique=False)
+    op.create_index(op.f('ix_notifier_group_contacts_group_id'), 'notifier_group_contacts', ['group_id'], unique=False)
+    op.create_index(op.f('ix_notifier_group_contacts_id'), 'notifier_group_contacts', ['id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_postman_group_contacts_id'), table_name='postman_group_contacts')
-    op.drop_index(op.f('ix_postman_group_contacts_group_id'), table_name='postman_group_contacts')
-    op.drop_table('postman_group_contacts')
-    op.drop_index(op.f('ix_postman_campaign_contacts_id'), table_name='postman_campaign_contacts')
-    op.drop_index(op.f('ix_postman_campaign_contacts_campaign_id'), table_name='postman_campaign_contacts')
-    op.drop_table('postman_campaign_contacts')
+    op.drop_index(op.f('ix_notifier_group_contacts_id'), table_name='notifier_group_contacts')
+    op.drop_index(op.f('ix_notifier_group_contacts_group_id'), table_name='notifier_group_contacts')
+    op.drop_table('notifier_group_contacts')
+    op.drop_index(op.f('ix_notifier_campaign_contacts_id'), table_name='notifier_campaign_contacts')
+    op.drop_index(op.f('ix_notifier_campaign_contacts_campaign_id'), table_name='notifier_campaign_contacts')
+    op.drop_table('notifier_campaign_contacts')
     op.drop_index(op.f('ix_credit_credit_logs_id'), table_name='credit_credit_logs')
     op.drop_table('credit_credit_logs')
     op.drop_index(op.f('ix_bot_builder_nodeuies_id'), table_name='bot_builder_nodeuies')
@@ -399,27 +408,29 @@ def downgrade():
     op.drop_table('bot_builder_edges')
     op.drop_table('academy_content_labels')
     op.drop_table('academy_content_categories')
-    op.drop_index(op.f('ix_postman_groups_id'), table_name='postman_groups')
-    op.drop_index(op.f('ix_postman_groups_facebook_page_id'), table_name='postman_groups')
-    op.drop_table('postman_groups')
-    op.drop_index(op.f('ix_postman_campaigns_user_id'), table_name='postman_campaigns')
-    op.drop_index(op.f('ix_postman_campaigns_id'), table_name='postman_campaigns')
-    op.drop_index(op.f('ix_postman_campaigns_facebook_page_id'), table_name='postman_campaigns')
-    op.drop_table('postman_campaigns')
+    op.drop_index(op.f('ix_notifier_groups_id'), table_name='notifier_groups')
+    op.drop_index(op.f('ix_notifier_groups_facebook_page_id'), table_name='notifier_groups')
+    op.drop_table('notifier_groups')
+    op.drop_index(op.f('ix_notifier_campaigns_user_id'), table_name='notifier_campaigns')
+    op.drop_index(op.f('ix_notifier_campaigns_id'), table_name='notifier_campaigns')
+    op.drop_index(op.f('ix_notifier_campaigns_facebook_page_id'), table_name='notifier_campaigns')
+    op.drop_table('notifier_campaigns')
     op.drop_index(op.f('ix_notification_users_id'), table_name='notification_users')
     op.drop_table('notification_users')
     op.drop_index(op.f('ix_live_chat_messages_to_page_id'), table_name='live_chat_messages')
     op.drop_index(op.f('ix_live_chat_messages_id'), table_name='live_chat_messages')
     op.drop_index(op.f('ix_live_chat_messages_from_page_id'), table_name='live_chat_messages')
     op.drop_table('live_chat_messages')
-    op.drop_index(op.f('ix_live_chat_contacts_user_page_id'), table_name='live_chat_contacts')
     op.drop_index(op.f('ix_live_chat_contacts_id'), table_name='live_chat_contacts')
+    op.drop_index(op.f('ix_live_chat_contacts_facebook_page_id'), table_name='live_chat_contacts')
     op.drop_index(op.f('ix_live_chat_contacts_contact_igs_id'), table_name='live_chat_contacts')
     op.drop_table('live_chat_contacts')
     op.drop_index(op.f('ix_instagram_pages_instagram_page_id'), table_name='instagram_pages')
     op.drop_index(op.f('ix_instagram_pages_id'), table_name='instagram_pages')
     op.drop_index(op.f('ix_instagram_pages_facebook_page_id'), table_name='instagram_pages')
     op.drop_table('instagram_pages')
+    op.drop_index(op.f('ix_credit_plan_features_id'), table_name='credit_plan_features')
+    op.drop_table('credit_plan_features')
     op.drop_index(op.f('ix_credit_invoices_id'), table_name='credit_invoices')
     op.drop_table('credit_invoices')
     op.drop_index(op.f('ix_credit_credits_id'), table_name='credit_credits')
@@ -434,8 +445,6 @@ def downgrade():
     op.drop_table('academy_contents')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_table('users')
-    op.drop_index(op.f('ix_credit_plan_features_id'), table_name='credit_plan_features')
-    op.drop_table('credit_plan_features')
     op.drop_index(op.f('ix_roles_id'), table_name='roles')
     op.drop_table('roles')
     op.drop_index(op.f('ix_notifications_id'), table_name='notifications')

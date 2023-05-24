@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app import services, schemas
 from app.core.config import settings
-from tests.unit.postman import helper
+from tests.unit.notifier import helper
 from tests.utils.user import get_user_token_headers
 
 
@@ -29,7 +29,7 @@ def test_create_group(client: TestClient, db: Session):
         {"contact_igs_id": contact_1.contact_igs_id, "contact_id": str(contact_1.id)}
     ]
     r = client.post(
-        f"{settings.API_V1_STR}/postman/group/",
+        f"{settings.API_V1_STR}/notifier/group/",
         json={
             "name": name,
             "description": description,
@@ -48,7 +48,7 @@ def test_get_groups(client: TestClient, db: Session):
     facebook_page_id = settings.SAMPLE_FACEBOOK_PAGE_ID
 
     r = client.get(
-        f"{settings.API_V1_STR}/postman/group/{facebook_page_id}", headers=headers
+        f"{settings.API_V1_STR}/notifier/group/{facebook_page_id}", headers=headers
     )
     json_response = r.json()
     assert r.status_code == 200
@@ -64,7 +64,7 @@ def test_delete_group(client: TestClient, db: Session):
     group = helper.create_group(db, user.id, account.facebook_page_id)
 
     r = client.delete(
-        f"{settings.API_V1_STR}/postman/group/{group.id}", headers=headers
+        f"{settings.API_V1_STR}/notifier/group/{group.id}", headers=headers
     )
 
     assert r.status_code == 200

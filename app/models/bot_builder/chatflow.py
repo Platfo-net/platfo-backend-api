@@ -25,7 +25,8 @@ class Chatflow(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
-    node = relationship("Node", back_populates="chatflow")
+    nodes = relationship("Node", back_populates="chatflow")
     nodeui = relationship("NodeUI", back_populates="chatflow")
     edge = relationship("Edge", back_populates="chatflow")
-    user = relationship("User", back_populates="chatflow")
+
+    user = relationship("User", back_populates="chatflows")

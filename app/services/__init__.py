@@ -1,4 +1,4 @@
-from app.services import academy, bot_builder, live_chat, postman , credit
+from app.services import academy, bot_builder, live_chat, notifier , credit
 
 from .role_services import role
 from .user_services import user

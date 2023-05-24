@@ -12,7 +12,7 @@ from app.core.config import settings
 @shared_task
 def campaign_terminal():
     db = SessionLocal()
-    campaigns = services.postman.campaign.get_active_campaigns(db)
+    campaigns = services.notifier.campaign.get_active_campaigns(db)
 
     if len(campaigns) == 0:
         db.close()
@@ -20,12 +20,12 @@ def campaign_terminal():
 
     for campaign in campaigns:
         unsend_count = (
-            services.postman.campaign_contact.get_campaign_unsend_contacts_count(
+            services.notifier.campaign_contact.get_campaign_unsend_contacts_count(
                 db, campaign_id=campaign.id
             )
         )
         if unsend_count == 0:
-            services.postman.campaign.change_status(
+            services.notifier.campaign.change_status(
                 db, campaign_id=campaign.id, status=CampaignStatus.DONE
             )
         else:
@@ -37,12 +37,12 @@ def campaign_terminal():
 @shared_task
 def campaign_handler(campaign_id):
     db = SessionLocal()
-    campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
-    campaign_contacts = services.postman.campaign_contact.get_campaign_unsend_contacts(
+    campaign = services.notifier.campaign.get(db=db, campaign_id=campaign_id)
+    campaign_contacts = services.notifier.campaign_contact.get_campaign_unsend_contacts(
         db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT
     )
 
-    services.postman.campaign.change_activity(
+    services.notifier.campaign.change_activity(
         db, campaign_id=campaign_id, is_active=True
     )
 
@@ -101,11 +101,11 @@ def campaign_handler(campaign_id):
             )
             utils.save_message(db, saved_message)
 
-    services.postman.campaign_contact.change_send_status_bulk(
+    services.notifier.campaign_contact.change_send_status_bulk(
         db=db, campaign_contacts_in=sent_contacts, is_sent=True
     )
 
-    services.postman.campaign.change_activity(
+    services.notifier.campaign.change_activity(
         db, campaign_id=campaign_id, is_active=False
     )
     db.close()

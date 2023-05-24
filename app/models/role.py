@@ -8,4 +8,5 @@ class Role(Base):
     name = Column(String(100))
     description = Column(Text)
     persian_name = Column(String(100), nullable=True)
-    user = relationship("User", back_populates="role")
+
+    users = relationship("User", back_populates="role")

@@ -106,14 +106,14 @@ def connect_instagram_page(
                     profile_picture_url=page_details.get(
                         "profile_picture_url", None
                     ),  # noqa
-                    information=dict(
-                        website=page_details.get("website", None),
-                        ig_id=page_details.get("ig_id", None),
-                        followers_count=page_details.get("followers_count", None),
-                        follows_count=page_details.get("follows_count", None),
-                        biography=page_details.get("biography", None),
-                        name=page_details.get("name", None),
-                    ),
+
+                    website=page_details.get("website", None),
+                    ig_id=page_details.get("ig_id", None),
+                    followers_count=page_details.get("followers_count", None),
+                    follows_count=page_details.get("follows_count", None),
+                    biography=page_details.get("biography", None),
+                    name=page_details.get("name", None),
+
                 )
                 services.instagram_page.create(db, obj_in=instagram_page_in)
         except Exception as e:
@@ -136,8 +136,14 @@ def get_page_data_by_instagram_page_id(
         facebook_page_id=obj_instagram.facebook_page_id,
         instagram_page_id=obj_instagram.instagram_page_id,
         username=obj_instagram.username,
-        information=obj_instagram.information,
-        profile_picture_url=obj_instagram.profile_picture_url
+        profile_picture_url=obj_instagram.profile_picture_url,
+
+        name=obj_instagram.name,
+        website=obj_instagram.website,
+        ig_id=obj_instagram.ig_id,
+        followers_count=obj_instagram.followers_count,
+        follows_count=obj_instagram.follows_count,
+        biography=obj_instagram.biography,
     )
 
 
@@ -159,6 +165,11 @@ def get_page_data_by_facebook_page_id(
         facebook_page_id=obj_instagram.facebook_page_id,
         instagram_page_id=obj_instagram.instagram_page_id,
         username=obj_instagram.username,
-        information=obj_instagram.information,
-        profile_picture_url=obj_instagram.profile_picture_url
+        profile_picture_url=obj_instagram.profile_picture_url,
+        name=obj_instagram.name,
+        website=obj_instagram.website,
+        ig_id=obj_instagram.ig_id,
+        followers_count=obj_instagram.followers_count,
+        follows_count=obj_instagram.follows_count,
+        biography=obj_instagram.biography,
     )

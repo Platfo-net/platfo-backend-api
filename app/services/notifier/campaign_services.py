@@ -8,9 +8,9 @@ from sqlalchemy import and_
 
 from fastapi.encoders import jsonable_encoder
 
-ModelType = models.postman.Campaign
-CreateSchemaType = schemas.postman.CampaignCreate
-UpdateSchemaType = schemas.postman.CampaignUpdate
+ModelType = models.notifier.Campaign
+CreateSchemaType = schemas.notifier.CampaignCreate
+UpdateSchemaType = schemas.notifier.CampaignUpdate
 
 
 class CampaignServices:
@@ -104,7 +104,7 @@ class CampaignServices:
             id: int,
             status: str = CampaignStatus.DONE,
     ) -> ModelType:
-        campaign = services.postman.campaign.get(db=db, campaign_id=id)
+        campaign = services.notifier.campaign.get(db=db, campaign_id=id)
         campaign.status = status
 
         db.add(campaign)
@@ -133,7 +133,7 @@ class CampaignServices:
             campaign_id: UUID4,
             is_active: bool,
     ) -> ModelType:
-        campaign = services.postman.campaign.get(db=db, campaign_id=campaign_id)
+        campaign = services.notifier.campaign.get(db=db, campaign_id=campaign_id)
         campaign.is_active = is_active
 
         db.add(campaign)
@@ -159,4 +159,4 @@ class CampaignServices:
         return
 
 
-campaign = CampaignServices(models.postman.Campaign)
+campaign = CampaignServices(models.notifier.Campaign)

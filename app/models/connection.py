@@ -23,4 +23,4 @@ class Connection(Base):
         index=True
     )
 
-    user = relationship("User", back_populates="connection")
+    user = relationship("User", back_populates="connections")

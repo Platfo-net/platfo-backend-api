@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app import services, schemas, models
 from app.core.config import settings
-from tests.unit.postman import helper
+from tests.unit.notifier import helper
 
 
 def test_add_contacts_to_campaign(db: Session):
@@ -29,18 +29,18 @@ def test_add_contacts_to_campaign(db: Session):
         ),
     )
 
-    schemas.postman.CampaignContactCreate(
+    schemas.notifier.CampaignContactCreate(
         contact_id=contact_1.id, contact_igs_id=contact_1.contact_igs_id
     )
 
     contacts_in = [
-        schemas.postman.CampaignContactCreate(
+        schemas.notifier.CampaignContactCreate(
             contact_id=contact_1.id, contact_igs_id=contact_1.contact_igs_id
         ),
-        schemas.postman.CampaignContactCreate(
+        schemas.notifier.CampaignContactCreate(
             contact_id=contact_2.id, contact_igs_id=contact_2.contact_igs_id
         ),
-        schemas.postman.CampaignContactCreate(
+        schemas.notifier.CampaignContactCreate(
             contact_id=contact_3.id, contact_igs_id=contact_3.contact_igs_id
         ),
     ]
@@ -63,7 +63,7 @@ def test_add_contacts_to_campaign(db: Session):
 
     assert type(campaign_contacts) == list
     for campaign_contact in campaign_contacts:
-        assert isinstance(campaign_contact, models.postman.CampaignContact)
+        assert isinstance(campaign_contact, models.notifier.CampaignContact)
 
     db_campaing_contatcs_igs_id = [c.contact_igs_id for c in campaign_contacts]
 
