@@ -32,14 +32,12 @@ repos:
           - --py3-plus
 
   - repo: https://github.com/pycqa/flake8
-    rev: '6.0.0'
+    rev: "6.0.0"
     hooks:
       - id: flake8
-        additional_dependencies:
-          - flake8-django
 
   - repo: https://github.com/pycqa/bandit
-    rev: '1.7.5'
+    rev: "1.7.5"
     hooks:
       - id: bandit
-        stages: [ manual ]
+        stages: [manual]
