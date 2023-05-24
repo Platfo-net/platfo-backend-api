@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app import models, schemas, services
+
 from .fixtures import sample_instagram_page  # noqa
 
 
@@ -10,7 +11,7 @@ def test_create_instagram_page(db: Session, sample_instagram_page: models.Instag
 
 def test_update_instagram_page(db: Session, sample_instagram_page: models.InstagramPage):  # noqa
     updated_page = schemas.InstagramPageUpdate(
-        username="sample_updated_username",
+        username='sample_updated_username',
     )  # noqa
     page = services.instagram_page.update(
         db,
@@ -39,16 +40,16 @@ def test_get_page_by_facebook_page_id(db: Session, sample_instagram_page: models
 
 def test_get_user_pages(db, sample_instagram_page: models.InstagramPage): # noqa
     page_in = schemas.InstagramPageCreate(
-        biography="sample biography",
+        biography='sample biography',
         facebook_page_id=12345689,
         instagram_page_id=12346789,
-        username="sample_username",
-        profile_picture_url="sample_profile_picture.facebook.com",
-        facebook_user_long_lived_token="quwidsfsjdfsdjfs",
-        facebook_user_id="456",
-        name="sample_name",
-        website="sample_website.com",
-        ig_id="47854",
+        username='sample_username',
+        profile_picture_url='sample_profile_picture.facebook.com',
+        facebook_user_long_lived_token='quwidsfsjdfsdjfs',
+        facebook_user_id='456',
+        name='sample_name',
+        website='sample_website.com',
+        ig_id='47854',
         followers_count=1,
         follows_count=1,
         user_id=sample_instagram_page.user_id,
