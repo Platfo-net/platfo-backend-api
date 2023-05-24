@@ -82,7 +82,8 @@ def init_test_db(db: Session) -> None:
     if not user:
         role = services.role.get_by_name(db, name=Role.ADMIN["name"])
         user_in = schemas.UserCreate(
-            email=settings.FIRST_ADMIN_EMAIL,
+            phone_number=settings.FIRST_ADMIN_PHONE_NUMBER,
+            phone_country_code=settings.FIRST_ADMIN_PHONE_COUNTRY_CODE,
             password=settings.FIRST_ADMIN_PASSWORD,
             role_id=role.id,
         )
@@ -90,13 +91,3 @@ def init_test_db(db: Session) -> None:
             db,
             obj_in=user_in,
         )
-    # User user
-    user = services.user.get_by_email(db, email=settings.FIRST_USER_EMAIL)
-    if not user:
-        role = services.role.get_by_name(db, name=Role.USER["name"])
-        user_in = schemas.UserCreate(
-            email=settings.FIRST_USER_EMAIL,
-            password=settings.FIRST_USER_PASSWORD,
-            role_id=role.id,
-        )
-        services.user.create(db, obj_in=user_in)
