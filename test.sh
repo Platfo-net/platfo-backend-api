@@ -18,6 +18,7 @@ alembic upgrade head
 python ./app/initial_test_data.py
 
 # Run tests
+
 pytest --disable-warnings tests
 TEST_RESULT=$?
 # --cov=app --cov-report=term-missing tests
