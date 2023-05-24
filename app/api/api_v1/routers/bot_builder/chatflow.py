@@ -1,10 +1,11 @@
 from typing import Any
-from app import models, services, schemas
-from app.api import deps
-from fastapi import APIRouter, Depends, Security
-from sqlalchemy.orm import Session
-from pydantic.types import UUID4
 
+from fastapi import APIRouter, Depends, Security
+from pydantic.types import UUID4
+from sqlalchemy.orm import Session
+
+from app import models, schemas, services
+from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
@@ -14,16 +15,16 @@ router = APIRouter(prefix="/chatflow")
 
 @router.post("", response_model=schemas.bot_builder.Chatflow)
 def create_chatflow(
-        *,
-        db: Session = Depends(deps.get_db),
-        obj_in: schemas.bot_builder.ChatflowCreate,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.bot_builder.ChatflowCreate,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     chatflow = services.bot_builder.chatflow.create(
         db, obj_in=obj_in, user_id=current_user.id
@@ -32,22 +33,22 @@ def create_chatflow(
         id=chatflow.uuid,
         name=chatflow.name,
         created_at=chatflow.created_at,
-        updated_at=chatflow.updated_at
+        updated_at=chatflow.updated_at,
     )
 
 
 @router.delete("/{id}")
 def delete_chatflow(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     chatflow = services.bot_builder.chatflow.get_by_uuid(db, uuid=id)
     if not chatflow:
@@ -59,17 +60,17 @@ def delete_chatflow(
 
 @router.get("/all", response_model=schemas.bot_builder.ChatflowListApi)
 def get_user_chatflows(
-        *,
-        db: Session = Depends(deps.get_db),
-        page: int = 1,
-        page_size: int = 20,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    page: int = 1,
+    page_size: int = 20,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     pagination, chatflows = services.bot_builder.chatflow.get_multi(
         db, user_id=current_user.id, page=page, page_size=page_size

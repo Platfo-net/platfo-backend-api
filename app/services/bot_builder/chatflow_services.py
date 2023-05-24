@@ -1,9 +1,11 @@
 # from typing import Optional
 
 import math
-from sqlalchemy.orm import Session
-from app import models, schemas
+
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
+
+from app import models, schemas
 
 
 class ChatflowServices:
@@ -11,11 +13,7 @@ class ChatflowServices:
         self.model = model
 
     def create(
-            self,
-            db: Session,
-            *,
-            obj_in: schemas.bot_builder.ChatflowCreate,
-            user_id: int
+        self, db: Session, *, obj_in: schemas.bot_builder.ChatflowCreate, user_id: int
     ) -> models.bot_builder.Chatflow:
         print(user_id)
         obj_in_data = jsonable_encoder(obj_in)
@@ -36,11 +34,15 @@ class ChatflowServices:
         return db.query(self.model).filter(self.model.uuid == uuid).first()
 
     def get_multi(
-            self, db: Session, *, user_id: int, page: int = 1, page_size: int = 20
+        self, db: Session, *, user_id: int, page: int = 1, page_size: int = 20
     ):
-        chatflows = db.query(self.model).filter(
-            self.model.user_id == user_id
-        ).offset(page_size * (page - 1)).limit(page_size).all()
+        chatflows = (
+            db.query(self.model)
+            .filter(self.model.user_id == user_id)
+            .offset(page_size * (page - 1))
+            .limit(page_size)
+            .all()
+        )
 
         total_count = db.query(self.model).count()
         total_page = math.ceil(total_count / page_size)
@@ -53,10 +55,10 @@ class ChatflowServices:
         return pagination, chatflows
 
     def delete(
-            self,
-            db: Session,
-            *,
-            id: int,
+        self,
+        db: Session,
+        *,
+        id: int,
     ):
         db_obj = db.query(self.model).filter(self.model.id == id).first()
         # connections = db.query(models.Connection)\  # todo ask alireza about it

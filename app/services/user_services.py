@@ -1,9 +1,11 @@
 from typing import Optional
+
+from sqlalchemy.orm import Session
+
+from app import models, schemas, services
+from app.constants.role import Role
 from app.core.security import get_password_hash, verify_password
 from app.services.base import BaseServices
-from app.constants.role import Role
-from sqlalchemy.orm import Session
-from app import models, schemas, services
 
 
 class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpdate]):
@@ -12,7 +14,6 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return user
 
     def register(self, db: Session, *, obj_in: schemas.UserRegister) -> models.User:
-
         user_role = services.role.get_by_name(db, name=Role.USER["name"])
 
         db_obj = models.User(
@@ -30,10 +31,10 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return db_obj
 
     def create(
-            self,
-            db: Session,
-            *,
-            obj_in: schemas.UserCreate,
+        self,
+        db: Session,
+        *,
+        obj_in: schemas.UserCreate,
     ) -> models.User:
         user_db_obj = models.User(
             email=obj_in.email,
@@ -51,9 +52,7 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         db.refresh(user_db_obj)
         return user_db_obj
 
-    def change_password(
-            self, db: Session, *, db_user: models.User, password: str
-    ):
+    def change_password(self, db: Session, *, db_user: models.User, password: str):
         db_user.hashed_password = get_password_hash(password)
         db.add(db_user)
         db.commit()
@@ -61,7 +60,7 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return db_user
 
     def authenticate_by_email(
-            self, db: Session, *, email: str, password: str
+        self, db: Session, *, email: str, password: str
     ) -> Optional[models.User]:
         user = self.get_by_email(db, email=email)
         if not user:
@@ -71,17 +70,10 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         return user
 
     def authenticate_by_phone_number(
-            self,
-            db: Session,
-            *,
-            phone_number: str,
-            phone_country_code: str,
-            password: str
+        self, db: Session, *, phone_number: str, phone_country_code: str, password: str
     ):
         user = self.get_by_phone_number(
-            db,
-            phone_number=phone_number,
-            phone_country_code=phone_country_code
+            db, phone_number=phone_number, phone_country_code=phone_country_code
         )
         if not user:
             return None
@@ -103,11 +95,17 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
         db.refresh(user)
         return user
 
-    def get_by_phone_number(self, db: Session, *, phone_number: str, phone_country_code: str):
-        return db.query(self.model).filter(
-            self.model.phone_number == phone_number,
-            self.model.phone_country_code == phone_country_code
-        ).first()
+    def get_by_phone_number(
+        self, db: Session, *, phone_number: str, phone_country_code: str
+    ):
+        return (
+            db.query(self.model)
+            .filter(
+                self.model.phone_number == phone_number,
+                self.model.phone_country_code == phone_country_code,
+            )
+            .first()
+        )
 
 
 user = UserServices(models.User)

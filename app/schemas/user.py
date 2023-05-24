@@ -1,9 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
-from app.schemas.role import Role
-from .media import Image
 from pydantic import UUID4, BaseModel, EmailStr, validator
+
+from app.schemas.role import Role
+
+from .media import Image
 
 
 def normalize_phone_number(phone_number):
@@ -17,7 +19,7 @@ def normalize_phone_number(phone_number):
 def get_full_phone_number(phone_number, phone_country_code):
     return "{}{}".format(
         normalize_phone_number(phone_number),
-        normalize_phone_country_code(phone_country_code)
+        normalize_phone_country_code(phone_country_code),
     )
 
 

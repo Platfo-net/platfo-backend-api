@@ -1,6 +1,8 @@
 from typing import List
-from app import models, schemas
+
 from sqlalchemy.orm import Session
+
+from app import models, schemas
 
 
 class GroupContactServices:
@@ -8,11 +10,11 @@ class GroupContactServices:
         self.model = model
 
     def create_bulk(
-            self,
-            db: Session,
-            *,
-            objs_in: List[schemas.notifier.GroupContactCreate],
-            group_id: int
+        self,
+        db: Session,
+        *,
+        objs_in: List[schemas.notifier.GroupContactCreate],
+        group_id: int
     ):
         db_objs = []
         for obj_in in objs_in:

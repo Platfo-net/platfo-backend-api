@@ -1,7 +1,7 @@
-from app.models import academy, bot_builder, live_chat, notifier, credit
-from .user import User
-from .role import Role
-from .instagram_page import InstagramPage
+from app.models import academy, bot_builder, credit, live_chat, notifier
+
 from .connection import Connection
+from .instagram_page import InstagramPage
 from .notification import Notification, NotificationUser
-from .user_role import UserRole
+from .role import Role
+from .user import User

@@ -1,12 +1,13 @@
-from app.constants.message_direction import MessageDirection
-from app import services
-from app.core import utils, storage
-from app.db.session import SessionLocal
-from app.constants.campaign_status import CampaignStatus
-from app.core.bot_builder.instagram_graph_api import graph_api
-from app.core.bot_builder.extra_classes import UserData, SavedMessage
 from celery import shared_task
+
+from app import services
+from app.constants.campaign_status import CampaignStatus
+from app.constants.message_direction import MessageDirection
+from app.core import storage, utils
+from app.core.bot_builder.extra_classes import SavedMessage, UserData
+from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.config import settings
+from app.db.session import SessionLocal
 
 
 @shared_task
@@ -52,7 +53,9 @@ def campaign_handler(campaign_id):
     campaign_image = campaign.image
     campaign_image_url = None
     if campaign_image:
-        campaign_image_url = storage.get_file(campaign_image, settings.S3_CAMPAIGN_BUCKET).url
+        campaign_image_url = storage.get_file(
+            campaign_image, settings.S3_CAMPAIGN_BUCKET
+        ).url
 
     instagram_page = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=campaign.facebook_page_id
@@ -97,7 +100,7 @@ def campaign_handler(campaign_id):
                 mid=mid,
                 content={"text": campaign_text},
                 user_id=instagram_page.user_id,
-                direction=MessageDirection.OUT
+                direction=MessageDirection.OUT,
             )
             utils.save_message(db, saved_message)
 

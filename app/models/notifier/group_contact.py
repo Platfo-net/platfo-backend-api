@@ -1,6 +1,7 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, BigInteger
+from sqlalchemy import BigInteger, Column, ForeignKey
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class GroupContact(Base):

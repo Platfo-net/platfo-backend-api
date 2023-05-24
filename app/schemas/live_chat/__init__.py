@@ -1,4 +1,2 @@
-from .contact import Contact, ContactCreate, ProfileUpdate, SearchItem, ContactList
-
-from .message import MessageCreate, Message, MessageSend
-
+from .contact import Contact, ContactCreate, ContactList, ProfileUpdate, SearchItem
+from .message import Message, MessageCreate, MessageSend

@@ -1,6 +1,7 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, Boolean, BigInteger
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class CampaignContact(Base):
@@ -20,10 +21,7 @@ class CampaignContact(Base):
         nullable=True,
     )
     campaign_id = Column(
-        BigInteger,
-        ForeignKey("notifier_campaigns.id"),
-        nullable=True,
-        index=True
+        BigInteger, ForeignKey("notifier_campaigns.id"), nullable=True, index=True
     )
     campaign = relationship("Campaign", back_populates="campaign_contacts")
     contact = relationship("Contact", back_populates="campaign_contacts")

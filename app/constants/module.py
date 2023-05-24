@@ -1,3 +1,2 @@
 class Module:
-
     NOTIFIER = "NOTIFIER"

@@ -1,6 +1,7 @@
-from app import models, schemas
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
+
+from app import models, schemas
 
 
 class MessageServices:
@@ -32,7 +33,6 @@ class MessageServices:
         skip: int = 0,
         limit: int = 20
     ):
-
         return (
             db.query(self.model)
             .filter(

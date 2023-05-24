@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from app import services, schemas
+from app import schemas, services
 from app.constants.application import Application
 from app.constants.trigger import Trigger
 from app.core.config import settings

@@ -1,8 +1,8 @@
+from typing import List
 
+from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
-from typing import List
-from pydantic import UUID4, BaseModel
 
 
 class InvoiceCreateAPI(BaseModel):

@@ -3,13 +3,12 @@ import sys
 from typing import Generator
 
 import redis
-from fastapi import Depends, HTTPException, Security
-from fastapi import WebSocket, Request
+from fastapi import Depends, HTTPException, Request, Security, WebSocket
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
 from sqlalchemy.orm import Session
 
-from app import services, models, schemas
+from app import models, schemas, services
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core import security
@@ -92,9 +91,9 @@ def get_redis_client_for_reset_password():
 
 
 def get_current_user(
-        security_scopes: SecurityScopes,
-        db: Session = Depends(get_db),
-        token: str = Depends(reusable_oauth2),
+    security_scopes: SecurityScopes,
+    db: Session = Depends(get_db),
+    token: str = Depends(reusable_oauth2),
 ) -> models.User:
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
@@ -123,22 +122,20 @@ def get_current_user(
         raise credentials_exception
     if security_scopes.scopes and not token_data.role:
         raise_http_exception(
-            Error.PERMISSION_DENIED_ERROR,
-            {"WWW-Authenticate": authenticate_value}
+            Error.PERMISSION_DENIED_ERROR, {"WWW-Authenticate": authenticate_value}
         )
     if security_scopes.scopes and token_data.role not in security_scopes.scopes:
         raise_http_exception(
-            Error.PERMISSION_DENIED_ERROR,
-            {"WWW-Authenticate": authenticate_value}
+            Error.PERMISSION_DENIED_ERROR, {"WWW-Authenticate": authenticate_value}
         )
     return user
 
 
 def get_current_active_user(
-        current_user: models.User = Security(
-            get_current_user,
-            scopes=[],
-        ),
+    current_user: models.User = Security(
+        get_current_user,
+        scopes=[],
+    ),
 ) -> models.User:
     if not current_user.is_active:
         raise_http_exception(Error.INACTIVE_USER)

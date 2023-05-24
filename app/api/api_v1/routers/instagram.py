@@ -1,15 +1,14 @@
-from app.constants.errors import Error
-import requests
-
 from typing import Any
 
-from app import services, models, schemas
-from app.api import deps
-from app.constants.role import Role
+import requests
 from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
-from app.core.config import settings
 
+from app import models, schemas, services
+from app.api import deps
+from app.constants.errors import Error
+from app.constants.role import Role
+from app.core.config import settings
 from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix="/instagram", tags=["Instagram"])
@@ -17,16 +16,16 @@ router = APIRouter(prefix="/instagram", tags=["Instagram"])
 
 @router.post("")
 def connect_instagram_page(
-        *,
-        db: Session = Depends(deps.get_db),
-        obj_in: schemas.ConnectPage,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.ConnectPage,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     # get user long lived token
     params = dict(
@@ -76,8 +75,8 @@ def connect_instagram_page(
             res = requests.post(subscribe_url, params=params)
             params = dict(
                 fields="username,profile_picture_url,"
-                       "followers_count,follows_count,biography,"
-                       "website,ig_id,name",
+                "followers_count,follows_count,biography,"
+                "website,ig_id,name",
                 access_token=page["access_token"],
             )
 
@@ -106,14 +105,12 @@ def connect_instagram_page(
                     profile_picture_url=page_details.get(
                         "profile_picture_url", None
                     ),  # noqa
-
                     website=page_details.get("website", None),
                     ig_id=page_details.get("ig_id", None),
                     followers_count=page_details.get("followers_count", None),
                     follows_count=page_details.get("follows_count", None),
                     biography=page_details.get("biography", None),
                     name=page_details.get("name", None),
-
                 )
                 services.instagram_page.create(db, obj_in=instagram_page_in)
         except Exception as e:
@@ -124,7 +121,7 @@ def connect_instagram_page(
 
 @router.get("/get/{instagram_page_id}", response_model=schemas.InstagramPage)
 def get_page_data_by_instagram_page_id(
-        *, db: Session = Depends(deps.get_db), instagram_page_id: str
+    *, db: Session = Depends(deps.get_db), instagram_page_id: str
 ):
     obj_instagram = services.instagram_page.get_page_by_ig_id(
         db, instagram_page_id=instagram_page_id
@@ -137,7 +134,6 @@ def get_page_data_by_instagram_page_id(
         instagram_page_id=obj_instagram.instagram_page_id,
         username=obj_instagram.username,
         profile_picture_url=obj_instagram.profile_picture_url,
-
         name=obj_instagram.name,
         website=obj_instagram.website,
         ig_id=obj_instagram.ig_id,
@@ -151,7 +147,7 @@ def get_page_data_by_instagram_page_id(
     "/get_by_facebook_page_id/{facebook_page_id}", response_model=schemas.InstagramPage
 )
 def get_page_data_by_facebook_page_id(
-        *, db: Session = Depends(deps.get_db), facebook_page_id: str
+    *, db: Session = Depends(deps.get_db), facebook_page_id: str
 ):
     obj_instagram = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=facebook_page_id

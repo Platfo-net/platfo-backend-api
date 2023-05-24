@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.routers.credit import plan , invoice
-
+from app.api.api_v1.routers.credit import invoice, plan
 
 router = APIRouter(prefix="/credit", tags=["Credit"], include_in_schema=True)
 

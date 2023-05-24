@@ -1,7 +1,9 @@
 import datetime
-from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, JSON, DateTime, BigInteger
+
+from sqlalchemy import JSON, BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class Message(Base):

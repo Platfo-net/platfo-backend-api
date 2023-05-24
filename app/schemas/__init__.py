@@ -1,43 +1,39 @@
-from app.schemas import academy, bot_builder, live_chat, notifier, credit
-from .role import Role, RoleCreate, RoleInDB, RoleUpdate
-from .token import Token, TokenPayload, Login, LoginFormByEmail, LoginFormByPhoneNumber
-from .user import (
-    User,
-    UserCreate,
-    UserInDB,
-    UserUpdate,
-    UserRegisterByPhoneNumber,
-    UserRegisterByEmail,
-    UserRegister,
-    UserBase,
-    ForgetPassword,
-    ChangePassword,
-    UserUpdatePassword,
-    RegisterCode,
-    ActivationDataByEmail,
-    ActivationDataByPhoneNumber,
-    PhoneData
-)
-
-from .instagram_page import (
-    InstagramPageCreate,
-    InstagramPageUpdate,
-    InstagramPage,
-    ConnectPage,
-)
+from app.schemas import academy, bot_builder, credit, live_chat, notifier
 
 from .account import Account, AccountDetail
-
 from .connection import Connection, ConnectionCreate, ConnectionUpdate
-
-from .pagination import Pagination
+from .file import FileUpload
+from .instagram_page import (
+    ConnectPage,
+    InstagramPage,
+    InstagramPageCreate,
+    InstagramPageUpdate,
+)
+from .media import Image
 from .notification import (
     Notification,
     NotificationCreate,
-    NotificationUpdate,
     NotificationListApi,
     NotificationListItem,
+    NotificationUpdate,
 )
-
-from .file import FileUpload
-from .media import Image
+from .pagination import Pagination
+from .role import Role, RoleCreate, RoleInDB, RoleUpdate
+from .token import Login, LoginFormByEmail, LoginFormByPhoneNumber, Token, TokenPayload
+from .user import (
+    ActivationDataByEmail,
+    ActivationDataByPhoneNumber,
+    ChangePassword,
+    ForgetPassword,
+    PhoneData,
+    RegisterCode,
+    User,
+    UserBase,
+    UserCreate,
+    UserInDB,
+    UserRegister,
+    UserRegisterByEmail,
+    UserRegisterByPhoneNumber,
+    UserUpdate,
+    UserUpdatePassword,
+)

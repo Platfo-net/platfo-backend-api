@@ -1,6 +1,7 @@
+from sqlalchemy.orm import Session
+
 from app import services
 from app.schemas.user import UserCreate
-from sqlalchemy.orm import Session
 from tests.utils.utils import random_lower_string
 
 

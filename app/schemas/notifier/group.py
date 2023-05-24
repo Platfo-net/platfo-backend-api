@@ -1,7 +1,10 @@
-from app.schemas.pagination import Pagination
 from typing import List, Optional
-from pydantic import BaseModel, UUID4
-from .group_contact import GroupContact, ContactSample
+
+from pydantic import UUID4, BaseModel
+
+from app.schemas.pagination import Pagination
+
+from .group_contact import ContactSample, GroupContact
 
 
 class GroupBase(BaseModel):

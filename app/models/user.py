@@ -1,7 +1,17 @@
 import datetime
-from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, BigInteger, UniqueConstraint
+
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class User(Base):
@@ -56,8 +66,8 @@ class User(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            'phone_country_code',
-            'phone_number',
-            name='_phone_number_phone_code_unique_constraint'
+            "phone_country_code",
+            "phone_number",
+            name="_phone_number_phone_code_unique_constraint",
         ),
     )

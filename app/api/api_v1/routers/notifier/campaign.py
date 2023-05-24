@@ -1,13 +1,12 @@
+from fastapi import APIRouter, Depends, Security
 from pydantic import UUID4
+from sqlalchemy.orm import Session
 
-from app import services, models, schemas
+from app import models, schemas, services
 from app.api import deps
 from app.constants.errors import Error
 from app.constants.platform import Platform
 from app.constants.role import Role
-from fastapi import APIRouter, Depends, Security
-from sqlalchemy.orm import Session
-
 from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception
@@ -17,18 +16,18 @@ router = APIRouter(prefix="/campaign")
 
 @router.get("/all", response_model=schemas.notifier.CampaignListApi)
 def get_all_user_campaigns(
-        *,
-        db: Session = Depends(deps.get_db),
-        page: int = 1,
-        page_size: int = 20,
-        facebook_page_id: int = None,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    page: int = 1,
+    page_size: int = 20,
+    facebook_page_id: int = None,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     pagination, items = services.notifier.campaign.get_multi(
         db,
@@ -51,8 +50,7 @@ def get_all_user_campaigns(
                 status=item.status,
                 is_draft=item.is_draft,
                 group_name=item.group_name,
-                image=image
-
+                image=image,
             )
         )
 
@@ -64,16 +62,16 @@ def get_all_user_campaigns(
 
 @router.post("/", response_model=schemas.notifier.Campaign)
 def create_campaign(
-        *,
-        db: Session = Depends(deps.get_db),
-        obj_in: schemas.notifier.CampaignCreateApiSchema,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.notifier.CampaignCreateApiSchema,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     group = services.notifier.group.get_by_uuid(db, obj_in.group_id)
 
@@ -104,8 +102,7 @@ def create_campaign(
     for contact in group_contacts:
         contacts.append(
             schemas.notifier.CampaignContactCreate(
-                contact_id=contact.contact_id,
-                contact_igs_id=contact.contact_igs_id
+                contact_id=contact.contact_id, contact_igs_id=contact.contact_igs_id
             )
         )
 
@@ -128,17 +125,17 @@ def create_campaign(
 
 @router.put("/{id}", response_model=schemas.notifier.CampaignUpdate)
 def update_campaign(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        obj_in: schemas.notifier.CampaignUpdate,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    obj_in: schemas.notifier.CampaignUpdate,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     db_obj = services.notifier.campaign.get_by_uuid(db, id)
 
@@ -168,16 +165,16 @@ def update_campaign(
 
 @router.get("/{id}", response_model=schemas.notifier.CampaignDetail)
 def get_campaign_by_id(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     campaign = services.notifier.campaign.get_by_uuid(db, id)
     if not campaign:
@@ -185,7 +182,9 @@ def get_campaign_by_id(
 
     sent_count = services.notifier.campaign_contact.get_all_sent_count(db, campaign.id)
     seen_count = services.notifier.campaign_contact.get_all_seen_count(db, campaign.id)
-    contact_count = services.notifier.campaign_contact.get_all_contacts_count(db, campaign.id)
+    contact_count = services.notifier.campaign_contact.get_all_contacts_count(
+        db, campaign.id
+    )
     instagram_page = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=campaign.facebook_page_id
     )
@@ -213,24 +212,24 @@ def get_campaign_by_id(
         sent_count=sent_count,
         seen_count=seen_count,
         total_contact_count=contact_count,
-        image=image
+        image=image,
     )
 
 
 @router.get("/{id}/contacts")
 def get_campain_contacts(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        page: int = 1,
-        page_size: int = 20,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    page: int = 1,
+    page_size: int = 20,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     campaign = services.notifier.campaign.get_by_uuid(db, id)
 
@@ -239,34 +238,38 @@ def get_campain_contacts(
     if not campaign.id == current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
-    campaign_contacts, pagination = services.notifier.campaign_contact.get_campain_contacts(
+    (
+        campaign_contacts,
+        pagination,
+    ) = services.notifier.campaign_contact.get_campain_contacts(
         db, campaign_id=campaign.id, page=page, page_size=page_size
     )
     contacts = []
     for contact in campaign_contacts:
-        contacts.append(schemas.notifier.ContactSample(
-            profile_image=contact.contact.information.get("profile_image"),
-            username=contact.contact.information.get("username")
-        ))
+        contacts.append(
+            schemas.notifier.ContactSample(
+                profile_image=contact.contact.information.get("profile_image"),
+                username=contact.contact.information.get("username"),
+            )
+        )
     return schemas.notifier.CampaignContactApiSchema(
-        items=contacts,
-        pagination=pagination
+        items=contacts, pagination=pagination
     )
 
 
 @router.get("/activate/{id}")
 def change_campaign_is_draft(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        is_draft: bool,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    is_draft: bool,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+    ),
 ):
     campaign = services.notifier.campaign.get_by_uuid(db, id)
 
@@ -275,7 +278,5 @@ def change_campaign_is_draft(
     if not campaign.user_id == current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
-    services.notifier.campaign.change_is_draft(
-        db, db_obj=campaign, is_draft=is_draft
-    )
+    services.notifier.campaign.change_is_draft(db, db_obj=campaign, is_draft=is_draft)
     return

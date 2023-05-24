@@ -1,8 +1,9 @@
 from functools import lru_cache
-from typing import Any, Dict, Optional
-from pydantic import BaseSettings, PostgresDsn, validator, RedisDsn
 from pathlib import Path
+from typing import Any, Dict, Optional
+
 from dotenv import load_dotenv
+from pydantic import BaseSettings, PostgresDsn, RedisDsn, validator
 
 load_dotenv()
 
@@ -92,7 +93,7 @@ class Settings(BaseSettings):
 
     @validator("CELERY_URI", pre=True)
     def assemble_celery_connection(
-            cls, v: Optional[str], values: Dict[str, Any]
+        cls, v: Optional[str], values: Dict[str, Any]
     ) -> Any:
         if isinstance(v, str):
             return v

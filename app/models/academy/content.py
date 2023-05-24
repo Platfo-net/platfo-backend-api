@@ -2,10 +2,18 @@ import datetime
 from uuid import uuid4
 
 from slugify import slugify
-
-from sqlalchemy import event
-from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON , BigInteger
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy import (
+    JSON,
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    String,
+    Text,
+    event,
+)
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base

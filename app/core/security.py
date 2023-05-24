@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Any, Union
-from app import models, schemas, services
 
-from app.core.config import settings
 from jose import jwt
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+
+from app import models, schemas, services
+from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -49,7 +50,4 @@ def create_token(db: Session, *, user: models.User):
     access_token = create_access_token(
         token_payload, expires_delta=access_token_expires
     )
-    return schemas.Token(
-        access_token=access_token,
-        token_type="bearer"
-    )
+    return schemas.Token(access_token=access_token, token_type="bearer")

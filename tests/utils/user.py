@@ -1,6 +1,8 @@
 from typing import Dict
-from app.core.config import settings
+
 from fastapi.testclient import TestClient
+
+from app.core.config import settings
 
 
 def user_authentication_headers(

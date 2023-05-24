@@ -1,8 +1,9 @@
 import math
 
 from pydantic import UUID4
-from app import models, schemas
 from sqlalchemy.orm import Session
+
+from app import models, schemas
 
 
 class GroupServices:
@@ -67,7 +68,6 @@ class GroupServices:
         db_obj: models.notifier.Group,
         obj_in: schemas.notifier.GroupUpdate,
     ):
-
         db_obj.name = obj_in.name
         db_obj.description = obj_in.description
         db.add(db_obj)

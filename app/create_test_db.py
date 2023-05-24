@@ -1,6 +1,6 @@
 import psycopg2
-from app.core.config import settings
 
+from app.core.config import settings
 
 conn_string = "host='{}' user='{}' password='{}' port='{}'".format(
     settings.DB_HOST,

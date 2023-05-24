@@ -1,5 +1,6 @@
-from locust import HttpUser, task
 from uuid import uuid4
+
+from locust import HttpUser, task
 
 
 class TestWebhook(HttpUser):

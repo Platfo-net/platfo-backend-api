@@ -1,12 +1,11 @@
-from posix import environ
-from app.db.base import Base
-import sys
 import os
+import sys
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from app.db.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -34,8 +33,9 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    from app.core.config import settings
     import os
+
+    from app.core.config import settings
 
     user = settings.POSTGRES_USER
     password = settings.POSTGRES_PASSWORD

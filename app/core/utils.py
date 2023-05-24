@@ -1,9 +1,11 @@
 import random
 import re
 import string
+
 from pydantic import UUID4
 from sqlalchemy.orm import Session
-from app import models, services, schemas
+
+from app import models, schemas, services
 from app.constants.message_type import MessageType
 from app.core.bot_builder.extra_classes import SavedMessage
 
@@ -90,13 +92,11 @@ def widget_mapper(data, node_id):
     return widget, quick_replies
 
 
-def save_message(
-        db: Session,
-        saved_message: SavedMessage
-):
+def save_message(db: Session, saved_message: SavedMessage):
     services.live_chat.contact.update_last_message(
-        db, contact_igs_id=saved_message.to_page_id,
-        last_message=saved_message.content.get("text", None)
+        db,
+        contact_igs_id=saved_message.to_page_id,
+        last_message=saved_message.content.get("text", None),
     )
     report = services.live_chat.message.create(
         db,
@@ -107,7 +107,7 @@ def save_message(
             mid=saved_message.mid,
             user_id=saved_message.user_id,
             direction=saved_message.direction,
-            type=MessageType.TEXT
+            type=MessageType.TEXT,
         ),
     )
     return report
@@ -116,18 +116,20 @@ def save_message(
 def validate_password(password) -> bool:
     if len(password) < 8:
         return False
-    elif re.search('[0-9]', password) is None:
+    elif re.search("[0-9]", password) is None:
         return False
-    elif re.search('[A-Z]', password) is None:
+    elif re.search("[A-Z]", password) is None:
         return False
-    elif re.search('[a-z]', password) is None:
+    elif re.search("[a-z]", password) is None:
         return False
     return True
 
 
 def generate_random_token(length: int) -> str:
-    return "".join(random.choice(f"{string.ascii_letters}0123456789") for _ in range(length))
+    return "".join(
+        random.choice(f"{string.ascii_letters}0123456789") for _ in range(length)
+    )
 
 
 def generate_random_code(length: int) -> int:
-    return random.randint(10**length, (10**(length + 1)) - 1)
+    return random.randint(10**length, (10 ** (length + 1)) - 1)

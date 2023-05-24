@@ -1,14 +1,24 @@
 import datetime
+
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy.orm import relationship
+
 from app.constants.currency import Currency
 from app.constants.module import Module
 from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, DateTime, Float, \
-    String, Text, ForeignKey, BigInteger, Integer
-from sqlalchemy.orm import relationship
 
 
 class Plan(Base):
-
     __tablename__ = "credit_plans"
 
     title = Column(String(255), nullable=True)

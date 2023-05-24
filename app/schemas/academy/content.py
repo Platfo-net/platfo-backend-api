@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel, Field
 
 from app.schemas.academy.category import CategoryContent, CategoryListItemContent
-from app.schemas.academy.label import LabelListItemContent, LabelContent
+from app.schemas.academy.label import LabelContent, LabelListItemContent
 from app.schemas.pagination import Pagination
 
 

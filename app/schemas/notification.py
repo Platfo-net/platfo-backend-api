@@ -1,7 +1,9 @@
-from typing import List, Optional
-from pydantic import BaseModel, UUID4
-from .pagination import Pagination
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import UUID4, BaseModel
+
+from .pagination import Pagination
 
 
 class NotificationBase(BaseModel):

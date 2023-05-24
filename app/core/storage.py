@@ -1,9 +1,10 @@
+from datetime import timedelta
+
 from minio import Minio
 from minio.error import S3Error
 
 from app import schemas
 from app.core.config import settings
-from datetime import timedelta
 
 
 def add_file_to_s3(object_name, file_path, bucket_name):
@@ -54,7 +55,4 @@ def get_file(filename, bucket):
     if not filename:
         return None
     object_url = get_object_url(filename, bucket)
-    return schemas.Image(
-        filename=filename,
-        url=object_url
-    )
+    return schemas.Image(filename=filename, url=object_url)
