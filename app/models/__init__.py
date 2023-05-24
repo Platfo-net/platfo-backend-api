@@ -4,3 +4,4 @@ from .role import Role
 from .instagram_page import InstagramPage
 from .connection import Connection
 from .notification import Notification, NotificationUser
+from .user_role import UserRole

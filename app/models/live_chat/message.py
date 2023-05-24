@@ -20,5 +20,4 @@ class Message(Base):
         nullable=True,
     )
 
-
-    user = relationship("User" , back_populates="messages")
+    user = relationship("User", back_populates="messages")

@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy.orm import relationship
 from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, ForeignKey, String, JSON, DateTime, Integer, BigInteger
+from sqlalchemy import Boolean, Column, ForeignKey, String, DateTime, Integer, BigInteger
 
 
 class Contact(Base):
@@ -35,9 +35,9 @@ class Contact(Base):
     user = relationship("User", back_populates="contacts")
 
     campaign_contacts = relationship(
-        "CampaignContact", back_populates="contacts", cascade="all,delete"
+        "CampaignContact", back_populates="contact", cascade="all,delete"
     )
 
     group_contacts = relationship(
-        "GroupContact", back_populates="contacts", cascade="all,delete"
+        "GroupContact", back_populates="contact", cascade="all,delete"
     )

@@ -137,24 +137,3 @@ def get_user_me(
         role=user.role,
         profile_image=storage.get_file(user.profile_image, settings.S3_USER_PROFILE_BUCKET)
     )
-
-
-@router.get("/delete-user", response_model=schemas.User)
-def delete_user(
-        *,
-        db: Session = Depends(deps.get_db),
-        phone_data: schemas.PhoneData,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-            ],
-        ),
-) -> Any:
-    user = services.user.get_by_phone_number(
-        db,
-        phone_number=phone_data.phone_number,
-        phone_country_code=phone_data.phone_country_code
-    )
-    if user:
-        services.user.remove(db, id=user.id)

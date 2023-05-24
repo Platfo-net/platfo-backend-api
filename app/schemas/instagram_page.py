@@ -28,13 +28,6 @@ class InstagramPageUpdate(InstagramPageBase):
     user_id: int
 
 
-class InstagramPageInDBBase(InstagramPageBase):
-    id: Optional[UUID4]
-
-    class Config:
-        orm_mode = True
-
-
 class InstagramPage(BaseModel):
     id: Optional[UUID4]
     facebook_page_id: Optional[int] = None
@@ -48,9 +41,6 @@ class InstagramPage(BaseModel):
     followers_count: Optional[int] = None
     follows_count: Optional[int] = None
     biography: Optional[str] = None
-
-class InstagramPageInDB(InstagramPageInDBBase):
-    pass
 
 
 class ConnectPage(BaseModel):

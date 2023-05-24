@@ -50,6 +50,9 @@ class User(Base):
     invoices = relationship("Invoice", back_populates="user")
     credit_logs = relationship("CreditLog", back_populates="user")
     credits = relationship("Credit", back_populates="user")
+    messages = relationship("Message", back_populates="user")
+
+    contacts = relationship("Contact", back_populates="user")
 
     __table_args__ = (
         UniqueConstraint(

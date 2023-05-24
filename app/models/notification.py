@@ -33,6 +33,6 @@ class NotificationUser(Base):
         nullable=True,
     )
 
-    user = relationship("User", back_populates="notification_user")
+    user = relationship("User", back_populates="user_notifications")
 
-    notification = relationship("Notification", back_populates="user_notifications")
+    notification = relationship("Notification", back_populates="notification_user")
