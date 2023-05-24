@@ -1,12 +1,12 @@
-from datetime import datetime
 import math
+from datetime import datetime
 from typing import List
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
-from sqlalchemy import and_
 
 from app import models, schemas
 
@@ -148,9 +148,11 @@ class ContactServices:
         )
 
     def get_bulk_by_uuid(self, db: Session, *, contacts_id: List[UUID4]):
-        return db.query(self.model).filter(
-            models.live_chat.Contact.uuid.in_(contacts_id)
-        ).all()
+        return (
+            db.query(self.model)
+            .filter(models.live_chat.Contact.uuid.in_(contacts_id))
+            .all()
+        )
 
     def get_multi(
         self,

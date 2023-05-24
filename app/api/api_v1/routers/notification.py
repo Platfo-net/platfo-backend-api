@@ -1,30 +1,33 @@
 from typing import Any
-from app import models, services, schemas
-from app.api import deps
-from fastapi import APIRouter, Depends, Security
-from sqlalchemy.orm import Session
-from pydantic.types import UUID4
-from app.constants.errors import Error
 
+from fastapi import APIRouter, Depends, Security
+from pydantic.types import UUID4
+from sqlalchemy.orm import Session
+
+from app import models, schemas, services
+from app.api import deps
+from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/notification", tags=["Notification"], include_in_schema=False)
+router = APIRouter(
+    prefix="/notification", tags=["Notification"], include_in_schema=False
+)
 
 
 @router.get("/all", response_model=schemas.NotificationListApi)
 def get_notifications_list(
-        *,
-        db: Session = Depends(deps.get_db),
-        page: int = 1,
-        page_size: int = 20,
-        current_user: models.User = Security(
-            deps.get_current_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    page: int = 1,
+    page_size: int = 20,
+    current_user: models.User = Security(
+        deps.get_current_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     current_user_role_name = services.role.get(db, current_user.role_id).name
     if current_user_role_name == Role.ADMIN["name"]:
@@ -55,15 +58,15 @@ def get_notifications_list(
 
 @router.post("", response_model=schemas.Notification)
 def create_notification(
-        *,
-        db: Session = Depends(deps.get_db),
-        obj_in: schemas.NotificationCreate,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.NotificationCreate,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     notification = services.notification.create(
         db,
@@ -79,16 +82,16 @@ def create_notification(
 
 @router.put("/{id}", response_model=schemas.Notification)
 def update_notification(
-        *,
-        db: Session = Depends(deps.get_db),
-        obj_in: schemas.NotificationUpdate,
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.NotificationUpdate,
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     notification = services.notification.get_by_uuid(db, id)
     if not notification:
@@ -105,15 +108,15 @@ def update_notification(
 
 @router.delete("/{id}")
 def delete_notification(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+        ],
+    ),
 ) -> Any:
     notification = services.notification.get_by_uuid(db, id)
     if not notification:
@@ -125,26 +128,26 @@ def delete_notification(
 
 @router.put("/read/{id}")
 def read_notification(
-        *,
-        db: Session = Depends(deps.get_db),
-        id: UUID4,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER["name"],
-                Role.ADMIN["name"],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+        ],
+    ),
 ):
     notification = services.notification.get_by_uuid(db, id)
     if not notification:
         raise_http_exception(Error.NOTIFICATON_NOT_FOUND)
     if services.notification_user.get(
-            db,
-            notification_id=notification.id,
-            user_id=current_user.id
+        db, notification_id=notification.id, user_id=current_user.id
     ):
         raise_http_exception(Error.NOTIFICATION_ALREADY_READED)
 
-    services.notification_user.create(db, notification_id=notification.id, user_id=current_user.id)
+    services.notification_user.create(
+        db, notification_id=notification.id, user_id=current_user.id
+    )
     return

@@ -1,17 +1,18 @@
 from uuid import uuid4
+
+from sqlalchemy.orm import Session
+
 from app import schemas, services
 from app.api import deps
 from app.constants.impression import Impression
-from app.db.session import SessionLocal
-from app.core import cache
-from app.core.bot_builder.instagram_graph_api import graph_api
-from app.core.bot_builder.extra_classes import InstagramData, SavedMessage
 from app.constants.message_direction import MessageDirection
-from app.constants.widget_type import WidgetType
 from app.constants.webhook_type import WebhookType
+from app.constants.widget_type import WidgetType
+from app.core import cache
+from app.core.bot_builder.extra_classes import InstagramData, SavedMessage, UserData
+from app.core.bot_builder.instagram_graph_api import graph_api
 from app.core.celery import celery
-from sqlalchemy.orm import Session
-from app.core.bot_builder.extra_classes import UserData
+from app.db.session import SessionLocal
 
 
 @celery.task
@@ -48,9 +49,7 @@ def webhook_proccessor(facebook_webhook_body):
             )
 
         case WebhookType.DELETE_MESSAGE:
-            services.live_chat.message.remove_message_by_mid(
-                db, mid=instagram_data.mid
-            )
+            services.live_chat.message.remove_message_by_mid(db, mid=instagram_data.mid)
 
         case WebhookType.STORY_MENTION:
             saved_data = {
@@ -65,7 +64,7 @@ def webhook_proccessor(facebook_webhook_body):
                 content=saved_data,
                 user_id=user_page_data.user_id,
                 direction=MessageDirection.IN,
-                instagram_page_id=instagram_data.recipient_id
+                instagram_page_id=instagram_data.recipient_id,
             )
             save_message(db, saved_message, user_page_data)
         case WebhookType.STORY_REPLY:
@@ -107,10 +106,10 @@ def webhook_proccessor(facebook_webhook_body):
 
 
 def save_comment(
-        db: Session,
-        from_page_id: int = None,
-        to_page_id: int = None,
-        user_id: int = None,
+    db: Session,
+    from_page_id: int = None,
+    to_page_id: int = None,
+    user_id: int = None,
 ):
     contact = services.live_chat.contact.get_contact_by_igs_id(
         db, contact_igs_id=from_page_id
@@ -198,6 +197,7 @@ def save_message(db: Session, message: SavedMessage, user_data: UserData):
         ),
     )
     return report
+
 
 #
 # @celery.task

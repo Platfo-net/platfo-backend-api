@@ -1,7 +1,9 @@
 import math
 from typing import List
-from app import models, schemas
+
 from sqlalchemy.orm import Session
+
+from app import models, schemas
 
 ModelType = models.notifier.CampaignContact
 CreateSchemaType = schemas.notifier.CampaignContactCreate
@@ -12,10 +14,17 @@ class CampaignContactServices:
     def __init__(self, model):
         self.model = model
 
-    def get_campain_contacts(self, db: Session, *, campaign_id: int, page: int, page_size: int):
-        contacts = db.query(self.model).filter(
-            self.model.campaign_id == campaign_id
-        ).join(self.model.contact).offset(page_size * (page - 1)).limit(page_size).all()
+    def get_campain_contacts(
+        self, db: Session, *, campaign_id: int, page: int, page_size: int
+    ):
+        contacts = (
+            db.query(self.model)
+            .filter(self.model.campaign_id == campaign_id)
+            .join(self.model.contact)
+            .offset(page_size * (page - 1))
+            .limit(page_size)
+            .all()
+        )
 
         total_count = db.query(self.model).count()
         total_pages = math.ceil(total_count / page_size)
@@ -29,9 +38,8 @@ class CampaignContactServices:
         return contacts, pagination
 
     def create_bulk(
-            self, db: Session, *, contacts: List[CreateSchemaType], campaign_id: int
+        self, db: Session, *, contacts: List[CreateSchemaType], campaign_id: int
     ) -> List[ModelType]:
-
         db_obj = [
             self.model(
                 contact_id=c.contact_id,
@@ -46,13 +54,18 @@ class CampaignContactServices:
         return db_obj
 
     def get_campaign_unsend_contacts(
-            self, db: Session, *, campaign_id: int, count: int
+        self, db: Session, *, campaign_id: int, count: int
     ):
-
-        return db.query(self.model).filter(
-            self.model.is_sent == False,  # noqa
-            self.model.campaign_id == campaign_id,
-        ).join(self.model.contact).limit(count).all()
+        return (
+            db.query(self.model)
+            .filter(
+                self.model.is_sent == False,  # noqa
+                self.model.campaign_id == campaign_id,
+            )
+            .join(self.model.contact)
+            .limit(count)
+            .all()
+        )
 
     def get_campaign_unsend_contacts_count(self, db: Session, *, campaign_id: int):
         return (
@@ -66,9 +79,7 @@ class CampaignContactServices:
 
     def get_all_contacts_count(self, db: Session, campaign_id: int):
         return (
-            db.query(self.model)
-            .filter(self.model.campaign_id == campaign_id)
-            .count()
+            db.query(self.model).filter(self.model.campaign_id == campaign_id).count()
         )
 
     def get_all_sent_count(self, db: Session, campaign_id: int):
@@ -86,7 +97,7 @@ class CampaignContactServices:
             db.query(models.notifier.CampaignContact)
             .filter(
                 self.model.campaign_id == campaign_id,
-                self.model.is_seen == True  # noqa
+                self.model.is_seen == True,  # noqa
             )
             .count()
         )
@@ -99,9 +110,8 @@ class CampaignContactServices:
         )
 
     def change_send_status_bulk(
-            self, db: Session, *, campaign_contacts_in: list[ModelType], is_sent: bool
+        self, db: Session, *, campaign_contacts_in: list[ModelType], is_sent: bool
     ):
-
         db_objs = []
         for campaign_contact in campaign_contacts_in:
             campaign_contact.is_sent = is_sent

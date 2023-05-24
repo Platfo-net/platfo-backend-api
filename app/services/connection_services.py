@@ -1,9 +1,10 @@
 from typing import List, Optional
+
 from pydantic import UUID4
-from app.services.base import BaseServices
-from app import models, schemas
 from sqlalchemy.orm import Session
 
+from app import models, schemas
+from app.services.base import BaseServices
 
 ModelType = models.Connection
 CreateSchemaType = schemas.ConnectionCreate
@@ -18,9 +19,8 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         obj_in: CreateSchemaType,
         details: List[dict],
         account_id: int,
-        user_id: int
+        user_id: int,
     ) -> Optional[ModelType]:
-
         db_obj = self.model(
             name=obj_in.name,
             description=obj_in.description,

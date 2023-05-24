@@ -1,6 +1,7 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, Text
+from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class InstagramPage(Base):

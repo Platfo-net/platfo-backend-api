@@ -1,24 +1,25 @@
 from .campaign import (
-    CampaignCreate,
-    CampaignUpdate,
     Campaign,
-    CampaignListApi,
+    CampaignCreate,
     CampaignCreateApiSchema,
     CampaignDetail,
-
+    CampaignListApi,
+    CampaignUpdate,
 )
-
 from .campaign_contact import CampaignContactCreate, CampaignContactUpdate
-
 from .group import (
     Group,
-    GroupContactSample,
-    GroupListApi,
-    GroupCreate,
-    GroupUpdate,
-    GroupCreateApiSchemas,
-    GroupUpdateApiSchemas,
     GroupContactCreate,
+    GroupContactSample,
+    GroupCreate,
+    GroupCreateApiSchemas,
+    GroupListApi,
+    GroupUpdate,
+    GroupUpdateApiSchemas,
 )
-
-from .group_contact import GroupContact, GroupContactListItem, ContactSample, CampaignContactApiSchema
+from .group_contact import (
+    CampaignContactApiSchema,
+    ContactSample,
+    GroupContact,
+    GroupContactListItem,
+)

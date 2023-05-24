@@ -2,10 +2,11 @@ class Error:
     """
     Constants for the errors
     """
+
     UNEXPECTED_ERROR = {
         "text": "Unexcpected error happen during the action.",
         "status_code": 500,
-        "code": 0
+        "code": 0,
     }
     USER_EXIST_ERROR = {
         "text": "There is a user with this email",
@@ -156,11 +157,7 @@ class Error:
         "status_code": 400,
         "code": 80,
     }
-    INVALID_DETAILS = {
-        "text": "Invalid Detail",
-        "status_code": 400,
-        "code": 81
-    }
+    INVALID_DETAILS = {"text": "Invalid Detail", "status_code": 400, "code": 81}
     INVALID_FIELDS_OPERATORS = {
         "text": "Invalid fields or operators",
         "status_code": 400,

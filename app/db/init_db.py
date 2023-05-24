@@ -1,7 +1,8 @@
-from app import services, schemas
+from sqlalchemy.orm import Session
+
+from app import schemas, services
 from app.constants.role import Role
 from app.core.config import settings
-from sqlalchemy.orm import Session
 
 
 def init_db(db: Session) -> None:

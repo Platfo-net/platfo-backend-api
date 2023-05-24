@@ -1,5 +1,4 @@
 from app.core.celery import celery
-
 from app.core.config import settings
 from app.core.sms import send_verify_sms
 
@@ -11,4 +10,6 @@ def send_user_activation_code(receptor, code):
 
 @celery.task
 def send_user_reset_password_code(receptor, code):
-    return send_verify_sms(receptor, code, settings.SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID)
+    return send_verify_sms(
+        receptor, code, settings.SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID
+    )

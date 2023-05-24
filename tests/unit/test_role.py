@@ -1,5 +1,6 @@
-from app import services, schemas, models
 from sqlalchemy.orm import Session
+
+from app import models, schemas, services
 
 
 def test_create_role_successfully(db: Session):

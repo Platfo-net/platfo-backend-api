@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.api.api_v1.routers.notifier import campaign, group
 
 router = APIRouter(prefix="/notifier", tags=["Notifier"])

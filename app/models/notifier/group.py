@@ -1,6 +1,7 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, BigInteger
+from sqlalchemy import BigInteger, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class Group(Base):

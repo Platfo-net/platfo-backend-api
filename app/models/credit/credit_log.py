@@ -1,10 +1,10 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, String, ForeignKey, BigInteger, Integer
+from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class CreditLog(Base):
-
     __tablename__ = "credit_credit_logs"
 
     module = Column(String(20), nullable=False)

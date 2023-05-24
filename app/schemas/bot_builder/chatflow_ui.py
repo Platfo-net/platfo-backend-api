@@ -1,5 +1,6 @@
 from typing import List, Optional
-from pydantic import BaseModel, UUID4
+
+from pydantic import UUID4, BaseModel
 
 
 class NodeUI(BaseModel):

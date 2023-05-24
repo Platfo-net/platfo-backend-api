@@ -1,9 +1,8 @@
 import uuid
 
-from fastapi import UploadFile, File, APIRouter, Security
+from fastapi import APIRouter, File, Security, UploadFile
 
-from app import models
-from app import schemas
+from app import models, schemas
 from app.api import deps
 from app.constants.role import Role
 from app.core import storage
@@ -14,14 +13,14 @@ router = APIRouter(prefix="/file", tags=["File"])
 
 @router.post("/upload/notifier/campaign", response_model=schemas.Image)
 async def upload_notifier_campaign_image(
-        file: UploadFile = File(...),
-        _: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+    file: UploadFile = File(...),
+    _: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+    ),
 ):
     filename = f"{uuid.uuid4()}-{file.filename}"
     uploaded_file_name = storage.add_file_to_s3(
@@ -33,14 +32,14 @@ async def upload_notifier_campaign_image(
 
 @router.post("/upload/user/profile", response_model=schemas.Image)
 async def upload_user_profile_image(
-        file: UploadFile = File(...),
-        _: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.ADMIN["name"],
-                Role.USER["name"],
-            ],
-        ),
+    file: UploadFile = File(...),
+    _: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+        ],
+    ),
 ):
     filename = f"{uuid.uuid4()}-{file.filename}"
     uploaded_file_name = storage.add_file_to_s3(

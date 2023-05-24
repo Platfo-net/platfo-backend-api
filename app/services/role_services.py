@@ -1,8 +1,9 @@
 from typing import Optional
 
-from app.services.base import BaseServices
 from sqlalchemy.orm import Session
+
 from app import models, schemas
+from app.services.base import BaseServices
 
 
 class RoleServices(BaseServices[models.Role, schemas.RoleCreate, schemas.RoleUpdate]):

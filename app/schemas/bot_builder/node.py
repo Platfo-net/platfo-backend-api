@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-from .chatflow import Chatflow
 from pydantic import UUID4, BaseModel
+
+from .chatflow import Chatflow
 
 
 class QuickReply(BaseModel):

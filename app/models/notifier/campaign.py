@@ -1,8 +1,10 @@
 import datetime
-from app.db.base_class import Base
-from sqlalchemy import Column, ForeignKey, String, DateTime, JSON, Boolean, BigInteger
+
+from sqlalchemy import JSON, BigInteger, Boolean, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
+
 from app.constants.campaign_status import CampaignStatus
+from app.db.base_class import Base
 
 
 class Campaign(Base):
@@ -21,12 +23,7 @@ class Campaign(Base):
 
     content = Column(JSON, nullable=True)
 
-    user_id = Column(
-        BigInteger,
-        ForeignKey("users.id"),
-        nullable=True,
-        index=True
-    )
+    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=True, index=True)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

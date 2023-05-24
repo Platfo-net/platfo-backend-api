@@ -4,7 +4,7 @@ from app.constants.webhook_type import WebhookType
 
 
 class InstagramData:
-    def __init__(self , body):
+    def __init__(self, body):
         self.platform = None
         self.sender_id = None
         self.recipient_id = None
@@ -339,4 +339,4 @@ class SavedMessage:
     user_id: int = None
     direction: str = None
     instagram_page_id: int = None
-    type : str = None
+    type: str = None

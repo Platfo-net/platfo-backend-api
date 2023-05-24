@@ -18,7 +18,6 @@ class ContentServices(
     ]
 ):
     def get_multi(self, db: Session, *, page: int = 1, page_size: int = 20):
-
         contents = (
             db.query(self.model)
             .order_by(desc(self.model.created_at))
@@ -44,7 +43,6 @@ class ContentServices(
     def get_by_detail(
         self, db: Session, *, id: str, page: int = 1, page_size: int = 20
     ):
-
         content = (
             db.query(self.model)
             .options(

@@ -1,10 +1,11 @@
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, UUID4
 
+from pydantic import UUID4, BaseModel
+
+from app.schemas.account import Account
 from app.schemas.media import Image
 from app.schemas.pagination import Pagination
-from app.schemas.account import Account
 
 
 class CampaignCreate(BaseModel):

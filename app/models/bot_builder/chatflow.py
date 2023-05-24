@@ -1,8 +1,9 @@
 import datetime
 
-from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, BigInteger
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class Chatflow(Base):
@@ -11,12 +12,7 @@ class Chatflow(Base):
     name = Column(String(255), nullable=True)
     is_active = Column(Boolean(), default=True)
 
-    user_id = Column(
-        BigInteger,
-        ForeignKey("users.id"),
-        nullable=True,
-        index=True
-    )
+    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=True, index=True)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(

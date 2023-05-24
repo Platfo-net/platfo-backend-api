@@ -1,10 +1,10 @@
-from sqlalchemy.orm import Session
 import json
-
 from datetime import timedelta
-from app import services
-from redis.client import Redis
 
+from redis.client import Redis
+from sqlalchemy.orm import Session
+
+from app import services
 from app.core.bot_builder.extra_classes import ConnectionData, UserData
 
 
@@ -14,7 +14,7 @@ def get_data_from_cache(client: Redis, key: str = None) -> str:
 
 
 def set_data_to_cache(
-        client: Redis, key: str = None, value: str = None, expire: int = 3600
+    client: Redis, key: str = None, value: str = None, expire: int = 3600
 ) -> bool:
     state = client.setex(key, timedelta(seconds=3600), value=value)  # todo time
     client.expire(key, expire)
@@ -27,7 +27,7 @@ def remove_data_from_cache(client: Redis, key: str = None):
 
 
 def get_user_data(
-        client: Redis, db: Session, *, instagram_page_id: int = None
+    client: Redis, db: Session, *, instagram_page_id: int = None
 ) -> UserData:
     data = get_data_from_cache(client, key=instagram_page_id)
 
@@ -68,7 +68,7 @@ def get_password_data(client: Redis, *, code: str = None):
 
 
 def get_connection_data(
-        db: Session, client: Redis, *, application_name: str = None, account_id: str = None
+    db: Session, client: Redis, *, application_name: str = None, account_id: str = None
 ):
     key = f"{application_name}+{str(account_id)}"
     data = get_data_from_cache(client, key)
@@ -121,9 +121,7 @@ def get_node_chatflow_id(db: Session, client: Redis, *, widget_id: str = None):
 
 
 def get_user_registeration_activation_code(
-        client: Redis,
-        phone_number: str,
-        phone_country_code: str
+    client: Redis, phone_number: str, phone_country_code: str
 ):
     data = get_data_from_cache(client, f"{phone_country_code}{phone_number}")
     if data is None:
@@ -134,16 +132,9 @@ def get_user_registeration_activation_code(
 
 
 def set_user_registeration_activation_code(
-        client: Redis,
-        phone_number: str,
-        phone_country_code: str,
-        code: int,
-        token: str
+    client: Redis, phone_number: str, phone_country_code: str, code: int, token: str
 ):
-    data = dict(
-        code=code,
-        token=token
-    )
+    data = dict(code=code, token=token)
     key = f"{phone_country_code}{phone_number}"
     data = json.dumps(data)
     result = set_data_to_cache(client, key, data, expire=120)
@@ -160,18 +151,15 @@ def get_user_reset_password_code(client: Redis, email):
 
 
 def set_user_reset_password_code(client: Redis, email, code, token):
-    data = dict(
-        code=code,
-        token=token
-    )
+    data = dict(code=code, token=token)
     data = json.dumps(data)
     result = set_data_to_cache(client, email, data, expire=120)
     return result
 
 
 def get_user_registeration_activation_code_by_email(
-        client: Redis,
-        email: str,
+    client: Redis,
+    email: str,
 ):
     data = get_data_from_cache(client, email)
     if data is None:
@@ -182,15 +170,9 @@ def get_user_registeration_activation_code_by_email(
 
 
 def set_user_registeration_activation_code_by_email(
-        client: Redis,
-        email: str,
-        code: int,
-        token: str
+    client: Redis, email: str, code: int, token: str
 ):
-    data = dict(
-        code=code,
-        token=token
-    )
+    data = dict(code=code, token=token)
     data = json.dumps(data)
     result = set_data_to_cache(client, email, data, expire=120)
     return result

@@ -1,9 +1,11 @@
 from typing import Generator
+
 import pytest
+from fastapi.testclient import TestClient
+
 from app.api.deps import get_db
 from app.db.session import TestingSessionLocal
 from app.main import app
-from fastapi.testclient import TestClient
 
 
 def override_get_db():

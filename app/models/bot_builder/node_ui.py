@@ -1,7 +1,8 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, String, ForeignKey, JSON, Boolean, Integer, BigInteger
+from sqlalchemy import JSON, BigInteger, Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class NodeUI(Base):
@@ -18,10 +19,7 @@ class NodeUI(Base):
     has_edit_action = Column(Boolean(), nullable=True)
 
     chatflow_id = Column(
-        BigInteger,
-        ForeignKey("bot_builder_chatflows.id"),
-        nullable=True,
-        index=True
+        BigInteger, ForeignKey("bot_builder_chatflows.id"), nullable=True, index=True
     )
 
     chatflow = relationship("Chatflow", back_populates="nodeui")

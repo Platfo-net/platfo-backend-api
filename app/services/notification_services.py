@@ -1,8 +1,10 @@
 import math
-from app.services.base import BaseServices
-from app import models, schemas
-from sqlalchemy.orm import Session
+
 from pydantic import UUID4
+from sqlalchemy.orm import Session
+
+from app import models, schemas
+from app.services.base import BaseServices
 
 
 class NotificationServices(
@@ -11,16 +13,19 @@ class NotificationServices(
     ]
 ):
     def get_by_multi(
-            self,
-            db: Session,
-            *,
-            page: int = 1,
-            page_size: int = 20,
+        self,
+        db: Session,
+        *,
+        page: int = 1,
+        page_size: int = 20,
     ):
-        notifications = db.query(self.model).order_by(
-            self.model.created_at.desc()).offset(
-            page_size * (page - 1)
-        ).limit(page_size).all()
+        notifications = (
+            db.query(self.model)
+            .order_by(self.model.created_at.desc())
+            .offset(page_size * (page - 1))
+            .limit(page_size)
+            .all()
+        )
 
         total_count = db.query(self.model).count()
         total_page = math.ceil(total_count / page_size)
@@ -34,7 +39,7 @@ class NotificationServices(
         return notifications, pagination
 
     def get_by_multi_for_user(
-            self, db: Session, *, page: int = 1, page_size: int = 20, user_id: int
+        self, db: Session, *, page: int = 1, page_size: int = 20, user_id: int
     ):
         notification_user = (
             db.query(models.NotificationUser)

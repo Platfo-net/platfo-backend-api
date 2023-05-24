@@ -1,6 +1,8 @@
 from typing import List
-from app import models
+
 from sqlalchemy.orm import Session
+
+from app import models
 
 
 class ChatflowUIServices:
@@ -20,12 +22,18 @@ class ChatflowUIServices:
         return
 
     def get_node_ui(self, db: Session, *, chatflow_id: int):
-        return db.query(models.bot_builder.NodeUI).filter(
-            models.bot_builder.NodeUI.chatflow_id == chatflow_id).all()
+        return (
+            db.query(models.bot_builder.NodeUI)
+            .filter(models.bot_builder.NodeUI.chatflow_id == chatflow_id)
+            .all()
+        )
 
     def get_edge_ui(self, db: Session, *, chatflow_id: int):
-        return db.query(models.bot_builder.Edge).filter(
-            models.bot_builder.Edge.chatflow_id == chatflow_id).all()
+        return (
+            db.query(models.bot_builder.Edge)
+            .filter(models.bot_builder.Edge.chatflow_id == chatflow_id)
+            .all()
+        )
 
 
 chatflow_ui = ChatflowUIServices()
