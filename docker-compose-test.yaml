@@ -16,8 +16,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env.test
-    environment:
-      - ENVIRONMENT=test
     
 
   db:
