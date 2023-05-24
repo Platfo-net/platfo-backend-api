@@ -1,0 +1,33 @@
+services:
+  api:
+    container_name: "${APP_NAME}-api"
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=${ENVIRONMENT}
+    image: "platfo-backend-app"
+    volumes:
+      - .:/app
+    command: /app/startup.sh
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+
+  db:
+    container_name: "${APP_NAME}-database"
+    image: postgres:14
+    restart: unless-stopped
+    env_file:
+      - .env.test
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+  redis-data:
