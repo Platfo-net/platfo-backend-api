@@ -24,7 +24,7 @@ class MessageServices:
         db.refresh(message)
         return message
 
-    def get_pages_messages(
+    def get_page_messages(
         self,
         db: Session,
         *,

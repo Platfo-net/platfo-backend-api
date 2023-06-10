@@ -13,6 +13,7 @@ app = FastAPI(
     redoc_url=None if settings.ENVIRONMENT == 'prod' else '/redoc',
 )
 
+
 app.include_router(api_router, prefix=settings.API_V1_STR)
 app.add_middleware(
     CORSMiddleware,

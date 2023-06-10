@@ -36,8 +36,12 @@ def get_archive(
         ],
     ),
 ):
-    messages = services.live_chat.message.get_pages_messages(
-        db, contact_igs_id=contact_igs_id, page_id=page_id, skip=skip, limit=limit
+    messages = services.live_chat.message.get_page_messages(
+        db,
+        contact_igs_id=contact_igs_id,
+        page_id=page_id,
+        skip=skip,
+        limit=limit,
     )
     new_messages = []
     messages = reversed(messages)
