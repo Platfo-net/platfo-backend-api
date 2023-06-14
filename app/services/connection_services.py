@@ -91,5 +91,15 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
             .first()
         )
 
+    def get_connection(
+        self, db: Session, *, account_id: int, application_name: str, trigger: str
+    ) -> Optional[ModelType]:
+        connection = self.get_by_application_name_and_account_id(
+            db, account_id=account_id, application_name=application_name)
+        for detail in connection.details:
+            if detail["trigger"] == trigger:
+                return connection , detail
+        return None , None
+
 
 connection = ConnectionServices(models.Connection)

@@ -128,6 +128,16 @@ class BaseHandler:
 
 
 class BotBaseHandler(BaseHandler):
+    def check_connection_and_get_detail(self, trigger, application):
+        _, detail = services.connection.get_connection(
+            self.db,
+            account_id=self.user_page_data.account_id,
+            application_name=application,
+            trigger=trigger
+        )
+
+        return detail
+
     def send_widget(
         self,
         widget: dict,
