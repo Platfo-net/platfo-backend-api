@@ -5,11 +5,15 @@ from app.api import deps
 from app.constants.webhook_type import WebhookType
 from app.core import cache
 from app.core.bot_builder.extra_classes import InstagramData
+from app.core.bot_builder.handlers import (CommentHandler,
+                                           ContactMessageHandler,
+                                           DeleteMessageHandler,
+                                           LiveCommentHandler,
+                                           MessageSeenHandler,
+                                           StoryMentionHandler,
+                                           StoryReplyHandler)
 from app.core.celery import celery
 from app.db.session import SessionLocal
-from app.core.bot_builder.handlers import MessageSeenHandler, CommentHandler, \
-    LiveCommentHandler, DeleteMessageHandler, StoryMentionHandler,\
-    StoryReplyHandler, ContactMessageHandler
 
 
 @celery.task

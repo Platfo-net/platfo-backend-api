@@ -1,5 +1,6 @@
 from app.db.base_class import Base
-from app.models.academy import Category, Content, ContentCategory, ContentLabel, Label
+from app.models.academy import (Category, Content, ContentCategory,
+                                ContentLabel, Label)
 from app.models.bot_builder import Chatflow, Edge, Node, NodeUI
 from app.models.connection import Connection
 from app.models.credit import Credit, CreditLog, Invoice, Plan, PlanFeature

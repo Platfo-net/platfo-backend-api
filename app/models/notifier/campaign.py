@@ -1,6 +1,7 @@
 import datetime
 
-from sqlalchemy import JSON, BigInteger, Boolean, Column, DateTime, ForeignKey, String
+from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime,
+                        ForeignKey, String)
 from sqlalchemy.orm import relationship
 
 from app.constants.campaign_status import CampaignStatus

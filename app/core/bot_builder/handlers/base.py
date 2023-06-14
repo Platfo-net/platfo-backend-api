@@ -1,12 +1,14 @@
 
 from abc import abstractmethod
+
+from redis import Redis
+from sqlalchemy.orm import Session
+
 from app import schemas, services
 from app.constants.impression import Impression
 from app.constants.message_direction import MessageDirection
-
-from app.core.bot_builder.extra_classes import InstagramData, SavedMessage, UserData
-from redis import Redis
-from sqlalchemy.orm import Session
+from app.core.bot_builder.extra_classes import (InstagramData, SavedMessage,
+                                                UserData)
 from app.core.bot_builder.instagram_graph_api import graph_api
 
 

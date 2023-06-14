@@ -1,4 +1,5 @@
-from sqlalchemy import JSON, BigInteger, Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import (JSON, BigInteger, Boolean, Column, ForeignKey, Integer,
+                        String)
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 

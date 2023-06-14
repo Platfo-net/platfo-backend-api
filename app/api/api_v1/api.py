@@ -1,21 +1,9 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.routers import (
-    academy,
-    accounts,
-    auth,
-    bot_builder_api,
-    connection,
-    constants,
-    credit_api,
-    file,
-    instagram,
-    live_chat_api,
-    notification,
-    notifier_api,
-    users,
-    webhook,
-)
+from app.api.api_v1.routers import (academy, accounts, auth, bot_builder_api,
+                                    connection, constants, credit_api, file,
+                                    instagram, live_chat_api, notification,
+                                    notifier_api, users, webhook)
 
 api_router = APIRouter()
 

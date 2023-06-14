@@ -1,6 +1,7 @@
 
 
 from uuid import uuid4
+
 from app.constants.message_direction import MessageDirection
 from app.constants.widget_type import WidgetType
 from app.core.bot_builder.extra_classes import SavedMessage

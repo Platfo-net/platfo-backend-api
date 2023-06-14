@@ -1,14 +1,7 @@
 import datetime
 
-from sqlalchemy import (
-    BigInteger,
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    String,
-    UniqueConstraint,
-)
+from sqlalchemy import (BigInteger, Boolean, Column, DateTime, ForeignKey,
+                        String, UniqueConstraint)
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base

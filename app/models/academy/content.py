@@ -2,17 +2,8 @@ import datetime
 from uuid import uuid4
 
 from slugify import slugify
-from sqlalchemy import (
-    JSON,
-    BigInteger,
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    String,
-    Text,
-    event,
-)
+from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime,
+                        ForeignKey, String, Text, event)
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 
