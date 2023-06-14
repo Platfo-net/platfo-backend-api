@@ -1,5 +1,6 @@
 
 from abc import abstractmethod
+from typing import List
 
 from redis import Redis
 from sqlalchemy.orm import Session
@@ -7,6 +8,7 @@ from sqlalchemy.orm import Session
 from app import schemas, services
 from app.constants.impression import Impression
 from app.constants.message_direction import MessageDirection
+from app.constants.widget_type import WidgetType
 from app.core.bot_builder.extra_classes import (InstagramData, SavedMessage,
                                                 UserData)
 from app.core.bot_builder.instagram_graph_api import graph_api
@@ -123,3 +125,83 @@ class BaseHandler:
             ),
         )
         return report
+
+
+class BotBaseHandler(BaseHandler):
+    def send_widget(
+        self,
+        widget: dict,
+        quick_replies: List[dict],
+        contact_igs_id: int,
+    ):
+
+        while widget["widget_type"] in (WidgetType.TEXT, WidgetType.MEDIA):
+            mid = None
+            if widget["widget_type"] == WidgetType.MEDIA:
+                mid = self.handle_media(widget, contact_igs_id)
+
+            if widget["widget_type"] == WidgetType.TEXT:
+                mid = self.handle_text(widget, contact_igs_id, quick_replies)
+
+            saved_message = self.pack_our_message(contact_igs_id, widget, mid)
+            self.save_message(
+                saved_message
+            )
+
+            payload = widget["id"]
+
+            node = services.bot_builder.node.get_next_node(self.db, from_id=payload)
+
+            if node is None:
+                break
+
+            widget = node.widget
+            quick_replies = node.quick_replies
+
+        if widget["widget_type"] == "MENU":
+            mid = self.handle_menu(widget, quick_replies, contact_igs_id)
+            self.pack_our_message(contact_igs_id, widget, mid)
+            saved_message = self.save_message(saved_message)
+
+        return widget
+
+    def handle_media(self, widget, contact_igs_id: int) -> str:
+        mid = graph_api.send_media(
+            widget["title"],
+            widget["image"],
+            from_id=self.user_page_data.facebook_page_id,
+            to_id=contact_igs_id,
+            page_access_token=self.user_page_data.facebook_page_token,
+        )
+        return mid
+
+    def handle_text(self, widget, contact_igs_id: int, quick_replies) -> str:
+        mid = graph_api.send_text_message(
+            text=widget["message"],
+            from_id=self.user_page_data.facebook_page_id,
+            to_id=contact_igs_id,
+            page_access_token=self.user_page_data.facebook_page_token,
+            quick_replies=quick_replies,
+        )
+        return mid
+
+    def handle_menu(self, widget, quick_replies, contact_igs_id: int):
+        mid = graph_api.send_menu(
+            widget,
+            quick_replies,
+            from_id=self.user_page_data.facebook_page_id,
+            to_id=contact_igs_id,
+            page_access_token=self.user_page_data.facebook_page_token,
+        )
+        return mid
+
+    def pack_our_message(self, contact_igs_id: int, content, mid) -> SavedMessage:
+        saved_message = SavedMessage(
+            from_page_id=self.user_page_data.facebook_page_id,
+            to_page_id=contact_igs_id,
+            mid=mid,
+            content=content,
+            user_id=self.user_page_data.user_id,
+            direction=MessageDirection.OUT
+        )
+        return saved_message
