@@ -80,6 +80,11 @@ class Settings(BaseSettings):
 
     LOKI_LOG_PUSH_URL: str
 
+    OTEL_EXPORTER_OTLP_ENDPOINT: str
+
+    OTEL_SERVICE_NAME: str
+    OTEL_EXPORTER_OTLP_INSECURE: str
+
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
@@ -118,8 +123,3 @@ def get_settings():
 
 
 settings = get_settings()
-
-"""
-broker_url = 'redis://user:password@redishost:6379/0'
-
-"""

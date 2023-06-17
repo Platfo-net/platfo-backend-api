@@ -3,6 +3,8 @@ from typing import Any
 
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
+from opentelemetry.semconv.trace import HttpFlavorValues, SpanAttributes
+from opentelemetry.trace import SpanKind
 from redis.client import Redis
 from sqlalchemy.orm import Session
 
@@ -20,8 +22,19 @@ def login_access_token_by_email(
     *,
     db: Session = Depends(deps.get_db),
     logger: Logger = Depends(deps.logger_factory("auth")),
+    tracer=Depends(deps.tracer_factory("auth")),
     data: schemas.LoginFormByEmail,
 ):
+
+    with tracer.start_as_current_span("login", kind=SpanKind.SERVER) as span:
+        span.set_attributes(
+            {
+                SpanAttributes.HTTP_METHOD: "GET",
+                SpanAttributes.HTTP_FLAVOR: str(HttpFlavorValues.HTTP_1_1),
+                SpanAttributes.HTTP_URL: "access-token",
+                SpanAttributes.NET_PEER_IP: "127.0.0.1",
+            }
+        )
     logger.info(
         "login_access_token_by_email",
         extra={"tags": {"email": data.email}},

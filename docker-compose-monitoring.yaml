@@ -1,0 +1,112 @@
+
+
+services:
+  loki:
+    image: grafana/loki:2.8.0
+    container_name: "${APP_NAME}-loki"
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-logs:/loki
+
+  jaeger-collector:
+    container_name: "${APP_NAME}-jaeger-collector"
+    image: jaegertracing/jaeger-collector
+    ports:
+      - "14250:14250"
+    restart: on-failure
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+    command:
+      [
+        "--es.server-urls=http://elasticsearch:9200",
+        "--es.num-shards=1",
+        "--es.num-replicas=0",
+        "--log-level=error"
+      ]
+    depends_on:
+      - elasticsearch
+
+  jaeger-agent:
+    container_name: "${APP_NAME}-jaeger-agent"
+    image: jaegertracing/jaeger-agent
+    hostname: jaeger-agent
+    command: [ "--collector.host-port=jaeger-collector:14267" ]
+    ports:
+      - "6831:6831/udp"
+    restart: on-failure
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+    depends_on:
+      - jaeger-collector
+
+  jaeger-query:
+    container_name: "${APP_NAME}-jaeger-query"
+    image: jaegertracing/jaeger-query
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - no_proxy=localhost
+    ports:
+      - "16686:16686"
+    restart: on-failure
+    command:
+      [
+        "--es.server-urls=http://elasticsearch:9200",
+        "--span-storage.type=elasticsearch",
+        "--log-level=debug"
+      ]
+    depends_on:
+      - jaeger-agent
+
+  opentelemetry-collector:
+    image: otel/opentelemetry-collector-contrib:0.42.0
+    container_name: "${APP_NAME}-opentelemetry-collector"
+    volumes:
+      - ./config/collector/config.yml/:/etc/opentelemetry-collector.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - "--config=/etc/opentelemetry-collector.yml"
+    ports:
+      - 4317:4317
+      - 13133:13133
+      - 8889:8889
+    env_file:
+      - .env
+
+  grafana:
+    image: grafana/grafana:8.3.3
+    container_name: "${APP_NAME}-grafana"
+    ports:
+      - 3000:3000
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ORG_ROLE=Editor
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_USERS_DEFAULT_THEME=light
+
+  elasticsearch:
+    image: elasticsearch:7.17.8
+    container_name: "${APP_NAME}-jaeger-elasticsearch"
+    restart: on-failure
+    environment:
+      - cluster.name=jaeger-cluster
+      - discovery.type=single-node
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+volumes:
+  loki-logs:
+  elasticsearch-data:
+
+
