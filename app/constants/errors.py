@@ -7,11 +7,13 @@ class Error:
         'text': 'Unexcpected error happen during the action.',
         'status_code': 500,
         'code': 0,
+        'description' : "",
     }
     USER_EXIST_ERROR = {
         'text': 'There is a user with this email',
         'status_code': 409,
         'code': 1,
+        'description' : "",
     }
 
     PERMISSION_DENIED_ERROR = {

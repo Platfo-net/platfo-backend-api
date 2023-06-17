@@ -1,3 +1,4 @@
+from logging import Logger
 from typing import Any
 
 from fastapi import APIRouter, Body, Depends, status
@@ -18,16 +19,21 @@ router = APIRouter(prefix='/auth', tags=['Auth'])
 def login_access_token_by_email(
     *,
     db: Session = Depends(deps.get_db),
+    logger: Logger = Depends(deps.logger_factory("auth")),
     data: schemas.LoginFormByEmail,
 ):
+    logger.info(
+        "login_access_token_by_email",
+        extra={"tags": {"email": data.email}},
+    )
     user = services.user.authenticate_by_email(
         db, email=data.email, password=data.password
     )
 
     if not user:
-        raise_http_exception(Error.USER_PASS_WRONG_ERROR)
+        raise_http_exception(Error.USER_PASS_WRONG_ERROR, logger=logger)
     if not user.is_email_verified:
-        raise_http_exception(Error.EMAIL_NOT_VERIFIED)
+        raise_http_exception(Error.EMAIL_NOT_VERIFIED, logger)
     elif not user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
 
