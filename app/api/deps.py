@@ -5,7 +5,8 @@ from typing import Generator
 
 import logging_loki
 import redis
-from fastapi import Depends, HTTPException, Request, Security, WebSocket
+from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
+                     WebSocket)
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
 from opentelemetry import trace
@@ -15,6 +16,7 @@ from opentelemetry.sdk.resources import Resource, ResourceDetector
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.semconv.resource import ResourceAttributes
+from opentelemetry.trace import Tracer
 from sqlalchemy.orm import Session
 
 from app import models, schemas, services
@@ -149,14 +151,14 @@ def get_current_active_user(
     return current_user
 
 
-def logger_factory(module_name):
-    def dependency(_: Request):
+def logger_factory(router: APIRouter):
+    def dependency() -> logging.Logger:
 
         handler = logging_loki.LokiHandler(
             url=settings.LOKI_LOG_PUSH_URL,
             tags={
                 "application": settings.APP_NAME,
-                "module": module_name
+                "module": router.tags[0]
             },
             version="1",
         )
@@ -179,8 +181,8 @@ class LocalResourceDetector(ResourceDetector):
         )
 
 
-def tracer_factory(name):
-    def dependency():
+def tracer_factory(router: APIRouter):
+    def dependency() -> Tracer:
         exporter = OTLPSpanExporter()
         # exporter = ConsoleSpanExporter()
         span_processor = BatchSpanProcessor(exporter)
@@ -189,13 +191,13 @@ def tracer_factory(name):
         resource = local_resource.merge(
             Resource.create(
                 {
-                    ResourceAttributes.SERVICE_NAME: name,
-                    ResourceAttributes.SERVICE_VERSION: "1",
+                    ResourceAttributes.SERVICE_NAME: router.tags[0],
+                    ResourceAttributes.SERVICE_VERSION: settings.VERSION,
                 }
             )
         )
         provider = TracerProvider(resource=resource)
         provider.add_span_processor(span_processor)
         trace.set_tracer_provider(provider)
-        return trace.get_tracer(name, "1")
+        return trace.get_tracer(router.tags[0], settings.VERSION)
     return dependency

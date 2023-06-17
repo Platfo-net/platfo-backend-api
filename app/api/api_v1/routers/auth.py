@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from opentelemetry.semconv.trace import HttpFlavorValues, SpanAttributes
-from opentelemetry.trace import SpanKind
+from opentelemetry.trace import SpanKind, Tracer
 from redis.client import Redis
 from sqlalchemy.orm import Session
 
@@ -21,18 +21,17 @@ router = APIRouter(prefix='/auth', tags=['Auth'])
 def login_access_token_by_email(
     *,
     db: Session = Depends(deps.get_db),
-    logger: Logger = Depends(deps.logger_factory("auth")),
-    tracer=Depends(deps.tracer_factory("auth")),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     data: schemas.LoginFormByEmail,
 ):
 
-    with tracer.start_as_current_span("login", kind=SpanKind.SERVER) as span:
+    with tracer.start_as_current_span("login_access_token_by_email", kind=SpanKind.SERVER) as span:
         span.set_attributes(
             {
-                SpanAttributes.HTTP_METHOD: "GET",
+                SpanAttributes.HTTP_METHOD: "POST",
                 SpanAttributes.HTTP_FLAVOR: str(HttpFlavorValues.HTTP_1_1),
                 SpanAttributes.HTTP_URL: "access-token",
-                SpanAttributes.NET_PEER_IP: "127.0.0.1",
             }
         )
     logger.info(
@@ -57,6 +56,8 @@ def login_access_token_by_email(
 def login_access_token_by_phone_number(
     *,
     db: Session = Depends(deps.get_db),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     data: schemas.LoginFormByPhoneNumber,
 ) -> Any:
     user = services.user.authenticate_by_phone_number(
@@ -77,6 +78,8 @@ def login_access_token_by_phone_number(
 @router.post('/token-swagger', response_model=schemas.Token)
 def login_access_token_swagger(
     db: Session = Depends(deps.get_db),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Any:
     user = services.user.authenticate_by_email(
@@ -92,6 +95,8 @@ def login_access_token_swagger(
 
 @router.post('/check', response_model=schemas.User)
 def test_token(
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -103,6 +108,8 @@ def test_token(
 
 @router.post('/hash-password', response_model=str)
 def hash_password(
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     password: str = Body(..., embed=True),
 ) -> Any:
     """
@@ -116,6 +123,8 @@ def forgot_password(
     *,
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client_for_reset_password),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     email: schemas.PhoneData,
 ):
     user = services.user.get_by_email(db, email=email)
@@ -145,6 +154,8 @@ def change_password(
     *,
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client_for_reset_password),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     obj_in: schemas.ChangePassword,
 ):
     user = services.user.get_by_email(db, email=obj_in.email)
@@ -174,6 +185,8 @@ def send_activation_code_by_sms(
     *,
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     phone_data: schemas.PhoneData,
 ):
     user = services.user.get_by_phone_number(
@@ -217,6 +230,8 @@ def activate_user_by_sms(
     *,
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     activation_data: schemas.ActivationDataByPhoneNumber,
 ):
     user = services.user.get_by_phone_number(
@@ -266,6 +281,8 @@ def activate_user_by_sms(
 def send_activation_email(
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     email: str = Body(..., embed=True),
 ):
     return
@@ -297,6 +314,8 @@ def activate_user_by_email(
     *,
     db: Session = Depends(deps.get_db),
     redis_client: Redis = Depends(deps.get_redis_client_for_user_activation),
+    logger: Logger = Depends(deps.logger_factory(router)),
+    tracer: Tracer = Depends(deps.tracer_factory(router)),
     activation_data: schemas.ActivationDataByEmail,
 ):
     return
