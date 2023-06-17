@@ -1,4 +1,5 @@
 import logging
+import socket
 import sys
 from typing import Generator
 
@@ -7,6 +8,13 @@ import redis
 from fastapi import Depends, HTTPException, Request, Security, WebSocket
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
+    OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource, ResourceDetector
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.semconv.resource import ResourceAttributes
 from sqlalchemy.orm import Session
 
 from app import models, schemas, services
@@ -156,4 +164,38 @@ def logger_factory(module_name):
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
         return logger
+    return dependency
+
+
+class LocalResourceDetector(ResourceDetector):
+    def detect(self):
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+        return Resource.create(
+            {
+                "net.host.name": hostname,
+                "net.host.ip": ip_address,
+            }
+        )
+
+
+def tracer_factory(name):
+    def dependency():
+        exporter = OTLPSpanExporter()
+        # exporter = ConsoleSpanExporter()
+        span_processor = BatchSpanProcessor(exporter)
+        local_resource = LocalResourceDetector().detect()
+
+        resource = local_resource.merge(
+            Resource.create(
+                {
+                    ResourceAttributes.SERVICE_NAME: name,
+                    ResourceAttributes.SERVICE_VERSION: "1",
+                }
+            )
+        )
+        provider = TracerProvider(resource=resource)
+        provider.add_span_processor(span_processor)
+        trace.set_tracer_provider(provider)
+        return trace.get_tracer(name, "1")
     return dependency
