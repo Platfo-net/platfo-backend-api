@@ -2,6 +2,7 @@ import logging
 import sys
 from typing import Generator
 
+import logging_loki
 import redis
 from fastapi import Depends, HTTPException, Request, Security, WebSocket
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -29,9 +30,6 @@ reusable_oauth2 = CustomOAuth2PasswordBearer(
         Role.USER['name']: Role.USER['description'],
     },
 )
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def get_db() -> Generator:
@@ -91,9 +89,9 @@ def get_redis_client_for_reset_password():
 
 
 def get_current_user(
-    security_scopes: SecurityScopes,
-    db: Session = Depends(get_db),
-    token: str = Depends(reusable_oauth2),
+        security_scopes: SecurityScopes,
+        db: Session = Depends(get_db),
+        token: str = Depends(reusable_oauth2),
 ) -> models.User:
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
@@ -132,12 +130,30 @@ def get_current_user(
 
 
 def get_current_active_user(
-    current_user: models.User = Security(
-        get_current_user,
-        scopes=[],
-    ),
+        current_user: models.User = Security(
+            get_current_user,
+            scopes=[],
+        ),
 ) -> models.User:
     if not current_user.is_active:
         raise_http_exception(Error.INACTIVE_USER)
 
     return current_user
+
+
+def logger_factory(module_name):
+    def dependency(_: Request):
+
+        handler = logging_loki.LokiHandler(
+            url=settings.LOKI_LOG_PUSH_URL,
+            tags={
+                "application": settings.APP_NAME,
+                "module": module_name
+            },
+            version="1",
+        )
+        logger = logging.getLogger(settings.PROJECT_NAME)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+        return logger
+    return dependency

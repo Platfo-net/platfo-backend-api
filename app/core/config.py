@@ -10,6 +10,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = 'Platfo Backend Api'
+    APP_NAME: str
     API_V1_STR: str = '/api/v1'
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
@@ -76,6 +77,8 @@ class Settings(BaseSettings):
 
     SMS_IR_API_KEY: str
     SMS_IR_LINE_NUMBER: str
+
+    LOKI_LOG_PUSH_URL: str
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
