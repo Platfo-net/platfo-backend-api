@@ -36,35 +36,35 @@ class Settings(BaseSettings):
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
-    S3_ACADEMY_ATTACHMENT_BUCKET: str
+    S3_ACADEMY_ATTACHMENT_BUCKET: str = None
 
-    FACEBOOK_APP_ID: str
-    FACEBOOK_APP_SECRET: str
+    FACEBOOK_APP_ID: str = None
+    FACEBOOK_APP_SECRET: str = None
 
-    FACEBOOK_GRAPH_BASE_URL: str
-    FACEBOOK_GRAPH_VERSION: str
+    FACEBOOK_GRAPH_BASE_URL: str = None
+    FACEBOOK_GRAPH_VERSION: str = None
 
-    FACEBOOK_WEBHOOK_VERIFY_TOKEN: str
+    FACEBOOK_WEBHOOK_VERIFY_TOKEN: str = None
 
-    REDIS_HOST: str
-    REDIS_PASSWORD: str
-    REDIS_PORT: str
-    REDIS_DB_CELERY: str
-    REDIS_DB_CACHE: str
+    REDIS_HOST: str = None
+    REDIS_PASSWORD: str = None
+    REDIS_PORT: str = None
+    REDIS_DB_CELERY: str = None
+    REDIS_DB_CACHE: str = None
 
     REDIS_RESET_PASSWORD_DB: int = 4
     REDIS_USER_ACTIVATION_DB: int = 5
 
     CELERY_URI: Optional[str] = None
 
-    S3_ROOT_USER: str
-    S3_ROOT_PASSWORD: str
-    S3_PORT: str
-    S3_HOST: str
+    S3_ROOT_USER: str = None
+    S3_ROOT_PASSWORD: str = None
+    S3_PORT: str = None
+    S3_HOST: str = None
 
-    S3_CHATFLOW_MEDIA_BUCKET: str
-    S3_CAMPAIGN_BUCKET: str
-    S3_USER_PROFILE_BUCKET: str
+    S3_CHATFLOW_MEDIA_BUCKET: str = None
+    S3_CAMPAIGN_BUCKET: str = None
+    S3_USER_PROFILE_BUCKET: str = None
 
     CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT: int = 150
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15
@@ -72,18 +72,18 @@ class Settings(BaseSettings):
     SAMPLE_FACEBOOK_PAGE_ID: int = 20
     SAMPLE_CONTACT_IGS_ID: int = 10
 
-    SMS_IR_USER_ACTIVATION_TEMPLATE_ID: int
-    SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID: int
+    SMS_IR_USER_ACTIVATION_TEMPLATE_ID: int = None
+    SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID: int = None
 
-    SMS_IR_API_KEY: str
-    SMS_IR_LINE_NUMBER: str
+    SMS_IR_API_KEY: str = None
+    SMS_IR_LINE_NUMBER: str = None
 
-    LOKI_LOG_PUSH_URL: str
+    LOKI_LOG_PUSH_URL: str = None
 
-    OTEL_EXPORTER_OTLP_ENDPOINT: str
+    OTEL_EXPORTER_OTLP_ENDPOINT: str = None
 
-    OTEL_SERVICE_NAME: str
-    OTEL_EXPORTER_OTLP_INSECURE: str
+    OTEL_SERVICE_NAME: str = None
+    OTEL_EXPORTER_OTLP_INSECURE: str = None
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
