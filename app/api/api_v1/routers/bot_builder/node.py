@@ -29,14 +29,14 @@ def get_all_nodes(
         ],
     ),
 ) -> Any:
-    chatflow = services.bot_builder.chatflow.get(
-        db, id=chatflow_id, user_id=current_user.id
+    chatflow: models.bot_builder.Chatflow = services.bot_builder.chatflow.get_by_uuid(
+        db, uuid=chatflow_id, user_id=current_user.id
     )
 
     if not chatflow:
         raise_http_exception(Error.NO_CHATFLOW_WITH_THE_GIVEN_ID)
 
-    nodes = services.bot_builder.node.get_nodes(db, chatflow_id=chatflow_id)
+    nodes = services.bot_builder.node.get_nodes(db, chatflow_id=chatflow.id)
     return nodes
 
 
@@ -53,8 +53,8 @@ def create_full_node(
         ],
     ),
 ) -> Any:
-    chatflow = services.bot_builder.chatflow.get(
-        db, id=obj_in.chatflow_id, user_id=current_user.id
+    chatflow = services.bot_builder.chatflow.get_by_uuid(
+        db, uuid=obj_in.chatflow_id, user_id=current_user.id
     )
 
     if not chatflow:

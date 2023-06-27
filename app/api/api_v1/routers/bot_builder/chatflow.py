@@ -50,7 +50,8 @@ def delete_chatflow(
         ],
     ),
 ) -> Any:
-    chatflow = services.bot_builder.chatflow.get_by_uuid(db, uuid=id)
+    chatflow: models.bot_builder.Chatflow = services.bot_builder.chatflow.get_by_uuid(
+        db, uuid=id, user_id=current_user.id)
     if not chatflow:
         raise_http_exception(Error.NO_CHATFLOW_WITH_THE_GIVEN_ID)
 

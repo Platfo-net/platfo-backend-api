@@ -23,16 +23,16 @@ def get_chatflow_nodes_edges(
         ],
     ),
 ):
-    chatflow = services.bot_builder.chatflow.get(
-        db, id=chatflow_id, user_id=current_user.id
+    chatflow: models.bot_builder.Chatflow = services.bot_builder.chatflow.get_by_uuid(
+        db, uuid=chatflow_id, user_id=current_user.id
     )
 
-    nodes = services.bot_builder.chatflow_ui.get_node_ui(db, chatflow_id=chatflow_id)
-    edges = services.bot_builder.chatflow_ui.get_edge_ui(db, chatflow_id=chatflow_id)
+    nodes = services.bot_builder.chatflow_ui.get_node_ui(db, chatflow_id=chatflow.id)
+    edges = services.bot_builder.chatflow_ui.get_edge_ui(db, chatflow_id=chatflow.id)
 
     nodes = [
         schemas.bot_builder.NodeUI(
-            id=node.id,
+            id=node.uuid,
             text=node.text,
             width=node.width,
             height=node.height,
@@ -46,7 +46,7 @@ def get_chatflow_nodes_edges(
 
     edges = [
         schemas.bot_builder.Edge(
-            id=edge.id,
+            id=edge.uuid,
             from_id=edge.from_id,
             to_id=edge.to_id,
             from_port=edge.from_port,
@@ -58,7 +58,7 @@ def get_chatflow_nodes_edges(
     ]
 
     return schemas.bot_builder.ChatflowUI(
-        chatflow_id=chatflow_id,
+        chatflow_id=chatflow.uuid,
         name=chatflow.name,
         nodes=nodes,
         edges=edges,
@@ -79,14 +79,15 @@ def create_chatflow_nodes_edges(
         ],
     ),
 ):
+    chatflow = services.bot_builder.chatflow.get_by_uuid(
+        db, uuid=chatflow_id, user_id=current_user.id)
     db.query(models.bot_builder.NodeUI).filter(
-        models.bot_builder.NodeUI.chatflow_id == chatflow_id
-    ).delete()
-    db.query(models.bot_builder.Edge).filter(
-        models.bot_builder.Edge.chatflow_id == chatflow_id
+        models.bot_builder.NodeUI.chatflow_id == chatflow.id
     ).delete()
 
-    chatflow = services.bot_builder.chatflow.get(db, chatflow_id, current_user.id)
+    db.query(models.bot_builder.Edge).filter(
+        models.bot_builder.Edge.chatflow_id == chatflow.id
+    ).delete()
 
     services.bot_builder.chatflow.update(
         db,
@@ -97,7 +98,7 @@ def create_chatflow_nodes_edges(
     new_nodes = []
     for node in obj_in.nodes:
         db_obj = models.bot_builder.NodeUI(
-            id=node.id,
+            id=node.uuid,
             text=node.text,
             width=node.width,
             height=node.height,
@@ -113,7 +114,7 @@ def create_chatflow_nodes_edges(
     new_edges = []
     for edge in obj_in.edges:
         db_obj = models.bot_builder.Edge(
-            id=edge.id,
+            id=edge.uuid,
             from_id=edge.from_id,
             to_id=edge.to_id,
             from_port=edge.from_port,

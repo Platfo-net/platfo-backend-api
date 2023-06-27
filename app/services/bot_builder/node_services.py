@@ -20,7 +20,7 @@ class NodeServices(
     ]
 ):
     def get_nodes(
-        self, db: Session, *, chatflow_id: UUID4
+        self, db: Session, *, chatflow_id: int
     ) -> List[schemas.bot_builder.Node]:
         return db.query(self.model).filter(self.model.chatflow_id == chatflow_id).all()
 

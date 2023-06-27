@@ -1,3 +1,4 @@
+import math
 import random
 import re
 import string
@@ -133,3 +134,12 @@ def generate_random_token(length: int) -> str:
 
 def generate_random_code(length: int) -> int:
     return random.randint(10**length, (10 ** (length + 1)) - 1)
+
+
+def paginate(total_count, page, page_size) -> schemas.Pagination:
+    return schemas.Pagination(
+        page=page,
+        page_size=page_size,
+        total_pages=math.ceil(total_count / page_size),
+        total_count=total_count,
+    )

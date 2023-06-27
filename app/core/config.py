@@ -86,7 +86,6 @@ class Settings(BaseSettings):
     OTEL_SERVICE_NAME: str = None
     OTEL_EXPORTER_OTLP_INSECURE: str = None
 
-
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
