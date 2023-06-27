@@ -10,6 +10,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = 'Platfo Backend Api'
+    VERSION: str = None
     APP_NAME: str
     API_V1_STR: str = '/api/v1'
     SECRET_KEY: str
@@ -84,6 +85,7 @@ class Settings(BaseSettings):
 
     OTEL_SERVICE_NAME: str = None
     OTEL_EXPORTER_OTLP_INSECURE: str = None
+
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
