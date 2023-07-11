@@ -19,11 +19,17 @@ class InvoiceServices:
             .first()
         )
 
-    def get_by_uuid(self, db: Session, uuid: UUID4) -> Optional[models.credit.Invoice]:
+    def get_by_uuid(
+            self,
+            db: Session,
+            *,
+            uuid: UUID4,
+            user_id: int
+    ) -> Optional[models.credit.Invoice]:
         return (
             db.query(self.model)
             .join(self.model.features)
-            .filter(self.model.uuid == uuid)
+            .filter(self.model.uuid == uuid, self.model.user_id == user_id)
             .first()
         )
 

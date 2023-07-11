@@ -1,5 +1,6 @@
 
 
+from datetime import datetime
 from uuid import uuid4
 
 from app import services
@@ -12,7 +13,10 @@ from app.core.bot_builder.handlers import BaseHandler
 class ContactMessageHandler(BaseHandler):
     def __call__(self):
         saved_message = self.pack()
-        self.save_message(saved_message)
+        _, self.is_new = self.save_message(saved_message)
+
+        if saved_message.direction == MessageDirection.IN:
+            self.update_databoard()
 
     def pack(self):
         saved_data = {
@@ -30,6 +34,49 @@ class ContactMessageHandler(BaseHandler):
             instagram_page_id=self.instagram_data.recipient_id,
         )
         return saved_message
+
+    def update_databoard(self):
+        now = datetime.now()
+        databoard = services.databoard.contact_message_stat.get(
+            self.db,
+            facebook_page_id=self.user_page_data.facebook_page_id,
+            now=now
+        )
+        if not databoard:
+            services.databoard.contact_message_stat.create(
+                self.db,
+                facebook_page_id=self.user_page_data.facebook_page_id,
+                count=1,
+                now=now()
+            )
+
+        else:
+            services.databoard.contact_message_stat.update_count(
+                self.db,
+                db_obj=databoard,
+                added_count=1
+            )
+
+        if self.is_new:
+            contact_databoard = services.databoard.contact_stat.get(
+                self.db,
+                facebook_page_id=self.user_page_data.facebook_page_id,
+                now=now
+            )
+            if not contact_databoard:
+                contact_databoard = services.databoard.contact_stat.create(
+                    self.db,
+                    facebook_page_id=self.user_page_data.facebook_page_id,
+                    count=1
+                )
+            else:
+                services.databoard.contact_stat.update_count(
+                    self.db,
+                    db_obj=contact_databoard,
+                    added_count=1,
+                )
+
+        return databoard
 
 
 class ContactMessageBotHandler(BaseHandler):

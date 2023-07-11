@@ -4,6 +4,8 @@ from app.models.academy import (Category, Content, ContentCategory,
 from app.models.bot_builder import Chatflow, Edge, Node, NodeUI
 from app.models.connection import Connection
 from app.models.credit import Credit, CreditLog, Invoice, Plan, PlanFeature
+from app.models.databoard import (CommentStat, ContactMessageStat, ContactStat,
+                                  FollowerStat, LiveCommentStat)
 from app.models.instagram_page import InstagramPage
 from app.models.live_chat import Contact, Message
 from app.models.notification import Notification, NotificationUser

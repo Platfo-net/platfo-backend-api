@@ -2,11 +2,8 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.constants.role import Role
-from tests.unit.fixtures import (
-    sample_email,
-    sample_phone_number,
-    sample_secure_password,
-)
+from tests.unit.fixtures import (sample_email, sample_phone_number,
+                                 sample_secure_password)
 
 from .fixtures import sample_inactive_user, sample_user  # noqa
 

@@ -11,7 +11,7 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix='/plans')
 
 
-@router.get('/')
+@router.get('')
 def get_plans(
     *,
     db: Session = Depends(deps.get_db),

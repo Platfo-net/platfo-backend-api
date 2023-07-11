@@ -241,3 +241,9 @@ class Error:
         'status_code': 400,
         'code': 132,
     }
+
+    INVALID_TIMEFRAME = {
+        'text': 'Invalid Timeframe',
+        'status_code': 400,
+        'code': 140,
+    }

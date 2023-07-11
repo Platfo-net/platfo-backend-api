@@ -74,7 +74,12 @@ class BaseHandler:
         )
         return 0
 
+    @abstractmethod
+    def update_databoard(self):
+        raise NotImplementedError
+
     def save_message(self, message: SavedMessage):
+        is_new = False
         if message.direction == MessageDirection.IN:
             contact = services.live_chat.contact.get_contact_by_igs_id(
                 self.db, contact_igs_id=message.from_page_id
@@ -98,6 +103,8 @@ class BaseHandler:
                     contact_igs_id=message.from_page_id,
                     information=information,
                 )
+                is_new = True
+
             else:
                 services.live_chat.contact.update_last_message_count(
                     self.db, contact_igs_id=message.from_page_id
@@ -124,7 +131,7 @@ class BaseHandler:
                 direction=message.direction,
             ),
         )
-        return report
+        return report , is_new
 
 
 class BotBaseHandler(BaseHandler):

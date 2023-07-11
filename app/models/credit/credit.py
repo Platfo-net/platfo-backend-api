@@ -17,6 +17,7 @@ class Credit(Base):
         ForeignKey('users.id'),
         primary_key=False,
         nullable=False,
+        index=True
     )
 
     user = relationship('User', back_populates='credits')

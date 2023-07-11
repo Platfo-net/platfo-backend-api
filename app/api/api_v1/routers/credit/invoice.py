@@ -69,7 +69,7 @@ def delete_invoice(
         ],
     ),
 ):
-    invoice = services.credit.invoice.get_by_uuid(db, uuid=id)
+    invoice = services.credit.invoice.get_by_uuid(db, uuid=id, user_id=current_user.id)
     if not invoice:
         raise_http_exception(Error.INVOICE_NOT_FOUND)
 
@@ -128,7 +128,7 @@ def get_invoice(
         ],
     ),
 ):
-    invoice = services.credit.invoice.get_by_uuid(db, uuid=id)
+    invoice = services.credit.invoice.get_by_uuid(db, uuid=id, user_id=current_user.id)
     if not invoice:
         return raise_http_exception(Error.INVOICE_NOT_FOUND)
 

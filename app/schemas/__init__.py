@@ -1,4 +1,4 @@
-from app.schemas import academy, bot_builder, credit, live_chat, notifier
+from app.schemas import academy, bot_builder, credit, live_chat, notifier , databoard
 
 from .account import Account, AccountDetail
 from .connection import Connection, ConnectionCreate, ConnectionUpdate
