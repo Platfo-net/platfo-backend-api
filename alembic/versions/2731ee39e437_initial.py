@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 20049bb1d300
+Revision ID: 2731ee39e437
 Revises: 
-Create Date: 2023-07-11 14:36:01.010621
+Create Date: 2023-07-15 17:29:49.080071
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '20049bb1d300'
+revision = '2731ee39e437'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -51,12 +51,13 @@ def upgrade():
     )
     op.create_index(op.f('ix_credit_plans_id'), 'credit_plans', ['id'], unique=False)
     op.create_table('databoard_comment_stats',
-    sa.Column('facebook_page_id', sa.Integer(), nullable=True),
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('year', sa.Integer(), nullable=True),
     sa.Column('month', sa.Integer(), nullable=True),
     sa.Column('day', sa.Integer(), nullable=True),
     sa.Column('hour', sa.Integer(), nullable=True),
     sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('from_datetime', sa.DateTime(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')
@@ -67,12 +68,13 @@ def upgrade():
     op.create_index(op.f('ix_databoard_comment_stats_month'), 'databoard_comment_stats', ['month'], unique=False)
     op.create_index(op.f('ix_databoard_comment_stats_year'), 'databoard_comment_stats', ['year'], unique=False)
     op.create_table('databoard_contact_message_stats',
-    sa.Column('facebook_page_id', sa.Integer(), nullable=True),
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('year', sa.Integer(), nullable=True),
     sa.Column('month', sa.Integer(), nullable=True),
     sa.Column('day', sa.Integer(), nullable=True),
     sa.Column('hour', sa.Integer(), nullable=True),
     sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('from_datetime', sa.DateTime(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')
@@ -83,12 +85,13 @@ def upgrade():
     op.create_index(op.f('ix_databoard_contact_message_stats_month'), 'databoard_contact_message_stats', ['month'], unique=False)
     op.create_index(op.f('ix_databoard_contact_message_stats_year'), 'databoard_contact_message_stats', ['year'], unique=False)
     op.create_table('databoard_contact_stats',
-    sa.Column('facebook_page_id', sa.Integer(), nullable=True),
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('year', sa.Integer(), nullable=True),
     sa.Column('month', sa.Integer(), nullable=True),
     sa.Column('day', sa.Integer(), nullable=True),
     sa.Column('hour', sa.Integer(), nullable=True),
     sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('from_datetime', sa.DateTime(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')
@@ -99,7 +102,7 @@ def upgrade():
     op.create_index(op.f('ix_databoard_contact_stats_month'), 'databoard_contact_stats', ['month'], unique=False)
     op.create_index(op.f('ix_databoard_contact_stats_year'), 'databoard_contact_stats', ['year'], unique=False)
     op.create_table('databoard_follower_stats',
-    sa.Column('facebook_page_id', sa.Integer(), nullable=True),
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('year', sa.Integer(), nullable=True),
     sa.Column('month', sa.Integer(), nullable=True),
     sa.Column('day', sa.Integer(), nullable=True),
@@ -116,12 +119,13 @@ def upgrade():
     op.create_index(op.f('ix_databoard_follower_stats_month'), 'databoard_follower_stats', ['month'], unique=False)
     op.create_index(op.f('ix_databoard_follower_stats_year'), 'databoard_follower_stats', ['year'], unique=False)
     op.create_table('databoard_live_comment_stats',
-    sa.Column('facebook_page_id', sa.Integer(), nullable=True),
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('year', sa.Integer(), nullable=True),
     sa.Column('month', sa.Integer(), nullable=True),
     sa.Column('day', sa.Integer(), nullable=True),
     sa.Column('hour', sa.Integer(), nullable=True),
     sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('from_datetime', sa.DateTime(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')

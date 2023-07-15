@@ -19,17 +19,17 @@ class DataboardBase:
         )
         db.add(db_obj)
         db.commit()
-        db.refresh()
+        db.refresh(db_obj)
         return db_obj
 
-    def get(self, db: Session, *, facebook_page_id: int, now: datetime, ):
+    def get(self, db: Session, *, facebook_page_id: int, now: datetime):
         return db.query(self.model).filter(
             self.model.facebook_page_id == facebook_page_id,
             self.model.year == now.year,
             self.model.month == now.month,
             self.model.day == now.day,
             self.model.hour == now.hour,
-        )
+        ).first()
 
     def update_count(
         self,
@@ -39,7 +39,8 @@ class DataboardBase:
         added_count: int,
     ):
 
-        db_obj += added_count
+        db_obj.count += added_count
         db.add(db_obj)
         db.commit()
+        db.refresh(db_obj)
         return db_obj

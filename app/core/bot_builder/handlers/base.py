@@ -87,7 +87,7 @@ class BaseHandler:
             if not contact:
                 contact_in = schemas.live_chat.ContactCreate(
                     contact_igs_id=message.from_page_id,
-                    user_page_id=message.to_page_id,
+                    facebook_page_id=message.to_page_id,
                     user_id=message.user_id,
                     message_count=1,
                     first_impression=Impression.MESSAGE,

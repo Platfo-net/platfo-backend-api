@@ -96,6 +96,10 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
     ) -> Optional[ModelType]:
         connection = self.get_by_application_name_and_account_id(
             db, account_id=account_id, application_name=application_name)
+        if not connection:
+            return None , None
+        if not connection.details:
+            return None , None
         for detail in connection.details:
             if detail["trigger"] == trigger:
                 return connection , detail

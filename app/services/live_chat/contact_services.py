@@ -19,7 +19,7 @@ class ContactServices:
         self, db: Session, *, obj_in: schemas.live_chat.ContactCreate
     ) -> models.live_chat.Contact:
         obj_in = jsonable_encoder(obj_in)
-        contact = self.model(**obj_in, information={}, last_message_at=datetime.now())
+        contact = self.model(**obj_in, last_message_at=datetime.now())
         db.add(contact)
         db.commit()
         db.refresh(contact)
@@ -46,13 +46,20 @@ class ContactServices:
         contact_igs_id: str,
         information: dict,
     ):
-        db_obj = (
+        db_obj: models.live_chat.Contact = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
             .first()
         )
 
-        db_obj.information = information
+        db_obj.username = information.get("username")
+        db_obj.name = information.get("name")
+        db_obj.profile_image = information.get("profile_image")
+        db_obj.followers_count = information.get("followers_count")
+        db_obj.is_verified_user = information.get("is_verified_user")
+        db_obj.is_user_follow_business = information.get("is_user_follow_business")
+        db_obj.is_business_follow_user = information.get("is_business_follow_user")
+                
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

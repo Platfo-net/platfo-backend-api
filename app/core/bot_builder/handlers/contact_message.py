@@ -8,6 +8,7 @@ from app.constants.message_direction import MessageDirection
 from app.constants.widget_type import WidgetType
 from app.core.bot_builder.extra_classes import SavedMessage
 from app.core.bot_builder.handlers import BaseHandler
+from app.core.bot_builder.handlers.base import BotBaseHandler
 
 
 class ContactMessageHandler(BaseHandler):
@@ -47,7 +48,7 @@ class ContactMessageHandler(BaseHandler):
                 self.db,
                 facebook_page_id=self.user_page_data.facebook_page_id,
                 count=1,
-                now=now()
+                now=now
             )
 
         else:
@@ -67,7 +68,8 @@ class ContactMessageHandler(BaseHandler):
                 contact_databoard = services.databoard.contact_stat.create(
                     self.db,
                     facebook_page_id=self.user_page_data.facebook_page_id,
-                    count=1
+                    count=1,
+                    now=now
                 )
             else:
                 services.databoard.contact_stat.update_count(
@@ -79,8 +81,8 @@ class ContactMessageHandler(BaseHandler):
         return databoard
 
 
-class ContactMessageBotHandler(BaseHandler):
-    def run(self, detail, trigger, application):
+class ContactMessageBotHandler(BotBaseHandler):
+    def run(self, trigger, application):
         if detail := self.check_connection_and_get_detail(trigger, application):
 
             node = services.bot_builder.node.get_chatflow_head_node(
