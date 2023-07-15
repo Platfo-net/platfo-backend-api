@@ -59,7 +59,7 @@ class ContactServices:
         db_obj.is_verified_user = information.get("is_verified_user")
         db_obj.is_user_follow_business = information.get("is_user_follow_business")
         db_obj.is_business_follow_user = information.get("is_business_follow_user")
-                
+
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

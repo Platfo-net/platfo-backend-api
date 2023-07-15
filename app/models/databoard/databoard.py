@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime , BigInteger
+from sqlalchemy import Column, Integer, DateTime, BigInteger
 from app.db.base_class import Base
 
 
@@ -11,9 +11,8 @@ class CommentStat(Base):
     day = Column(Integer(), index=True)
     hour = Column(Integer())
     count = Column(Integer())
-    
+
     from_datetime = Column(DateTime())
-    
 
 
 class LiveCommentStat(Base):
@@ -25,9 +24,8 @@ class LiveCommentStat(Base):
     day = Column(Integer(), index=True)
     hour = Column(Integer())
     count = Column(Integer())
-    
+
     from_datetime = Column(DateTime())
-    
 
 
 class ContactStat(Base):
@@ -39,9 +37,8 @@ class ContactStat(Base):
     day = Column(Integer(), index=True)
     hour = Column(Integer())
     count = Column(Integer())
-    
+
     from_datetime = Column(DateTime())
-    
 
 
 class ContactMessageStat(Base):
@@ -54,9 +51,8 @@ class ContactMessageStat(Base):
     day = Column(Integer(), index=True)
     hour = Column(Integer())
     count = Column(Integer())
-    
+
     from_datetime = Column(DateTime())
-    
 
 
 class FollowerStat(Base):
