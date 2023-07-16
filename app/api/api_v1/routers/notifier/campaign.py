@@ -26,6 +26,7 @@ def get_all_user_campaigns(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -70,6 +71,7 @@ def create_campaign(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -134,6 +136,7 @@ def update_campaign(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -173,6 +176,7 @@ def get_campaign_by_id(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -228,6 +232,7 @@ def get_campain_contacts(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -268,6 +273,7 @@ def change_campaign_is_draft(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):

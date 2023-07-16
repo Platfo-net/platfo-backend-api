@@ -19,6 +19,7 @@ async def upload_notifier_campaign_image(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -38,6 +39,7 @@ async def upload_user_profile_image(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):

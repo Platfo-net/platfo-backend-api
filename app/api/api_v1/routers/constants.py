@@ -20,6 +20,7 @@ def get_roles(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:

@@ -13,6 +13,11 @@ class Role:
         'description': 'User of Application Ecosystem',
         'persian_name': 'کاربر',
     }
+    DEVELOPER = {
+        'name': 'DEVELOPER',
+        'description': 'Developer of Application Ecosystem',
+        'persian_name': 'توسعه دهنده',
+    }
     WRITER = {
         'name': 'WRITER',
         'description': 'Writer of Application Ecosystem',

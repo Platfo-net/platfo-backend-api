@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, DateTime, BigInteger
+from sqlalchemy import BigInteger, Column, DateTime, Integer
+
 from app.db.base_class import Base
 
 

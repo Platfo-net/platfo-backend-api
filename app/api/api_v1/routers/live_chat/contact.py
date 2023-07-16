@@ -23,6 +23,7 @@ def get_contact(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -70,6 +71,7 @@ def update_page_contacts_information(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -95,6 +97,7 @@ def get_all_contact_based_on_filters(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):

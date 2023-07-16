@@ -18,6 +18,7 @@ def delete_(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:

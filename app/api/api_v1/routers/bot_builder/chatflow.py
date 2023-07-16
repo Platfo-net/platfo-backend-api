@@ -23,6 +23,7 @@ def create_chatflow(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -47,6 +48,7 @@ def delete_chatflow(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -70,6 +72,7 @@ def get_user_chatflows(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:

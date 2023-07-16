@@ -33,6 +33,7 @@ def get_archive(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -73,6 +74,7 @@ def send_message(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):

@@ -1,4 +1,4 @@
 from .comment_stat_services import comment_stat
 from .contact_message_stat_services import contact_message_stat
-from .live_comment_stat_services import live_comment_stat
 from .contact_stat_services import contact_stat
+from .live_comment_stat_services import live_comment_stat

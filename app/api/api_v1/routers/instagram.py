@@ -24,6 +24,7 @@ def connect_instagram_page(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -121,13 +122,27 @@ def connect_instagram_page(
 
 @router.get('/get/{instagram_page_id}', response_model=schemas.InstagramPage)
 def get_page_data_by_instagram_page_id(
-    *, db: Session = Depends(deps.get_db), instagram_page_id: str
+    *,
+    db: Session = Depends(deps.get_db),
+    instagram_page_id: str,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
 ):
     obj_instagram = services.instagram_page.get_page_by_ig_id(
         db, instagram_page_id=instagram_page_id
     )
     if not obj_instagram:
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
+    if obj_instagram.user_id != current_user.id:
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
     return schemas.InstagramPage(
         id=obj_instagram.uuid,
         facebook_page_id=obj_instagram.facebook_page_id,
@@ -147,13 +162,26 @@ def get_page_data_by_instagram_page_id(
     '/get_by_facebook_page_id/{facebook_page_id}', response_model=schemas.InstagramPage
 )
 def get_page_data_by_facebook_page_id(
-    *, db: Session = Depends(deps.get_db), facebook_page_id: str
+    *,
+    db: Session = Depends(deps.get_db),
+    facebook_page_id: str,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
 ):
     obj_instagram = services.instagram_page.get_by_facebook_page_id(
         db, facebook_page_id=facebook_page_id
     )
 
     if not obj_instagram:
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
+    if obj_instagram.user_id != current_user.id:
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
 
     return schemas.InstagramPage(

@@ -26,6 +26,7 @@ def get_all_nodes(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -50,6 +51,7 @@ def create_full_node(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -106,6 +108,7 @@ def connect_widget_to_node(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:

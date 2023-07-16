@@ -78,6 +78,7 @@ def update_user_me(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -97,6 +98,7 @@ def change_password_me(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -117,6 +119,7 @@ def get_user_me(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:

@@ -1,9 +1,10 @@
 from datetime import date, datetime
 
 from sqlalchemy import func
+from sqlalchemy.orm import Session
+
 from app import models
 from app.services.databoard.databoard_base import DataboardBase
-from sqlalchemy.orm import Session
 
 
 class CommentStatServices(DataboardBase):

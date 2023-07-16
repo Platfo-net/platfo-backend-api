@@ -20,6 +20,7 @@ def get_chatflow_nodes_edges(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -76,6 +77,7 @@ def create_chatflow_nodes_edges(
         scopes=[
             Role.ADMIN['name'],
             Role.USER['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):

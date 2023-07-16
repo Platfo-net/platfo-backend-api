@@ -26,6 +26,7 @@ def get_notifications_list(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -65,6 +66,7 @@ def create_notification(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -90,6 +92,7 @@ def update_notification(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -115,6 +118,7 @@ def delete_notification(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ) -> Any:
@@ -136,6 +140,7 @@ def read_notification(
         scopes=[
             Role.USER['name'],
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):

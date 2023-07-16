@@ -34,6 +34,7 @@ def create_label(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -51,6 +52,7 @@ def update_label(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -74,6 +76,7 @@ def delete_label(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -125,6 +128,7 @@ def create_category(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -142,6 +146,7 @@ def update_category(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -165,6 +170,7 @@ def delete_category(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -248,7 +254,7 @@ def create_content(
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.ADMIN['name'], Role.WRITER['name']],
+        scopes=[Role.ADMIN['name'], Role.WRITER['name'], Role.DEVELOPER['name']],
     ),
 ):
     content = services.academy.content.create(
@@ -276,6 +282,7 @@ def update_content(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
@@ -321,6 +328,7 @@ def delete_content(
         deps.get_current_active_user,
         scopes=[
             Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
         ],
     ),
 ):
