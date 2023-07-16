@@ -52,7 +52,6 @@ def delete_sms_codes(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.ADMIN['name'],
             Role.DEVELOPER['name'],
         ],
     ),
