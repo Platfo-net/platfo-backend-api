@@ -15,7 +15,7 @@ from .role import Role, RoleCreate, RoleInDB, RoleUpdate
 from .token import (Login, LoginFormByEmail, LoginFormByPhoneNumber, Token,
                     TokenPayload)
 from .user import (ActivationDataByEmail, ActivationDataByPhoneNumber,
-                   ChangePassword, ForgetPassword, PhoneData, RegisterCode,
-                   User, UserBase, UserCreate, UserInDB, UserRegister,
-                   UserRegisterByEmail, UserRegisterByPhoneNumber, UserUpdate,
-                   UserUpdatePassword)
+                   ChangePassword, DeveloperCreate, ForgetPassword, PhoneData,
+                   RegisterCode, User, UserBase, UserCreate, UserInDB,
+                   UserRegister, UserRegisterByEmail,
+                   UserRegisterByPhoneNumber, UserUpdate, UserUpdatePassword)

@@ -59,7 +59,12 @@ class UserBase(PhoneValidator):
     last_name: Optional[str] = None
 
 
+class DeveloperCreate(UserBase):
+    password: str
+
 # Properties to receive via API on creation
+
+
 class UserCreate(UserBase):
     password: Optional[str] = None
     role_id: int
