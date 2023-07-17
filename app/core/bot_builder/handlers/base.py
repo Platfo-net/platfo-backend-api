@@ -109,9 +109,9 @@ class BaseHandler:
         if message.direction == MessageDirection.IN:
             if self.instagram_data.timestamp:
                 print(self.instagram_data.timestamp)
-                time = datetime.fromtimestamp(self.instagram_data.timestamp/1000.0)
+                time = datetime.fromtimestamp(self.instagram_data.timestamp / 1000.0)
             elif self.instagram_data.entry_time:
-                time = datetime.fromtimestamp(self.instagram_data.entry_time/1000.0)
+                time = datetime.fromtimestamp(self.instagram_data.entry_time / 1000.0)
             else:
                 time = datetime.now()
             services.live_chat.contact.update_interactions(

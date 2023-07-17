@@ -289,7 +289,7 @@ class InstagramData:
                                         'reply_to': {
                                             'story': {
                                                 'url': story_url,
-                                                'id': story_id
+                                                'id': _
                                             }
                                         }
                                     }
