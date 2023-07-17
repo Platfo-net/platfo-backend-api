@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from app.core.utils import paginate
 
 ModelType = models.notifier.CampaignContact
 CreateSchemaType = schemas.notifier.CampaignContactCreate
@@ -14,7 +15,7 @@ class CampaignContactServices:
     def __init__(self, model):
         self.model = model
 
-    def get_campain_contacts(
+    def get_campaign_contacts(
         self, db: Session, *, campaign_id: int, page: int, page_size: int
     ):
         contacts = (
@@ -25,17 +26,9 @@ class CampaignContactServices:
             .limit(page_size)
             .all()
         )
+        total_count = db.query(self.model).filter(self.model.campaign_id == campaign_id).count()
 
-        total_count = db.query(self.model).count()
-        total_pages = math.ceil(total_count / page_size)
-        pagination = schemas.Pagination(
-            page=page,
-            page_size=page_size,
-            total_pages=total_pages,
-            total_count=total_count,
-        )
-
-        return contacts, pagination
+        return contacts, paginate(total_count, page, page_size)
 
     def create_bulk(
         self, db: Session, *, contacts: List[CreateSchemaType], campaign_id: int
@@ -67,7 +60,7 @@ class CampaignContactServices:
             .all()
         )
 
-    def get_campaign_unsend_contacts_count(self, db: Session, *, campaign_id: int):
+    def get_campaign_unsend_contacts_count(self, db: Session, *, campaign_id: int) -> int:
         return (
             db.query(models.notifier.CampaignContact)
             .filter(
@@ -77,12 +70,12 @@ class CampaignContactServices:
             .count()
         )
 
-    def get_all_contacts_count(self, db: Session, campaign_id: int):
+    def get_all_contacts_count(self, db: Session, campaign_id: int) -> int:
         return (
             db.query(self.model).filter(self.model.campaign_id == campaign_id).count()
         )
 
-    def get_all_sent_count(self, db: Session, campaign_id: int):
+    def get_all_sent_count(self, db: Session, campaign_id: int) -> int:
         return (
             db.query(self.model)
             .filter(
@@ -92,7 +85,7 @@ class CampaignContactServices:
             .count()
         )
 
-    def get_all_seen_count(self, db: Session, campaign_id: int):
+    def get_all_seen_count(self, db: Session, campaign_id: int) -> int:
         return (
             db.query(models.notifier.CampaignContact)
             .filter(
@@ -102,7 +95,7 @@ class CampaignContactServices:
             .count()
         )
 
-    def delete_campaign_contact(self, db: Session, *, campaign_contact_id: int):
+    def delete_campaign_contact(self, db: Session, *, campaign_contact_id: int) -> int:
         return (
             db.query(self.model)
             .filter(self.model.CampaignContact.id == campaign_contact_id)

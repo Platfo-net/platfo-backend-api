@@ -183,15 +183,16 @@ def get_campaign_by_id(
     if not campaign:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
 
+    instagram_page = services.instagram_page.get_by_facebook_page_id(
+        db, facebook_page_id=campaign.facebook_page_id
+    )
+    if not instagram_page:
+        raise_http_exception(Error.ACCOUNT_NOT_FOUND)
     sent_count = services.notifier.campaign_contact.get_all_sent_count(db, campaign.id)
     seen_count = services.notifier.campaign_contact.get_all_seen_count(db, campaign.id)
     contact_count = services.notifier.campaign_contact.get_all_contacts_count(
         db, campaign.id
     )
-    instagram_page = services.instagram_page.get_by_facebook_page_id(
-        db, facebook_page_id=campaign.facebook_page_id
-    )
-
     account = schemas.Account(
         id=instagram_page.uuid,
         username=instagram_page.username,
@@ -245,15 +246,15 @@ def get_campain_contacts(
     (
         campaign_contacts,
         pagination,
-    ) = services.notifier.campaign_contact.get_campain_contacts(
+    ) = services.notifier.campaign_contact.get_campaign_contacts(
         db, campaign_id=campaign.id, page=page, page_size=page_size
     )
     contacts = []
     for contact in campaign_contacts:
         contacts.append(
             schemas.notifier.ContactSample(
-                profile_image=contact.contact.information.get('profile_image'),
-                username=contact.contact.information.get('username'),
+                profile_image=contact.contact.profile_image,
+                username=contact.contact.username,
             )
         )
     return schemas.notifier.CampaignContactApiSchema(
