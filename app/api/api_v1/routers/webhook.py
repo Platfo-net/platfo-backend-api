@@ -23,6 +23,5 @@ def instagram_subscription_webhook(request: Request):
 
 @router.post('/instagram', status_code=status.HTTP_200_OK)
 def instagram_webhook_listener(*, facebook_webhook_body: dict):
-    print(facebook_webhook_body)
     tasks.webhook_proccessor.delay(facebook_webhook_body)
     return
