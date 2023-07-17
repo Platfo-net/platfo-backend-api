@@ -98,7 +98,6 @@ class BaseHandler:
         is_new = False
         # set and convert message time
         if self.instagram_data.timestamp:
-            print(self.instagram_data.timestamp)
             time = datetime.fromtimestamp(self.instagram_data.timestamp / 1000.0)
         elif self.instagram_data.entry_time:
             time = datetime.fromtimestamp(self.instagram_data.entry_time / 1000.0)

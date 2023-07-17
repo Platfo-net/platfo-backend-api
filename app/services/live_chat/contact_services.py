@@ -44,8 +44,10 @@ class ContactServices:
         db: Session,
         *,
         contact_igs_id: str,
-        information: dict,
+        information: dict | None,
     ):
+        if not information:
+            return
         db_obj: models.live_chat.Contact = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
