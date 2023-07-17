@@ -9,21 +9,23 @@ from app.schemas.pagination import Pagination
 class ContactBase(BaseModel):
     contact_igs_id: int
     facebook_page_id: int
-    comment_count: int = 0
-    message_count: int = 0
-    live_comment_count: int = 0
     first_impression: str = None
 
 
 class ContactCreate(ContactBase):
     user_id: int
+    last_interaction_at: datetime = None
+    last_message: str = None
+    last_message_at: datetime = None
 
 
 class Contact(ContactBase):
     id: UUID4
-    last_message_at: datetime
-    information: Optional[dict] = None
+    last_message_at: datetime = None
+    last_interaction_at: datetime = None
     last_message: str = None
+    profile_image: str = None
+    username: str = None
 
 
 class ProfileCreate(BaseModel):

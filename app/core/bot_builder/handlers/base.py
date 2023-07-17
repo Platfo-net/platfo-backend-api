@@ -63,8 +63,8 @@ class BaseHandler:
                 contact_igs_id=from_page_id,
                 user_page_id=to_page_id,
                 user_id=user_id,
-                comment_count=1,
                 first_impression=Impression.COMMENT,
+                last_interaction_at=datetime.fromtimestamp(float(self.instagram_data.entry_time))
             )
             services.live_chat.contact.create(self.db, obj_in=contact_in)
 
@@ -82,11 +82,12 @@ class BaseHandler:
                 contact_igs_id=from_page_id,
                 information=information,
             )
-        services.live_chat.contact.update_interactions(
-            self.db,
-            contact_igs_id=contact.contact_igs_id,
-            last_interaction_at=datetime.fromtimestamp(float(self.instagram_data.entry_time))
-        )
+        else:
+            services.live_chat.contact.update_interactions(
+                self.db,
+                contact_igs_id=contact.contact_igs_id,
+                last_interaction_at=datetime.fromtimestamp(float(self.instagram_data.entry_time))
+            )
         return 0
 
     @abstractmethod
@@ -95,6 +96,15 @@ class BaseHandler:
 
     def save_message(self, message: SavedMessage):
         is_new = False
+        # set and convert message time
+        if self.instagram_data.timestamp:
+            print(self.instagram_data.timestamp)
+            time = datetime.fromtimestamp(self.instagram_data.timestamp / 1000.0)
+        elif self.instagram_data.entry_time:
+            time = datetime.fromtimestamp(self.instagram_data.entry_time / 1000.0)
+        else:
+            time = datetime.now()
+
         if message.direction == MessageDirection.IN:
             contact = services.live_chat.contact.get_contact_by_igs_id(
                 self.db, contact_igs_id=message.from_page_id
@@ -104,8 +114,10 @@ class BaseHandler:
                     contact_igs_id=message.from_page_id,
                     facebook_page_id=message.to_page_id,
                     user_id=message.user_id,
-                    message_count=1,
                     first_impression=Impression.MESSAGE,
+                    last_message=convert_message(message.content),
+                    last_message_at=time,
+                    last_interaction_at=time,
                 )
                 new_contact = services.live_chat.contact.create(self.db, obj_in=contact_in)
 
@@ -119,30 +131,15 @@ class BaseHandler:
                     information=information,
                 )
                 is_new = True
-
-        if message.direction == MessageDirection.IN:
-            if self.instagram_data.timestamp:
-                print(self.instagram_data.timestamp)
-                time = datetime.fromtimestamp(self.instagram_data.timestamp / 1000.0)
-            elif self.instagram_data.entry_time:
-                time = datetime.fromtimestamp(self.instagram_data.entry_time / 1000.0)
             else:
-                time = datetime.now()
-            services.live_chat.contact.update_interactions(
-                self.db,
-                contact_igs_id=message.from_page_id,
-                last_message=convert_message(message.content),  # TODO Handle this to be as str
-                last_message_at=time,
-                last_interaction_at=time,
+                services.live_chat.contact.update_interactions(
+                    self.db,
+                    contact_igs_id=message.from_page_id,
+                    last_message=convert_message(message.content),  # TODO Handle this to be as str
+                    last_message_at=time,
+                    last_interaction_at=time,
 
-            )
-
-        else:
-            services.live_chat.contact.update_interactions(
-                self.db,
-                contact_igs_id=message.to_page_id,
-                last_message=convert_message(message.content)  # TODO Handle this to be as str
-            )
+                )
 
         if message.timestamp:
             time = datetime.fromtimestamp(message.timestamp / 1000.0)

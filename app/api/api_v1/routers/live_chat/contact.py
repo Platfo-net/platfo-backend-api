@@ -52,11 +52,10 @@ def get_contact(
         user_id=contact.user_id,
         id=contact.uuid,
         last_message_at=contact.last_message_at,
-        information=contact.information,
-        last_message=str(contact.last_message),
-        live_comment_count=contact.live_comment_count,
-        comment_count=contact.comment_count,
-        message_count=contact.message_count,
+        last_interaction_at=contact.last_interaction_at,
+        last_message=contact.last_message,
+        username=contact.username,
+        profile_image=contact.profile_image,
     )
 
 
@@ -91,8 +90,8 @@ def get_all_contact_based_on_filters(
     page_size: int = 20,
     db: Session = Depends(deps.get_db),
     facebook_page_id: int,
-    from_date: date,
-    is_user_follow_buisiness: bool,
+    from_date: date = None,
+    is_user_follow_buisiness: bool = None,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -129,16 +128,15 @@ def get_all_contact_based_on_filters(
     contacts = [
         schemas.live_chat.Contact(
             contact_igs_id=contact.contact_igs_id,
-            user_page_id=contact.user_page_id,
+            facebook_page_id=contact.facebook_page_id,
             id=contact.uuid,
             last_message_at=contact.last_message_at,
-            information=contact.information,
+            last_interaction_at=contact.last_interaction_at,
             last_message=contact.last_message,
-            user_id=contact.user_id,
-            live_comment_count=contact.live_comment_count,
-            comment_count=contact.comment_count,
-            message_count=contact.message_count,
             first_impression=contact.first_impression,
+            profile_image=contact.profile_image,
+            username=contact.username,
+
         )
         for contact in contacts
     ]

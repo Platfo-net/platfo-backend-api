@@ -19,7 +19,7 @@ class ContactServices:
         self, db: Session, *, obj_in: schemas.live_chat.ContactCreate
     ) -> models.live_chat.Contact:
         obj_in = jsonable_encoder(obj_in)
-        contact = self.model(**obj_in, last_message_at=datetime.now())
+        contact = self.model(**obj_in)
         db.add(contact)
         db.commit()
         db.refresh(contact)
@@ -151,7 +151,7 @@ class ContactServices:
             total_pages=total_pages,
             total_count=total_count,
         )
-        filters = [models.live_chat.Contact.user_page_id == facebook_page_id]
+        filters = [models.live_chat.Contact.facebook_page_id == facebook_page_id]
         if from_date:
             from_datetime = datetime.combine(from_date, datetime.min.time())
             filters.append(models.live_chat.Contact.last_interaction_at > from_datetime)
