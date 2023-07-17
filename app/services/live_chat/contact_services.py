@@ -140,7 +140,7 @@ class ContactServices:
         db: Session,
         *,
         facebook_page_id: int = None,
-        is_user_follow_buisiness: bool = None,
+        is_user_follow_business: bool = None,
         from_date: date = None,
         page: int = 1,
         page_size: int = 20,
@@ -157,9 +157,9 @@ class ContactServices:
         if from_date:
             from_datetime = datetime.combine(from_date, datetime.min.time())
             filters.append(models.live_chat.Contact.last_interaction_at > from_datetime)
-        if is_user_follow_buisiness:
+        if is_user_follow_business is not None:
             filters.append(
-                models.live_chat.Contact.is_user_follow_business == is_user_follow_buisiness
+                models.live_chat.Contact.is_user_follow_business == is_user_follow_business
             )
 
         return db.query(self.model).filter(and_(*filters)).all(), pagination

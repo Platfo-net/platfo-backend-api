@@ -91,7 +91,7 @@ def get_all_contact_based_on_filters(
     db: Session = Depends(deps.get_db),
     facebook_page_id: int,
     from_date: date = None,
-    is_user_follow_buisiness: bool = None,
+    is_user_follow_business: bool = None,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -113,7 +113,7 @@ def get_all_contact_based_on_filters(
     contacts, pagination = services.live_chat.contact.get_multi(
         db=db,
         facebook_page_id=facebook_page_id,
-        is_user_follow_buisiness=is_user_follow_buisiness,
+        is_user_follow_business=is_user_follow_business,
         from_date=from_date,
         page=page,
         page_size=page_size,
