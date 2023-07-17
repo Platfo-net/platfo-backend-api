@@ -33,6 +33,7 @@ class ContactMessageHandler(BaseHandler):
             user_id=self.user_page_data.user_id,
             direction=MessageDirection.IN,
             instagram_page_id=self.instagram_data.recipient_id,
+            timestamp=self.instagram_data.timestamp,
         )
         return saved_message
 

@@ -343,3 +343,4 @@ class SavedMessage:
     direction: str = None
     instagram_page_id: int = None
     type: str = None
+    timestamp: int = None

@@ -86,12 +86,13 @@ class ContactServices:
         return db_obj
 
     def update_interactions(
-        self, 
-        db: Session, 
-        *, 
-        contact_igs_id: int, 
-        last_message: str = None, 
-        interact_at: datetime,
+        self,
+        db: Session,
+        *,
+        contact_igs_id: int,
+        last_message: str = None,
+        last_message_at: datetime = None,
+        last_interaction_at: datetime = None,
     ):
         db_obj = (
             db.query(self.model)
@@ -100,13 +101,13 @@ class ContactServices:
         )
         if last_message:
             db_obj.last_message = last_message
-            db_obj.last_message_at = interact_at
-        db_obj.last_interaction_at = interact_at
-            
+            db_obj.last_message_at = last_message_at
+        if last_interaction_at:
+            db_obj.last_interaction_at = last_interaction_at
+
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
-
 
     def remove_by_user_page_id(self, db: Session, *, user_page_id: int):
         contacts = (
@@ -151,8 +152,15 @@ class ContactServices:
             total_count=total_count,
         )
         filters = [models.live_chat.Contact.user_page_id == facebook_page_id]
+        if from_date:
+            from_datetime = datetime.combine(from_date, datetime.min.time())
+            filters.append(models.live_chat.Contact.last_interaction_at > from_datetime)
+        if is_user_follow_buisiness:
+            filters.append(
+                models.live_chat.Contact.is_user_follow_business == is_user_follow_buisiness
+            )
+
         return db.query(self.model).filter(and_(*filters)).all(), pagination
-    
 
 
 contact = ContactServices(models.live_chat.Contact)

@@ -15,7 +15,7 @@ class Contact(Base):
 
     last_message = Column(String(1024), nullable=True)
     last_message_at = Column(DateTime, default=datetime.datetime.utcnow)
-    last_interaction_at = Column(DateTime , default=datetime.datetime.utcnow)
+    last_interaction_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     username = Column(String(255), nullable=True)
     profile_image = Column(String(1024), nullable=True)
@@ -24,7 +24,7 @@ class Contact(Base):
     is_verified_user = Column(Boolean, nullable=True)
     is_user_follow_business = Column(Boolean, nullable=True)
     is_business_follow_user = Column(Boolean, nullable=True)
-    
+
     first_impression = Column(String(100), nullable=True)
 
     user_id = Column(

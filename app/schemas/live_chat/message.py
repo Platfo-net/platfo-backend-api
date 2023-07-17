@@ -15,6 +15,7 @@ class MessageBase(BaseModel):
 class MessageCreate(MessageBase):
     direction: str = None
     user_id: int = None
+    datetime : datetime
 
 
 class Message(MessageBase):

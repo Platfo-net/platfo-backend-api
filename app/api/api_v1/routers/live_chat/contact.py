@@ -1,5 +1,4 @@
 from datetime import date
-from typing import List
 
 from fastapi import APIRouter, Depends, Security
 from pydantic import UUID4
@@ -92,7 +91,7 @@ def get_all_contact_based_on_filters(
     page_size: int = 20,
     db: Session = Depends(deps.get_db),
     facebook_page_id: int,
-    from_datetime: date,    
+    from_date: date,
     is_user_follow_buisiness: bool,
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -115,7 +114,8 @@ def get_all_contact_based_on_filters(
     contacts, pagination = services.live_chat.contact.get_multi(
         db=db,
         facebook_page_id=facebook_page_id,
-        obj_in=obj_in,
+        is_user_follow_buisiness=is_user_follow_buisiness,
+        from_date=from_date,
         page=page,
         page_size=page_size,
     )

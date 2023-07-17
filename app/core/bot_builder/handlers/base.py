@@ -1,5 +1,6 @@
 
 from abc import abstractmethod
+from datetime import datetime
 from typing import List
 
 from redis import Redis
@@ -62,13 +63,16 @@ class BaseHandler:
                 'is_user_follow_business': True,
                 'is_business_follow_user': False,
             }
-            services.live_chat.contact.set_information(
+            contact = services.live_chat.contact.set_information(
                 self.db,
                 contact_igs_id=from_page_id,
                 information=information,
             )
-            return 0
-
+        services.live_chat.contact.update_interactions(
+            self.db,
+            contact_igs_id=contact.contact_igs_id,
+            last_interaction_at=datetime.fromtimestamp(float(self.instagram_data.entry_time))
+        )
         return 0
 
     @abstractmethod
@@ -102,21 +106,35 @@ class BaseHandler:
                 )
                 is_new = True
 
-            else:
-                services.live_chat.contact.update_last_message_count(
-                    self.db, contact_igs_id=message.from_page_id
-                )
-
         if message.direction == MessageDirection.IN:
-            services.live_chat.contact.update_last_message(
-                self.db, contact_igs_id=message.from_page_id, last_message=str(message.content)
+            if self.instagram_data.timestamp:
+                time = datetime.fromtimestamp(float(self.instagram_data.timestamp))
+            elif self.instagram_data.entry_time:
+                time = datetime.fromtimestamp(float(self.instagram_data.entry_time))
+            else:
+                time = datetime.now()
+            services.live_chat.contact.update_interactions(
+                self.db,
+                contact_igs_id=message.from_page_id,
+                last_message=str(message.content),  # TODO Handle this to be as str
+                last_message_at=time,
+                last_interaction_at=time,
+
             )
 
         else:
-            services.live_chat.contact.update_last_message(
-                self.db, contact_igs_id=message.to_page_id, last_message=str(message.content)
+            services.live_chat.contact.update_interactions(
+                self.db,
+                contact_igs_id=message.to_page_id,
+                last_message=str(message.content)  # TODO Handle this to be as str
             )
 
+        if message.timestamp:
+            time = datetime.fromtimestamp(float(message.timestamp))
+        elif self.instagram_data.entry_time:
+            time = datetime.fromtimestamp(float(message.entry_time))
+        else:
+            time = datetime.now()
         report = services.live_chat.message.create(
             self.db,
             obj_in=schemas.live_chat.MessageCreate(
@@ -126,9 +144,10 @@ class BaseHandler:
                 mid=message.mid,
                 user_id=message.user_id,
                 direction=message.direction,
+                datetime=time,
             ),
         )
-        return report , is_new
+        return report, is_new
 
 
 class BotBaseHandler(BaseHandler):
