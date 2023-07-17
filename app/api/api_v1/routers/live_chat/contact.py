@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List
 
 from fastapi import APIRouter, Depends, Security
@@ -91,7 +92,8 @@ def get_all_contact_based_on_filters(
     page_size: int = 20,
     db: Session = Depends(deps.get_db),
     facebook_page_id: int,
-    obj_in: List[schemas.live_chat.SearchItem],
+    from_datetime: date,    
+    is_user_follow_buisiness: bool,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[

@@ -69,9 +69,6 @@ class BaseHandler:
             )
             return 0
 
-        services.live_chat.contact.update_last_comment_count(
-            self.db, contact_igs_id=contact.contact_igs_id
-        )
         return 0
 
     @abstractmethod

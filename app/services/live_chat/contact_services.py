@@ -1,5 +1,5 @@
 import math
-from datetime import datetime
+from datetime import date, datetime
 from typing import List
 
 from fastapi.encoders import jsonable_encoder
@@ -85,57 +85,28 @@ class ContactServices:
         db.refresh(db_obj)
         return db_obj
 
-    def update_last_message(
-        self, db: Session, *, contact_igs_id: int, last_message: str
+    def update_interactions(
+        self, 
+        db: Session, 
+        *, 
+        contact_igs_id: int, 
+        last_message: str = None, 
+        interact_at: datetime,
     ):
         db_obj = (
             db.query(self.model)
             .filter(self.model.contact_igs_id == contact_igs_id)
             .first()
         )
-
-        db_obj.last_message = last_message
-        db_obj.last_message_at = datetime.now()
-
+        if last_message:
+            db_obj.last_message = last_message
+            db_obj.last_message_at = interact_at
+        db_obj.last_interaction_at = interact_at
+            
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
 
-    def update_last_comment_count(self, db: Session, *, contact_igs_id: int):
-        db_obj = (
-            db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
-        )
-        db_obj.comment_count = db_obj.comment_count + 1
-
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-
-    def update_last_live_comment_count(self, db: Session, *, contact_igs_id: int):
-        db_obj = (
-            db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
-        )
-        db_obj.live_comment_count = db_obj.live_comment_count + 1
-
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-
-    def update_last_message_count(self, db: Session, *, contact_igs_id: int):
-        db_obj = (
-            db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
-            .first()
-        )
-        db_obj.message_count = db_obj.message_count + 1
-
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
 
     def remove_by_user_page_id(self, db: Session, *, user_page_id: int):
         contacts = (
@@ -166,7 +137,8 @@ class ContactServices:
         db: Session,
         *,
         facebook_page_id: int = None,
-        obj_in: List[schemas.live_chat.SearchItem],
+        is_user_follow_buisiness: bool = None,
+        from_date: date = None,
         page: int = 1,
         page_size: int = 20,
     ):
@@ -179,37 +151,8 @@ class ContactServices:
             total_count=total_count,
         )
         filters = [models.live_chat.Contact.user_page_id == facebook_page_id]
-        if len(obj_in):
-            for obj in obj_in:
-                match obj.operator:
-                    case 'EQ':
-                        filters.append(
-                            getattr(models.live_chat.Contact, obj.field) == obj.value
-                        )
-                    case 'NE':
-                        filters.append(
-                            getattr(models.live_chat.Contact, obj.field) != obj.value
-                        )
-                    case 'GT':
-                        filters.append(
-                            getattr(models.live_chat.Contact, obj.field) > obj.value
-                        )
-                    case 'LT':
-                        filters.append(
-                            getattr(models.live_chat.Contact, obj.field) < obj.value
-                        )
-
-                    case 'GTE':
-                        filters.append(
-                            getattr(models.live_chat.Contact, obj.field) >= obj.value
-                        )
-
-                    case 'LTE':
-                        filters.append(
-                            getattr(models.live_chat.Contact, obj.field) <= obj.value
-                        )
-
         return db.query(self.model).filter(and_(*filters)).all(), pagination
+    
 
 
 contact = ContactServices(models.live_chat.Contact)

@@ -30,6 +30,7 @@ class InstagramData:
         self.username = None
         self.value_id = None
         self.parent_id = None
+        self.entry_time = None
         self.parse(body)
 
     def parse(self, body):
@@ -39,7 +40,7 @@ class InstagramData:
                 'entry': [
                     {
                         'time': entry_time,
-                        'id': entry__id,
+                        'id': entry_id,
                         'messaging': [
                             {
                                 'sender': {'id': sender_id},
@@ -99,6 +100,7 @@ class InstagramData:
                 self.comment_detail = comment_detail
                 self.value_id = value_id
                 self.type = WebhookType.COMMENT
+                self.entry_time = entry_time
 
             case {
                 'object': platform,
@@ -133,13 +135,14 @@ class InstagramData:
                 self.platform = platform
                 self.value_id = value_id
                 self.type = WebhookType.LIVE_COMMENT
+                self.entry_time = entry_time
 
             case {
                 'object': platform,
                 'entry': [
                     {
                         'time': entry_time,  # noqa
-                        'id': entry__id,  # noqa
+                        'id': entry_id,  # noqa
                         'messaging': [
                             {
                                 'sender': {'id': sender_id},
