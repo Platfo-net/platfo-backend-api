@@ -273,8 +273,38 @@ class InstagramData:
                 self.url = url
                 self.type = WebhookType.STORY_MENTION
             case {
-                'object': 'instagram', 
-                'entry': [{'time': 1689602524418, 'id': '17841449720273509', 'messaging': [{'sender': {'id': '5638341022851855'}, 'recipient': {'id': '17841449720273509'}, 'timestamp': 1689602523915, 'message': {'mid': 'aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDQ5NzIwMjczNTA5OjM0MDI4MjM2Njg0MTcxMDMwMDk0OTEyODE2NzY0MzU5Mjg5MDM5NzozMTE2NzY2NTM0NDk3MjA2MzI3MDY0NTgzNDE5MDk0NjMwNAZDZD', 'text': 'Reply to story', 'reply_to': {'story': {'url': 'https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=17971467701309129&signature=Aby24948Qm48kjl1YWdNE2Tiu4TvbeQmtSjpF2mlSQZXhHCU2HA-kgMA8aMeQVPVdqyknPTisdSj62NRt96kzon8ss_qZ-Jj0zoE7iEKymQmUa4fiPOEDGvGIlDHLOTzpriDF5fLZ_LVdRTSCSDcCecNwpWDtOvAUpBf3TtsmOOPGs8ncRDByopFslZcinxZoarEaS9s2OiMQP8jJkupRRGVSmOvAyI', 'id': '17971467701309129'}}}}]}]}
+                    'object': platform,
+                    'entry': [
+                        {
+                            'time': entry_time,
+                            'id': entry_id,  # noqa
+                            'messaging': [
+                                {
+                                    'sender': {'id': sender_id},
+                                    'recipient': {'id': recipient_id},
+                                    'timestamp': timestamp,
+                                    'message': {
+                                        'mid': mid,
+                                        'text': text,
+                                        'reply_to': {
+                                            'story': {
+                                                'url': story_url,
+                                                'id': story_id
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+            }:
+                self.platform = platform
+                self.entry_time = entry_time
+                self.sender_id = sender_id
+                self.recipient_id = recipient_id
+                self.mid = mid
+                self.text = text
+                self.story_url = story_url
             case _:
                 pass
 
