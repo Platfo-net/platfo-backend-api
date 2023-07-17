@@ -15,6 +15,20 @@ from app.core.bot_builder.extra_classes import (InstagramData, SavedMessage,
 from app.core.bot_builder.instagram_graph_api import graph_api
 
 
+def convert_message(content):
+    if type(content) == str:
+        return content
+    if message := content.get("message"):
+        return message
+    if message := content.get("text"):
+        return message
+    if message := content.get("question"):
+        return message
+    if message := content.get("title"):
+        return message
+    return ""
+
+
 class BaseHandler:
     def __init__(
             self,
@@ -117,7 +131,7 @@ class BaseHandler:
             services.live_chat.contact.update_interactions(
                 self.db,
                 contact_igs_id=message.from_page_id,
-                last_message=str(message.content),  # TODO Handle this to be as str
+                last_message=convert_message(message.content),  # TODO Handle this to be as str
                 last_message_at=time,
                 last_interaction_at=time,
 
@@ -127,7 +141,7 @@ class BaseHandler:
             services.live_chat.contact.update_interactions(
                 self.db,
                 contact_igs_id=message.to_page_id,
-                last_message=str(message.content)  # TODO Handle this to be as str
+                last_message=convert_message(message.content)  # TODO Handle this to be as str
             )
 
         if message.timestamp:
