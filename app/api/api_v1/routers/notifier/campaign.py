@@ -41,7 +41,6 @@ def get_all_user_campaigns(
     campaigns = []
     for item in items:
         image = storage.get_file(item.image, settings.S3_CAMPAIGN_BUCKET)
-        print(item.image)
         campaigns.append(
             schemas.notifier.Campaign(
                 id=item.uuid,

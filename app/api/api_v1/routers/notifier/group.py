@@ -62,7 +62,7 @@ def create_group(
     if not obj_in.contacts:
         raise_http_exception(Error.GROUP_EMPTY_CONTACT)
     with AtomicTransaction(db) as session:
-        db_obj = services.v.group.create(
+        db_obj = services.notifier.group.create(
             session,
             obj_in=schemas.notifier.GroupCreate(
                 name=obj_in.name,
