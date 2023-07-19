@@ -1,4 +1,5 @@
 import math
+from typing import Optional
 
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -32,7 +33,10 @@ class GroupServices:
 
         total_count = (
             db.query(self.model)
-            .filter(self.model.facebook_page_id == facebook_page_id)
+            .filter(
+                self.model.facebook_page_id == facebook_page_id,
+                self.model.user_id == user_id
+            )
             .count()
         )
 
@@ -59,6 +63,8 @@ class GroupServices:
             user_id=user_id,
         )
         db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
         return db_obj
 
     def update(
@@ -78,7 +84,7 @@ class GroupServices:
     def get(self, db: Session, id: int):
         return db.query(self.model).filter(self.model.id == id).first()
 
-    def get_by_uuid(self, db: Session, uuid: UUID4):
+    def get_by_uuid(self, db: Session, uuid: UUID4) -> Optional[models.notifier.Group]:
         return db.query(self.model).filter(self.model.uuid == uuid).first()
 
     def remove(self, db: Session, *, id: int):

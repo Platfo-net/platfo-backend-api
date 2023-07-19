@@ -1,5 +1,3 @@
-import math
-
 from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
 from sqlalchemy import and_
@@ -7,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.constants.campaign_status import CampaignStatus
+from app.core.utils import paginate
 
 ModelType = models.notifier.Campaign
 CreateSchemaType = schemas.notifier.CampaignCreate
@@ -39,14 +38,7 @@ class CampaignServices:
         )
 
         total_count = db.query(self.model).filter(and_(*condition)).count()
-        total_page = math.ceil(total_count / page_size)
-        pagination = schemas.Pagination(
-            page=page,
-            page_size=page_size,
-            total_pages=total_page,
-            total_count=total_count,
-        )
-        return pagination, campaigns
+        return campaigns, paginate(total_count, page, page_size)
 
     def create(
         self, db: Session, *, obj_in: CreateSchemaType, user_id: int

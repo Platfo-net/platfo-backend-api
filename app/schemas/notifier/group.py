@@ -4,7 +4,7 @@ from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
 
-from .group_contact import ContactSample, GroupContact
+from .group_contact import ContactSample
 
 
 class GroupBase(BaseModel):
@@ -22,11 +22,11 @@ class GroupUpdate(GroupBase):
 
 class GroupCreateApiSchemas(GroupBase):
     facebook_page_id: int = None
-    contacts: List[GroupContact]
+    contacts: List[UUID4]
 
 
 class GroupUpdateApiSchemas(GroupBase):
-    contacts: List[GroupContact]
+    contacts: List[UUID4]
 
 
 class Group(GroupBase):

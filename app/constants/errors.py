@@ -7,13 +7,13 @@ class Error:
         'text': 'Unexcpected error happen during the action.',
         'status_code': 500,
         'code': 0,
-        'description' : "",
+        'description': "",
     }
     USER_EXIST_ERROR = {
         'text': 'There is a user with this email',
         'status_code': 409,
         'code': 1,
-        'description' : "",
+        'description': "",
     }
 
     PERMISSION_DENIED_ERROR = {
@@ -208,7 +208,12 @@ class Error:
         'code': 103,
     }
     GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE = {
-        'text': 'Group does not belongs to this page!',
+        'text': 'Group does not belong to this page!',
+        'status_code': 400,
+        'code': 104,
+    }
+    CONTACTS_DO_NOT_BELONGS_TO_THIS_PAGE = {
+        'text': 'Contacts do not belong to this page',
         'status_code': 400,
         'code': 104,
     }

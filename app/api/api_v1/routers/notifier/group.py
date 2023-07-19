@@ -7,7 +7,6 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
-from app.core.transaction import AtomicTransaction
 
 router = APIRouter(prefix='/group')
 
@@ -61,35 +60,36 @@ def create_group(
 ):
     if not obj_in.contacts:
         raise_http_exception(Error.GROUP_EMPTY_CONTACT)
-    with AtomicTransaction(db) as session:
-        db_obj = services.notifier.group.create(
-            session,
-            obj_in=schemas.notifier.GroupCreate(
-                name=obj_in.name,
-                description=obj_in.description,
-                facebook_page_id=obj_in.facebook_page_id,
-            ),
-            user_id=current_user.id,
-        )
+    contacts = services.live_chat.contact.get_bulk_by_uuid(
+        db, contacts_id=obj_in.contacts
+    )
+    for contact in contacts:
+        if contact.facebook_page_id != obj_in.facebook_page_id:
+            raise_http_exception(Error.CONTACTS_DO_NOT_BELONGS_TO_THIS_PAGE)
 
-        contacts_uuid = [item.contact_id for item in obj_in.contacts]
-        contacts = services.live_chat.contact.get_bulk_by_uuid(
-            db, contacts_id=contacts_uuid
-        )
+    group = services.notifier.group.create(
+        db,
+        obj_in=schemas.notifier.GroupCreate(
+            name=obj_in.name,
+            description=obj_in.description,
+            facebook_page_id=obj_in.facebook_page_id,
+        ),
+        user_id=current_user.id,
+    )
 
-        contacts_in = [
-            schemas.notifier.GroupContactCreate(
-                contact_id=item.id,
-                contact_igs_id=item.contact_igs_id,
-            )
-            for item in contacts
-        ]
-        services.notifier.group_contact.create_bulk(
-            session, objs_in=contacts_in, group_id=db_obj.id
+    contacts_in = [
+        schemas.notifier.GroupContactCreate(
+            contact_id=item.id,
+            contact_igs_id=item.contact_igs_id,
         )
+        for item in contacts
+    ]
+    services.notifier.group_contact.create_bulk(
+        db, objs_in=contacts_in, group_id=group.id
+    )
 
     return schemas.notifier.Group(
-        id=db_obj.uuid, name=db_obj.name, description=db_obj.description
+        id=group.uuid, name=group.name, description=group.description
     )
 
 
@@ -107,7 +107,7 @@ def remove_group(
         ],
     ),
 ):
-    group = services.notifier.group.get_by_uuid(db, id)
+    group = services.notifier.group.get_by_uuid(db, uuid=id)
     if not group:
         raise_http_exception(Error.GROUP_NOT_FOUND)
     if group.user_id != current_user.id:
@@ -134,14 +134,16 @@ def update_group(
         ],
     ),
 ):
-    if not obj_in.contacts:
-        raise_http_exception(Error.GROUP_EMPTY_CONTACT)
-    db_obj = services.notifier.group.get_by_uuid(db, id)
+    db_obj = services.notifier.group.get_by_uuid(db, uuid=id)
     if not db_obj:
         raise_http_exception(Error.GROUP_NOT_FOUND)
 
     if db_obj.user_id != current_user.id:
         raise_http_exception(Error.GROUP_NOT_FOUND)
+
+    for contact in obj_in.contacts:
+        if contact.facebook_page_id != obj_in.facebook_page_id:
+            raise_http_exception(Error.CONTACTS_DO_NOT_BELONGS_TO_THIS_PAGE)
 
     group = services.notifier.group.update(
         db,
@@ -150,19 +152,18 @@ def update_group(
             name=obj_in.name, description=obj_in.description
         ),
     )
-    services.notifier.group_contact.remove_bulk(db, group_id=group.id)
+    services.notifier.group_contact.remove_by_group_id(db, group_id=group.id)
 
-    contacts_uuid = [item.contact_id for item in obj_in.contacts]
     contacts = services.live_chat.contact.get_bulk_by_uuid(
-        db, contacts_id=contacts_uuid
+        db, contacts_id=obj_in.contacts
     )
 
     contacts_in = [
         schemas.notifier.GroupContactCreate(
-            contact_id=item.id,
-            contact_igs_id=item.contact_igs_id,
+            contact_id=contact.id,
+            contact_igs_id=contact.contact_igs_id,
         )
-        for item in contacts
+        for contact in contacts
     ]
     services.notifier.group_contact.create_bulk(
         db, objs_in=contacts_in, group_id=db_obj.id

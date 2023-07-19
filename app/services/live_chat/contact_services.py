@@ -1,14 +1,14 @@
-import math
 from datetime import date, datetime
 from typing import List
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
-from sqlalchemy import and_
+from sqlalchemy import and_, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
 from app import models, schemas
+from app.core.utils import paginate
 
 
 class ContactServices:
@@ -128,7 +128,9 @@ class ContactServices:
             .all()
         )
 
-    def get_bulk_by_uuid(self, db: Session, *, contacts_id: List[UUID4]):
+    def get_bulk_by_uuid(
+        self, db: Session, *, contacts_id: List[UUID4]
+    ) -> List[models.live_chat.Contact]:
         return (
             db.query(self.model)
             .filter(models.live_chat.Contact.uuid.in_(contacts_id))
@@ -145,14 +147,6 @@ class ContactServices:
         page: int = 1,
         page_size: int = 20,
     ):
-        total_count = db.query(self.model).count()
-        total_pages = math.ceil(total_count / page_size)
-        pagination = schemas.Pagination(
-            page=page,
-            page_size=page_size,
-            total_pages=total_pages,
-            total_count=total_count,
-        )
         filters = [models.live_chat.Contact.facebook_page_id == facebook_page_id]
         if from_date:
             from_datetime = datetime.combine(from_date, datetime.min.time())
@@ -161,8 +155,11 @@ class ContactServices:
             filters.append(
                 models.live_chat.Contact.is_user_follow_business == is_user_follow_business
             )
-
-        return db.query(self.model).filter(and_(*filters)).all(), pagination
+        total_count = db.query(self.model).filter(and_(*filters)).count()
+        contacts = db.query(self.model).filter(and_(*filters)).order_by(
+            desc(self.model.last_interaction_at)
+        ).offset(page_size * (page - 1)).limit(page_size).all()
+        return contacts, paginate(total_count, page, page_size)
 
 
 contact = ContactServices(models.live_chat.Contact)

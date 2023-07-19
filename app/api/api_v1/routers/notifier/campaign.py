@@ -30,7 +30,7 @@ def get_all_user_campaigns(
         ],
     ),
 ):
-    pagination, items = services.notifier.campaign.get_multi(
+    items , pagination = services.notifier.campaign.get_multi(
         db,
         user_id=current_user.id,
         facebook_page_id=facebook_page_id,
@@ -141,8 +141,6 @@ def update_campaign(
 ):
     db_obj = services.notifier.campaign.get_by_uuid(db, id)
 
-    if db_obj.is_draft is False:
-        raise_http_exception(Error.CAMPAIGN_ALREADY_ACTIVE)
     campaign = services.notifier.campaign.update(
         db,
         db_obj=db_obj,
