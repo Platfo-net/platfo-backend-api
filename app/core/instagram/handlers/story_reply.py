@@ -4,8 +4,8 @@ from uuid import uuid4
 
 from app import services
 from app.constants.message_direction import MessageDirection
-from app.core.bot_builder.extra_classes import SavedMessage
-from app.core.bot_builder.handlers import BaseHandler, BotBaseHandler
+from app.core.instagram.instagram import SavedMessage
+from app.core.instagram.handlers import BaseHandler, BotBaseHandler
 
 
 class StoryReplyHandler(BaseHandler):

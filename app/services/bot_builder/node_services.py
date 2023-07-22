@@ -74,11 +74,13 @@ class NodeServices(
         return node
 
     def get_next_node(
-        self, db: Session, *, from_id: UUID4
+        self, db: Session, *, from_id: UUID4, chatflow_id: int
     ) -> Optional[models.bot_builder.Node]:
         return (
             db.query(models.bot_builder.Node)
-            .filter(models.bot_builder.Node.from_widget.contains([str(from_id)]))
+            .filter(
+                models.bot_builder.Node.chatflow_id == chatflow_id,
+                models.bot_builder.Node.from_widget.contains([str(from_id)]))
             .first()
         )
 

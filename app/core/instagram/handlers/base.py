@@ -10,9 +10,9 @@ from app import schemas, services
 from app.constants.impression import Impression
 from app.constants.message_direction import MessageDirection
 from app.constants.widget_type import WidgetType
-from app.core.bot_builder.extra_classes import (InstagramData, SavedMessage,
+from app.core.instagram.instagram import (InstagramData, SavedMessage,
                                                 UserData)
-from app.core.bot_builder.instagram_graph_api import graph_api
+from app.core.instagram.graph_api import graph_api
 
 
 def convert_message(content):

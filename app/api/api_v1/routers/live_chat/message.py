@@ -10,8 +10,8 @@ from app.constants.errors import Error
 from app.constants.message_direction import MessageDirection
 from app.constants.role import Role
 from app.constants.widget_type import WidgetType
-from app.core.bot_builder import tasks
-from app.core.bot_builder.instagram_graph_api import graph_api
+from app.core.instagram import tasks
+from app.core.instagram.graph_api import graph_api
 from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix='/message')

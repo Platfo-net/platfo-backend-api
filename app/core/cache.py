@@ -5,7 +5,7 @@ from redis.client import Redis
 from sqlalchemy.orm import Session
 
 from app import services
-from app.core.bot_builder.extra_classes import ConnectionData, UserData
+from app.core.instagram.instagram import ConnectionData, UserData
 
 
 def get_data_from_cache(client: Redis, key: str = None) -> str:

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app import services
-from app.core.bot_builder.handlers.base import BaseHandler
+from app.core.instagram.handlers.base import BaseHandler
 
 
 class DeleteMessageHandler(BaseHandler):

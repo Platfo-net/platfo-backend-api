@@ -6,16 +6,17 @@ from app.constants.application import Application
 from app.constants.trigger import Trigger
 from app.constants.webhook_type import WebhookType
 from app.core import cache
-from app.core.bot_builder.extra_classes import InstagramData
-from app.core.bot_builder.handlers import (CommentHandler,
-                                           ContactMessageBotHandler,
-                                           ContactMessageHandler,
-                                           DeleteMessageHandler,
-                                           LiveCommentHandler,
-                                           MessageSeenHandler,
-                                           StoryMentionHandler,
-                                           StoryReplyBotHandler,
-                                           StoryReplyHandler)
+from app.core.instagram.handlers.message_postback import MessagePostbackBotHandler
+from app.core.instagram.instagram import InstagramData
+from app.core.instagram.handlers import (CommentHandler,
+                                         ContactMessageBotHandler,
+                                         ContactMessageHandler,
+                                         DeleteMessageHandler,
+                                         LiveCommentHandler,
+                                         MessageSeenHandler,
+                                         StoryMentionHandler,
+                                         StoryReplyBotHandler,
+                                         StoryReplyHandler)
 from app.core.celery import celery
 from app.db.session import SessionLocal
 
@@ -70,9 +71,13 @@ def webhook_proccessor(facebook_webhook_body):
 
             bot = ContactMessageBotHandler(instagram_data, user_page_data, redis_client, db)
             bot.run(Trigger.MESSAGE, Application.BOT_BUILDER)
+
+        case WebhookType.MESSAGE_POSTBACK:
+            # handler = MessagePostbackBotHandler(instagram_data, user_page_data, redis_client, db)
+            # handler()
+
+            bot = MessagePostbackBotHandler(instagram_data, user_page_data, redis_client, db)
+            bot.run(Trigger.MESSAGE, Application.BOT_BUILDER,
+                    postback_payload=instagram_data.payload)
     db.close()
     return None
-
-
-#
-# @celery.task

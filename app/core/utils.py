@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.constants.message_type import MessageType
-from app.core.bot_builder.extra_classes import SavedMessage
+from app.core.instagram.instagram import SavedMessage
 
 
 def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):

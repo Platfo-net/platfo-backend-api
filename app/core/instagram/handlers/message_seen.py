@@ -1,7 +1,7 @@
 
 
 from app import services
-from app.core.bot_builder.handlers import BaseHandler
+from app.core.instagram.handlers import BaseHandler
 
 
 class MessageSeenHandler(BaseHandler):

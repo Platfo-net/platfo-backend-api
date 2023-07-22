@@ -6,7 +6,7 @@ from app.core.config import settings
 
 celery = Celery(
     __name__,
-    include=['app.core.bot_builder.tasks', 'app.core.notifier.tasks', 'app.core.tasks'],
+    include=['app.core.instagram.tasks', 'app.core.notifier.tasks', 'app.core.tasks'],
 )
 
 celery.conf.broker_url = settings.CELERY_URI
