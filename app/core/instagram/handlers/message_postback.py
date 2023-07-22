@@ -1,12 +1,5 @@
 
-from datetime import datetime
-from uuid import uuid4
-
 from app import services
-from app.constants.message_direction import MessageDirection
-from app.constants.widget_type import WidgetType
-from app.core.instagram.instagram import SavedMessage
-from app.core.instagram.handlers import BaseHandler
 from app.core.instagram.handlers.base import BotBaseHandler
 
 

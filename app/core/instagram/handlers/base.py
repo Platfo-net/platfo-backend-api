@@ -183,7 +183,8 @@ class BotBaseHandler(BaseHandler):
                 mid = self.handle_media(widget, contact_igs_id)
 
             if widget["widget_type"] == WidgetType.TEXT:
-                mid = self.handle_text(widget, contact_igs_id, quick_replies , chatflow_id = chatflow_id)
+                mid = self.handle_text(widget, contact_igs_id,
+                                       quick_replies, chatflow_id=chatflow_id)
 
             saved_message = self.pack_our_message(contact_igs_id, widget, mid)
             self.save_message(

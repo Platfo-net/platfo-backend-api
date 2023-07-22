@@ -98,7 +98,7 @@ def create_connection(
         details = copy.deepcopy(obj_in.details)
         for detail in details:
             chatflow = services.bot_builder.chatflow.get_by_uuid(
-                db, uuid = detail['chatflow_id'] , user_id = current_user.id
+                db, uuid=detail['chatflow_id'], user_id=current_user.id
             )
             detail['chatflow_id'] = chatflow.id
 
