@@ -13,7 +13,11 @@ from app.core.instagram.handlers.base import BotBaseHandler
 class MessagePostbackBotHandler(BotBaseHandler):
     def run(self, application: str, postback_payload: str, chatflow_id: int):
         if services.connection.is_chatflow_connected_to_page(
-                self.db, self.user_page_data.facebook_page_id, chatflow_id, application):
+                self.db,
+                account_id=self.user_page_data.facebook_page_id,
+                chatflow_id=chatflow_id,
+                application_name=application,
+        ):
             node = services.bot_builder.node.get_next_node(
                 self.db,
                 from_id=postback_payload,
@@ -23,8 +27,8 @@ class MessagePostbackBotHandler(BotBaseHandler):
                 return
 
             self.send_widget(
-                node.widget,
-                chatflow_id=chatflow_id,
+                widget=node.widget,
                 quick_replies=node.quick_replies,
-                contact_igs_id=self.instagram_data.sender_id
+                chatflow_id=chatflow_id,
+                contact_igs_id=self.instagram_data.sender_id,
             )

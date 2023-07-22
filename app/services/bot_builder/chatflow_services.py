@@ -24,6 +24,18 @@ class ChatflowServices:
         db.refresh(db_obj)
         return db_obj
 
+    def update(
+        self,
+        db: Session,
+        *,
+        db_obj: models.bot_builder.Chatflow,
+        obj_in: schemas.bot_builder.chatflow.ChatflowUpdate,
+    ) -> models.bot_builder.Chatflow:
+        db_obj.name = obj_in.name,
+        db.add(db_obj)
+        db.commit()
+        return db_obj
+
     def get(self, db: Session, *, id: int):
         return (
             db.query(self.model)

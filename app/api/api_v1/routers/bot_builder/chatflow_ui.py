@@ -83,6 +83,7 @@ def create_chatflow_nodes_edges(
 ):
     chatflow = services.bot_builder.chatflow.get_by_uuid(
         db, uuid=chatflow_id, user_id=current_user.id)
+    
     db.query(models.bot_builder.NodeUI).filter(
         models.bot_builder.NodeUI.chatflow_id == chatflow.id
     ).delete()

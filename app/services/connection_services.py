@@ -93,7 +93,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
 
     def get_connection(
         self, db: Session, *, account_id: int, application_name: str, trigger: str
-    ) -> Optional[ModelType]:
+    ):
         connection = self.get_by_application_name_and_account_id(
             db, account_id=account_id, application_name=application_name)
         if not connection:
