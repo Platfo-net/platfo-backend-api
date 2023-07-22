@@ -9,7 +9,7 @@ from app.core.config import settings
 
 class InstagramGraphApi:
     def send_quick_replies(
-        self, quick_replies, from_id: str, to_id: str, page_access_token: str
+        self, quick_replies, chatflow_id: int, from_id: str, to_id: str, page_access_token: str,
     ):
         url = '{}/{}/{}/messages'.format(
             settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION, from_id
@@ -25,7 +25,7 @@ class InstagramGraphApi:
                     {
                         'content_type': 'text',
                         'title': quick_reply['text'],
-                        'payload': quick_reply['id'],
+                        'payload': f"{quick_reply['id']},{chatflow_id}",
                     }
                     for quick_reply in quick_replies
                 ],
@@ -43,6 +43,7 @@ class InstagramGraphApi:
         to_id: int,
         page_access_token: str,
         quick_replies: list = [],
+        chatflow_id: int = None,
     ):
         url = '{}/{}/{}/messages'.format(
             settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION, from_id
@@ -59,7 +60,7 @@ class InstagramGraphApi:
                 {
                     'content_type': 'text',
                     'title': quick_reply['text'],
-                    'payload': quick_reply['id'],
+                    'payload': f"{quick_reply['id']},{chatflow_id}",
                 }
                 for quick_reply in quick_replies
             ]
@@ -130,7 +131,8 @@ class InstagramGraphApi:
 
         res = requests.post(url=url, params=params, json=payload)
         if quick_replies:
-            self.send_quick_replies(quick_replies, from_id, to_id, page_access_token)
+            self.send_quick_replies(
+                quick_replies, chatflow_id, from_id, to_id, page_access_token)
 
         mid = None
         if res.status_code == 200:

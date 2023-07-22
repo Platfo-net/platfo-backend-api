@@ -46,6 +46,39 @@ class InstagramData:
                                 'sender': {'id': sender_id},
                                 'recipient': {'id': recipient_id},
                                 'timestamp': timestamp,
+                                'message': {
+                                    'mid': mid,
+                                    'text': text,
+                                    'quick_reply': {
+                                        'payload': payload
+                                    },
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }:
+                self.payload = payload
+                self.platform = platform
+                self.entry_time = entry_time
+                self.sender_id = sender_id
+                self.recipient_id = recipient_id
+                self.timestamp = timestamp
+                self.mid = mid
+                self.text = text
+                self.payload = payload
+                self.type = WebhookType.MESSAGE_POSTBACK
+            case {
+                'object': platform,
+                'entry': [
+                    {
+                        'time': entry_time,
+                        'id': entry_id,
+                        'messaging': [
+                            {
+                                'sender': {'id': sender_id},
+                                'recipient': {'id': recipient_id},
+                                'timestamp': timestamp,
                                 'postback': {
                                     'mid': mid,
                                     'title': title,
@@ -305,6 +338,7 @@ class InstagramData:
                 self.mid = mid
                 self.text = text
                 self.story_url = story_url
+
             case _:
                 pass
 

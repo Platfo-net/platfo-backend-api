@@ -87,6 +87,7 @@ def campaign_handler(campaign_id):
                     to_id=contact.contact_igs_id,
                     page_access_token=instagram_page.facebook_page_token,
                     quick_replies=[],
+                    chatflow_id=None,
                 )
             if mid:
                 break

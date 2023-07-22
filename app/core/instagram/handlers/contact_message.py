@@ -94,8 +94,8 @@ class ContactMessageBotHandler(BotBaseHandler):
                 return
 
             self.send_widget(
-                node.widget,
-                chatflow_id,
+                widget=node.widget,
+                chatflow_id=chatflow_id,
                 quick_replies=node.quick_replies,
                 contact_igs_id=self.instagram_data.sender_id
             )

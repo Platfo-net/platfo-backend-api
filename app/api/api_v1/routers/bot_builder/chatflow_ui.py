@@ -101,7 +101,7 @@ def create_chatflow_nodes_edges(
     new_nodes = []
     for node in obj_in.nodes:
         db_obj = models.bot_builder.NodeUI(
-            id=node.uuid,
+            uuid=node.id,
             text=node.text,
             width=node.width,
             height=node.height,
@@ -109,7 +109,7 @@ def create_chatflow_nodes_edges(
             ports=node.ports,
             has_delete_action=node.has_delete_action,
             has_edit_action=node.has_edit_action,
-            chatflow_id=chatflow_id,
+            chatflow_id=chatflow.id,
         )
 
         new_nodes.append(db_obj)
@@ -117,12 +117,12 @@ def create_chatflow_nodes_edges(
     new_edges = []
     for edge in obj_in.edges:
         db_obj = models.bot_builder.Edge(
-            id=edge.uuid,
+            uuid=edge.id,
             from_id=edge.from_id,
             to_id=edge.to_id,
             from_port=edge.from_port,
             to_port=edge.to_port,
-            chatflow_id=chatflow_id,
+            chatflow_id=chatflow.id,
             from_widget=edge.from_widget,
             text=edge.text,
         )
@@ -132,9 +132,9 @@ def create_chatflow_nodes_edges(
         db, nodes=new_nodes, edges=new_edges
     )
 
-    services.bot_builder.node.delete_chatflow_nodes(db, chatflow_id=chatflow_id)
+    services.bot_builder.node.delete_chatflow_nodes(db, chatflow_id=chatflow.id)
     nodes = chatflow_ui_parse(
-        chatflow_id=chatflow_id, nodes=obj_in.nodes, edges=obj_in.edges
+        chatflow_id=chatflow.id, nodes=obj_in.nodes, edges=obj_in.edges
     )
 
     services.bot_builder.node.create_bulk_nodes(db, nodes=nodes)

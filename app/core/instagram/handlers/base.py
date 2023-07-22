@@ -167,7 +167,6 @@ class BotBaseHandler(BaseHandler):
             application_name=application,
             trigger=trigger
         )
-
         return detail
 
     def send_widget(
@@ -175,7 +174,7 @@ class BotBaseHandler(BaseHandler):
         widget: dict,
         quick_replies: List[dict],
         contact_igs_id: int,
-        chatflow_id: int=None,
+        chatflow_id: int = None,
     ):
 
         while widget["widget_type"] in (WidgetType.TEXT, WidgetType.MEDIA):
@@ -184,16 +183,16 @@ class BotBaseHandler(BaseHandler):
                 mid = self.handle_media(widget, contact_igs_id)
 
             if widget["widget_type"] == WidgetType.TEXT:
-                mid = self.handle_text(widget, contact_igs_id, quick_replies)
+                mid = self.handle_text(widget, contact_igs_id, quick_replies , chatflow_id = chatflow_id)
 
             saved_message = self.pack_our_message(contact_igs_id, widget, mid)
             self.save_message(
                 saved_message
             )
+            payload = widget["id"]
 
-            payload = widget["uuid"]
-
-            node = services.bot_builder.node.get_next_node(self.db, from_id=payload)
+            node = services.bot_builder.node.get_next_node(
+                self.db, from_id=payload, chatflow_id=chatflow_id)
 
             if node is None:
                 break
@@ -218,19 +217,20 @@ class BotBaseHandler(BaseHandler):
         )
         return mid
 
-    def handle_text(self, widget, contact_igs_id: int, quick_replies) -> str:
+    def handle_text(self, widget, contact_igs_id: int, quick_replies, chatflow_id: int) -> str:
         mid = graph_api.send_text_message(
             text=widget["message"],
             from_id=self.user_page_data.facebook_page_id,
             to_id=contact_igs_id,
             page_access_token=self.user_page_data.facebook_page_token,
             quick_replies=quick_replies,
+            chatflow_id=chatflow_id,
         )
         return mid
 
     def handle_menu(self, widget, chatflow_id, quick_replies, contact_igs_id: int):
         mid = graph_api.send_menu(
-            data = widget,
+            data=widget,
             quick_replies=quick_replies,
             from_id=self.user_page_data.facebook_page_id,
             to_id=contact_igs_id,

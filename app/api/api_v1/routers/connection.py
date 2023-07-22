@@ -14,7 +14,7 @@ from app.constants.role import Role
 from app.core.cache import remove_data_from_cache
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix='/connection', tags=['Connection'], include_in_schema=False)
+router = APIRouter(prefix='/connection', tags=['Connection'])
 
 
 @router.get('/all', response_model=List[schemas.Connection])
@@ -85,7 +85,7 @@ def create_connection(
         ],
     ),
 ):
-    account = services.instagram_page.get_by_uuid(db, obj_in.account_id)
+    account = services.instagram_page.get_by_uuid(db, uuid=obj_in.account_id)
     if not account:
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
     connection = services.connection.get_by_application_name_and_account_id(
@@ -98,7 +98,7 @@ def create_connection(
         details = copy.deepcopy(obj_in.details)
         for detail in details:
             chatflow = services.bot_builder.chatflow.get_by_uuid(
-                db, detail['chatflow_id']
+                db, uuid = detail['chatflow_id'] , user_id = current_user.id
             )
             detail['chatflow_id'] = chatflow.id
 

@@ -26,7 +26,6 @@ def webhook_proccessor(facebook_webhook_body):
     db: Session = SessionLocal()
     redis_client = deps.get_redis_client()
     instagram_data = InstagramData(facebook_webhook_body)
-
     try:
         user_page_data = cache.get_user_data(
             redis_client, db, instagram_page_id=instagram_data.recipient_id
@@ -36,7 +35,6 @@ def webhook_proccessor(facebook_webhook_body):
         return None
 
     handler = None
-
     match instagram_data.type:
         case WebhookType.MESSAGE_SEEN:
             handler = MessageSeenHandler(instagram_data, user_page_data, redis_client, db)
@@ -70,14 +68,14 @@ def webhook_proccessor(facebook_webhook_body):
             handler()
 
             bot = ContactMessageBotHandler(instagram_data, user_page_data, redis_client, db)
-            bot.run(Trigger.MESSAGE, Application.BOT_BUILDER)
+            bot.run(Trigger.MESSAGE["name"], Application.BOT_BUILDER)
 
         case WebhookType.MESSAGE_POSTBACK:
             # handler = MessagePostbackBotHandler(instagram_data, user_page_data, redis_client, db)
             # handler()
             payload, chatflow_id = instagram_data.payload.split(",")
             bot = MessagePostbackBotHandler(instagram_data, user_page_data, redis_client, db)
-            bot.run(Trigger.MESSAGE, Application.BOT_BUILDER,
-                    postback_payload=payload , chatflow_id = chatflow_id)
+            bot.run(Application.BOT_BUILDER,
+                    postback_payload=payload, chatflow_id=int(chatflow_id))
     db.close()
     return None

@@ -14,7 +14,7 @@ class MessagePostbackBotHandler(BotBaseHandler):
     def run(self, application: str, postback_payload: str, chatflow_id: int):
         if services.connection.is_chatflow_connected_to_page(
                 self.db,
-                account_id=self.user_page_data.facebook_page_id,
+                account_id=self.user_page_data.account_id,
                 chatflow_id=chatflow_id,
                 application_name=application,
         ):

@@ -100,7 +100,7 @@ class NodeServices(
         db.commit()
         return
 
-    def delete_chatflow_nodes(self, db: Session, *, chatflow_id: UUID4):
+    def delete_chatflow_nodes(self, db: Session, *, chatflow_id: int):
         return (
             db.query(self.model).filter(self.model.chatflow_id == chatflow_id).delete()
         )

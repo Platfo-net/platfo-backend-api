@@ -117,7 +117,7 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         connection = db.query(self.model).filter(
             self.model.account_id == account_id,
             self.model.application_name == application_name
-        )
+        ).first()
         if not connection:
             return False
         if not connection.details:

@@ -33,7 +33,7 @@ def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
     ]
 
     obj = models.bot_builder.Node(
-        id=head_node.id,
+        uuid=head_node.id,
         title=head_node.text,
         chatflow_id=chatflow_id,
         from_widget=from_widget,
@@ -51,7 +51,7 @@ def chatflow_ui_parse(chatflow_id: UUID4, nodes, edges):
         from_widget = [str(edge.from_widget) for edge in edges if edge.to_id == node.id]
 
         obj = models.bot_builder.Node(
-            id=node.id,
+            uuid=node.id,
             title=node.text,
             chatflow_id=chatflow_id,
             from_widget=from_widget,
