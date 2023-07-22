@@ -97,13 +97,35 @@ class ConnectionServices(BaseServices[ModelType, CreateSchemaType, UpdateSchemaT
         connection = self.get_by_application_name_and_account_id(
             db, account_id=account_id, application_name=application_name)
         if not connection:
-            return None , None
+            return None, None
         if not connection.details:
-            return None , None
+            return None, None
         for detail in connection.details:
             if detail["trigger"] == trigger:
-                return connection , detail
-        return None , None
+                return connection, detail
+        return None, None
+
+    def is_chatflow_connected_to_page(
+        self,
+        db: Session,
+        *,
+        account_id: int,
+        chatflow_id: int,
+        application_name: str
+
+    ) -> bool:
+        connection = db.query(self.model).filter(
+            self.model.account_id == account_id,
+            self.model.application_name == application_name
+        )
+        if not connection:
+            return False
+        if not connection.details:
+            return False
+        for detail in connection.details:
+            if detail["chatflow_id"] == chatflow_id:
+                return True
+        return False
 
 
 connection = ConnectionServices(models.Connection)

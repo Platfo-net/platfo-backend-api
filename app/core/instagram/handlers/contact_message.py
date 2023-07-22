@@ -85,16 +85,17 @@ class ContactMessageHandler(BaseHandler):
 class ContactMessageBotHandler(BotBaseHandler):
     def run(self, trigger, application):
         if detail := self.check_connection_and_get_detail(trigger, application):
-
+            chatflow_id = detail.get("chatflow_id")
             node = services.bot_builder.node.get_chatflow_head_node(
                 self.db,
-                chatflow_id=detail.get("chatflow_id"),
+                chatflow_id=chatflow_id,
             )
             if not node:
                 return
 
             self.send_widget(
                 node.widget,
+                chatflow_id,
                 quick_replies=node.quick_replies,
                 contact_igs_id=self.instagram_data.sender_id
             )

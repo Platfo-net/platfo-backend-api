@@ -75,9 +75,9 @@ def webhook_proccessor(facebook_webhook_body):
         case WebhookType.MESSAGE_POSTBACK:
             # handler = MessagePostbackBotHandler(instagram_data, user_page_data, redis_client, db)
             # handler()
-
+            payload, chatflow_id = instagram_data.payload.split(",")
             bot = MessagePostbackBotHandler(instagram_data, user_page_data, redis_client, db)
             bot.run(Trigger.MESSAGE, Application.BOT_BUILDER,
-                    postback_payload=instagram_data.payload)
+                    postback_payload=payload , chatflow_id = chatflow_id)
     db.close()
     return None

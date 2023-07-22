@@ -77,6 +77,7 @@ class InstagramGraphApi:
         data,
         from_id: str,
         to_id: str,
+        chatflow_id: int,
         page_access_token: str,
         quick_replies: list = [],
     ):
@@ -97,7 +98,7 @@ class InstagramGraphApi:
                     {
                         'type': ButtonType.POSTBACK['value'],
                         'title': choice['text'],
-                        'payload': choice['id'],
+                        'payload': f"{choice['id']},{chatflow_id}",
                     }
                 )
 

@@ -11,7 +11,7 @@ from app.constants.impression import Impression
 from app.constants.message_direction import MessageDirection
 from app.constants.widget_type import WidgetType
 from app.core.instagram.instagram import (InstagramData, SavedMessage,
-                                                UserData)
+                                          UserData)
 from app.core.instagram.graph_api import graph_api
 
 
@@ -175,6 +175,7 @@ class BotBaseHandler(BaseHandler):
         widget: dict,
         quick_replies: List[dict],
         contact_igs_id: int,
+        chatflow_id: int=None,
     ):
 
         while widget["widget_type"] in (WidgetType.TEXT, WidgetType.MEDIA):
@@ -190,7 +191,7 @@ class BotBaseHandler(BaseHandler):
                 saved_message
             )
 
-            payload = widget["id"]
+            payload = widget["uuid"]
 
             node = services.bot_builder.node.get_next_node(self.db, from_id=payload)
 
@@ -201,7 +202,7 @@ class BotBaseHandler(BaseHandler):
             quick_replies = node.quick_replies
 
         if widget["widget_type"] == "MENU":
-            mid = self.handle_menu(widget, quick_replies, contact_igs_id)
+            mid = self.handle_menu(widget, chatflow_id, quick_replies, contact_igs_id)
             self.pack_our_message(contact_igs_id, widget, mid)
             saved_message = self.save_message(saved_message)
 
@@ -227,12 +228,13 @@ class BotBaseHandler(BaseHandler):
         )
         return mid
 
-    def handle_menu(self, widget, quick_replies, contact_igs_id: int):
+    def handle_menu(self, widget, chatflow_id, quick_replies, contact_igs_id: int):
         mid = graph_api.send_menu(
-            widget,
-            quick_replies,
+            data = widget,
+            quick_replies=quick_replies,
             from_id=self.user_page_data.facebook_page_id,
             to_id=contact_igs_id,
+            chatflow_id=chatflow_id,
             page_access_token=self.user_page_data.facebook_page_token,
         )
         return mid
