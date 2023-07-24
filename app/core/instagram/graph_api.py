@@ -15,34 +15,62 @@ class InstagramGraphApi:
         )
 
         payload = {
-            "attachment":{
-      "type":"template",
-      "payload":{
-        "template_type":"generic",
-        "elements":[
-           {
-            "title":"Welcome!",
-            "image_url":"https://github.com/fbsamples/original-coast-clothing/blob/main/public/looks/male-work.jpg",
-            "subtitle":"We have the right hat for everyone.",
-            "default_action": {
-              "type": "web_url",
-              "url": "https://www.originalcoastclothing.com",
+            'recipient': {
+                'id': to_id,
             },
-            "buttons":[
-              {
-                "type":"web_url",
-                "url":"https://www.originalcoastclothing.com",
-                "title":"View Website"
-              },{
-                "type":"postback",
-                "title":"Start Chatting",
-                "payload":"DEVELOPER_DEFINED_PAYLOAD"
-              }              
-            ]      
-          }
-        ]
-      }}
+ "message" : {
+  "attachment": {
+    "type": "template",
+    "payload": {
+      "template_type": "generic",
+      "elements": [
+        {
+          "title": "سلام",
+          "image_url": "https://images.unsplash.com/photo-1527126887308-6cdf83c7d844?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
+          "subtitle": "به پیج باتینو حوش‌آمدید",
+          "default_action": {
+            "type": "web_url",
+            "url": "https://www.chatbot.aimedic.co"
+          },
+          "buttons": [
+            {
+              "type": "web_url",
+              "url": "https://www.chatbot.aimedic.co",
+              "title": "تماس با ما"
+            },
+            {
+              "type": "postback",
+              "title": "ارتباط با ادمین",
+              "payload": "DEVELOPER_DEFINED_PAYLOAD"
+            }
+          ]
+        },{
+          "title": "سلام",
+          "image_url": "https://images.unsplash.com/photo-1527126887308-6cdf83c7d844?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
+          "subtitle": "به پیج باتینو حوش‌آمدید",
+          "default_action": {
+            "type": "web_url",
+            "url": "https://www.chatbot.aimedic.co"
+          },
+          "buttons": [
+            {
+              "type": "web_url",
+              "url": "https://www.chatbot.aimedic.co",
+              "title": "تماس با ما"
+            },
+            {
+              "type": "postback",
+              "title": "ارتباط با ادمین",
+              "payload": "DEVELOPER_DEFINED_PAYLOAD"
+            }
+          ]
         }
+      ]
+    }
+  }
+}       
+  }   
+        
         params = {'access_token': page_access_token}
         res = requests.post(url, params=params, json=payload)
 
