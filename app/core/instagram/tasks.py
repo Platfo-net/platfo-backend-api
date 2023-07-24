@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm import Session
 
 from app.api import deps
@@ -35,7 +34,7 @@ def webhook_proccessor(facebook_webhook_body):
         return None
 
     handler = None
-    
+
     from app.core.instagram.graph_api import graph_api
     if instagram_data.type == WebhookType.CONTACT_MESSAGE:
         a = graph_api.send_persistant_menu(
@@ -43,7 +42,7 @@ def webhook_proccessor(facebook_webhook_body):
             to_id=instagram_data.sender_id,
             page_access_token=user_page_data.facebook_page_token)
         print(a)
-        return 
+        return
     match instagram_data.type:
         case WebhookType.MESSAGE_SEEN:
             handler = MessageSeenHandler(instagram_data, user_page_data, redis_client, db)

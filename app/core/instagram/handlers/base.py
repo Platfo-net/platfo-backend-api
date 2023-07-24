@@ -1,4 +1,3 @@
-
 from abc import abstractmethod
 from datetime import datetime
 from typing import List
@@ -50,10 +49,10 @@ class BaseHandler:
         raise NotImplementedError
 
     def save_comment(
-        self,
-        from_page_id: int = None,
-        to_page_id: int = None,
-        user_id: int = None,
+            self,
+            from_page_id: int = None,
+            to_page_id: int = None,
+            user_id: int = None,
     ):
         contact = services.live_chat.contact.get_contact_by_igs_id(
             self.db, contact_igs_id=from_page_id
@@ -170,11 +169,11 @@ class BotBaseHandler(BaseHandler):
         return detail
 
     def send_widget(
-        self,
-        widget: dict,
-        quick_replies: List[dict],
-        contact_igs_id: int,
-        chatflow_id: int = None,
+            self,
+            widget: dict,
+            quick_replies: List[dict],
+            contact_igs_id: int,
+            chatflow_id: int = None,
     ):
 
         while widget["widget_type"] in (WidgetType.TEXT, WidgetType.MEDIA):
@@ -201,11 +200,12 @@ class BotBaseHandler(BaseHandler):
             widget = node.widget
             quick_replies = node.quick_replies
 
-        if widget["widget_type"] == "MENU":
+        if widget["widget_type"] == WidgetType.MENU:
             mid = self.handle_menu(widget, chatflow_id, quick_replies, contact_igs_id)
             self.pack_our_message(contact_igs_id, widget, mid)
             saved_message = self.save_message(saved_message)
-
+        if widget["widget_type"] == WidgetType.SLIDER:
+            mid = self.handle_slider(widget, chatflow_id, quick_replies, contact_igs_id)
         return widget
 
     def handle_media(self, widget, contact_igs_id: int) -> str:
@@ -232,6 +232,17 @@ class BotBaseHandler(BaseHandler):
     def handle_menu(self, widget, chatflow_id, quick_replies, contact_igs_id: int):
         mid = graph_api.send_menu(
             data=widget,
+            quick_replies=quick_replies,
+            from_id=self.user_page_data.facebook_page_id,
+            to_id=contact_igs_id,
+            chatflow_id=chatflow_id,
+            page_access_token=self.user_page_data.facebook_page_token,
+        )
+        return mid
+
+    def handle_slider(self, widget, chatflow_id, quick_replies, contact_igs_id: int):
+        mid = graph_api.send_slider(
+            slides=widget.get("slides"),
             quick_replies=quick_replies,
             from_id=self.user_page_data.facebook_page_id,
             to_id=contact_igs_id,
