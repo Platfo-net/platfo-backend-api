@@ -8,6 +8,46 @@ from app.core.config import settings
 
 
 class InstagramGraphApi:
+    
+    def send_persistant_menu(self,from_id , to_id , page_access_token):
+        url = '{}/{}/{}/messages'.format(
+            settings.FACEBOOK_GRAPH_BASE_URL, settings.FACEBOOK_GRAPH_VERSION, from_id
+        )
+
+        payload = {
+            "attachment":{
+      "type":"template",
+      "payload":{
+        "template_type":"generic",
+        "elements":[
+           {
+            "title":"Welcome!",
+            "image_url":"https://github.com/fbsamples/original-coast-clothing/blob/main/public/looks/male-work.jpg",
+            "subtitle":"We have the right hat for everyone.",
+            "default_action": {
+              "type": "web_url",
+              "url": "https://www.originalcoastclothing.com",
+            },
+            "buttons":[
+              {
+                "type":"web_url",
+                "url":"https://www.originalcoastclothing.com",
+                "title":"View Website"
+              },{
+                "type":"postback",
+                "title":"Start Chatting",
+                "payload":"DEVELOPER_DEFINED_PAYLOAD"
+              }              
+            ]      
+          }
+        ]
+      }}
+        }
+        params = {'access_token': page_access_token}
+        res = requests.post(url, params=params, json=payload)
+
+        return res.json()
+          
     def send_quick_replies(
         self, quick_replies, chatflow_id: int, from_id: str, to_id: str, page_access_token: str,
     ):
