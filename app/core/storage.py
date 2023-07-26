@@ -26,6 +26,7 @@ def add_file_to_s3(object_name, file_path, bucket_name):
 
 
 def get_object_url(object_name, bucket_name):
+    return "https://platfo.net/wp-content/uploads/2023/07/platfo-logo-B-150x150.png"
     try:
         client = create_client()
         if object_name in ['', None]:

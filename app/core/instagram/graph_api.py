@@ -26,18 +26,17 @@ class InstagramGraphApi:
         for slide in slides:
             item = {
                 "title": slide.get("title", ""),
-                "image_url": storage.get_object_url(settings.S3_CHATFLOW_MEDIA_BUCKET) or "",
+                "image_url": storage.get_object_url(slide.get("image"),settings.S3_CHATFLOW_MEDIA_BUCKET) or "",
                 "subtitle": slide.get("subtitle", ""),
                 "buttons": [
                     {
                         "type": "postback",
-                        "title": button.get("title", ""),
-                        "postback": f"{button.get('id')},{chatflow_id}"
-                    } for button in slide.get("bottuns") if len(slide.get("bottuns")) > 0
+                        "title": button.get("text", ""),
+                        "payload": f"{button.get('id')},{chatflow_id}"
+                    } for button in slide.get("choices") if len(slide.get("choices")) > 0
                 ]
             }
             items.append(item)
-
         payload = {
             'recipient': {
                 'id': to_id,
@@ -52,7 +51,7 @@ class InstagramGraphApi:
                 }
             }
         }
-
+        
         params = {'access_token': page_access_token}
         res = requests.post(url, params=params, json=payload)
 
