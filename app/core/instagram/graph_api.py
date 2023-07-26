@@ -26,7 +26,8 @@ class InstagramGraphApi:
         for slide in slides:
             item = {
                 "title": slide.get("title", ""),
-                "image_url": storage.get_object_url(slide.get("image"),settings.S3_CHATFLOW_MEDIA_BUCKET) or "",
+                "image_url": storage.get_object_url(
+                    slide.get("image"), settings.S3_CHATFLOW_MEDIA_BUCKET) or "",
                 "subtitle": slide.get("subtitle", ""),
                 "buttons": [
                     {
@@ -51,7 +52,7 @@ class InstagramGraphApi:
                 }
             }
         }
-        
+
         params = {'access_token': page_access_token}
         res = requests.post(url, params=params, json=payload)
 
