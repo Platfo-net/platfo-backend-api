@@ -23,14 +23,14 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-
-@app.middleware('http')
-async def add_sql_tap(request: Request, call_next):
-    profiler = sqltap.start()
-    response = await call_next(request)
-    statistics = profiler.collect()
-    sqltap.report(statistics, 'report.txt', report_format='text')
-    return response
+if settings.ENVIRONMENT.lower() == "dev":
+    @app.middleware('http')
+    async def add_sql_tap(request: Request, call_next):
+        profiler = sqltap.start()
+        response = await call_next(request)
+        statistics = profiler.collect()
+        sqltap.report(statistics, 'report.txt', report_format='text')
+        return response
 
 
 @app.get('/health', tags=['health-check'])
