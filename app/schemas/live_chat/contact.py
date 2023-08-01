@@ -26,6 +26,11 @@ class Contact(ContactBase):
     last_message: str = None
     profile_image: str = None
     username: str = None
+    name: str = None
+    followers_count: int = None
+    is_verified_user: bool = None
+    is_user_follow_business: bool = None
+    is_business_follow_user: bool = None
 
 
 class ProfileCreate(BaseModel):

@@ -83,7 +83,7 @@ def update_page_contacts_information(
     return contacts
 
 
-@router.post('/all/{facebook_page_id}')
+@router.post('/all/{facebook_page_id}', response_model=schemas.live_chat.ContactList)
 def get_all_contact_based_on_filters(
     *,
     page: int = 1,
@@ -136,6 +136,11 @@ def get_all_contact_based_on_filters(
             first_impression=contact.first_impression,
             profile_image=contact.profile_image,
             username=contact.username,
+            name=contact.name,
+            followers_count=contact.followers_count,
+            is_verified_user=contact.is_verified_user,
+            is_user_follow_business=contact.is_user_follow_business,
+            is_business_follow_user=contact.is_business_follow_user,
 
         )
         for contact in contacts
