@@ -48,7 +48,7 @@ def get_contact(
 
     return schemas.live_chat.Contact(
         contact_igs_id=contact.contact_igs_id,
-        user_page_id=contact.user_page_id,
+        facebook_page_id=contact.facebook_page_id,
         user_id=contact.user_id,
         id=contact.uuid,
         last_message_at=contact.last_message_at,
@@ -56,6 +56,12 @@ def get_contact(
         last_message=contact.last_message,
         username=contact.username,
         profile_image=contact.profile_image,
+        name=contact.name,
+        followers_count=contact.followers_count,
+        is_verified_user=contact.is_verified_user,
+        is_user_follow_business=contact.is_user_follow_business,
+        is_business_follow_user=contact.is_business_follow_user,
+        
     )
 
 
