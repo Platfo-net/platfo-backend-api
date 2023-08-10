@@ -17,4 +17,9 @@ class AccountDetail(BaseModel):
     platform: Optional[str] = None
     profile_image: Optional[str] = None
     facebook_page_id: Optional[int] = None
-    information: Optional[dict] = None
+
+    name : Optional[str] = None
+    website: Optional[str] = None
+    followers_count : Optional[int] = None
+    follows_count : Optional[int] = None
+    biography: Optional[str] = None
