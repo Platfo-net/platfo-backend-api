@@ -61,7 +61,7 @@ def get_contact(
         is_verified_user=contact.is_verified_user,
         is_user_follow_business=contact.is_user_follow_business,
         is_business_follow_user=contact.is_business_follow_user,
-        
+
     )
 
 

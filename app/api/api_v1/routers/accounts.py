@@ -67,18 +67,18 @@ def get_account(
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
     if instagram_page.user_id != current_user.id:
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
-    
+
     return schemas.AccountDetail(
         id=instagram_page.uuid,
         facebook_page_id=instagram_page.facebook_page_id,
         username=instagram_page.username,
         profile_image=instagram_page.profile_picture_url,
         platform=Platform.INSTAGRAM['name'],
-        name = instagram_page.name,
-        website= instagram_page.website,
-    followers_count = instagram_page.followers_count,
-    follows_count = instagram_page.follows_count,
-    biography= instagram_page.biography
+        name=instagram_page.name,
+        website=instagram_page.website,
+        followers_count=instagram_page.followers_count,
+        follows_count=instagram_page.follows_count,
+        biography=instagram_page.biography
     )
 
 
