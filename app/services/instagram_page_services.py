@@ -50,5 +50,29 @@ class InstagramPageServices(
     def remove(self, db: Session, *, id: int):
         db.query(self.model).filter(self.model.id == id).delete()
 
+    def update_comment_count(self, db: Session, *, facebook_page_id: int, count: int = 1):
+        db.query(self.model).filter(
+            self.model.facebook_page_id == facebook_page_id
+        ).update({'comments_count': self.model.comments_count + count})
+        db.commit()
+
+    def update_live_comment_count(self, db: Session, *, facebook_page_id: int, count: int = 1):
+        db.query(self.model).filter(
+            self.model.facebook_page_id == facebook_page_id
+        ).update({'live_comment_count': self.model.live_comment_count + count})
+        db.commit()
+
+    def update_leads_count(self, db: Session, *, facebook_page_id: int, count: int = 1):
+        db.query(self.model).filter(
+            self.model.facebook_page_id == facebook_page_id
+        ).update({'leads_count': self.model.leads_count + count})
+        db.commit()
+
+    def update_chats_count(self, db: Session, *, facebook_page_id: int, count: int = 1):
+        db.query(self.model).filter(
+            self.model.facebook_page_id == facebook_page_id
+        ).update({'chats_count': self.model.chats_count + count})
+        db.commit()
+
 
 instagram_page = InstagramPageServices(models.InstagramPage)

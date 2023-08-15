@@ -18,6 +18,15 @@ class ContactMessageHandler(BaseHandler):
 
         if saved_message.direction == MessageDirection.IN:
             self.update_databoard()
+        if self.is_new:
+            services.instagram_page.update_leads_count(
+                self.db,
+                instagram_page_id=self.user_page_data.facebook_page_id
+            )
+        services.instagram_page.update_chats_count(
+            self.db,
+            instagram_page_id=self.user_page_data.facebook_page_id
+        )
 
     def pack(self):
         saved_data = {

@@ -12,6 +12,10 @@ class CommentHandler(BaseHandler):
             user_id=self.user_page_data.user_id,
         )
         self.update_databoard()
+        services.instagram_page.update_comment_count(
+            self.db,
+            instagram_page_id=self.user_page_data.facebook_page_id
+        )
 
     def update_databoard(self):
         now = datetime.now()

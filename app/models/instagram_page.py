@@ -29,4 +29,9 @@ class InstagramPage(Base):
     follows_count = Column(Integer, nullable=True)
     biography = Column(Text(), nullable=True)
 
+    leads_count = Column(Integer, nullable=True)
+    comments_count = Column(Integer, nullable=True)
+    live_comment_count = Column(Integer, nullable=True)
+    chats_count = Column(Integer, nullable=True)
+
     user = relationship('User', back_populates='instagram_pages')
