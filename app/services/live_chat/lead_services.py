@@ -11,20 +11,20 @@ from app import models, schemas
 from app.core.utils import paginate
 
 
-class ContactServices:
+class LeadServices:
     def __init__(self, model):
         self.model = model
 
     def create(
-        self, db: Session, *, obj_in: schemas.live_chat.ContactCreate
-    ) -> models.live_chat.Contact:
+        self, db: Session, *, obj_in: schemas.live_chat.LeadCreate
+    ) -> models.live_chat.Lead:
         obj_in = jsonable_encoder(obj_in)
-        contact = self.model(**obj_in)
-        db.add(contact)
+        lead = self.model(**obj_in)
+        db.add(lead)
         db.commit()
-        db.refresh(contact)
+        db.refresh(lead)
 
-        return contact
+        return lead
 
     def get(self, db: Session, id: int):
         return db.query(self.model).filter(self.model.id == id).first()
@@ -32,10 +32,10 @@ class ContactServices:
     def get_by_uuid(self, db: Session, uuid: UUID4):
         return db.query(self.model).filter(self.model.uuid == uuid).first()
 
-    def get_contact_by_igs_id(self, db: Session, *, contact_igs_id: int):
+    def get_lead_by_igs_id(self, db: Session, *, lead_igs_id: int):
         return (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
+            .filter(self.model.lead_igs_id == lead_igs_id)
             .first()
         )
 
@@ -43,14 +43,14 @@ class ContactServices:
         self,
         db: Session,
         *,
-        contact_igs_id: str,
+        lead_igs_id: str,
         information: dict | None,
     ):
         if not information:
             return
-        db_obj: models.live_chat.Contact = (
+        db_obj: models.live_chat.Lead = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
+            .filter(self.model.lead_igs_id == lead_igs_id)
             .first()
         )
 
@@ -72,12 +72,12 @@ class ContactServices:
         self,
         db: Session,
         *,
-        contact_igs_id: int,
+        lead_igs_id: int,
         data: dict,
     ):
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
+            .filter(self.model.lead_igs_id == lead_igs_id)
             .first()
         )
         db_obj.information.update(data)
@@ -91,14 +91,14 @@ class ContactServices:
         self,
         db: Session,
         *,
-        contact_igs_id: int,
+        lead_igs_id: int,
         last_message: str = None,
         last_message_at: datetime = None,
         last_interaction_at: datetime = None,
     ):
         db_obj = (
             db.query(self.model)
-            .filter(self.model.contact_igs_id == contact_igs_id)
+            .filter(self.model.lead_igs_id == lead_igs_id)
             .first()
         )
         if last_message:
@@ -112,28 +112,28 @@ class ContactServices:
         db.refresh(db_obj)
 
     def remove_by_user_page_id(self, db: Session, *, user_page_id: int):
-        contacts = (
+        leads = (
             db.query(self.model).filter(self.model.user_page_id == user_page_id).all()
         )
-        for contact in contacts:
-            db.delete(contact)
+        for lead in leads:
+            db.delete(lead)
         db.commit()
 
         return
 
-    def get_bulk(self, db: Session, *, contacts_id: List[int]):
+    def get_bulk(self, db: Session, *, leads_id: List[int]):
         return (
             db.query(self.model)
-            .filter(models.live_chat.Contact.id.in_(contacts_id))
+            .filter(models.live_chat.Lead.id.in_(leads_id))
             .all()
         )
 
     def get_bulk_by_uuid(
-        self, db: Session, *, contacts_id: List[UUID4]
-    ) -> List[models.live_chat.Contact]:
+        self, db: Session, *, leads_id: List[UUID4]
+    ) -> List[models.live_chat.Lead]:
         return (
             db.query(self.model)
-            .filter(models.live_chat.Contact.uuid.in_(contacts_id))
+            .filter(models.live_chat.Lead.uuid.in_(leads_id))
             .all()
         )
 
@@ -147,19 +147,19 @@ class ContactServices:
         page: int = 1,
         page_size: int = 20,
     ):
-        filters = [models.live_chat.Contact.facebook_page_id == facebook_page_id]
+        filters = [models.live_chat.Lead.facebook_page_id == facebook_page_id]
         if from_date:
             from_datetime = datetime.combine(from_date, datetime.min.time())
-            filters.append(models.live_chat.Contact.last_interaction_at > from_datetime)
+            filters.append(models.live_chat.Lead.last_interaction_at > from_datetime)
         if is_user_follow_business is not None:
             filters.append(
-                models.live_chat.Contact.is_user_follow_business == is_user_follow_business
+                models.live_chat.Lead.is_user_follow_business == is_user_follow_business
             )
         total_count = db.query(self.model).filter(and_(*filters)).count()
-        contacts = db.query(self.model).filter(and_(*filters)).order_by(
+        leads = db.query(self.model).filter(and_(*filters)).order_by(
             desc(self.model.last_interaction_at)
         ).offset(page_size * (page - 1)).limit(page_size).all()
-        return contacts, paginate(total_count, page, page_size)
+        return leads, paginate(total_count, page, page_size)
 
 
-contact = ContactServices(models.live_chat.Contact)
+lead = LeadServices(models.live_chat.Lead)

@@ -48,5 +48,5 @@ class StoryReplyBotHandler(BotBaseHandler):
             self.send_widget(
                 node.widget,
                 quick_replies=node.quick_replies,
-                contact_igs_id=self.instagram_data.sender_id
+                lead_igs_id=self.instagram_data.sender_id
             )

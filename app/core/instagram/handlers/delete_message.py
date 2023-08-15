@@ -10,14 +10,14 @@ class DeleteMessageHandler(BaseHandler):
 
     def update_databoard(self):
         now = datetime.now()
-        databoard = services.databoard.contact_message_stat.get(
+        databoard = services.databoard.lead_message_stat.get(
             self.db,
             facebook_page_id=self.user_page_data.facebook_page_id,
             now=now
         )
 
         if databoard:
-            services.databoard.contact_message_stat.update_count(
+            services.databoard.lead_message_stat.update_count(
                 self.db,
                 db_obj=databoard,
                 added_count=-1

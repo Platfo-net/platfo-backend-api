@@ -98,17 +98,17 @@ def create_campaign(
         db, obj_in=campaign_obj, user_id=current_user.id
     )
 
-    group_contacts = services.notifier.group_contact.get_by_group(db, group_id=group.id)
-    contacts = []
-    for contact in group_contacts:
-        contacts.append(
+    group_leads = services.notifier.group_lead.get_by_group(db, group_id=group.id)
+    leads = []
+    for lead in group_leads:
+        leads.append(
             schemas.notifier.CampaignContactCreate(
-                contact_id=contact.contact_id, contact_igs_id=contact.contact_igs_id
+                lead_id=lead.lead_id, lead_igs_id=lead.lead_igs_id
             )
         )
 
-    services.notifier.campaign_contact.create_bulk(
-        db, campaign_id=campaign.id, contacts=contacts
+    services.notifier.campaign_lead.create_bulk(
+        db, campaign_id=campaign.id, leads=leads
     )
     image = storage.get_file(campaign.image, settings.S3_CAMPAIGN_BUCKET)
 
@@ -186,9 +186,9 @@ def get_campaign_by_id(
     )
     if not instagram_page:
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
-    sent_count = services.notifier.campaign_contact.get_all_sent_count(db, campaign.id)
-    seen_count = services.notifier.campaign_contact.get_all_seen_count(db, campaign.id)
-    contact_count = services.notifier.campaign_contact.get_all_contacts_count(
+    sent_count = services.notifier.campaign_lead.get_all_sent_count(db, campaign.id)
+    seen_count = services.notifier.campaign_lead.get_all_seen_count(db, campaign.id)
+    lead_count = services.notifier.campaign_lead.get_all_leads_count(
         db, campaign.id
     )
     account = schemas.Account(
@@ -213,13 +213,13 @@ def get_campaign_by_id(
         account=account,
         sent_count=sent_count,
         seen_count=seen_count,
-        total_contact_count=contact_count,
+        total_lead_count=lead_count,
         image=image,
     )
 
 
-@router.get('/{id}/contacts')
-def get_campain_contacts(
+@router.get('/{id}/leads')
+def get_campain_leads(
     *,
     db: Session = Depends(deps.get_db),
     id: UUID4,
@@ -242,21 +242,21 @@ def get_campain_contacts(
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
     (
-        campaign_contacts,
+        campaign_leads,
         pagination,
-    ) = services.notifier.campaign_contact.get_campaign_contacts(
+    ) = services.notifier.campaign_lead.get_campaign_leads(
         db, campaign_id=campaign.id, page=page, page_size=page_size
     )
-    contacts = []
-    for contact in campaign_contacts:
-        contacts.append(
+    leads = []
+    for lead in campaign_leads:
+        leads.append(
             schemas.notifier.ContactSample(
-                profile_image=contact.contact.profile_image,
-                username=contact.contact.username,
+                profile_image=lead.lead.profile_image,
+                username=lead.lead.username,
             )
         )
     return schemas.notifier.CampaignContactApiSchema(
-        items=contacts, pagination=pagination
+        items=leads, pagination=pagination
     )
 
 

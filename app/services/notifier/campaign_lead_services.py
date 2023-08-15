@@ -5,47 +5,47 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.core.utils import paginate
 
-ModelType = models.notifier.CampaignContact
-CreateSchemaType = schemas.notifier.CampaignContactCreate
-UpdateSchemaType = schemas.notifier.CampaignContactUpdate
+ModelType = models.notifier.CampaignLead
+CreateSchemaType = schemas.notifier.CampaignLeadCreate
+UpdateSchemaType = schemas.notifier.CampaignLeadUpdate
 
 
-class CampaignContactServices:
+class CampaignLeadServices:
     def __init__(self, model):
         self.model = model
 
-    def get_campaign_contacts(
+    def get_campaign_leads(
         self, db: Session, *, campaign_id: int, page: int, page_size: int
     ):
-        contacts = (
+        leads = (
             db.query(self.model)
             .filter(self.model.campaign_id == campaign_id)
-            .join(self.model.contact)
+            .join(self.model.lead)
             .offset(page_size * (page - 1))
             .limit(page_size)
             .all()
         )
         total_count = db.query(self.model).filter(self.model.campaign_id == campaign_id).count()
 
-        return contacts, paginate(total_count, page, page_size)
+        return leads, paginate(total_count, page, page_size)
 
     def create_bulk(
-        self, db: Session, *, contacts: List[CreateSchemaType], campaign_id: int
+        self, db: Session, *, leads: List[CreateSchemaType], campaign_id: int
     ) -> List[ModelType]:
         db_obj = [
             self.model(
-                contact_id=c.contact_id,
+                lead_id=c.lead_id,
                 campaign_id=campaign_id,
-                contact_igs_id=c.contact_igs_id,
+                lead_igs_id=c.lead_igs_id,
             )
-            for c in contacts
+            for c in leads
         ]
         db.add_all(db_obj)
         db.commit()
 
         return db_obj
 
-    def get_campaign_unsend_contacts(
+    def get_campaign_unsend_leads(
         self, db: Session, *, campaign_id: int, count: int
     ):
         return (
@@ -54,22 +54,22 @@ class CampaignContactServices:
                 self.model.is_sent == False,  # noqa
                 self.model.campaign_id == campaign_id,
             )
-            .join(self.model.contact)
+            .join(self.model.lead)
             .limit(count)
             .all()
         )
 
-    def get_campaign_unsend_contacts_count(self, db: Session, *, campaign_id: int) -> int:
+    def get_campaign_unsend_leads_count(self, db: Session, *, campaign_id: int) -> int:
         return (
-            db.query(models.notifier.CampaignContact)
+            db.query(models.notifier.CampaignLead)
             .filter(
-                models.notifier.CampaignContact.is_sent == False,  # noqa
-                models.notifier.CampaignContact.campaign_id == campaign_id,
+                models.notifier.CampaignLead.is_sent == False,  # noqa
+                models.notifier.CampaignLead.campaign_id == campaign_id,
             )
             .count()
         )
 
-    def get_all_contacts_count(self, db: Session, campaign_id: int) -> int:
+    def get_all_leads_count(self, db: Session, campaign_id: int) -> int:
         return (
             db.query(self.model).filter(self.model.campaign_id == campaign_id).count()
         )
@@ -86,7 +86,7 @@ class CampaignContactServices:
 
     def get_all_seen_count(self, db: Session, campaign_id: int) -> int:
         return (
-            db.query(models.notifier.CampaignContact)
+            db.query(models.notifier.CampaignLead)
             .filter(
                 self.model.campaign_id == campaign_id,
                 self.model.is_seen == True,  # noqa
@@ -94,20 +94,20 @@ class CampaignContactServices:
             .count()
         )
 
-    def delete_campaign_contact(self, db: Session, *, campaign_contact_id: int) -> int:
+    def delete_campaign_lead(self, db: Session, *, campaign_lead_id: int) -> int:
         return (
             db.query(self.model)
-            .filter(self.model.CampaignContact.id == campaign_contact_id)
+            .filter(self.model.CampaignLead.id == campaign_lead_id)
             .delete()
         )
 
     def change_send_status_bulk(
-        self, db: Session, *, campaign_contacts_in: list[ModelType], is_sent: bool
+        self, db: Session, *, campaign_leads_in: list[ModelType], is_sent: bool
     ):
         db_objs = []
-        for campaign_contact in campaign_contacts_in:
-            campaign_contact.is_sent = is_sent
-            db_objs.append(campaign_contact)
+        for campaign_lead in campaign_leads_in:
+            campaign_lead.is_sent = is_sent
+            db_objs.append(campaign_lead)
 
         db.add_all(db_objs)
         db.commit()
@@ -128,4 +128,4 @@ class CampaignContactServices:
         )
 
 
-campaign_contact = CampaignContactServices(models.notifier.CampaignContact)
+campaign_lead = CampaignLeadServices(models.notifier.CampaignLead)

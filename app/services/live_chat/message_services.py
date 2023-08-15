@@ -28,7 +28,7 @@ class MessageServices:
         self,
         db: Session,
         *,
-        contact_igs_id: str,
+        lead_igs_id: str,
         page_id: str,
         skip: int = 0,
         limit: int = 20
@@ -38,12 +38,12 @@ class MessageServices:
             .filter(
                 or_(
                     and_(
-                        self.model.from_page_id == contact_igs_id,
+                        self.model.from_page_id == lead_igs_id,
                         self.model.to_page_id == page_id,
                     ),
                     and_(
                         self.model.from_page_id == page_id,
-                        self.model.to_page_id == contact_igs_id,
+                        self.model.to_page_id == lead_igs_id,
                     ),
                 )
             )

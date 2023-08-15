@@ -1,2 +1,2 @@
-from .contact_services import contact
+from .lead_services import lead
 from .message_services import message

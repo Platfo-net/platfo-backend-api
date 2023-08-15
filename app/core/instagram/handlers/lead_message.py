@@ -11,7 +11,7 @@ from app.core.instagram.handlers import BaseHandler
 from app.core.instagram.handlers.base import BotBaseHandler
 
 
-class ContactMessageHandler(BaseHandler):
+class LeadMessageHandler(BaseHandler):
     def __call__(self):
         saved_message = self.pack()
         _, self.is_new = self.save_message(saved_message)
@@ -48,13 +48,13 @@ class ContactMessageHandler(BaseHandler):
 
     def update_databoard(self):
         now = datetime.now()
-        databoard = services.databoard.contact_message_stat.get(
+        databoard = services.databoard.lead_message_stat.get(
             self.db,
             facebook_page_id=self.user_page_data.facebook_page_id,
             now=now
         )
         if not databoard:
-            services.databoard.contact_message_stat.create(
+            services.databoard.lead_message_stat.create(
                 self.db,
                 facebook_page_id=self.user_page_data.facebook_page_id,
                 count=1,
@@ -62,36 +62,36 @@ class ContactMessageHandler(BaseHandler):
             )
 
         else:
-            services.databoard.contact_message_stat.update_count(
+            services.databoard.lead_message_stat.update_count(
                 self.db,
                 db_obj=databoard,
                 added_count=1
             )
 
         if self.is_new:
-            contact_databoard = services.databoard.contact_stat.get(
+            lead_databoard = services.databoard.lead_stat.get(
                 self.db,
                 facebook_page_id=self.user_page_data.facebook_page_id,
                 now=now
             )
-            if not contact_databoard:
-                contact_databoard = services.databoard.contact_stat.create(
+            if not lead_databoard:
+                lead_databoard = services.databoard.lead_stat.create(
                     self.db,
                     facebook_page_id=self.user_page_data.facebook_page_id,
                     count=1,
                     now=now
                 )
             else:
-                services.databoard.contact_stat.update_count(
+                services.databoard.lead_stat.update_count(
                     self.db,
-                    db_obj=contact_databoard,
+                    db_obj=lead_databoard,
                     added_count=1,
                 )
 
         return databoard
 
 
-class ContactMessageBotHandler(BotBaseHandler):
+class LeadMessageBotHandler(BotBaseHandler):
     def run(self, trigger, application):
         if detail := self.check_connection_and_get_detail(trigger, application):
             chatflow_id = detail.get("chatflow_id")
@@ -106,5 +106,5 @@ class ContactMessageBotHandler(BotBaseHandler):
                 widget=node.widget,
                 chatflow_id=chatflow_id,
                 quick_replies=node.quick_replies,
-                contact_igs_id=self.instagram_data.sender_id
+                lead_igs_id=self.instagram_data.sender_id
             )

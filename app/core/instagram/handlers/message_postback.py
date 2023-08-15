@@ -22,9 +22,5 @@ class MessagePostbackBotHandler(BotBaseHandler):
                 widget=node.widget,
                 quick_replies=node.quick_replies,
                 chatflow_id=chatflow_id,
-                contact_igs_id=self.instagram_data.sender_id,
+                lead_igs_id=self.instagram_data.sender_id,
             )
-# chatflow_id = 1
-#
-# from app.core import storage
-# from app.core.config import settings

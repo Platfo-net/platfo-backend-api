@@ -21,7 +21,7 @@ def campaign_terminal():
 
     for campaign in campaigns:
         unsend_count = (
-            services.notifier.campaign_contact.get_campaign_unsend_contacts_count(
+            services.notifier.campaign_lead.get_campaign_unsend_leads_count(
                 db, campaign_id=campaign.id
             )
         )
@@ -39,8 +39,8 @@ def campaign_terminal():
 def campaign_handler(campaign_id):
     db = SessionLocal()
     campaign = services.notifier.campaign.get(db=db, campaign_id=campaign_id)
-    campaign_contacts = services.notifier.campaign_contact.get_campaign_unsend_contacts(
-        db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_CONTACT_COUNT
+    campaign_leads = services.notifier.campaign_lead.get_campaign_unsend_leads(
+        db, campaign_id=campaign_id, count=settings.CAMPAIGN_INTERVAL_SEND_LEAD_COUNT
     )
 
     services.notifier.campaign.change_activity(
@@ -67,9 +67,9 @@ def campaign_handler(campaign_id):
         facebook_page_id=instagram_page.facebook_page_id,
         account_id=instagram_page.id,
     )
-    sent_contacts = []
+    sent_leads = []
 
-    for contact in campaign_contacts:
+    for lead in campaign_leads:
         mid = None
         for _ in range(3):
             if campaign_image_url:
@@ -77,14 +77,14 @@ def campaign_handler(campaign_id):
                     text=campaign_text,
                     image_url=campaign_image_url,
                     from_id=instagram_page.facebook_page_id,
-                    to_id=contact.contact_igs_id,
+                    to_id=lead.lead_igs_id,
                     page_access_token=instagram_page.facebook_page_token,
                 )
             else:
                 mid = graph_api.send_text_message(
                     text=campaign_text,
                     from_id=instagram_page.facebook_page_id,
-                    to_id=contact.contact_igs_id,
+                    to_id=lead.lead_igs_id,
                     page_access_token=instagram_page.facebook_page_token,
                     quick_replies=[],
                     chatflow_id=None,
@@ -93,11 +93,11 @@ def campaign_handler(campaign_id):
                 break
 
         if mid:
-            contact.mid = mid
-            sent_contacts.append(contact)
+            lead.mid = mid
+            sent_leads.append(lead)
             saved_message = SavedMessage(
                 from_page_id=instagram_page.facebook_page_id,
-                to_page_id=contact.contact_igs_id,
+                to_page_id=lead.lead_igs_id,
                 mid=mid,
                 content={'text': campaign_text},
                 user_id=instagram_page.user_id,
@@ -105,8 +105,8 @@ def campaign_handler(campaign_id):
             )
             utils.save_message(db, saved_message)
 
-    services.notifier.campaign_contact.change_send_status_bulk(
-        db=db, campaign_contacts_in=sent_contacts, is_sent=True
+    services.notifier.campaign_lead.change_send_status_bulk(
+        db=db, campaign_leads_in=sent_leads, is_sent=True
     )
 
     services.notifier.campaign.change_activity(

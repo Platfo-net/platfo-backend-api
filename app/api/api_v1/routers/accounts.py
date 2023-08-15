@@ -108,7 +108,7 @@ def delete_account(
 
     services.instagram_page.remove(db, id=id)
 
-    services.live_chat.contact.remove_by_user_page_id(
+    services.live_chat.lead.remove_by_user_page_id(
         db, user_page_id=instagram_page.facebook_page_id
     )
     services.live_chat.message.remove_by_user_page_id(

@@ -45,7 +45,7 @@ class CampaignDetail(Campaign):
     user_id: UUID4
     sent_count: int = 0
     seen_count: int = 0
-    total_contact_count: int = 0
+    total_lead_count: int = 0
 
 
 class CampaignListApi(BaseModel):

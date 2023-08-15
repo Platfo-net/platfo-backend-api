@@ -6,20 +6,20 @@ from pydantic import UUID4, BaseModel
 from app.schemas.pagination import Pagination
 
 
-class ContactBase(BaseModel):
-    contact_igs_id: int
+class LeadBase(BaseModel):
+    lead_igs_id: int
     facebook_page_id: int
     first_impression: str = None
 
 
-class ContactCreate(ContactBase):
+class LeadCreate(LeadBase):
     user_id: int
     last_interaction_at: datetime = None
     last_message: str = None
     last_message_at: datetime = None
 
 
-class Contact(ContactBase):
+class Lead(LeadBase):
     id: UUID4
     last_message_at: datetime = None
     last_interaction_at: datetime = None
@@ -49,6 +49,6 @@ class SearchItem(BaseModel):
     value: Optional[int] = None
 
 
-class ContactList(BaseModel):
-    items: List[Contact]
+class LeadList(BaseModel):
+    items: List[Lead]
     pagination: Pagination

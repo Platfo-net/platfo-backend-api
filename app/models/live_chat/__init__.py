@@ -1,2 +1,2 @@
-from .contact import Contact
+from .lead import Lead
 from .message import Message

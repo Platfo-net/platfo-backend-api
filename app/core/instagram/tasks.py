@@ -8,8 +8,8 @@ from app.core import cache
 from app.core.instagram.handlers.message_postback import MessagePostbackBotHandler
 from app.core.instagram.instagram import InstagramData
 from app.core.instagram.handlers import (CommentHandler,
-                                         ContactMessageBotHandler,
-                                         ContactMessageHandler,
+                                         LeadMessageHandler,
+                                         LeadMessageBotHandler,
                                          DeleteMessageHandler,
                                          LiveCommentHandler,
                                          MessageSeenHandler,
@@ -63,11 +63,11 @@ def webhook_proccessor(facebook_webhook_body):
             bot = StoryReplyBotHandler(instagram_data, user_page_data, redis_client, db)
             bot.run(Trigger.STORY_REPLY, Application.BOT_BUILDER)
 
-        case WebhookType.CONTACT_MESSAGE:
-            handler = ContactMessageHandler(instagram_data, user_page_data, redis_client, db)
+        case WebhookType.LEAD_MESSAGE:
+            handler = LeadMessageHandler(instagram_data, user_page_data, redis_client, db)
             handler()
 
-            bot = ContactMessageBotHandler(instagram_data, user_page_data, redis_client, db)
+            bot = LeadMessageBotHandler(instagram_data, user_page_data, redis_client, db)
             bot.run(Trigger.MESSAGE["name"], Application.BOT_BUILDER)
 
         case WebhookType.MESSAGE_POSTBACK:

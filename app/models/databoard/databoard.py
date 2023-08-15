@@ -29,8 +29,8 @@ class LiveCommentStat(Base):
     from_datetime = Column(DateTime())
 
 
-class ContactStat(Base):
-    __tablename__ = 'databoard_contact_stats'
+class LeadStat(Base):
+    __tablename__ = 'databoard_lead_stats'
 
     facebook_page_id = Column(BigInteger(), index=True)
     year = Column(Integer(), index=True)
@@ -42,8 +42,8 @@ class ContactStat(Base):
     from_datetime = Column(DateTime())
 
 
-class ContactMessageStat(Base):
-    __tablename__ = 'databoard_contact_message_stats'
+class LeadMessageStat(Base):
+    __tablename__ = 'databoard_lead_message_stats'
 
     facebook_page_id = Column(BigInteger(), index=True)
 

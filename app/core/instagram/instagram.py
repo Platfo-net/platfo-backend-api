@@ -217,7 +217,7 @@ class InstagramData:
                 self.timestamp = timestamp
                 self.mid = mid
                 self.text = text
-                self.type = WebhookType.CONTACT_MESSAGE
+                self.type = WebhookType.LEAD_MESSAGE
 
             case {
                 'object': platform,
@@ -247,7 +247,7 @@ class InstagramData:
                 self.mid = mid
                 self.text = text
                 self.is_echo = is_echo
-                self.type = WebhookType.CONTACT_MESSAGE_ECHO
+                self.type = WebhookType.LEAD_MESSAGE_ECHO
 
             case {
                 'object': platform,

@@ -7,10 +7,10 @@ from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 
 
-class Contact(Base):
-    __tablename__ = 'live_chat_contacts'
+class Lead(Base):
+    __tablename__ = 'live_chat_leads'
 
-    contact_igs_id = Column(BigInteger, nullable=True, index=True)
+    lead_igs_id = Column(BigInteger, nullable=True, index=True)
     facebook_page_id = Column(BigInteger, nullable=True, index=True)
 
     last_message = Column(String(1024), nullable=True)
@@ -33,12 +33,8 @@ class Contact(Base):
         nullable=True,
     )
 
-    user = relationship('User', back_populates='contacts')
+    user = relationship('User', back_populates='leads')
 
-    campaign_contacts = relationship(
-        'CampaignContact', back_populates='contact', cascade='all,delete'
-    )
-
-    group_contacts = relationship(
-        'GroupContact', back_populates='contact', cascade='all,delete'
+    campaign_leads = relationship(
+        'CampaignLead', back_populates='lead', cascade='all,delete'
     )

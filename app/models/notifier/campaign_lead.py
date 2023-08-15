@@ -4,10 +4,10 @@ from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 
 
-class CampaignContact(Base):
-    __tablename__ = 'notifier_campaign_contacts'
+class CampaignLead(Base):
+    __tablename__ = 'notifier_campaign_leads'
 
-    contact_igs_id = Column(BigInteger, nullable=True)
+    lead_igs_id = Column(BigInteger, nullable=True)
 
     is_sent = Column(Boolean(), default=False)
     is_seen = Column(Boolean(), default=False)
@@ -15,13 +15,13 @@ class CampaignContact(Base):
 
     reaction = Column(String(100), nullable=True)
 
-    contact_id = Column(
+    lead_id = Column(
         BigInteger,
-        ForeignKey('live_chat_contacts.id'),
+        ForeignKey('live_chat_leads.id'),
         nullable=True,
     )
     campaign_id = Column(
         BigInteger, ForeignKey('notifier_campaigns.id'), nullable=True, index=True
     )
-    campaign = relationship('Campaign', back_populates='campaign_contacts')
-    contact = relationship('Contact', back_populates='campaign_contacts')
+    campaign = relationship('Campaign', back_populates='campaign_leads')
+    lead = relationship('Lead', back_populates='campaign_leads')

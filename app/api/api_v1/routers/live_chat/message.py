@@ -18,13 +18,13 @@ router = APIRouter(prefix='/message')
 
 
 @router.get(
-    '/archive/{page_id}/{contact_igs_id}',
+    '/archive/{page_id}/{lead_igs_id}',
     response_model=List[schemas.live_chat.Message],
 )
 def get_archive(
     *,
     db: Session = Depends(deps.get_db),
-    contact_igs_id: int,
+    lead_igs_id: int,
     page_id: int,
     skip: int = 0,
     limit: int = 20,
@@ -39,7 +39,7 @@ def get_archive(
 ):
     messages = services.live_chat.message.get_page_messages(
         db,
-        contact_igs_id=contact_igs_id,
+        lead_igs_id=lead_igs_id,
         page_id=page_id,
         skip=skip,
         limit=limit,
@@ -61,12 +61,12 @@ def get_archive(
     return new_messages
 
 
-@router.post('/send/{from_page_id}/{to_contact_igs_id}', deprecated=True)
+@router.post('/send/{from_page_id}/{to_lead_igs_id}', deprecated=True)
 def send_message(
     *,
     db: Session = Depends(deps.get_db),
     from_page_id: int,
-    to_contact_igs_id: int,
+    to_lead_igs_id: int,
     obj_in: schemas.live_chat.MessageSend,
     backgroud: BackgroundTasks,
     current_user: models.User = Security(
@@ -87,12 +87,12 @@ def send_message(
         graph_api.send_text_message,
         obj_in.text,
         from_page_id,
-        to_contact_igs_id,
+        to_lead_igs_id,
         instagram_page.facebook_page_token,
     )
     message_in = dict(
         from_page_id=from_page_id,
-        to_page_id=to_contact_igs_id,
+        to_page_id=to_lead_igs_id,
         content={
             'message': obj_in.text,
             'widget_type': WidgetType.TEXT,

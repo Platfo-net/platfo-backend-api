@@ -166,8 +166,8 @@ class Error:
         'code': 90,
     }
 
-    CONTACT_NOT_FOUND = {
-        'text': 'Contact not found!',
+    LEAD_NOT_FOUND = {
+        'text': 'Lead not found!',
         'status_code': 404,
         'code': 91,
     }
@@ -202,8 +202,8 @@ class Error:
         'code': 102,
     }
 
-    GROUP_EMPTY_CONTACT = {
-        'text': 'Group contacts cannot be empty!',
+    GROUP_EMPTY_LEAD = {
+        'text': 'Group leads cannot be empty!',
         'status_code': 400,
         'code': 103,
     }
@@ -212,8 +212,8 @@ class Error:
         'status_code': 400,
         'code': 104,
     }
-    CONTACTS_DO_NOT_BELONGS_TO_THIS_PAGE = {
-        'text': 'Contacts do not belong to this page',
+    LEADS_DO_NOT_BELONGS_TO_THIS_PAGE = {
+        'text': 'Leads do not belong to this page',
         'status_code': 400,
         'code': 104,
     }

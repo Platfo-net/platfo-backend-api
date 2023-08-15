@@ -94,9 +94,9 @@ def widget_mapper(data, node_id):
 
 
 def save_message(db: Session, saved_message: SavedMessage):
-    services.live_chat.contact.update_last_message(
+    services.live_chat.lead.update_last_message(
         db,
-        contact_igs_id=saved_message.to_page_id,
+        lead_igs_id=saved_message.to_page_id,
         last_message=saved_message.content.get('text', None),
     )
     report = services.live_chat.message.create(

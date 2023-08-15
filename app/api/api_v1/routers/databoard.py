@@ -90,8 +90,8 @@ def get_comments_stats(
     raise_http_exception(Error.INVALID_TIMEFRAME)
 
 
-@router.get('/contacts')
-def get_contacts_stats(
+@router.get('/leads')
+def get_leads_stats(
     *,
     db: Session = Depends(deps.get_db),
     facebook_page_id: int,
@@ -114,7 +114,7 @@ def get_contacts_stats(
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
 
     if timeframe == TimeFrame.MONTHLY:
-        report = services.databoard.contact_stat.get_monthly_data(
+        report = services.databoard.lead_stat.get_monthly_data(
             db,
             from_date=from_date,
             to_date=to_date,
@@ -130,7 +130,7 @@ def get_contacts_stats(
         ]
 
     if timeframe == TimeFrame.DAILY:
-        report = services.databoard.contact_stat.get_daily_data(
+        report = services.databoard.lead_stat.get_daily_data(
             db,
             from_date=from_date,
             to_date=to_date,
@@ -147,7 +147,7 @@ def get_contacts_stats(
         ]
 
     if timeframe == TimeFrame.HOURLY:
-        report = services.databoard.contact_stat.get_hourly_data(
+        report = services.databoard.lead_stat.get_hourly_data(
             db,
             from_date=from_date,
             to_date=to_date,
@@ -166,8 +166,8 @@ def get_contacts_stats(
     raise_http_exception(Error.INVALID_TIMEFRAME)
 
 
-@router.get('/contact-messages')
-def get_contact_messages_stats(
+@router.get('/lead-messages')
+def get_lead_messages_stats(
     *,
     db: Session = Depends(deps.get_db),
     facebook_page_id: int,
@@ -190,7 +190,7 @@ def get_contact_messages_stats(
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
 
     if timeframe == TimeFrame.MONTHLY:
-        report = services.databoard.contact_message_stat.get_monthly_data(
+        report = services.databoard.lead_message_stat.get_monthly_data(
             db,
             from_date=from_date,
             to_date=to_date,
@@ -206,7 +206,7 @@ def get_contact_messages_stats(
         ]
 
     if timeframe == TimeFrame.DAILY:
-        report = services.databoard.contact_message_stat.get_daily_data(
+        report = services.databoard.lead_message_stat.get_daily_data(
             db,
             from_date=from_date,
             to_date=to_date,
@@ -223,7 +223,7 @@ def get_contact_messages_stats(
         ]
 
     if timeframe == TimeFrame.HOURLY:
-        report = services.databoard.contact_message_stat.get_hourly_data(
+        report = services.databoard.lead_message_stat.get_hourly_data(
             db,
             from_date=from_date,
             to_date=to_date,

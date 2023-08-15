@@ -237,13 +237,13 @@ class InstagramGraphApi:
 
         return mid
 
-    def get_contact_information_from_facebook(
-            self, contact_igs_id: str = None, page_access_token: str = None
+    def get_lead_information_from_facebook(
+            self, lead_igs_id: str = None, page_access_token: str = None
     ) -> Union[dict, None]:
         url = '{}/{}/{}'.format(
             settings.FACEBOOK_GRAPH_BASE_URL,
             settings.FACEBOOK_GRAPH_VERSION,
-            contact_igs_id,
+            lead_igs_id,
         )
         params = dict(
             fields='name,username,profile_pic,follower_count,is_verified_user,'
