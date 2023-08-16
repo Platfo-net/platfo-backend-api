@@ -189,29 +189,12 @@ class Error:
         'status_code': 400,
         'code': 93,
     }
-
-    GROUP_NOT_FOUND = {
-        'text': 'Group not found!',
-        'status_code': 404,
-        'code': 101,
-    }
-
-    GROUP_NOT_FOUND_ACCESS_DENIED = {
-        'text': 'Group not found!',
-        'status_code': 404,
-        'code': 102,
-    }
-
-    GROUP_EMPTY_LEAD = {
-        'text': 'Group leads cannot be empty!',
+    DRAFT_CAMPAIGN_DOESNT_HAVE_CONTACT = {
+        'text': 'Draft campaign doesnt have contacts.',
         'status_code': 400,
-        'code': 103,
+        'code': 94,
     }
-    GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE = {
-        'text': 'Group does not belong to this page!',
-        'status_code': 400,
-        'code': 104,
-    }
+
     LEADS_DO_NOT_BELONGS_TO_THIS_PAGE = {
         'text': 'Leads do not belong to this page',
         'status_code': 400,

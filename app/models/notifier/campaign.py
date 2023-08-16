@@ -14,7 +14,6 @@ class Campaign(Base):
     name = Column(String(255), nullable=True)
     description = Column(String(255), nullable=True)
     image = Column(String(255), nullable=True)
-    group_name = Column(String(255), nullable=True)
 
     is_draft = Column(Boolean(), default=True)
 
@@ -27,6 +26,8 @@ class Campaign(Base):
     user_id = Column(BigInteger, ForeignKey('users.id'), nullable=True, index=True)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    leads_criteria = Column(JSON, nullable=True)
 
     user = relationship('User', back_populates='campaigns')
     campaign_leads = relationship('CampaignLead', back_populates='campaign')

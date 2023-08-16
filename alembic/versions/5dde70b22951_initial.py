@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 2731ee39e437
+Revision ID: 5dde70b22951
 Revises: 
-Create Date: 2023-07-15 17:29:49.080071
+Create Date: 2023-08-16 08:27:58.539428
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '2731ee39e437'
+revision = '5dde70b22951'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -62,45 +62,8 @@ def upgrade():
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_databoard_comment_stats_day'), 'databoard_comment_stats', ['day'], unique=False)
     op.create_index(op.f('ix_databoard_comment_stats_facebook_page_id'), 'databoard_comment_stats', ['facebook_page_id'], unique=False)
     op.create_index(op.f('ix_databoard_comment_stats_id'), 'databoard_comment_stats', ['id'], unique=False)
-    op.create_index(op.f('ix_databoard_comment_stats_month'), 'databoard_comment_stats', ['month'], unique=False)
-    op.create_index(op.f('ix_databoard_comment_stats_year'), 'databoard_comment_stats', ['year'], unique=False)
-    op.create_table('databoard_contact_message_stats',
-    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
-    sa.Column('year', sa.Integer(), nullable=True),
-    sa.Column('month', sa.Integer(), nullable=True),
-    sa.Column('day', sa.Integer(), nullable=True),
-    sa.Column('hour', sa.Integer(), nullable=True),
-    sa.Column('count', sa.Integer(), nullable=True),
-    sa.Column('from_datetime', sa.DateTime(), nullable=True),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_databoard_contact_message_stats_day'), 'databoard_contact_message_stats', ['day'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_message_stats_facebook_page_id'), 'databoard_contact_message_stats', ['facebook_page_id'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_message_stats_id'), 'databoard_contact_message_stats', ['id'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_message_stats_month'), 'databoard_contact_message_stats', ['month'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_message_stats_year'), 'databoard_contact_message_stats', ['year'], unique=False)
-    op.create_table('databoard_contact_stats',
-    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
-    sa.Column('year', sa.Integer(), nullable=True),
-    sa.Column('month', sa.Integer(), nullable=True),
-    sa.Column('day', sa.Integer(), nullable=True),
-    sa.Column('hour', sa.Integer(), nullable=True),
-    sa.Column('count', sa.Integer(), nullable=True),
-    sa.Column('from_datetime', sa.DateTime(), nullable=True),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_databoard_contact_stats_day'), 'databoard_contact_stats', ['day'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_stats_facebook_page_id'), 'databoard_contact_stats', ['facebook_page_id'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_stats_id'), 'databoard_contact_stats', ['id'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_stats_month'), 'databoard_contact_stats', ['month'], unique=False)
-    op.create_index(op.f('ix_databoard_contact_stats_year'), 'databoard_contact_stats', ['year'], unique=False)
     op.create_table('databoard_follower_stats',
     sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('year', sa.Integer(), nullable=True),
@@ -113,11 +76,36 @@ def upgrade():
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_databoard_follower_stats_day'), 'databoard_follower_stats', ['day'], unique=False)
     op.create_index(op.f('ix_databoard_follower_stats_facebook_page_id'), 'databoard_follower_stats', ['facebook_page_id'], unique=False)
     op.create_index(op.f('ix_databoard_follower_stats_id'), 'databoard_follower_stats', ['id'], unique=False)
-    op.create_index(op.f('ix_databoard_follower_stats_month'), 'databoard_follower_stats', ['month'], unique=False)
-    op.create_index(op.f('ix_databoard_follower_stats_year'), 'databoard_follower_stats', ['year'], unique=False)
+    op.create_table('databoard_lead_message_stats',
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
+    sa.Column('year', sa.Integer(), nullable=True),
+    sa.Column('month', sa.Integer(), nullable=True),
+    sa.Column('day', sa.Integer(), nullable=True),
+    sa.Column('hour', sa.Integer(), nullable=True),
+    sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('from_datetime', sa.DateTime(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_databoard_lead_message_stats_facebook_page_id'), 'databoard_lead_message_stats', ['facebook_page_id'], unique=False)
+    op.create_index(op.f('ix_databoard_lead_message_stats_id'), 'databoard_lead_message_stats', ['id'], unique=False)
+    op.create_table('databoard_lead_stats',
+    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
+    sa.Column('year', sa.Integer(), nullable=True),
+    sa.Column('month', sa.Integer(), nullable=True),
+    sa.Column('day', sa.Integer(), nullable=True),
+    sa.Column('hour', sa.Integer(), nullable=True),
+    sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('from_datetime', sa.DateTime(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_databoard_lead_stats_facebook_page_id'), 'databoard_lead_stats', ['facebook_page_id'], unique=False)
+    op.create_index(op.f('ix_databoard_lead_stats_id'), 'databoard_lead_stats', ['id'], unique=False)
     op.create_table('databoard_live_comment_stats',
     sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('year', sa.Integer(), nullable=True),
@@ -130,11 +118,7 @@ def upgrade():
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_databoard_live_comment_stats_day'), 'databoard_live_comment_stats', ['day'], unique=False)
-    op.create_index(op.f('ix_databoard_live_comment_stats_facebook_page_id'), 'databoard_live_comment_stats', ['facebook_page_id'], unique=False)
     op.create_index(op.f('ix_databoard_live_comment_stats_id'), 'databoard_live_comment_stats', ['id'], unique=False)
-    op.create_index(op.f('ix_databoard_live_comment_stats_month'), 'databoard_live_comment_stats', ['month'], unique=False)
-    op.create_index(op.f('ix_databoard_live_comment_stats_year'), 'databoard_live_comment_stats', ['year'], unique=False)
     op.create_table('notifications',
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
@@ -275,6 +259,10 @@ def upgrade():
     sa.Column('followers_count', sa.Integer(), nullable=True),
     sa.Column('follows_count', sa.Integer(), nullable=True),
     sa.Column('biography', sa.Text(), nullable=True),
+    sa.Column('leads_count', sa.Integer(), nullable=True),
+    sa.Column('comments_count', sa.Integer(), nullable=True),
+    sa.Column('live_comment_count', sa.Integer(), nullable=True),
+    sa.Column('chats_count', sa.Integer(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -283,11 +271,12 @@ def upgrade():
     op.create_index(op.f('ix_instagram_pages_facebook_page_id'), 'instagram_pages', ['facebook_page_id'], unique=False)
     op.create_index(op.f('ix_instagram_pages_id'), 'instagram_pages', ['id'], unique=False)
     op.create_index(op.f('ix_instagram_pages_instagram_page_id'), 'instagram_pages', ['instagram_page_id'], unique=False)
-    op.create_table('live_chat_contacts',
-    sa.Column('contact_igs_id', sa.BigInteger(), nullable=True),
+    op.create_table('live_chat_leads',
+    sa.Column('lead_igs_id', sa.BigInteger(), nullable=True),
     sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('last_message', sa.String(length=1024), nullable=True),
     sa.Column('last_message_at', sa.DateTime(), nullable=True),
+    sa.Column('last_interaction_at', sa.DateTime(), nullable=True),
     sa.Column('username', sa.String(length=255), nullable=True),
     sa.Column('profile_image', sa.String(length=1024), nullable=True),
     sa.Column('name', sa.String(length=128), nullable=True),
@@ -295,9 +284,6 @@ def upgrade():
     sa.Column('is_verified_user', sa.Boolean(), nullable=True),
     sa.Column('is_user_follow_business', sa.Boolean(), nullable=True),
     sa.Column('is_business_follow_user', sa.Boolean(), nullable=True),
-    sa.Column('message_count', sa.Integer(), nullable=True),
-    sa.Column('comment_count', sa.Integer(), nullable=True),
-    sa.Column('live_comment_count', sa.Integer(), nullable=True),
     sa.Column('first_impression', sa.String(length=100), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
@@ -305,9 +291,9 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_live_chat_contacts_contact_igs_id'), 'live_chat_contacts', ['contact_igs_id'], unique=False)
-    op.create_index(op.f('ix_live_chat_contacts_facebook_page_id'), 'live_chat_contacts', ['facebook_page_id'], unique=False)
-    op.create_index(op.f('ix_live_chat_contacts_id'), 'live_chat_contacts', ['id'], unique=False)
+    op.create_index(op.f('ix_live_chat_leads_facebook_page_id'), 'live_chat_leads', ['facebook_page_id'], unique=False)
+    op.create_index(op.f('ix_live_chat_leads_id'), 'live_chat_leads', ['id'], unique=False)
+    op.create_index(op.f('ix_live_chat_leads_lead_igs_id'), 'live_chat_leads', ['lead_igs_id'], unique=False)
     op.create_table('live_chat_messages',
     sa.Column('from_page_id', sa.BigInteger(), nullable=True),
     sa.Column('to_page_id', sa.BigInteger(), nullable=True),
@@ -338,7 +324,6 @@ def upgrade():
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('description', sa.String(length=255), nullable=True),
     sa.Column('image', sa.String(length=255), nullable=True),
-    sa.Column('group_name', sa.String(length=255), nullable=True),
     sa.Column('is_draft', sa.Boolean(), nullable=True),
     sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
     sa.Column('status', sa.String(length=255), nullable=True),
@@ -346,6 +331,7 @@ def upgrade():
     sa.Column('content', sa.JSON(), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('leads_criteria', sa.JSON(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -354,18 +340,6 @@ def upgrade():
     op.create_index(op.f('ix_notifier_campaigns_facebook_page_id'), 'notifier_campaigns', ['facebook_page_id'], unique=False)
     op.create_index(op.f('ix_notifier_campaigns_id'), 'notifier_campaigns', ['id'], unique=False)
     op.create_index(op.f('ix_notifier_campaigns_user_id'), 'notifier_campaigns', ['user_id'], unique=False)
-    op.create_table('notifier_groups',
-    sa.Column('name', sa.String(length=255), nullable=True),
-    sa.Column('description', sa.String(length=255), nullable=True),
-    sa.Column('user_id', sa.BigInteger(), nullable=True),
-    sa.Column('facebook_page_id', sa.BigInteger(), nullable=True),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_notifier_groups_facebook_page_id'), 'notifier_groups', ['facebook_page_id'], unique=False)
-    op.create_index(op.f('ix_notifier_groups_id'), 'notifier_groups', ['id'], unique=False)
     op.create_table('academy_content_categories',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('content_id', sa.UUID(), nullable=True),
@@ -444,45 +418,30 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_credit_credit_logs_id'), 'credit_credit_logs', ['id'], unique=False)
-    op.create_table('notifier_campaign_contacts',
-    sa.Column('contact_igs_id', sa.BigInteger(), nullable=True),
+    op.create_table('notifier_campaign_leads',
+    sa.Column('lead_igs_id', sa.BigInteger(), nullable=True),
     sa.Column('is_sent', sa.Boolean(), nullable=True),
     sa.Column('is_seen', sa.Boolean(), nullable=True),
     sa.Column('mid', sa.String(length=255), nullable=True),
     sa.Column('reaction', sa.String(length=100), nullable=True),
-    sa.Column('contact_id', sa.BigInteger(), nullable=True),
+    sa.Column('lead_id', sa.BigInteger(), nullable=True),
     sa.Column('campaign_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['campaign_id'], ['notifier_campaigns.id'], ),
-    sa.ForeignKeyConstraint(['contact_id'], ['live_chat_contacts.id'], ),
+    sa.ForeignKeyConstraint(['lead_id'], ['live_chat_leads.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_notifier_campaign_contacts_campaign_id'), 'notifier_campaign_contacts', ['campaign_id'], unique=False)
-    op.create_index(op.f('ix_notifier_campaign_contacts_id'), 'notifier_campaign_contacts', ['id'], unique=False)
-    op.create_table('notifier_group_contacts',
-    sa.Column('contact_igs_id', sa.BigInteger(), nullable=True),
-    sa.Column('contact_id', sa.BigInteger(), nullable=True),
-    sa.Column('group_id', sa.BigInteger(), nullable=True),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['contact_id'], ['live_chat_contacts.id'], ),
-    sa.ForeignKeyConstraint(['group_id'], ['notifier_groups.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_notifier_group_contacts_group_id'), 'notifier_group_contacts', ['group_id'], unique=False)
-    op.create_index(op.f('ix_notifier_group_contacts_id'), 'notifier_group_contacts', ['id'], unique=False)
+    op.create_index(op.f('ix_notifier_campaign_leads_campaign_id'), 'notifier_campaign_leads', ['campaign_id'], unique=False)
+    op.create_index(op.f('ix_notifier_campaign_leads_id'), 'notifier_campaign_leads', ['id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_notifier_group_contacts_id'), table_name='notifier_group_contacts')
-    op.drop_index(op.f('ix_notifier_group_contacts_group_id'), table_name='notifier_group_contacts')
-    op.drop_table('notifier_group_contacts')
-    op.drop_index(op.f('ix_notifier_campaign_contacts_id'), table_name='notifier_campaign_contacts')
-    op.drop_index(op.f('ix_notifier_campaign_contacts_campaign_id'), table_name='notifier_campaign_contacts')
-    op.drop_table('notifier_campaign_contacts')
+    op.drop_index(op.f('ix_notifier_campaign_leads_id'), table_name='notifier_campaign_leads')
+    op.drop_index(op.f('ix_notifier_campaign_leads_campaign_id'), table_name='notifier_campaign_leads')
+    op.drop_table('notifier_campaign_leads')
     op.drop_index(op.f('ix_credit_credit_logs_id'), table_name='credit_credit_logs')
     op.drop_table('credit_credit_logs')
     op.drop_index(op.f('ix_bot_builder_nodeuies_id'), table_name='bot_builder_nodeuies')
@@ -496,9 +455,6 @@ def downgrade():
     op.drop_table('bot_builder_edges')
     op.drop_table('academy_content_labels')
     op.drop_table('academy_content_categories')
-    op.drop_index(op.f('ix_notifier_groups_id'), table_name='notifier_groups')
-    op.drop_index(op.f('ix_notifier_groups_facebook_page_id'), table_name='notifier_groups')
-    op.drop_table('notifier_groups')
     op.drop_index(op.f('ix_notifier_campaigns_user_id'), table_name='notifier_campaigns')
     op.drop_index(op.f('ix_notifier_campaigns_id'), table_name='notifier_campaigns')
     op.drop_index(op.f('ix_notifier_campaigns_facebook_page_id'), table_name='notifier_campaigns')
@@ -509,10 +465,10 @@ def downgrade():
     op.drop_index(op.f('ix_live_chat_messages_id'), table_name='live_chat_messages')
     op.drop_index(op.f('ix_live_chat_messages_from_page_id'), table_name='live_chat_messages')
     op.drop_table('live_chat_messages')
-    op.drop_index(op.f('ix_live_chat_contacts_id'), table_name='live_chat_contacts')
-    op.drop_index(op.f('ix_live_chat_contacts_facebook_page_id'), table_name='live_chat_contacts')
-    op.drop_index(op.f('ix_live_chat_contacts_contact_igs_id'), table_name='live_chat_contacts')
-    op.drop_table('live_chat_contacts')
+    op.drop_index(op.f('ix_live_chat_leads_lead_igs_id'), table_name='live_chat_leads')
+    op.drop_index(op.f('ix_live_chat_leads_id'), table_name='live_chat_leads')
+    op.drop_index(op.f('ix_live_chat_leads_facebook_page_id'), table_name='live_chat_leads')
+    op.drop_table('live_chat_leads')
     op.drop_index(op.f('ix_instagram_pages_instagram_page_id'), table_name='instagram_pages')
     op.drop_index(op.f('ix_instagram_pages_id'), table_name='instagram_pages')
     op.drop_index(op.f('ix_instagram_pages_facebook_page_id'), table_name='instagram_pages')
@@ -538,35 +494,19 @@ def downgrade():
     op.drop_table('roles')
     op.drop_index(op.f('ix_notifications_id'), table_name='notifications')
     op.drop_table('notifications')
-    op.drop_index(op.f('ix_databoard_live_comment_stats_year'), table_name='databoard_live_comment_stats')
-    op.drop_index(op.f('ix_databoard_live_comment_stats_month'), table_name='databoard_live_comment_stats')
     op.drop_index(op.f('ix_databoard_live_comment_stats_id'), table_name='databoard_live_comment_stats')
-    op.drop_index(op.f('ix_databoard_live_comment_stats_facebook_page_id'), table_name='databoard_live_comment_stats')
-    op.drop_index(op.f('ix_databoard_live_comment_stats_day'), table_name='databoard_live_comment_stats')
     op.drop_table('databoard_live_comment_stats')
-    op.drop_index(op.f('ix_databoard_follower_stats_year'), table_name='databoard_follower_stats')
-    op.drop_index(op.f('ix_databoard_follower_stats_month'), table_name='databoard_follower_stats')
+    op.drop_index(op.f('ix_databoard_lead_stats_id'), table_name='databoard_lead_stats')
+    op.drop_index(op.f('ix_databoard_lead_stats_facebook_page_id'), table_name='databoard_lead_stats')
+    op.drop_table('databoard_lead_stats')
+    op.drop_index(op.f('ix_databoard_lead_message_stats_id'), table_name='databoard_lead_message_stats')
+    op.drop_index(op.f('ix_databoard_lead_message_stats_facebook_page_id'), table_name='databoard_lead_message_stats')
+    op.drop_table('databoard_lead_message_stats')
     op.drop_index(op.f('ix_databoard_follower_stats_id'), table_name='databoard_follower_stats')
     op.drop_index(op.f('ix_databoard_follower_stats_facebook_page_id'), table_name='databoard_follower_stats')
-    op.drop_index(op.f('ix_databoard_follower_stats_day'), table_name='databoard_follower_stats')
     op.drop_table('databoard_follower_stats')
-    op.drop_index(op.f('ix_databoard_contact_stats_year'), table_name='databoard_contact_stats')
-    op.drop_index(op.f('ix_databoard_contact_stats_month'), table_name='databoard_contact_stats')
-    op.drop_index(op.f('ix_databoard_contact_stats_id'), table_name='databoard_contact_stats')
-    op.drop_index(op.f('ix_databoard_contact_stats_facebook_page_id'), table_name='databoard_contact_stats')
-    op.drop_index(op.f('ix_databoard_contact_stats_day'), table_name='databoard_contact_stats')
-    op.drop_table('databoard_contact_stats')
-    op.drop_index(op.f('ix_databoard_contact_message_stats_year'), table_name='databoard_contact_message_stats')
-    op.drop_index(op.f('ix_databoard_contact_message_stats_month'), table_name='databoard_contact_message_stats')
-    op.drop_index(op.f('ix_databoard_contact_message_stats_id'), table_name='databoard_contact_message_stats')
-    op.drop_index(op.f('ix_databoard_contact_message_stats_facebook_page_id'), table_name='databoard_contact_message_stats')
-    op.drop_index(op.f('ix_databoard_contact_message_stats_day'), table_name='databoard_contact_message_stats')
-    op.drop_table('databoard_contact_message_stats')
-    op.drop_index(op.f('ix_databoard_comment_stats_year'), table_name='databoard_comment_stats')
-    op.drop_index(op.f('ix_databoard_comment_stats_month'), table_name='databoard_comment_stats')
     op.drop_index(op.f('ix_databoard_comment_stats_id'), table_name='databoard_comment_stats')
     op.drop_index(op.f('ix_databoard_comment_stats_facebook_page_id'), table_name='databoard_comment_stats')
-    op.drop_index(op.f('ix_databoard_comment_stats_day'), table_name='databoard_comment_stats')
     op.drop_table('databoard_comment_stats')
     op.drop_index(op.f('ix_credit_plans_id'), table_name='credit_plans')
     op.drop_table('credit_plans')

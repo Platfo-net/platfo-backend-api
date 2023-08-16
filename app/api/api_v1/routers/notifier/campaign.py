@@ -30,7 +30,7 @@ def get_all_user_campaigns(
         ],
     ),
 ):
-    items , pagination = services.notifier.campaign.get_multi(
+    items, pagination = services.notifier.campaign.get_multi(
         db,
         user_id=current_user.id,
         facebook_page_id=facebook_page_id,
@@ -49,8 +49,8 @@ def get_all_user_campaigns(
                 created_at=item.created_at,
                 status=item.status,
                 is_draft=item.is_draft,
-                group_name=item.group_name,
                 image=image,
+                leads_criteria=item.leads_criteria,
             )
         )
 
@@ -74,15 +74,6 @@ def create_campaign(
         ],
     ),
 ):
-    group = services.notifier.group.get_by_uuid(db, obj_in.group_id)
-
-    if not group:
-        raise_http_exception(Error.GROUP_NOT_FOUND)
-    if not group.user_id == current_user.id:
-        raise_http_exception(Error.GROUP_NOT_FOUND_ACCESS_DENIED)
-
-    if not group.facebook_page_id == obj_in.facebook_page_id:
-        raise_http_exception(Error.GROUP_DOES_NOT_BELONGS_TO_THIS_PAGE)
 
     campaign_obj = schemas.notifier.CampaignCreate(
         name=obj_in.name,
@@ -90,26 +81,14 @@ def create_campaign(
         facebook_page_id=obj_in.facebook_page_id,
         is_draft=obj_in.is_draft,
         content=obj_in.content,
-        group_name=group.name,
         image=obj_in.image,
+        leads_criteria=obj_in.leads_criteria,
     )
 
     campaign = services.notifier.campaign.create(
         db, obj_in=campaign_obj, user_id=current_user.id
     )
 
-    group_leads = services.notifier.group_lead.get_by_group(db, group_id=group.id)
-    leads = []
-    for lead in group_leads:
-        leads.append(
-            schemas.notifier.CampaignContactCreate(
-                lead_id=lead.lead_id, lead_igs_id=lead.lead_igs_id
-            )
-        )
-
-    services.notifier.campaign_lead.create_bulk(
-        db, campaign_id=campaign.id, leads=leads
-    )
     image = storage.get_file(campaign.image, settings.S3_CAMPAIGN_BUCKET)
 
     return schemas.notifier.Campaign(
@@ -119,8 +98,8 @@ def create_campaign(
         created_at=campaign.created_at,
         is_draft=campaign.is_draft,
         status=campaign.status,
-        group_name=group.name,
         image=image,
+        leads_criteria=obj_in.leads_criteria,
     )
 
 
@@ -151,15 +130,18 @@ def update_campaign(
             content=obj_in.content,
             is_draft=obj_in.is_draft,
             image=obj_in.image,
+            leads_criteria=obj_in.leads_criteria,
         ),
     )
     image = storage.get_file(obj_in.image, settings.S3_CAMPAIGN_BUCKET)
-    return schemas.notifier.CampaignUpdate(
+    return schemas.notifier.Campaign(
+        id=campaign.uuid,
         name=campaign.name,
         description=campaign.description,
         content=campaign.content,
         is_draft=campaign.is_draft,
         image=image,
+        leads_criteria=campaign.leads_criteria
     )
 
 
@@ -186,6 +168,7 @@ def get_campaign_by_id(
     )
     if not instagram_page:
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
     sent_count = services.notifier.campaign_lead.get_all_sent_count(db, campaign.id)
     seen_count = services.notifier.campaign_lead.get_all_seen_count(db, campaign.id)
     lead_count = services.notifier.campaign_lead.get_all_leads_count(
@@ -206,7 +189,6 @@ def get_campaign_by_id(
         created_at=campaign.created_at,
         is_draft=campaign.is_draft,
         status=campaign.status,
-        group_name=campaign.group_name,
         content=campaign.content,
         user_id=current_user.uuid,
         facebook_page_id=campaign.facebook_page_id,
@@ -215,48 +197,6 @@ def get_campaign_by_id(
         seen_count=seen_count,
         total_lead_count=lead_count,
         image=image,
-    )
-
-
-@router.get('/{id}/leads')
-def get_campain_leads(
-    *,
-    db: Session = Depends(deps.get_db),
-    id: UUID4,
-    page: int = 1,
-    page_size: int = 20,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
-    ),
-):
-    campaign = services.notifier.campaign.get_by_uuid(db, id)
-
-    if not campaign:
-        raise_http_exception(Error.CAMPAIGN_NOT_FOUND)
-    if not campaign.id == current_user.id:
-        raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
-
-    (
-        campaign_leads,
-        pagination,
-    ) = services.notifier.campaign_lead.get_campaign_leads(
-        db, campaign_id=campaign.id, page=page, page_size=page_size
-    )
-    leads = []
-    for lead in campaign_leads:
-        leads.append(
-            schemas.notifier.ContactSample(
-                profile_image=lead.lead.profile_image,
-                username=lead.lead.username,
-            )
-        )
-    return schemas.notifier.CampaignContactApiSchema(
-        items=leads, pagination=pagination
     )
 
 

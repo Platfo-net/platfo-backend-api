@@ -134,15 +134,5 @@ class CampaignServices:
     def delete_campaign(self, db: Session, *, campaign_id: UUID4):
         return db.query(self.model).filter(self.model.id == campaign_id).delete()
 
-    def set_group_name(
-        self, db: Session, *, campaign_id: UUID4, group_name: str
-    ) -> None:
-        db_obj = db.query(self.model).filter(self.model.id == campaign_id).first()
-        db_obj.group_name = group_name
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return
-
 
 campaign = CampaignServices(models.notifier.Campaign)

@@ -7,9 +7,9 @@ class CommentStat(Base):
     __tablename__ = 'databoard_comment_stats'
 
     facebook_page_id = Column(BigInteger(), index=True)
-    year = Column(Integer(), index=True)
-    month = Column(Integer(), index=True)
-    day = Column(Integer(), index=True)
+    year = Column(Integer())
+    month = Column(Integer())
+    day = Column(Integer())
     hour = Column(Integer())
     count = Column(Integer())
 
@@ -19,10 +19,10 @@ class CommentStat(Base):
 class LiveCommentStat(Base):
     __tablename__ = 'databoard_live_comment_stats'
 
-    facebook_page_id = Column(BigInteger(), index=True)
-    year = Column(Integer(), index=True)
-    month = Column(Integer(), index=True)
-    day = Column(Integer(), index=True)
+    facebook_page_id = Column(BigInteger())
+    year = Column(Integer())
+    month = Column(Integer())
+    day = Column(Integer())
     hour = Column(Integer())
     count = Column(Integer())
 
@@ -33,9 +33,9 @@ class LeadStat(Base):
     __tablename__ = 'databoard_lead_stats'
 
     facebook_page_id = Column(BigInteger(), index=True)
-    year = Column(Integer(), index=True)
-    month = Column(Integer(), index=True)
-    day = Column(Integer(), index=True)
+    year = Column(Integer())
+    month = Column(Integer())
+    day = Column(Integer())
     hour = Column(Integer())
     count = Column(Integer())
 
@@ -47,9 +47,9 @@ class LeadMessageStat(Base):
 
     facebook_page_id = Column(BigInteger(), index=True)
 
-    year = Column(Integer(), index=True)
-    month = Column(Integer(), index=True)
-    day = Column(Integer(), index=True)
+    year = Column(Integer())
+    month = Column(Integer())
+    day = Column(Integer())
     hour = Column(Integer())
     count = Column(Integer())
 
@@ -60,9 +60,9 @@ class FollowerStat(Base):
     __tablename__ = 'databoard_follower_stats'
 
     facebook_page_id = Column(BigInteger(), index=True)
-    year = Column(Integer(), index=True)
-    month = Column(Integer(), index=True)
-    day = Column(Integer(), index=True)
+    year = Column(Integer())
+    month = Column(Integer())
+    day = Column(Integer())
     hour = Column(Integer())
     count = Column(Integer())
 
