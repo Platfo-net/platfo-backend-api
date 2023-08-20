@@ -200,7 +200,7 @@ def get_campaign_by_id(
     )
 
 
-@router.get('/activate/{id}')
+@router.get('/{id}/activate')
 def change_campaign_is_draft(
     *,
     db: Session = Depends(deps.get_db),
