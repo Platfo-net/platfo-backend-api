@@ -22,7 +22,9 @@ async def get_me(token):
 
 async def set_webhook(token):
     bot = telegram.Bot(token=token)
-    res = await bot.set_webhook(f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/telegram/webhook")
+    res = await bot.set_webhook(
+        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/telegram/webhook"
+    )
     return res
 
 

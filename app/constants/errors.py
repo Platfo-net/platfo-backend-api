@@ -249,7 +249,7 @@ class Error:
         "status_code": 400,
         "code": 151,
     }
-    
+
     TELEGRAM_SERVER_SET_WEBHOOK_ERROR = {
         "text": "There is some problems with server, please try again later!",
         "status_code": 400,
