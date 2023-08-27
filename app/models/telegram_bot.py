@@ -22,4 +22,4 @@ class TelegramBot(Base):
     first_name = Column(String(255), nullable=True)
     bot_id = Column(String(64), nullable=True)
 
-    user = relationship('User', back_populates='instagram_pages')
+    user = relationship('User', back_populates='telegram_bots')
