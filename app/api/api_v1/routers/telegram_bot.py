@@ -17,7 +17,7 @@ router = APIRouter(prefix='/telegram', tags=['Teleegram'])
 async def get_me(token):
     bot = telegram.Bot(token=token)
     user = await bot.get_me()
-    return {"first_name": user.first_name, "username": user.username, "id": user.id}
+    return {"first_name": user.first_name, "username": user.username, "bot_id": str(user.id)}
 
 
 async def set_webhook(token):
@@ -47,7 +47,7 @@ def connect_telegram_bot(
     except telegram.error.InvalidToken:
         raise_http_exception(Error.INVALID_TELEGRAM_BOT)
 
-    bot = services.telegram_bot.get_by_id(db, bot_id=bot_information["id"])
+    bot = services.telegram_bot.get_by_id(db, bot_id=bot_information["bot_id"])
     if bot:
         raise_http_exception(Error.TELEGRAM_BOT_EXIST_IN_SYSTEM)
 
