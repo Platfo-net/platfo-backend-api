@@ -14,3 +14,4 @@ from app.models.notifier.campaign import Campaign
 from app.models.notifier.campaign_lead import CampaignLead
 from app.models.role import Role
 from app.models.user import User
+from app.models.telegram_bot import TelegramBot

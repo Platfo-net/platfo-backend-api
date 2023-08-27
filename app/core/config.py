@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     USERS_OPEN_REGISTRATION: str
+    SERVER_ADDRESS_NAME : str
 
     ENVIRONMENT: Optional[str]
     BASE_DIR = Path(__file__).resolve().parent.parent.parent

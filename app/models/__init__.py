@@ -6,3 +6,4 @@ from .instagram_page import InstagramPage
 from .notification import Notification, NotificationUser
 from .role import Role
 from .user import User
+from .telegram_bot import TelegramBot

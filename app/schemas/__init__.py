@@ -6,6 +6,7 @@ from .connection import Connection, ConnectionCreate, ConnectionUpdate
 from .file import FileUpload
 from .instagram_page import (ConnectPage, InstagramPage, InstagramPageCreate,
                              InstagramPageUpdate)
+from .telegram_bot import ConnectTelegramBot , TelegramBotCreate, TelegramBot
 from .media import Image
 from .notification import (Notification, NotificationCreate,
                            NotificationListApi, NotificationListItem,
@@ -19,3 +20,4 @@ from .user import (ActivationDataByEmail, ActivationDataByPhoneNumber,
                    RegisterCode, User, UserBase, UserCreate, UserInDB,
                    UserRegister, UserRegisterByEmail,
                    UserRegisterByPhoneNumber, UserUpdate, UserUpdatePassword)
+
