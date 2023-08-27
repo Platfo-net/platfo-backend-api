@@ -28,7 +28,7 @@ async def set_webhook(token):
     return res
 
 
-@router.post('/', response_model=schemas.TelegramBot)
+@router.post('', response_model=schemas.TelegramBot)
 def connect_telegram_bot(
     *,
     db: Session = Depends(deps.get_db),
