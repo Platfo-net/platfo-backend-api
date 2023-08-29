@@ -1,5 +1,5 @@
 from app.schemas import (academy, bot_builder, credit, databoard, live_chat,
-                         notifier)
+                         notifier, shop)
 
 from .account import Account, AccountDetail
 from .connection import Connection, ConnectionCreate, ConnectionUpdate
@@ -12,6 +12,7 @@ from .notification import (Notification, NotificationCreate,
                            NotificationUpdate)
 from .pagination import Pagination
 from .role import Role, RoleCreate, RoleInDB, RoleUpdate
+from .telegram_bot import ConnectTelegramBot, TelegramBot, TelegramBotCreate
 from .token import (Login, LoginFormByEmail, LoginFormByPhoneNumber, Token,
                     TokenPayload)
 from .user import (ActivationDataByEmail, ActivationDataByPhoneNumber,

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
@@ -6,7 +6,6 @@ from pydantic import UUID4, BaseModel
 from app.schemas.account import Account
 from app.schemas.media import Image
 from app.schemas.pagination import Pagination
-from datetime import date
 
 
 class CampaignLeadsCriteria(BaseModel):

@@ -5,18 +5,18 @@ from app.constants.application import Application
 from app.constants.trigger import Trigger
 from app.constants.webhook_type import WebhookType
 from app.core import cache
-from app.core.instagram.handlers.message_postback import MessagePostbackBotHandler
-from app.core.instagram.instagram import InstagramData
-from app.core.instagram.handlers import (CommentHandler,
-                                         LeadMessageHandler,
+from app.core.celery import celery
+from app.core.instagram.handlers import (CommentHandler, DeleteMessageHandler,
                                          LeadMessageBotHandler,
-                                         DeleteMessageHandler,
+                                         LeadMessageHandler,
                                          LiveCommentHandler,
                                          MessageSeenHandler,
                                          StoryMentionHandler,
                                          StoryReplyBotHandler,
                                          StoryReplyHandler)
-from app.core.celery import celery
+from app.core.instagram.handlers.message_postback import \
+    MessagePostbackBotHandler
+from app.core.instagram.instagram import InstagramData
 from app.db.session import SessionLocal
 
 

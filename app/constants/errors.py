@@ -235,3 +235,39 @@ class Error:
         'status_code': 400,
         'code': 140,
     }
+
+    # telegram bot errors
+
+    INVALID_TELEGRAM_BOT = {
+        "text": "Invalid telegram bot",
+        "status_code": 400,
+        "code": 150,
+    }
+
+    TELEGRAM_BOT_EXIST_IN_SYSTEM = {
+        "text": "This bot has been already added to this system",
+        "status_code": 400,
+        "code": 151,
+    }
+
+    TELEGRAM_SERVER_SET_WEBHOOK_ERROR = {
+        "text": "There is some problems with server, please try again later!",
+        "status_code": 400,
+        "code": 152,
+    }
+
+    # ------------
+
+    # shop errors
+
+    SHOP_CATEGORY_NOT_FOUND_ERROR = {
+        "text": "Category not found",
+        "status_code": 404,
+        "code": 160,
+    }
+
+    SHOP_PRODUCT_NOT_FOUND_ERROR = {
+        "text": "Category not found",
+        "status_code": 404,
+        "code": 160,
+    }

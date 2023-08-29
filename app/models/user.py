@@ -40,6 +40,7 @@ class User(Base):
     role = relationship('Role', back_populates='users')
 
     instagram_pages = relationship('InstagramPage', back_populates='user')
+    telegram_bots = relationship('TelegramBot', back_populates='user')
 
     connections = relationship('Connection', back_populates='user')
     chatflows = relationship('Chatflow', back_populates='user')
@@ -53,8 +54,10 @@ class User(Base):
     credit_logs = relationship('CreditLog', back_populates='user')
     credits = relationship('Credit', back_populates='user')
     messages = relationship('Message', back_populates='user')
-
     leads = relationship('Lead', back_populates='user')
+
+    shop_categories = relationship('ShopCategory', back_populates='user')
+    shop_products = relationship('ShopProduct', back_populates='user')
 
     __table_args__ = (
         UniqueConstraint(
