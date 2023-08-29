@@ -11,7 +11,7 @@ class ShopProduct(Base):
 
     title = Column(String(255), nullable=True)
     image = Column(String(255), nullable=True)
-    price = Column(Float(255), nullable=True)
+    price = Column(Float(), nullable=True)
     currency = Column(String(32), nullable=True)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
