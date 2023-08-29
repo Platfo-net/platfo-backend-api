@@ -72,6 +72,7 @@ class Settings(BaseSettings):
     S3_CHATFLOW_MEDIA_BUCKET: str = None
     S3_CAMPAIGN_BUCKET: str = None
     S3_USER_PROFILE_BUCKET: str = None
+    S3_SHOP_PRODUCT_IMAGE_BUCKET: str = None
 
     CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: int = 150
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15

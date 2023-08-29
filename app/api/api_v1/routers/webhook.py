@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request, status
 
-from app.core.instagram import tasks
 from app.core.config import settings
+from app.core.instagram import tasks
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'], include_in_schema=False)
 

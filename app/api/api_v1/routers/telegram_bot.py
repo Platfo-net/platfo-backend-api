@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any
 
+import telegram
 from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
@@ -10,8 +11,8 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.config import settings
 from app.core.exception import raise_http_exception
-import telegram
-router = APIRouter(prefix='/telegram', tags=['Teleegram'])
+
+router = APIRouter(prefix='/telegram', tags=['Telegram'])
 
 
 async def get_me(token):

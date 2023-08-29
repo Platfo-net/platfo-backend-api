@@ -257,3 +257,17 @@ class Error:
     }
 
     # ------------
+
+    # shop errors
+
+    SHOP_CATEGORY_NOT_FOUND_ERROR = {
+        "text": "Category not found",
+        "status_code": 404,
+        "code": 160,
+    }
+
+    SHOP_PRODUCT_NOT_FOUND_ERROR = {
+        "text": "Category not found",
+        "status_code": 404,
+        "code": 160,
+    }
