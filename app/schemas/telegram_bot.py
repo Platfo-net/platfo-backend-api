@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import UUID4, BaseModel
 
 
 class TelegramBotBase(BaseModel):
@@ -22,5 +22,6 @@ class TelegramBotCreate(TelegramBotBase):
 
 
 class TelegramBot(BaseModel):
+    id: UUID4
     first_name: Optional[str] = None
     username: Optional[str] = None

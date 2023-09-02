@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any
+from typing import Any, List
+from pydantic import UUID4
 
 import telegram
 from fastapi import APIRouter, Depends, Security
@@ -71,6 +72,56 @@ def connect_telegram_bot(
     bot = services.telegram_bot.create(db, obj_in=bot_in, user_id=current_user.id)
 
     return schemas.TelegramBot(
+        id=bot.uuid,
+        first_name=bot.first_name,
+        username=bot.username,
+    )
+
+
+@router.get('/all', response_model=List[schemas.TelegramBot])
+def get_telegram_bots_list(
+    *,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+) -> Any:
+    bots = services.telegram_bot.get_multi_by_user_id(db, user_id=current_user.id)
+
+    return [schemas.TelegramBot(
+        id=bot.uuid,
+        first_name=bot.first_name,
+        username=bot.username,
+    ) for bot in bots]
+
+
+@router.post('/{id}', response_model=schemas.TelegramBot)
+def get_telegram_bot(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+) -> Any:
+    bot = services.telegram_bot.get_by_uuid(db, uuid=id)
+    if not bot:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT)
+    if bot.user_id != current_user.id:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT_ACCESS_DENIED)
+
+    return schemas.TelegramBot(
+        id=bot.uuid,
         first_name=bot.first_name,
         username=bot.username,
     )

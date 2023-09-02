@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import List, Optional
+from pydantic import UUID4
 
 from sqlalchemy.orm import Session
 
@@ -11,6 +12,12 @@ class TelegramBotServices:
 
     def get_by_id(self, db: Session, *, bot_id: str) -> Optional[models.TelegramBot]:
         return db.query(self.model).filter(self.model.bot_id == bot_id).first()
+    
+    def get_by_uuid(self, db: Session, *, uuid: UUID4) -> Optional[models.TelegramBot]:
+        return db.query(self.model).filter(self.model.uuid == uuid).first()
+    
+    def get_multi_by_user_id(self, db: Session, *, user_id: str) -> List[models.TelegramBot]:
+        return db.query(self.model).filter(self.model.user_id == user_id).all()
 
     def create(
             self,
