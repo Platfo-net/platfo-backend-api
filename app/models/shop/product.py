@@ -35,3 +35,5 @@ class ShopProduct(Base):
 
     user = relationship('User', back_populates='shop_products')
     category = relationship('ShopCategory', back_populates='products')
+
+    cart_items = relationship('ShopProduct', back_populates="product")
