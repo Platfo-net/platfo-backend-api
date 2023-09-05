@@ -1,9 +1,9 @@
 import asyncio
 from typing import Any, List
-from pydantic import UUID4
 
 import telegram
 from fastapi import APIRouter, Depends, Security
+from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import models, schemas, services

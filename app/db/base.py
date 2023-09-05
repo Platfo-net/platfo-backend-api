@@ -13,6 +13,7 @@ from app.models.notifier import Campaign, CampaignLead
 from app.models.notifier.campaign import Campaign
 from app.models.notifier.campaign_lead import CampaignLead
 from app.models.role import Role
-from app.models.shop import ShopCategory, ShopProduct , ShopCartItem , ShopCart , ShopShop
+from app.models.shop import (ShopCart, ShopCartItem, ShopCategory, ShopProduct,
+                             ShopShop)
 from app.models.telegram_bot import TelegramBot
 from app.models.user import User
