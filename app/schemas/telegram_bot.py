@@ -6,8 +6,6 @@ from pydantic import UUID4, BaseModel
 
 
 class TelegramBotBase(BaseModel):
-    app_id: str
-    app_secret: str
     bot_token: str
 
 

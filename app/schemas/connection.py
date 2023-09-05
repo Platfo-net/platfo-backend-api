@@ -12,6 +12,7 @@ class ConnectionBase(BaseModel):
 
 class ConnectionCreate(ConnectionBase):
     account_id: Optional[UUID4] = None
+    platform: str
 
 
 class ConnectionUpdate(ConnectionCreate):

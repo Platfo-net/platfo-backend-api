@@ -14,8 +14,6 @@ class TelegramBot(Base):
         nullable=True,
     )
 
-    app_id = Column(String(64), nullable=True)
-    app_secret = Column(String(128), nullable=True)
     bot_token = Column(String(255), nullable=True)
 
     username = Column(String(255), nullable=True)

@@ -32,8 +32,15 @@ class ShopProduct(Base):
         ForeignKey('users.id'),
         nullable=True,
     )
+    shop_id = Column(
+        BigInteger,
+        ForeignKey('shop_shops.id'),
+        nullable=True,
+    )
 
     user = relationship('User', back_populates='shop_products')
-    category = relationship('ShopCategory', back_populates='products')
 
-    cart_items = relationship('ShopProduct', back_populates="product")
+    category = relationship('ShopCategory', back_populates='products')
+    cart_items = relationship('ShopCartItem', back_populates="product")
+
+    shop = relationship('ShopShop', back_populates="products")

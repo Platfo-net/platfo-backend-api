@@ -25,3 +25,14 @@ def instagram_subscription_webhook(request: Request):
 def instagram_webhook_listener(*, facebook_webhook_body: dict):
     tasks.webhook_proccessor.delay(facebook_webhook_body)
     return
+
+
+@router.post('/telegram/bot', status_code=status.HTTP_200_OK)
+def telegram_webhook_listener(*, request: Request):
+    return
+
+
+
+@router.post('/telegram/support', status_code=status.HTTP_200_OK)
+def telegram_webhook_listener(*, request: Request):
+    return

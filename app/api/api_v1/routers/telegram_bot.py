@@ -31,7 +31,7 @@ async def set_webhook(token):
 
 
 @router.post('', response_model=schemas.TelegramBot)
-def connect_telegram_bot(
+def add_telegram_bot(
     *,
     db: Session = Depends(deps.get_db),
     obj_in: schemas.ConnectTelegramBot,
@@ -62,8 +62,6 @@ def connect_telegram_bot(
         raise_http_exception(Error.TELEGRAM_SERVER_SET_WEBHOOK_ERROR)
 
     bot_in = schemas.TelegramBotCreate(
-        app_id=obj_in.app_id,
-        app_secret=obj_in.app_secret,
         bot_token=obj_in.bot_token,
         first_name=bot_information["first_name"],
         username=bot_information["username"],
@@ -102,6 +100,33 @@ def get_telegram_bots_list(
 
 @router.post('/{id}', response_model=schemas.TelegramBot)
 def get_telegram_bot(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+) -> Any:
+    bot = services.telegram_bot.get_by_uuid(db, uuid=id)
+    if not bot:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT)
+    if bot.user_id != current_user.id:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT_ACCESS_DENIED)
+
+    return schemas.TelegramBot(
+        id=bot.uuid,
+        first_name=bot.first_name,
+        username=bot.username,
+    )
+
+
+@router.post('/{id}', response_model=schemas.TelegramBot)
+def connect_bot_to_shop(
     *,
     db: Session = Depends(deps.get_db),
     id: UUID4,

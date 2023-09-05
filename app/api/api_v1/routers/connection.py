@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas, services
 from app.api import deps
 from app.constants.errors import Error
+from app.constants.platform import Platform
 from app.constants.role import Role
 from app.core.cache import remove_data_from_cache
 from app.core.exception import raise_http_exception
@@ -31,22 +32,6 @@ def get_list_of_connections(
         ],
     ),
 ) -> Any:
-    """
-    Endpoint for getting list of a user connections.
-
-    Args:
-
-        skip (int, optional): Defaults to 0.
-
-        limit (int, optional): Defaults to 20.
-
-        account_id (UUID4, optional): id of account in our system.
-        Defaults to None.
-
-    Returns:
-
-        List of a user connection
-    """
     account = services.instagram_page.get_by_uuid(db, account_id)
 
     connections = services.connection.get_by_user_and_account_id(
@@ -85,25 +70,52 @@ def create_connection(
         ],
     ),
 ):
-    account = services.instagram_page.get_by_uuid(db, uuid=obj_in.account_id)
+    account = None
+
+    match obj_in.platform:
+        case Platform.INSTAGRAM.get("name"):
+            account = services.instagram_page.get_by_uuid(db, uuid=obj_in.account_id)
+
+        case Platform.TELEGRAM.get("name"):
+            account = services.telegram_bot.get_by_uuid(db, uuid=obj_in.account_id)
+
     if not account:
         raise_http_exception(Error.ACCOUNT_NOT_FOUND)
+
     connection = services.connection.get_by_application_name_and_account_id(
         db, application_name=obj_in.application_name, account_id=account.id
     )
     if connection:
         raise_http_exception(Error.CONNECTION_EXIST)
     details = None
-    try:
-        details = copy.deepcopy(obj_in.details)
-        for detail in details:
-            chatflow = services.bot_builder.chatflow.get_by_uuid(
-                db, uuid=detail['chatflow_id'], user_id=current_user.id
-            )
-            detail['chatflow_id'] = chatflow.id
 
-    except KeyError:
-        raise_http_exception(Error.INVALID_DETAILS)
+    match obj_in.platform:
+        case Platform.INSTAGRAM.get("name"):
+            try:
+                details = copy.deepcopy(obj_in.details)
+                for detail in details:
+                    chatflow = services.bot_builder.chatflow.get_by_uuid(
+                        db, uuid=detail['chatflow_id'], user_id=current_user.id
+                    )
+                    detail['chatflow_id'] = chatflow.id
+
+            except KeyError:
+                raise_http_exception(Error.INVALID_DETAILS)
+
+        case Platform.TELEGRAM.get("name"):
+            try:
+                details = copy.deepcopy(obj_in.details)
+                for detail in details:
+                    shop = services.shop.shop.get_user_shop_by_uuid(
+                        db, uuid=detail['shop_id'], user_id=current_user.id,
+                    )
+                    if not shop:
+                        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+                    detail['shop_id'] = shop.id
+
+            except KeyError:
+                raise_http_exception(Error.INVALID_DETAILS)
 
     connection = services.connection.create(
         db,

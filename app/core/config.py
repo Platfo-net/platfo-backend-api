@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     USERS_OPEN_REGISTRATION: str
-    SERVER_ADDRESS_NAME : str
+    SERVER_ADDRESS_NAME: str
 
     ENVIRONMENT: Optional[str]
     BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -92,6 +92,8 @@ class Settings(BaseSettings):
 
     OTEL_SERVICE_NAME: str = None
     OTEL_EXPORTER_OTLP_INSECURE: str = None
+
+    SUPPORT_BOT_TOKEN: str = None
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

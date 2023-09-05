@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, String
+from sqlalchemy import BigInteger, Column, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -7,13 +7,12 @@ from app.db.base_class import Base
 class ShopCartItem(Base):
     __tablename__ = 'shop_cart_items'
 
-
     cart_id = Column(
         BigInteger,
         ForeignKey('shop_carts.id'),
         nullable=True,
     )
-    
+
     product_id = Column(
         BigInteger,
         ForeignKey('shop_products.id'),

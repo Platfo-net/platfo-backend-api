@@ -12,10 +12,10 @@ class TelegramBotServices:
 
     def get_by_id(self, db: Session, *, bot_id: str) -> Optional[models.TelegramBot]:
         return db.query(self.model).filter(self.model.bot_id == bot_id).first()
-    
+
     def get_by_uuid(self, db: Session, *, uuid: UUID4) -> Optional[models.TelegramBot]:
         return db.query(self.model).filter(self.model.uuid == uuid).first()
-    
+
     def get_multi_by_user_id(self, db: Session, *, user_id: str) -> List[models.TelegramBot]:
         return db.query(self.model).filter(self.model.user_id == user_id).all()
 
@@ -29,8 +29,6 @@ class TelegramBotServices:
         db_obj = self.model(
             bot_id=obj_in.bot_id,
             username=obj_in.username,
-            app_id=obj_in.app_id,
-            app_secret=obj_in.app_secret,
             bot_token=obj_in.bot_token,
             first_name=obj_in.first_name,
             user_id=user_id,

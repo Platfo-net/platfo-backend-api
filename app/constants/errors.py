@@ -279,5 +279,23 @@ class Error:
     SHOP_PRODUCT_NOT_FOUND_ERROR = {
         "text": "Category not found",
         "status_code": 404,
-        "code": 160,
+        "code": 161,
+    }
+
+    SHOP_SHOP_NOT_FOUND_ERROR = {
+        "text": "Shop not found",
+        "status_code": 404,
+        "code": 162,
+    }
+
+    SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR = {
+        "text": "Shop not found",
+        "status_code": 404,
+        "code": 163,
+    }
+
+    SHOP_SHOP_HAS_BEEN_ALREADY_CONNECTED_TO_SUPPORT_ACCOUNT = {
+        "text": "Shop has been already connected to support account",
+        "status_code": 400,
+        "code": 164,
     }

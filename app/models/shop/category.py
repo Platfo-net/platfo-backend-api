@@ -15,5 +15,13 @@ class ShopCategory(Base):
         nullable=True,
     )
 
+    shop_id = Column(
+        BigInteger,
+        ForeignKey('shop_shops.id'),
+        nullable=True,
+    )
+
     user = relationship('User', back_populates='shop_categories')
     products = relationship('ShopProduct', back_populates='category')
+
+    shop = relationship('ShopShop', back_populates='categories')

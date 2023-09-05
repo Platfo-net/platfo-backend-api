@@ -14,9 +14,9 @@ class Connection(Base):
 
     account_id = Column(
         BigInteger, nullable=True, index=True
-    )  # it can be instagram page or any other platform page
+    )  # it can be instagram page or any other platform page (telegram bot id)
 
-    details = Column(ARRAY(JSON), nullable=True)
+    details = Column(ARRAY(JSON), nullable=True)  # {shop_id : 123456}
     user_id = Column(BigInteger, ForeignKey('users.id'), nullable=True, index=True)
 
     user = relationship('User', back_populates='connections')
