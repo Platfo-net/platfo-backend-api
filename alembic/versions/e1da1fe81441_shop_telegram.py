@@ -1,8 +1,8 @@
 """shop-telegram
 
-Revision ID: 5fb0bec12705
+Revision ID: e1da1fe81441
 Revises: 5dde70b22951
-Create Date: 2023-09-05 09:35:22.205031
+Create Date: 2023-09-05 11:17:13.513620
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5fb0bec12705'
+revision = 'e1da1fe81441'
 down_revision = '5dde70b22951'
 branch_labels = None
 depends_on = None
@@ -25,6 +25,7 @@ def upgrade():
     sa.Column('support_token', sa.String(length=255), nullable=True),
     sa.Column('support_bot_token', sa.String(length=255), nullable=True),
     sa.Column('support_account_chat_id', sa.BigInteger(), nullable=True),
+    sa.Column('is_support_verified', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),

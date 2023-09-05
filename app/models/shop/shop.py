@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, Text
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -16,6 +16,7 @@ class ShopShop(Base):
     support_token = Column(String(255), nullable=True)
     support_bot_token = Column(String(255) , nullable=True)
     support_account_chat_id = Column(BigInteger, index=True, nullable=True)
+    is_support_verified = Column(Boolean() , default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user_id = Column(
