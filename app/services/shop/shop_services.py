@@ -25,7 +25,7 @@ class ShopServices:
             category=obj_in.category,
             user_id=user_id,
             support_token=support_token,
-            support_bot_token = support_bot_token,
+            support_bot_token=support_bot_token,
         )
         db.add(db_obj)
         db.commit()
@@ -89,19 +89,26 @@ class ShopServices:
     ) -> models.shop.ShopShop:
         return db.query(self.model).filter(self.model.support_token == support_token).first()
     
+    def get_by_support_bot_token(
+        self,
+        db: Session,
+        *,
+        support_bot_token: int
+    ) -> models.shop.ShopShop:
+        return db.query(self.model).filter(self.model.support_bot_token == support_bot_token).first()
+
     def set_support_account_chat_id(
         self,
         db: Session,
         *,
         db_obj: models.shop.ShopShop,
-        chat_id : int,
+        chat_id: int,
     ) -> models.shop.ShopShop:
         db_obj.support_account_chat_id = chat_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
-
 
 
 shop = ShopServices(models.shop.ShopShop)

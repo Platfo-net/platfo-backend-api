@@ -71,5 +71,4 @@ async def telegram_webhook_support_listener(
         
         await update.message.reply_text(f"Enter this code in app: {shop.support_bot_token}")
         services.shop.shop.set_support_account_chat_id(db , db_obj=shop , chat_id=update.message.chat_id)
-        print(update.message.chat_id)
             

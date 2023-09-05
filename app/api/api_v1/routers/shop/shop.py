@@ -27,13 +27,18 @@ def create_shop(
     ),
 ):
 
-    token = generate_random_token(length=8)
+    support_token = generate_random_token(length=8)
 
-    while services.shop.shop.get_by_support_token(db, support_token=token):
-        token = generate_random_token(length=8)
+    while services.shop.shop.get_by_support_token(db, support_token=support_token):
+        support_token = generate_random_token(length=8)
+
+    support_bot_token = generate_random_token(length=8)
+
+    while services.shop.shop.get_by_support_bot_token(db, support_bot_token=support_bot_token):
+        support_bot_token = generate_random_token(length=8)
 
     shop = services.shop.shop.create(
-        db, obj_in=obj_in, support_token=token, user_id=current_user.id)
+        db, obj_in=obj_in, support_token=support_token, support_bot_token=support_bot_token, user_id=current_user.id)
 
     return schemas.shop.ShopRegister(
         id=shop.uuid,
