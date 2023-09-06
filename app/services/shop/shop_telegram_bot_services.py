@@ -30,7 +30,12 @@ class ShopTelegramBotServices:
         *,
         support_token: str
     ) -> models.shop.ShopShopTelegramBot:
-        return db.query(self.model).filter(self.model.support_token == support_token).first()
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.support_token == support_token)
+            .first()
+        )
 
     def get_by_support_bot_token(
         self,
@@ -38,8 +43,12 @@ class ShopTelegramBotServices:
         *,
         support_bot_token: str
     ) -> models.shop.ShopShopTelegramBot:
-        return db.query(self.model).filter(
-            self.model.support_bot_token == support_bot_token).first()
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.support_bot_token == support_bot_token)
+            .first()
+        )
 
     def set_support_account_chat_id(
         self,
@@ -72,7 +81,12 @@ class ShopTelegramBotServices:
         *,
         shop_id: UUID4
     ) -> models.shop.ShopShopTelegramBot:
-        return db.query(self.model).filter(self.model.shop_id == shop_id).first()
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.shop_id == shop_id)
+            .first()
+        )
 
     def connect_telegram_bot(
         self,

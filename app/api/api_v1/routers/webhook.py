@@ -1,5 +1,3 @@
-import asyncio
-
 import telegram
 from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
                      status)
@@ -79,7 +77,10 @@ async def telegram_webhook_support_listener(
         if shop_telegram_bot.is_support_verified:
             await update.message.reply_text(f"Your shop is already connected to an account.")
             return
-            
-        await update.message.reply_text(f"Enter this code in app: {shop_telegram_bot.support_bot_token}")
+
+        await update.message.reply_text(
+            f"You are trying to connect your accoutn to {shop_telegram_bot.shop.title} shop,"    
+            f"Enter this code in app: {shop_telegram_bot.support_bot_token}" \
+            )
         services.shop.shop_telegram_bot.set_support_account_chat_id(
             db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
