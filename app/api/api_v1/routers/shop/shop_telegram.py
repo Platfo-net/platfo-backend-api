@@ -11,7 +11,7 @@ from app.core.utils import generate_random_token
 router = APIRouter(prefix='/telegram')
 
 
-@router.post('', response_model=schemas.shop.ShopRegister)
+@router.post('', response_model=schemas.shop.ShopTelegramBotRegister)
 def create_shop_for_telegram_bot(
     *,
     db: Session = Depends(deps.get_db),
