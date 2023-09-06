@@ -21,4 +21,6 @@ class TelegramBot(Base):
     bot_id = Column(String(64), nullable=True)
 
     user = relationship('User', back_populates='telegram_bots')
-    telegram_bot_shop = relationship("ShopShopTelegramBot" , back_populates="telegram_bot")
+
+    telegram_bot_shop = relationship("ShopShopTelegramBot", back_populates="telegram_bot")
+    leads = relationship("TelegramLead", back_populates="telegram_bot")

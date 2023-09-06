@@ -21,6 +21,6 @@ class ShopShop(Base):
 
     products = relationship('ShopProduct', back_populates='shop')
     categories = relationship('ShopCategory', back_populates='shop')
-    carts = relationship("ShopCart", back_populates="shop")
+    orders = relationship("ShopOrder", back_populates="shop")
 
     shop_telegram_bot = relationship("ShopShopTelegramBot", back_populates="shop")

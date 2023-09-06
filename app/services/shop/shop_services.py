@@ -49,7 +49,10 @@ class ShopServices:
         *,
         uuid: UUID4
     ) -> models.shop.ShopShop:
-        return db.query(self.model).filter(self.model.uuid == uuid).first()
+        return (
+            db.query(self.model)
+            .filter(self.model.uuid == uuid).first()
+        )
 
     def get_user_shop_by_uuid(
         self,

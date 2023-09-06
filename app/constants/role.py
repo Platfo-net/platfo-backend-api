@@ -23,3 +23,8 @@ class Role:
         'description': 'Writer of Application Ecosystem',
         'persian_name': 'نویسنده',
     }
+    SHOP = {
+        'name': 'SHOP',
+        'description': 'Shop',
+        'persian_name': 'فروشگاه',
+    }

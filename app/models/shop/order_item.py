@@ -4,12 +4,12 @@ from sqlalchemy.orm import relationship
 from app.db.base_class import Base
 
 
-class ShopCartItem(Base):
-    __tablename__ = 'shop_cart_items'
+class ShopOrderItem(Base):
+    __tablename__ = 'shop_order_items'
 
-    cart_id = Column(
+    order_id = Column(
         BigInteger,
-        ForeignKey('shop_carts.id'),
+        ForeignKey('shop_orders.id'),
         nullable=True,
     )
 
@@ -19,5 +19,5 @@ class ShopCartItem(Base):
         nullable=True,
     )
 
-    cart = relationship('ShopCart', back_populates='cart_items')
-    product = relationship('ShopProduct', back_populates='cart_items')
+    order = relationship('ShopOrder', back_populates='items')
+    product = relationship('ShopProduct', back_populates='order_items')

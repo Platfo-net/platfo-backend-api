@@ -328,3 +328,15 @@ class Error:
         "status_code": 404,
         "code": 169,
     }
+
+    # lead
+    LEAD_TELEGRAM_LEAD_NOT_FOUND = {
+        "text": "Lead not found",
+        "status_code": 404,
+        "code": 190,
+    }
+    LEAD_TELEGRAM_LEAD_NOT_FOUND_ACCESS_DENIED = {
+        "text": "Lead not found",
+        "status_code": 404,
+        "code": 191,
+    }
