@@ -1,7 +1,3 @@
-
-
-from typing import List
-
 from fastapi import APIRouter, Depends, Security
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -32,10 +28,25 @@ def create_product(
     ),
 ):
     category = services.shop.category.get_by_uuid(db, uuid=obj_in.category_id)
-    if not category or category.user_id != current_user.id:
+    if not category:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
-    product = services.shop.product.create(db, obj_in=obj_in, user_id=current_user.id)
+    if category.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
+
+    shop = services.shop.shop.get_by_uuid(db, uuid=obj_in.shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    product = services.shop.product.create(
+        db,
+        obj_in=obj_in,
+        user_id=current_user.id,
+        shop_id=shop.id,
+        category_id=category.id)
 
     image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
@@ -43,6 +54,7 @@ def create_product(
         id=product.uuid,
         title=product.title,
         price=product.price,
+        currency=product.currency,
         image=image_url,
         created_at=product.created_at,
         updated_at=product.updated_at,
@@ -54,7 +66,7 @@ def create_product(
 
 
 @router.put('/{id}', response_model=schemas.shop.Product)
-def update_update(
+def update_product(
     *,
     db: Session = Depends(deps.get_db),
     obj_in: schemas.shop.ProductUpdate,
@@ -70,14 +82,21 @@ def update_update(
 ):
 
     product = services.shop.product.get_by_uuid(db, uuid=id)
-    if not product or product.user_id != current_user.id:
+    if not product:
         raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR)
 
-    category = services.shop.category.get_by_uuid(db, uuid=id)
-    if not category or category.user_id != current_user.id:
+    if product.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED)
+
+    category = services.shop.category.get_by_uuid(db, uuid=obj_in.category_id)
+    if not category:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
-    product = services.shop.product.update(db, db_obj=product, obj_in=obj_in)
+    if category.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
+
+    product = services.shop.product.update(
+        db, db_obj=product, obj_in=obj_in, category_id=category.id)
     image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
     return schemas.shop.Product(
@@ -85,6 +104,7 @@ def update_update(
         title=product.title,
         price=product.price,
         image=image_url,
+        currency=product.currency,
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=schemas.shop.Category(
@@ -94,7 +114,7 @@ def update_update(
     )
 
 
-@router.get('/all', response_model=List[schemas.shop.Product])
+@router.get('/all', response_model=schemas.shop.ProductListAPI)
 def get_products(
     *,
     db: Session = Depends(deps.get_db),
@@ -109,7 +129,8 @@ def get_products(
         ],
     ),
 ):
-    items, pagination = services.shop.product.get_multi_by_user(db, user_id=current_user.id)
+    items, pagination = services.shop.product.get_multi_by_user(
+        db, user_id=current_user.id, page=page, page_size=page_size)
 
     products_list = []
     for product in items:
@@ -120,6 +141,7 @@ def get_products(
                 title=product.title,
                 price=product.price,
                 image=image_url,
+                currency=product.currency,
                 created_at=product.created_at,
                 updated_at=product.updated_at,
                 category=schemas.shop.Category(

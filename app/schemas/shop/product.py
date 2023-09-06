@@ -13,24 +13,24 @@ from .category import Category
 class ProductBase(BaseModel):
     title: str
     image: str
-    price: str
+    price: float
     currency: str
-    category_id: UUID4
 
 
 class ProductCreate(ProductBase):
-    pass
+    category_id: UUID4
+    shop_id: UUID4
 
 
 class ProductUpdate(ProductBase):
-    pass
+    category_id: UUID4
 
 
 class Product(ProductBase):
     id: UUID4
-    catgory: Category
-    created_at : datetime
-    updated_at : datetime
+    category: Category
+    created_at: datetime
+    updated_at: datetime
 
 
 class ProductListAPI(BaseModel):

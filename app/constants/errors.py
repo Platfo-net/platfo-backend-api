@@ -316,3 +316,15 @@ class Error:
         "status_code": 400,
         "code": 167,
     }
+
+    SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED = {
+        "text": "Category not found",
+        "status_code": 404,
+        "code": 168,
+    }
+
+    SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED = {
+        "text": "Category not found",
+        "status_code": 404,
+        "code": 169,
+    }

@@ -26,6 +26,8 @@ def add_file_to_s3(object_name, file_path, bucket_name):
 
 
 def get_object_url(object_name, bucket_name):
+    if settings.ENVIRONMENT == "dev":
+        return "ok"
     try:
         client = create_client()
         if object_name in ['', None]:

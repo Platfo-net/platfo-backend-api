@@ -75,7 +75,7 @@ class ShopServices:
         *,
         user_id: int
     ) -> List[models.shop.ShopShop]:
-        return db.query(self.model).filter(self.model.user_id == user_id).first()
+        return db.query(self.model).filter(self.model.user_id == user_id).all()
 
     def get_by_title(
         self,

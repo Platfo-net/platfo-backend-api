@@ -52,8 +52,12 @@ def update_category(
     ),
 ):
     category = services.shop.category.get_by_uuid(db, uuid=id)
-    if not category or category.user_id != current_user.id:
+    if not category:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
+
+    if category.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
+
     category = services.shop.category.update(db, db_obj=category, obj_in=obj_in)
     return schemas.shop.Category(
         title=category.title,

@@ -32,10 +32,8 @@ class CategoryServices:
         *,
         db_obj: models.shop.ShopCategory,
         obj_in: schemas.shop.CategoryCreate,
-        user_id: int
     ) -> models.shop.ShopCategory:
         db_obj.title = obj_in.title
-        db_obj.user_id = user_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -63,7 +61,7 @@ class CategoryServices:
         *,
         user_id: int
     ) -> List[models.shop.ShopCategory]:
-        return db.query(self.model).filter(self.model.user_id == user_id).first()
+        return db.query(self.model).filter(self.model.user_id == user_id).all()
 
 
 category = CategoryServices(models.shop.ShopCategory)

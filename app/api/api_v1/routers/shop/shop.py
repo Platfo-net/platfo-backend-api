@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, Security
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -11,7 +12,7 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix='/shop')
 
 
-@router.get('/all', response_model=schemas.shop.Shop)
+@router.get('/all', response_model=List[schemas.shop.Shop])
 def get_shop_multi(
     *,
     db: Session = Depends(deps.get_db),
@@ -26,12 +27,13 @@ def get_shop_multi(
 ):
     shops = services.shop.shop.get_multi_by_user(db, user_id=current_user.id)
 
-    return [schemas.shop.Shop(
-        id=shop.uuid,
-        title=shop.title,
-        category=shop.category,
-        description=shop.description,
-    ) for shop in shops]
+    return [
+        schemas.shop.Shop(
+            id=shop.uuid,
+            title=shop.title,
+            category=shop.category,
+            description=shop.description,
+        ) for shop in shops]
 
 
 @router.get('/{id}', response_model=schemas.shop.Shop)

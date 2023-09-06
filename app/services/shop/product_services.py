@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import UUID4
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
@@ -15,15 +16,18 @@ class ProductServices:
         db: Session,
         *,
         obj_in: schemas.shop.ProductCreate,
-        user_id: int
+        user_id: int,
+        shop_id: int,
+        category_id: int,
     ) -> models.shop.ShopProduct:
         db_obj = self.model(
             title=obj_in.title,
             image=obj_in.image,
             price=obj_in.price,
             currency=obj_in.currency,
-            category_id=obj_in.category_id,
+            category_id=category_id,
             user_id=user_id,
+            shop_id=shop_id,
         )
         db.add(db_obj)
         db.commit()
@@ -36,13 +40,14 @@ class ProductServices:
         *,
         db_obj: models.shop.ShopProduct,
         obj_in: schemas.shop.ProductCreate,
-        user_id: int
+        category_id: int,
+
     ) -> models.shop.ShopProduct:
         db_obj.title = obj_in.title
-        db_obj.user_id = user_id
-        db_obj.category_id = obj_in.category_id,
+        db_obj.category_id = category_id,
         db_obj.price = obj_in.price,
         db_obj.currency = obj_in.currency,
+
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -76,7 +81,7 @@ class ProductServices:
         user_id: int,
         page: int = 1,
         page_size: int = 20,
-    ):
+    ) -> dict[List[models.shop.ShopProduct], schemas.Pagination]:
         items = (db.query(self.model)
                  .join(self.model.category)
                  .filter(self.model.user_id == user_id)
