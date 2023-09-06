@@ -31,13 +31,15 @@ class ShopTelegramBotServices:
         support_token: str
     ) -> models.shop.ShopShopTelegramBot:
         return db.query(self.model).filter(self.model.support_token == support_token).first()
+
     def get_by_support_bot_token(
         self,
         db: Session,
         *,
         support_bot_token: str
     ) -> models.shop.ShopShopTelegramBot:
-        return db.query(self.model).filter(self.model.support_bot_token == support_bot_token).first()
+        return db.query(self.model).filter(
+            self.model.support_bot_token == support_bot_token).first()
 
     def set_support_account_chat_id(
         self,
