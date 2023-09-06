@@ -23,10 +23,6 @@ class Shop(ShopBase):
     id: UUID4
 
 
-class ShopRegister(Shop):
-    support_token: str
-
-
 class ShopConnectSupport(BaseModel):
     token: str
     shop_id: UUID4

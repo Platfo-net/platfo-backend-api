@@ -299,3 +299,20 @@ class Error:
         "status_code": 400,
         "code": 164,
     }
+
+    SHOP_SHOP_IS_EXIST = {
+        "text": "There is another shop with the same title.",
+        "status_code": 400,
+        "code": 165,
+    }
+
+    SHOP_INVALID_SUPPORT_TOKEN = {
+        "text": "Invalid support token.",
+        "status_code": 400,
+        "code": 166,
+    }
+    SHOP_SHOP_HAS_BEEN_ALREADY_CONNECTED_TO_TELEGRAM_BOT = {
+        "text": "Shop has been already connected to telegram bot",
+        "status_code": 400,
+        "code": 167,
+    }

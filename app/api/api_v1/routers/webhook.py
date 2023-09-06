@@ -1,14 +1,17 @@
 import asyncio
-from fastapi import APIRouter, HTTPException, Request, Security, status , Depends
-from app import models , services
+
+import telegram
+from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
+                     status)
+from sqlalchemy.orm import Session
+
+from app import models, services
 from app.api import deps
 from app.constants.role import Role
 from app.core import support_bot
-from sqlalchemy.orm import Session
-
 from app.core.config import settings
 from app.core.instagram import tasks
-import telegram
+
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
 
@@ -52,23 +55,25 @@ async def telegram_set_webhook(
 ):
     return await support_bot.set_support_bot_webhook()
 
+
 @router.post('/telegram/support-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_support_listener(
-    *, 
+    *,
     db: Session = Depends(deps.get_db),
-    request: Request):
+        request: Request):
     bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
     data = await request.json()
-    update:telegram.Update = telegram.Update.de_json(data , bot = bot)
+    update: telegram.Update = telegram.Update.de_json(data, bot=bot)
     if update.message.text == "/start":
         await update.message.reply_text("Enter your code")
     else:
         code = update.message.text
-        shop = services.shop.shop.get_by_support_token(db , support_token=code.replace(" " , ""))
-        if not shop:
+        shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
+            db, support_token=code.replace(" ", ""))
+        if not shop_telegram_bot:
             await update.message.reply_text(f"Wrong code.")
             return
-        
-        await update.message.reply_text(f"Enter this code in app: {shop.support_bot_token}")
-        services.shop.shop.set_support_account_chat_id(db , db_obj=shop , chat_id=update.message.chat_id)
-            
+
+        await update.message.reply_text(f"Enter this code in app: {shop_telegram_bot.support_bot_token}")
+        services.shop.shop_telegram_bot.set_support_account_chat_id(
+            db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)

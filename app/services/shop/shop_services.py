@@ -20,7 +20,7 @@ class ShopServices:
         user_id: int
     ) -> models.shop.ShopShop:
         db_obj = self.model(
-            title=obj_in.title,
+            title=obj_in.title.lstrip().rstrip(),
             description=obj_in.description,
             category=obj_in.category,
             user_id=user_id,
@@ -81,34 +81,13 @@ class ShopServices:
     ) -> List[models.shop.ShopShop]:
         return db.query(self.model).filter(self.model.user_id == user_id).first()
 
-    def get_by_support_token(
+    def get_by_title(
         self,
         db: Session,
         *,
-        support_token: int
+        title: str
     ) -> models.shop.ShopShop:
-        return db.query(self.model).filter(self.model.support_token == support_token).first()
-    
-    def get_by_support_bot_token(
-        self,
-        db: Session,
-        *,
-        support_bot_token: int
-    ) -> models.shop.ShopShop:
-        return db.query(self.model).filter(self.model.support_bot_token == support_bot_token).first()
-
-    def set_support_account_chat_id(
-        self,
-        db: Session,
-        *,
-        db_obj: models.shop.ShopShop,
-        chat_id: int,
-    ) -> models.shop.ShopShop:
-        db_obj.support_account_chat_id = chat_id
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        return db.query(self.model).filter(self.model.title == title).first()
 
 
 shop = ShopServices(models.shop.ShopShop)

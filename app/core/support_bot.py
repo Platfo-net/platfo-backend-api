@@ -13,4 +13,3 @@ async def set_support_bot_webhook():
     await bot.set_webhook(
         f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/support-bot"
     )
-

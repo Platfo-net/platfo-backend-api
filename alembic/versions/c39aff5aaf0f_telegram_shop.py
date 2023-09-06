@@ -1,8 +1,8 @@
-"""shop-telegram
+"""telegram-shop
 
-Revision ID: e1da1fe81441
+Revision ID: c39aff5aaf0f
 Revises: 5dde70b22951
-Create Date: 2023-09-05 11:17:13.513620
+Create Date: 2023-09-06 09:45:27.770517
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e1da1fe81441'
+revision = 'c39aff5aaf0f'
 down_revision = '5dde70b22951'
 branch_labels = None
 depends_on = None
@@ -22,11 +22,6 @@ def upgrade():
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('category', sa.String(length=255), nullable=True),
-    sa.Column('support_token', sa.String(length=255), nullable=True),
-    sa.Column('support_bot_token', sa.String(length=255), nullable=True),
-    sa.Column('support_account_chat_id', sa.BigInteger(), nullable=True),
-    sa.Column('is_support_verified', sa.Boolean(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
@@ -34,7 +29,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_shop_shops_id'), 'shop_shops', ['id'], unique=False)
-    op.create_index(op.f('ix_shop_shops_support_account_chat_id'), 'shop_shops', ['support_account_chat_id'], unique=False)
     op.create_table('telegram_bots',
     sa.Column('user_id', sa.BigInteger(), nullable=True),
     sa.Column('bot_token', sa.String(length=255), nullable=True),
@@ -66,6 +60,22 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_shop_categories_id'), 'shop_categories', ['id'], unique=False)
+    op.create_table('shop_shop_telegram_bots',
+    sa.Column('support_token', sa.String(length=255), nullable=True),
+    sa.Column('support_bot_token', sa.String(length=255), nullable=True),
+    sa.Column('support_account_chat_id', sa.BigInteger(), nullable=True),
+    sa.Column('is_support_verified', sa.Boolean(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('telegram_bot_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
+    sa.ForeignKeyConstraint(['telegram_bot_id'], ['telegram_bots.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_shop_telegram_bots_id'), 'shop_shop_telegram_bots', ['id'], unique=False)
+    op.create_index(op.f('ix_shop_shop_telegram_bots_support_account_chat_id'), 'shop_shop_telegram_bots', ['support_account_chat_id'], unique=False)
     op.create_table('shop_products',
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('image', sa.String(length=255), nullable=True),
@@ -103,13 +113,15 @@ def downgrade():
     op.drop_table('shop_cart_items')
     op.drop_index(op.f('ix_shop_products_id'), table_name='shop_products')
     op.drop_table('shop_products')
+    op.drop_index(op.f('ix_shop_shop_telegram_bots_support_account_chat_id'), table_name='shop_shop_telegram_bots')
+    op.drop_index(op.f('ix_shop_shop_telegram_bots_id'), table_name='shop_shop_telegram_bots')
+    op.drop_table('shop_shop_telegram_bots')
     op.drop_index(op.f('ix_shop_categories_id'), table_name='shop_categories')
     op.drop_table('shop_categories')
     op.drop_index(op.f('ix_shop_carts_id'), table_name='shop_carts')
     op.drop_table('shop_carts')
     op.drop_index(op.f('ix_telegram_bots_id'), table_name='telegram_bots')
     op.drop_table('telegram_bots')
-    op.drop_index(op.f('ix_shop_shops_support_account_chat_id'), table_name='shop_shops')
     op.drop_index(op.f('ix_shop_shops_id'), table_name='shop_shops')
     op.drop_table('shop_shops')
     # ### end Alembic commands ###

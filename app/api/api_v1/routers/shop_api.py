@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.routers.shop import category, product , shop
+from app.api.api_v1.routers.shop import category, product, shop
 
 router = APIRouter(prefix='/shop', tags=['Shop'])
 
