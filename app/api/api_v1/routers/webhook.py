@@ -75,7 +75,9 @@ async def telegram_webhook_support_listener(
             await update.message.reply_text(f"Wrong code.")
             return
         if shop_telegram_bot.is_support_verified:
-            await update.message.reply_text(f"Your shop is already connected to an account.")
+            await update.message.reply_text(
+                f"Your shop '{shop_telegram_bot.shop.title}' is"
+                " already connected to an account.")
             return
 
         await update.message.reply_text(
