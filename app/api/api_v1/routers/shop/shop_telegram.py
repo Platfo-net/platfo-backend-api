@@ -48,8 +48,6 @@ def create_shop_for_telegram_bot(
     shop = services.shop.shop.create(
         db,
         obj_in=obj_in,
-        support_token=support_token,
-        support_bot_token=support_bot_token,
         user_id=current_user.id
     )
 

@@ -15,8 +15,6 @@ class ShopServices:
         db: Session,
         *,
         obj_in: schemas.shop.ShopCreate,
-        support_token: str,
-        support_bot_token: str,
         user_id: int
     ) -> models.shop.ShopShop:
         db_obj = self.model(
@@ -24,8 +22,6 @@ class ShopServices:
             description=obj_in.description,
             category=obj_in.category,
             user_id=user_id,
-            support_token=support_token,
-            support_bot_token=support_bot_token,
         )
         db.add(db_obj)
         db.commit()
