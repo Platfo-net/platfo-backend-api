@@ -9,6 +9,7 @@ from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
 from app.core.instagram import tasks
+from app.core.telegram.tasks import telegram_support_bot_task
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
@@ -36,7 +37,8 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
 
 
 @router.post('/telegram/bot', status_code=status.HTTP_200_OK)
-def telegram_webhook_listener(*, request: Request):
+async def telegram_webhook_listener(*, request: Request):
+    print(await request.json())
     return
 
 
@@ -51,38 +53,14 @@ async def telegram_set_webhook(
         ],
     )
 ):
-    return await support_bot.set_support_bot_webhook()
+    try:
+        return await support_bot.set_support_bot_webhook()
+    except:
+        return
 
 
 @router.post('/telegram/support-bot', status_code=status.HTTP_200_OK)
-async def telegram_webhook_support_listener(
-    *,
-    db: Session = Depends(deps.get_db),
-        request: Request):
-    bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
+async def telegram_webhook_support_listener(request: Request):
     data = await request.json()
-    update: telegram.Update = telegram.Update.de_json(data, bot=bot)
-    if update.message.text == "/start":
-        await update.message.reply_text("Enter your code")
-    else:
-        code = update.message.text.lstrip().rstrip()
-        if len(code) != 8:
-            await update.message.reply_text(f"Wrong code.")
-            return
-        shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
-            db, support_token=code)
-        if not shop_telegram_bot:
-            await update.message.reply_text(f"Wrong code.")
-            return
-        if shop_telegram_bot.is_support_verified:
-            await update.message.reply_text(
-                f"Your shop '{shop_telegram_bot.shop.title}' is"
-                " already connected to an account.")
-            return
-
-        await update.message.reply_text(
-            f"You are trying to connect your account to {shop_telegram_bot.shop.title} shop,\n"    
-            f"Enter this code in app: {shop_telegram_bot.support_bot_token}"
-            )
-        services.shop.shop_telegram_bot.set_support_account_chat_id(
-            db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
+    telegram_support_bot_task.delay(data)
+    return

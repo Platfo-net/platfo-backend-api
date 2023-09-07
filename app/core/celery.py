@@ -2,11 +2,11 @@ from celery import Celery
 
 from app.core.config import settings
 
-# from app.core.notifier.tasks import campaign_terminal
 
 celery = Celery(
     __name__,
-    include=['app.core.instagram.tasks', 'app.core.notifier.tasks', 'app.core.tasks'],
+    include=['app.core.instagram.tasks', 'app.core.telegram.tasks',
+             'app.core.notifier.tasks', 'app.core.tasks'],
 )
 
 celery.conf.broker_url = settings.CELERY_URI
