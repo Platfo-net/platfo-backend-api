@@ -10,8 +10,8 @@ class Error:
         'description': "",
     }
     USER_EXIST_ERROR = {
-        'text': 'There is a user with this email',
-        'status_code': 409,
+        'text': 'There is a user with this email or phone number',
+        'status_code': 400,
         'code': 1,
         'description': "",
     }

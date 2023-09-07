@@ -40,6 +40,7 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
 async def telegram_webhook_listener(*, bot_id: int, request: Request):
     try:
         data = await request.json()
+        print(data["message"]["from"])
         await telegram_bot_webhook_handler(data, bot_id)
     except Exception as e:
         print(e)

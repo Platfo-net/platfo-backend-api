@@ -52,17 +52,17 @@ services:
   #     MINIO_ROOT_USER: "${S3_ROOT_USER}"
   #     MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
 
-  # celery-worker:
-  #   image: "platfo-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-worker-1"
-  #   command: celery -A app.core.celery.celery worker --loglevel=info -n w1
-  #   volumes:
-  #     - .:/app
-  #   depends_on:
-  #     - db
-  #     - api
-  #     - redis
+  celery-worker:
+    image: "platfo-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-worker-1"
+    command: celery -A app.core.celery.celery worker --loglevel=info -n w1
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - api
+      - redis
 
   # celery-beat:
   #   image: "platfo-backend-app"
@@ -76,19 +76,19 @@ services:
   #     - api
   #     - redis
 
-  # celery-flower:
-  #   image: "platfo-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-flower"
-  #   command: celery -A app.core.celery.celery flower --port=5566
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "5566:5566"
-  #   depends_on:
-  #     - db
-  #     - api
-  #     - redis
+  celery-flower:
+    image: "platfo-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-flower"
+    command: celery -A app.core.celery.celery flower --port=5566
+    volumes:
+      - .:/app
+    ports:
+      - "5566:5566"
+    depends_on:
+      - db
+      - api
+      - redis
 
 volumes:
   postgres-data:
