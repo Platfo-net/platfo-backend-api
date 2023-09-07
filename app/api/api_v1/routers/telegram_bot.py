@@ -49,7 +49,7 @@ def add_telegram_bot(
     except telegram.error.InvalidToken:
         raise_http_exception(Error.INVALID_TELEGRAM_BOT)
     bot_id = bot_information["bot_id"]
-    bot = services.telegram_bot.get_by_id(db, bot_id=bot_id)
+    bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
     if bot:
         raise_http_exception(Error.TELEGRAM_BOT_EXIST_IN_SYSTEM)
 

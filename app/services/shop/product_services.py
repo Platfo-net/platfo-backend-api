@@ -17,7 +17,6 @@ class ProductServices:
         db: Session,
         *,
         obj_in: schemas.shop.ProductCreate,
-        user_id: int,
         shop_id: int,
         category_id: int,
     ) -> models.shop.ShopProduct:
@@ -27,7 +26,6 @@ class ProductServices:
             price=obj_in.price,
             currency=obj_in.currency,
             category_id=category_id,
-            user_id=user_id,
             shop_id=shop_id,
         )
         db.add(db_obj)
@@ -75,24 +73,25 @@ class ProductServices:
     ) -> models.shop.ShopProduct:
         return db.query(self.model).join(self.model.category).filter(self.model.id == id).first()
 
-    def get_multi_by_user(
+    def get_multi_by_shop_id(
         self,
         db: Session,
         *,
-        user_id: int,
+        shop_id: int,
         page: int = 1,
         page_size: int = 20,
     ) -> dict[List[models.shop.ShopProduct], schemas.Pagination]:
         items = (db.query(self.model)
                  .join(self.model.category)
-                 .filter(self.model.user_id == user_id)
+                 .join(self.model.shop)
+                 .filter(self.model.shop_id == shop_id)
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)
                  .all())
 
-        total_count = db.query(self.model).join(self.model.category).filter(
-            self.model.user_id == user_id).count()
+        total_count = db.query(self.model).filter(
+            self.model.shop_id == shop_id).count()
 
         pagination = paginate(total_count, page, page_size)
 

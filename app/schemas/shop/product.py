@@ -1,7 +1,7 @@
 
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
 
@@ -28,7 +28,7 @@ class ProductUpdate(ProductBase):
 
 class Product(ProductBase):
     id: UUID4
-    category: Category
+    category: Optional[Category]
     created_at: datetime
     updated_at: datetime
 

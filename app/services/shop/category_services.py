@@ -15,11 +15,11 @@ class CategoryServices:
         db: Session,
         *,
         obj_in: schemas.shop.CategoryCreate,
-        user_id: int
+        shop_id: int,
     ) -> models.shop.ShopCategory:
         db_obj = self.model(
             title=obj_in.title,
-            user_id=user_id,
+            shop_id=shop_id,
         )
         db.add(db_obj)
         db.commit()
@@ -45,7 +45,7 @@ class CategoryServices:
         *,
         uuid: UUID4
     ) -> models.shop.ShopCategory:
-        return db.query(self.model).filter(self.model.uuid == uuid).first()
+        return db.query(self.model).join(self.model.shop).filter(self.model.uuid == uuid).first()
 
     def get(
         self,
@@ -53,7 +53,7 @@ class CategoryServices:
         *,
         id: int
     ) -> models.shop.ShopCategory:
-        return db.query(self.model).filter(self.model.id == id).first()
+        return db.query(self.model).join(self.model.shop).filter(self.model.id == id).first()
 
     def get_multi_by_user(
         self,
@@ -61,7 +61,7 @@ class CategoryServices:
         *,
         user_id: int
     ) -> List[models.shop.ShopCategory]:
-        return db.query(self.model).filter(self.model.user_id == user_id).all()
+        return db.query(self.model).join(self.model.shop).filter(self.model.shop.user_id == user_id).all()
 
 
 category = CategoryServices(models.shop.ShopCategory)

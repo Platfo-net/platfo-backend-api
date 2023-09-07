@@ -27,18 +27,11 @@ class ShopProduct(Base):
         nullable=True,
     )
 
-    user_id = Column(
-        BigInteger,
-        ForeignKey('users.id'),
-        nullable=True,
-    )
     shop_id = Column(
         BigInteger,
         ForeignKey('shop_shops.id'),
         nullable=True,
     )
-
-    user = relationship('User', back_populates='shop_products')
 
     category = relationship('ShopCategory', back_populates='products')
     order_items = relationship('ShopOrderItem', back_populates="product")

@@ -8,11 +8,11 @@ class CategoryBase(BaseModel):
 
 
 class CategoryCreate(CategoryBase):
-    pass
+    shop_id: UUID4
 
 
 class CategoryUpdate(CategoryBase):
-    pass
+    shop_id: UUID4
 
 
 class Category(CategoryBase):

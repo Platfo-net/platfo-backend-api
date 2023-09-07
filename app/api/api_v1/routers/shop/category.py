@@ -29,7 +29,18 @@ def create_category(
         ],
     ),
 ):
-    category = services.shop.category.create(db, obj_in=obj_in, user_id=current_user.id)
+    shop = services.shop.shop.get_by_uuid(db, uuid=obj_in.shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    category = services.shop.category.create(
+        db,
+        obj_in=obj_in,
+        shop_id=shop.id,
+    )
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,

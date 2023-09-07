@@ -27,8 +27,8 @@ def telegram_webhook_task(data: dict, bot_id: int):
     db = SessionLocal()
     try:
         asyncio.run(telegram_bot_webhook_handler(db, data, bot_id=bot_id))
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
 
     db.close()
 
@@ -68,6 +68,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
         return
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot.id)
+    
     if not shop_telegram_bot:
         return
 

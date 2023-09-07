@@ -43,7 +43,7 @@ async def telegram_webhook_listener(*, bot_id: int, request: Request):
         data = await request.json()
         telegram_tasks.telegram_webhook_task.delay(data, bot_id)
     except Exception as e:
-        pass
+        print(e)
     return
 
 
