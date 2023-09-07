@@ -1,5 +1,5 @@
-from app.models import (academy, bot_builder, credit, databoard, lead,
-                        live_chat, notifier, shop)
+from app.models import (academy, bot_builder, credit, databoard, live_chat,
+                        notifier, shop, social)
 
 from .connection import Connection
 from .instagram_page import InstagramPage

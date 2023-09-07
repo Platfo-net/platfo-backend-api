@@ -10,7 +10,6 @@ class TelegramBotServices:
     def __init__(self, model):
         self.model: models.TelegramBot = model
 
-
     def get_by_uuid(self, db: Session, *, uuid: UUID4) -> Optional[models.TelegramBot]:
         return db.query(self.model).filter(self.model.uuid == uuid).first()
 

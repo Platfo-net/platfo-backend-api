@@ -31,7 +31,7 @@ def create_telegram_shop_order(
     if not shop:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
-    lead = services.lead.telegram_lead.get_by_uuid(db, uuid=lead_id)
+    lead = services.social.telegram_lead.get_by_uuid(db, uuid=lead_id)
     if not lead:
         raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND)
 
@@ -54,6 +54,7 @@ def create_telegram_shop_order(
         db,
         obj_in=obj_in,
         shop_id=shop.id,
+        lead_id=lead.id,
         order_number=last_order_number + 1,
         status=OrderStatus.UNPAID,
     )

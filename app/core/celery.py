@@ -2,7 +2,6 @@ from celery import Celery
 
 from app.core.config import settings
 
-
 celery = Celery(
     __name__,
     include=['app.core.instagram.tasks', 'app.core.telegram.tasks',

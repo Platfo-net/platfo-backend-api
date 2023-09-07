@@ -14,6 +14,7 @@ class OrderServices:
         *,
         obj_in: schemas.shop.OrderCreate,
         shop_id: int,
+        lead_id: int,
         order_number: int,
         status: str,
     ) -> models.shop.ShopOrder:
@@ -28,6 +29,7 @@ class OrderServices:
             email=obj_in.email,
             order_number=order_number,
             shop_id=shop_id,
+            lead_id=lead_id,
         )
 
         db.add(db_obj)

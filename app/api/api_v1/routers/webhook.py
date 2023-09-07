@@ -9,7 +9,8 @@ from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
 from app.core.instagram import tasks
-from app.core.telegram.tasks import telegram_bot_webhook_handler, telegram_support_bot_task
+from app.core.telegram import tasks as telegram_tasks
+from app.db.session import SessionLocal
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
@@ -32,7 +33,7 @@ def instagram_subscription_webhook(request: Request):
 
 @router.post('/instagram', status_code=status.HTTP_200_OK)
 def instagram_webhook_listener(*, facebook_webhook_body: dict):
-    tasks.webhook_proccessor.delay(facebook_webhook_body)
+    tasks.webhook_processor.delay(facebook_webhook_body)
     return
 
 
@@ -40,10 +41,9 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
 async def telegram_webhook_listener(*, bot_id: int, request: Request):
     try:
         data = await request.json()
-        print(data["message"]["from"])
-        await telegram_bot_webhook_handler(data, bot_id)
+        telegram_tasks.telegram_webhook_task.delay(data, bot_id)
     except Exception as e:
-        print(e)
+        pass
     return
 
 
@@ -67,5 +67,5 @@ async def telegram_set_webhook(
 @router.post('/telegram/support-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_support_listener(request: Request):
     data = await request.json()
-    telegram_support_bot_task.delay(data)
+    telegram_tasks.telegram_support_bot_task.delay(data)
     return

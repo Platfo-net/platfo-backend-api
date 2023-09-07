@@ -99,6 +99,7 @@ class Settings(BaseSettings):
     OTEL_EXPORTER_OTLP_INSECURE: str = None
 
     SUPPORT_BOT_TOKEN: str = None
+    PLATFO_SHOPS_BASE_URL: str
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

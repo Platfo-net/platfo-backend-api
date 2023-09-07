@@ -21,7 +21,7 @@ from app.db.session import SessionLocal
 
 
 @celery.task
-def webhook_proccessor(facebook_webhook_body):
+def webhook_processor(facebook_webhook_body):
     db: Session = SessionLocal()
     redis_client = deps.get_redis_client()
     instagram_data = InstagramData(facebook_webhook_body)

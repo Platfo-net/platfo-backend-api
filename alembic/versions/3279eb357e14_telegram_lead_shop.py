@@ -1,8 +1,8 @@
-"""shop-telegram-leads
+"""telegram-lead-shop
 
-Revision ID: 7e868ed4fe9f
+Revision ID: 3279eb357e14
 Revises: 5dde70b22951
-Create Date: 2023-09-06 17:18:11.039380
+Create Date: 2023-09-07 14:12:53.437026
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7e868ed4fe9f'
+revision = '3279eb357e14'
 down_revision = '5dde70b22951'
 branch_labels = None
 depends_on = None
@@ -34,23 +34,14 @@ def upgrade():
     sa.Column('bot_token', sa.String(length=255), nullable=True),
     sa.Column('username', sa.String(length=255), nullable=True),
     sa.Column('first_name', sa.String(length=255), nullable=True),
-    sa.Column('bot_id', sa.String(length=64), nullable=True),
+    sa.Column('bot_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_index(op.f('ix_telegram_bots_bot_id'), 'telegram_bots', ['bot_id'], unique=False)
     op.create_index(op.f('ix_telegram_bots_id'), 'telegram_bots', ['id'], unique=False)
-    op.create_table('lead_telegram_leads',
-    sa.Column('chat_id', sa.BigInteger(), nullable=True),
-    sa.Column('telegram_bot_id', sa.BigInteger(), nullable=True),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['telegram_bot_id'], ['telegram_bots.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_lead_telegram_leads_chat_id'), 'lead_telegram_leads', ['chat_id'], unique=False)
-    op.create_index(op.f('ix_lead_telegram_leads_id'), 'lead_telegram_leads', ['id'], unique=False)
     op.create_table('shop_categories',
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
@@ -62,25 +53,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_shop_categories_id'), 'shop_categories', ['id'], unique=False)
-    op.create_table('shop_orders',
-    sa.Column('first_name', sa.String(length=255), nullable=True),
-    sa.Column('last_name', sa.String(length=255), nullable=True),
-    sa.Column('phone_number', sa.String(length=255), nullable=True),
-    sa.Column('email', sa.String(length=255), nullable=True),
-    sa.Column('state', sa.String(length=255), nullable=True),
-    sa.Column('city', sa.String(length=255), nullable=True),
-    sa.Column('address', sa.String(length=255), nullable=True),
-    sa.Column('postal_code', sa.String(length=255), nullable=True),
-    sa.Column('status', sa.String(length=255), nullable=True),
-    sa.Column('order_number', sa.Integer(), nullable=True),
-    sa.Column('shop_id', sa.BigInteger(), nullable=True),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_shop_orders_id'), 'shop_orders', ['id'], unique=False)
-    op.create_index(op.f('ix_shop_orders_order_number'), 'shop_orders', ['order_number'], unique=False)
     op.create_table('shop_shop_telegram_bots',
     sa.Column('support_token', sa.String(length=255), nullable=True),
     sa.Column('support_bot_token', sa.String(length=255), nullable=True),
@@ -97,6 +69,40 @@ def upgrade():
     )
     op.create_index(op.f('ix_shop_shop_telegram_bots_id'), 'shop_shop_telegram_bots', ['id'], unique=False)
     op.create_index(op.f('ix_shop_shop_telegram_bots_support_account_chat_id'), 'shop_shop_telegram_bots', ['support_account_chat_id'], unique=False)
+    op.create_table('social_telegram_leads',
+    sa.Column('first_name', sa.String(length=255), nullable=True),
+    sa.Column('last_name', sa.String(length=255), nullable=True),
+    sa.Column('username', sa.String(length=255), nullable=True),
+    sa.Column('chat_id', sa.BigInteger(), nullable=True),
+    sa.Column('telegram_bot_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['telegram_bot_id'], ['telegram_bots.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_social_telegram_leads_chat_id'), 'social_telegram_leads', ['chat_id'], unique=False)
+    op.create_index(op.f('ix_social_telegram_leads_id'), 'social_telegram_leads', ['id'], unique=False)
+    op.create_table('shop_orders',
+    sa.Column('first_name', sa.String(length=255), nullable=True),
+    sa.Column('last_name', sa.String(length=255), nullable=True),
+    sa.Column('phone_number', sa.String(length=255), nullable=True),
+    sa.Column('email', sa.String(length=255), nullable=True),
+    sa.Column('state', sa.String(length=255), nullable=True),
+    sa.Column('city', sa.String(length=255), nullable=True),
+    sa.Column('address', sa.String(length=255), nullable=True),
+    sa.Column('postal_code', sa.String(length=255), nullable=True),
+    sa.Column('status', sa.String(length=255), nullable=True),
+    sa.Column('order_number', sa.Integer(), nullable=True),
+    sa.Column('lead_id', sa.BigInteger(), nullable=True),
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['lead_id'], ['social_telegram_leads.id'], ),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_orders_id'), 'shop_orders', ['id'], unique=False)
+    op.create_index(op.f('ix_shop_orders_order_number'), 'shop_orders', ['order_number'], unique=False)
     op.create_table('shop_products',
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('image', sa.String(length=255), nullable=True),
@@ -134,18 +140,19 @@ def downgrade():
     op.drop_table('shop_order_items')
     op.drop_index(op.f('ix_shop_products_id'), table_name='shop_products')
     op.drop_table('shop_products')
-    op.drop_index(op.f('ix_shop_shop_telegram_bots_support_account_chat_id'), table_name='shop_shop_telegram_bots')
-    op.drop_index(op.f('ix_shop_shop_telegram_bots_id'), table_name='shop_shop_telegram_bots')
-    op.drop_table('shop_shop_telegram_bots')
     op.drop_index(op.f('ix_shop_orders_order_number'), table_name='shop_orders')
     op.drop_index(op.f('ix_shop_orders_id'), table_name='shop_orders')
     op.drop_table('shop_orders')
+    op.drop_index(op.f('ix_social_telegram_leads_id'), table_name='social_telegram_leads')
+    op.drop_index(op.f('ix_social_telegram_leads_chat_id'), table_name='social_telegram_leads')
+    op.drop_table('social_telegram_leads')
+    op.drop_index(op.f('ix_shop_shop_telegram_bots_support_account_chat_id'), table_name='shop_shop_telegram_bots')
+    op.drop_index(op.f('ix_shop_shop_telegram_bots_id'), table_name='shop_shop_telegram_bots')
+    op.drop_table('shop_shop_telegram_bots')
     op.drop_index(op.f('ix_shop_categories_id'), table_name='shop_categories')
     op.drop_table('shop_categories')
-    op.drop_index(op.f('ix_lead_telegram_leads_id'), table_name='lead_telegram_leads')
-    op.drop_index(op.f('ix_lead_telegram_leads_chat_id'), table_name='lead_telegram_leads')
-    op.drop_table('lead_telegram_leads')
     op.drop_index(op.f('ix_telegram_bots_id'), table_name='telegram_bots')
+    op.drop_index(op.f('ix_telegram_bots_bot_id'), table_name='telegram_bots')
     op.drop_table('telegram_bots')
     op.drop_index(op.f('ix_shop_shops_id'), table_name='shop_shops')
     op.drop_table('shop_shops')

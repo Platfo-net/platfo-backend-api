@@ -49,7 +49,7 @@ class ShopTelegramBotServices:
             .filter(self.model.support_bot_token == support_bot_token)
             .first()
         )
-        
+
     def get_by_telegram_bot_id(
         self,
         db: Session,

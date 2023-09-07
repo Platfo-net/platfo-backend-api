@@ -19,6 +19,11 @@ class ShopOrder(Base):
     status = Column(String(255), default=OrderStatus.UNPAID)
 
     order_number = Column(Integer, nullable=True, index=True)
+    lead_id = Column(
+        BigInteger,
+        ForeignKey('social_telegram_leads.id'),
+        nullable=True,
+    )
 
     shop_id = Column(
         BigInteger,
@@ -29,3 +34,4 @@ class ShopOrder(Base):
     shop = relationship('ShopShop', back_populates='orders')
 
     items = relationship("ShopOrderItem", back_populates="order")
+    lead = relationship("TelegramLead", back_populates="orders")

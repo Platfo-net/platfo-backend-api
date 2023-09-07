@@ -18,8 +18,7 @@ class TelegramBot(Base):
 
     username = Column(String(255), nullable=True)
     first_name = Column(String(255), nullable=True)
-    # TODO cast to bigint and indexing
-    bot_id = Column(String(64), nullable=True)
+    bot_id = Column(BigInteger, nullable=True, index=True)
 
     user = relationship('User', back_populates='telegram_bots')
 
