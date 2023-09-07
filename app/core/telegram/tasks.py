@@ -68,7 +68,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
         return
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot.id)
-    
+
     if not shop_telegram_bot:
         return
 

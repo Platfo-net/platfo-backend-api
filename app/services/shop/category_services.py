@@ -61,7 +61,12 @@ class CategoryServices:
         *,
         user_id: int
     ) -> List[models.shop.ShopCategory]:
-        return db.query(self.model).join(self.model.shop).filter(self.model.shop.user_id == user_id).all()
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.shop.user_id == user_id)
+            .all()
+        )
 
 
 category = CategoryServices(models.shop.ShopCategory)

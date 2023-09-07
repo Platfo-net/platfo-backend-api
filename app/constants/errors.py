@@ -328,13 +328,13 @@ class Error:
         "status_code": 404,
         "code": 169,
     }
-    
+
     SHOP_CATEGORY_NOT_FOUND_IN_THIS_SHOP = {
         "text": "Category not found in this shop",
         "status_code": 404,
         "code": 170,
     }
-    
+
     SHOP_CATEGORY_OR_SHOP_NOT_PROVIDED = {
         "text": "category and shop not provided. You should provide at least one of them.",
         "status_code": 400,
