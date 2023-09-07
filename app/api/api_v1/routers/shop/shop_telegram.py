@@ -140,6 +140,6 @@ def connect_shop_to_telegram_bot(
         raise_http_exception(Error.SHOP_SHOP_HAS_BEEN_ALREADY_CONNECTED_TO_TELEGRAM_BOT)
 
     shop = services.shop.shop_telegram_bot.connect_telegram_bot(
-        db, db_obj=shop_telegram_bot, telegram_bor_id=telegram_bot.id)
+        db, db_obj=shop_telegram_bot, telegram_bot_id=telegram_bot.id)
 
     return

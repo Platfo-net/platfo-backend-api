@@ -22,10 +22,10 @@ async def get_me(token):
     return {"first_name": user.first_name, "username": user.username, "bot_id": str(user.id)}
 
 
-async def set_webhook(token):
+async def set_webhook(token, bot_id):
     bot = telegram.Bot(token=token)
     res = await bot.set_webhook(
-        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/telegram/webhook"
+        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/bot/{bot_id}"
     )
     return res
 
@@ -48,13 +48,13 @@ def add_telegram_bot(
         bot_information = asyncio.run(get_me(obj_in.bot_token))
     except telegram.error.InvalidToken:
         raise_http_exception(Error.INVALID_TELEGRAM_BOT)
-
-    bot = services.telegram_bot.get_by_id(db, bot_id=bot_information["bot_id"])
+    bot_id = bot_information["bot_id"]
+    bot = services.telegram_bot.get_by_id(db, bot_id=bot_id)
     if bot:
         raise_http_exception(Error.TELEGRAM_BOT_EXIST_IN_SYSTEM)
 
     try:
-        res = asyncio.run(set_webhook(obj_in.bot_token))
+        res = asyncio.run(set_webhook(obj_in.bot_token, bot_id))
     except Exception:
         raise_http_exception(Error.TELEGRAM_SERVER_SET_WEBHOOK_ERROR)
 

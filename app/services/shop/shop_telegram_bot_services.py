@@ -49,6 +49,19 @@ class ShopTelegramBotServices:
             .filter(self.model.support_bot_token == support_bot_token)
             .first()
         )
+        
+    def get_by_telegram_bot_id(
+        self,
+        db: Session,
+        *,
+        telegram_bot_id: int
+    ) -> models.shop.ShopShopTelegramBot:
+        return (
+            db.query(self.model)
+            .join(self.model.telegram_bot)
+            .filter(self.model.telegram_bot_id == telegram_bot_id)
+            .first()
+        )
 
     def set_support_account_chat_id(
         self,
@@ -93,9 +106,9 @@ class ShopTelegramBotServices:
         db: Session,
         *,
         db_obj: models.shop.ShopShopTelegramBot,
-        telegram_bor_id: int,
+        telegram_bot_id: int,
     ) -> models.shop.ShopShopTelegramBot:
-        db_obj.shop_id = telegram_bor_id
+        db_obj.telegram_bot_id = telegram_bot_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

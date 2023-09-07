@@ -9,7 +9,7 @@ from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
 from app.core.instagram import tasks
-from app.core.telegram.tasks import telegram_support_bot_task
+from app.core.telegram.tasks import telegram_bot_webhook_handler, telegram_support_bot_task
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
@@ -36,9 +36,13 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
     return
 
 
-@router.post('/telegram/bot', status_code=status.HTTP_200_OK)
-async def telegram_webhook_listener(*, request: Request):
-    print(await request.json())
+@router.post('/telegram/bot/{bot_id}', status_code=status.HTTP_200_OK)
+async def telegram_webhook_listener(*, bot_id: int, request: Request):
+    try:
+        data = await request.json()
+        await telegram_bot_webhook_handler(data, bot_id)
+    except Exception as e:
+        print(e)
     return
 
 

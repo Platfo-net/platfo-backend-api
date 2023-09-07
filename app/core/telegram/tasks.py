@@ -1,3 +1,4 @@
+from telegram import Bot
 import asyncio
 import telegram
 from app import services
@@ -39,3 +40,32 @@ async def telegram_support_bot_handler(data):
         )
         services.shop.shop_telegram_bot.set_support_account_chat_id(
             db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
+
+
+async def telegram_bot_webhook_handler(data, bot_id):
+    db = SessionLocal()
+    telegram_bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
+    if not telegram_bot:
+        return
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
+        db, telegram_bot_id=telegram_bot.id)
+    if not shop_telegram_bot:
+        return
+    bot = Bot(token=telegram_bot.bot_token)
+    update = telegram.Update.de_json(data, bot)
+    await update.message.reply_text(text=f"Hi, you are using `{shop_telegram_bot.shop.title}` shop" , reply_markup = get_menu(shop_telegram_bot.shop.title))
+    db.close()
+
+
+def get_menu(shop_name):
+    keyboard = [
+        [
+            telegram.MenuButtonWebApp(
+                text="View Shop", web_app=telegram.WebAppInfo(f"https://api.platfo.net/sample-shop/{shop_name}"))
+        ],
+    ]
+
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    return reply_markup

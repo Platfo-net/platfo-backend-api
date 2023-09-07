@@ -36,3 +36,15 @@ if settings.ENVIRONMENT.lower() == "dev":
 @app.get('/health', tags=['health-check'])
 async def health():
     return {'message': 'ok!'}
+
+from fastapi.templating import Jinja2Templates
+
+
+@app.get("/sample-shop/{shop_name}")
+def get_html(* , shop_name:str , request: Request):
+    templates = Jinja2Templates(directory="/app/app/templates")
+    name = "Platfo bot"
+    
+    # name =  "Hello my dear Fatemeh \N{kissing face} , I jus want to say I love you so much ❤️ and I miss you a lot"
+    return  templates.TemplateResponse("shop.html" , {"request" : request , "name" : shop_name} )
+
