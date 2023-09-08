@@ -8,6 +8,7 @@ from app.constants.errors import Error
 from app.constants.order_status import OrderStatus
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
+from app.core.telegram import tasks as telegram_tasks
 
 router = APIRouter(prefix='/orders/telegram')
 
@@ -62,7 +63,8 @@ def create_telegram_shop_order(
 
     services.shop.order_item.create_bulk(db, objs_in=order_items, order_id=order.id)
 
-    # send order to user in bot
+    telegram_tasks.send_lead_order_to_bot_task.delay(
+        shop_telegram_bot.telegram_bot.id, lead.id, order.id)
 
     return schemas.shop.order.OrderCreateResponse(
         order_number=order.order_number

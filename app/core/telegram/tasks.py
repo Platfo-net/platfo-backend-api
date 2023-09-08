@@ -37,7 +37,7 @@ def telegram_webhook_task(data: dict, bot_id: int):
 def send_lead_order_to_bot_task(telegram_bot_id: int, lead_id: int, order_id: int):
     db = SessionLocal()
     try:
-        asyncio.run(send_lead_order_to_bot_handler(db, telegram_bot_id , lead_id, order_id))
+        asyncio.run(send_lead_order_to_bot_handler(db, telegram_bot_id, lead_id, order_id))
     except Exception as e:
         print(e)
 
@@ -105,12 +105,25 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
     )
 
 
-async def send_lead_order_to_bot_handler(db: Session , telegram_bot_id: int, lead_id: int, order_id: int):
-    telegram_bot = services.telegram_bot.get(db , id = telegram_bot_id)
-    # if not telegram_bot:
-        # return
-    lead = services.social.telegram_lead.get()
+async def send_lead_order_to_bot_handler(
+        db: Session, telegram_bot_id: int, lead_id: int, order_id: int):
+    telegram_bot = services.telegram_bot.get(db, id=telegram_bot_id)
+    if not telegram_bot:
+        return
+    lead = services.social.telegram_lead.get(db, id=lead_id)
+    if not lead:
+        return
+    order = services.shop.order.get(db, id=order_id)
+    if not order:
+        return
+    m = order.order_number
+    for item in order.items:
+        m += f" {item.product.title}"
+
     bot = Bot(token=telegram_bot.bot_token)
+    bot.send_message(chat_id=lead.chat_id, text=m)
+    return
+
 
 def get_shop_menu(bot_id: UUID4, lead_id: UUID4):
     keyboard = [

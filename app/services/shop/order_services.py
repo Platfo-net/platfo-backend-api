@@ -44,5 +44,14 @@ class OrderServices:
             return 10000000
         return last_order.order_number
 
+    def get(self, db: Session, *, id: int) -> models.shop.ShopOrder:
+        return (
+            db.query(self.model)
+            .join(self.model.items)
+            .join(self.model.items.product)
+            .filter(self.model.id == id)
+            .first()
+        )
+
 
 order = OrderServices(models.shop.ShopOrder)

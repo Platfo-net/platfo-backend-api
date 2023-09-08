@@ -30,6 +30,14 @@ class TelegramLeadServices:
             .first()
         )
 
+    def get(self, db: Session, *, id: int) -> models.social.TelegramLead:
+        return (
+            db.query(self.model)
+            .join(self.model.telegram_bot)
+            .filter(self.model.id == id)
+            .first()
+        )
+
     def get_by_chat_id(self, db: Session, *, chat_id: int) -> models.social.TelegramLead:
         return (
             db.query(self.model)
