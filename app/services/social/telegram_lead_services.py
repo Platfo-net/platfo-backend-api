@@ -13,6 +13,9 @@ class TelegramLeadServices:
         db_obj = self.model(
             chat_id=obj_in.chat_id,
             telegram_bot_id=obj_in.telegram_bot_id,
+            first_name=obj_in.first_name,
+            last_name=obj_in.last_name,
+            username=obj_in.username,
         )
         db.add(db_obj)
         db.commit()

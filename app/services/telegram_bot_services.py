@@ -38,5 +38,13 @@ class TelegramBotServices:
         db.refresh(db_obj)
         return db_obj
 
+    def get(
+            self,
+            db: Session,
+            *,
+            id: int
+    ) -> models.TelegramBot:
+        return db.query(self.model).filter(self.model.id == id).first()
+
 
 telegram_bot = TelegramBotServices(models.TelegramBot)

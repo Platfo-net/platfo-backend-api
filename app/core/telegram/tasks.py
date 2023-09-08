@@ -33,6 +33,17 @@ def telegram_webhook_task(data: dict, bot_id: int):
     db.close()
 
 
+@celery.task
+def send_lead_order_to_bot_task(telegram_bot_id: int, lead_id: int, order_id: int):
+    db = SessionLocal()
+    try:
+        asyncio.run(send_lead_order_to_bot_handler(db, telegram_bot_id , lead_id, order_id))
+    except Exception as e:
+        print(e)
+
+    db.close()
+
+
 async def telegram_support_bot_handler(db: Session, data: dict):
     bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
     update: telegram.Update = telegram.Update.de_json(data, bot=bot)
@@ -68,7 +79,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
         return
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot.id)
-    
+
     if not shop_telegram_bot:
         return
 
@@ -93,6 +104,13 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
         reply_markup=get_shop_menu(telegram_bot.uuid, shop_telegram_bot.shop.uuid)
     )
 
+
+async def send_lead_order_to_bot_handler(db: Session , telegram_bot_id: int, lead_id: int, order_id: int):
+    telegram_bot = services.telegram_bot.get(db , id = telegram_bot_id)
+    # if not telegram_bot:
+        # return
+    lead = services.social.telegram_lead.get()
+    bot = Bot(token=telegram_bot.bot_token)
 
 def get_shop_menu(bot_id: UUID4, lead_id: UUID4):
     keyboard = [

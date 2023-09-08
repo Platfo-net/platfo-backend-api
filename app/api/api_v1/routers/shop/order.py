@@ -12,7 +12,7 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix='/orders/telegram')
 
 
-@router.get("/{shop_id}/{lead_id}", response_class=schemas.shop.OrderCreateResponse)
+@router.post("/{shop_id}/{lead_id}", response_model=schemas.shop.OrderCreateResponse)
 def create_telegram_shop_order(
     *,
     db: Session = Depends(deps.get_db),
@@ -23,6 +23,7 @@ def create_telegram_shop_order(
         deps.get_current_active_user,
         scopes=[
             Role.SHOP['name'],
+            Role.ADMIN['name'],
         ],
     ),
 ):
@@ -35,7 +36,7 @@ def create_telegram_shop_order(
     if not lead:
         raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND)
 
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=shop.uuid)
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=shop.id)
     if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
         raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND_ACCESS_DENIED)
 
