@@ -48,7 +48,6 @@ class OrderServices:
         return (
             db.query(self.model)
             .join(self.model.items)
-            .join(self.model.items.product)
             .filter(self.model.id == id)
             .first()
         )

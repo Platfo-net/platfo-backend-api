@@ -116,12 +116,13 @@ async def send_lead_order_to_bot_handler(
     order = services.shop.order.get(db, id=order_id)
     if not order:
         return
-    m = order.order_number
+    m = f"No: {order.order_number}\nItems:"
+    
     for item in order.items:
-        m += f" {item.product.title}"
+        m += f"\n {item.product.title}"
 
     bot = Bot(token=telegram_bot.bot_token)
-    bot.send_message(chat_id=lead.chat_id, text=m)
+    await bot.send_message(chat_id=lead.chat_id, text=m)
     return
 
 
