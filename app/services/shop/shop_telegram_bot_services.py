@@ -114,5 +114,18 @@ class ShopTelegramBotServices:
         db.refresh(db_obj)
         return db_obj
 
+    def get_by_chat_id(
+        self,
+        db: Session,
+        *,
+        chat_id: int,
+    ) -> models.shop.ShopShopTelegramBot:
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.support_account_chat_id == chat_id)
+            .first()
+        )
+
 
 shop_telegram_bot = ShopTelegramBotServices(models.shop.ShopShopTelegramBot)

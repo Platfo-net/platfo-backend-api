@@ -1,5 +1,6 @@
 class OrderStatus:
     UNPAID = "UNPAID"
+    PAYMENT_CHECK = "PAYMENT_CHECK"
     PAID = "PAID"
     PREPARATION = "PREPARATION"
     SENT = "SENT"

@@ -69,3 +69,23 @@ async def upload_shop_product_image(
     )
 
     return storage.get_file(uploaded_file_name, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+
+
+@router.post('/upload/shop/order/payment-receipt', response_model=schemas.Image)
+async def upload_payment_receipt_image(
+    file: UploadFile = File(...),
+    _: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN['name'],
+            Role.USER['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+    filename = f'{uuid.uuid4()}-{file.filename}'
+    uploaded_file_name = storage.add_file_to_s3(
+        filename, file.file.fileno(), settings.PAYMENT_RECEIPT_IMAGE
+    )
+
+    return storage.get_file(uploaded_file_name, settings.PAYMENT_RECEIPT_IMAGE)

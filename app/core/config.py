@@ -74,10 +74,11 @@ class Settings(BaseSettings):
     S3_PORT: str = None
     S3_HOST: str = None
 
-    S3_CHATFLOW_MEDIA_BUCKET: str = None
-    S3_CAMPAIGN_BUCKET: str = None
-    S3_USER_PROFILE_BUCKET: str = None
-    S3_SHOP_PRODUCT_IMAGE_BUCKET: str = None
+    S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow_media_bucket"
+    S3_CAMPAIGN_BUCKET: str = "notifier_campaign_bucket"
+    S3_USER_PROFILE_BUCKET: str = 'user_profile_bucket'
+    S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop_product_image_bucket'
+    PAYMENT_RECEIPT_IMAGE: str = 'payment_receipt_image_bucket'
 
     CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: int = 150
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15

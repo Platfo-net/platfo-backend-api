@@ -1,7 +1,10 @@
+from typing import List
+from pydantic import UUID4
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from app.constants.order_status import OrderStatus
 
 
 class OrderServices:
@@ -51,6 +54,37 @@ class OrderServices:
             .filter(self.model.id == id)
             .first()
         )
+
+    def get_by_uuid(self, db: Session, *, uuid: UUID4) -> models.shop.ShopOrder:
+        return (
+            db.query(self.model)
+            .join(self.model.items)
+            .filter(self.model.uuid == uuid)
+            .first()
+        )
+
+    def pay_order(
+        self, db: Session, *,
+        order: models.shop.ShopOrder,
+        payment_info: schemas.shop.OrderAddPaymentInfo
+    ):
+        order.status = OrderStatus.PAYMENT_CHECK
+        order.payment_card_last_four_number = payment_info.payment_reference_number
+        order.payment_card_last_four_number = payment_info.payment_card_last_four_number
+        order.payment_card_last_four_number = payment_info.payment_datetime
+        order.payment_card_last_four_number = payment_info.payment_receipt_image
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+        return order
+    
+    def get_shop_orders(
+        self, db: Session, *,shop_id : int , status : List[str] 
+    ):
+        query = db.query(self.model).filter(self.model.shop_id == shop_id)
+        if status:
+            query = query.filter(self.model.status.in_(status))
+        return query.all()
 
 
 order = OrderServices(models.shop.ShopOrder)

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -66,6 +66,64 @@ def create_telegram_shop_order(
     telegram_tasks.send_lead_order_to_bot_task.delay(
         shop_telegram_bot.telegram_bot.id, lead.id, order.id)
 
+    telegram_tasks.send_lead_order_to_shop_support_task.delay(
+        shop_telegram_bot.telegram_bot.id, lead.id, order.id)
+
     return schemas.shop.order.OrderCreateResponse(
         order_number=order.order_number
+    )
+
+
+@router.post("/{order_id}/pay", status_code=status.HTTP_202_ACCEPTED)
+def pay_order(
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.shop.OrderAddPaymentInfo,
+    order_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.SHOP['name'],
+            Role.ADMIN['name'],
+        ],
+    ),
+):
+
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
+
+    services.shop.order.pay_order(db, order=order, payment_info=obj_in)
+
+    return
+
+
+@router.get("/{order_id}", status_code=schemas.shop.OrderSummary)
+def get_order(
+    *,
+    db: Session = Depends(deps.get_db),
+    order_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.SHOP['name'],
+            Role.ADMIN['name'],
+        ],
+    ),
+):
+
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
+
+    sum = 0
+    for item in order.items:
+        sum += item.product.price * item.count
+
+    return schemas.shop.OrderSummary(
+        first_name=order.first_name,
+        last_name=order.last_name,
+        phone_number=order.phone_number,
+        order_number=order.order_number,
+        total_amount=sum
     )

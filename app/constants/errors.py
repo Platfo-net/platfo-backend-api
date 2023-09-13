@@ -341,6 +341,12 @@ class Error:
         "code": 171,
     }
 
+    SHOP_ORDER_NOT_FOUND = {
+        "text": "Order not found.",
+        "status_code": 404,
+        "code": 172,
+    }
+
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {
         "text": "Lead not found",

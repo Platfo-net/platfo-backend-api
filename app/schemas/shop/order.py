@@ -1,5 +1,6 @@
 
 
+from datetime import datetime
 from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
@@ -29,3 +30,18 @@ class OrderCreateResponse(BaseModel):
 class OrderItemCreate(BaseModel):
     product_id: int
     count: int
+
+
+class OrderAddPaymentInfo(BaseModel):
+    payment_reference_number: Optional[str] = None
+    payment_card_last_four_number: Optional[str] = None
+    payment_datetime: Optional[datetime] = None
+    payment_receipt_image: Optional[str] = None
+
+
+class OrderSummary(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    order_number: str
+    total_amount: float
