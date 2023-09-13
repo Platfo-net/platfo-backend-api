@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import models, schemas, services
+from app.constants.order_status import OrderStatus
 from app.core.celery import celery
 from app.core.config import settings
 from app.db.session import SessionLocal
@@ -70,12 +71,15 @@ async def telegram_support_bot_handler(db: Session, data: dict):
         callback = data.get("callback_query").get("data")
         command, order_id = callback.split("-")
         if command == "ACCEPT_ORDER":
-            order = services.shop.order.get(db , id = order_id)
+            order = services.shop.order.get_by_uuid(db, id=order_id)
             if not order:
-                return    
-            
-            services.shop.order.change_status(db , order_id = order.id , status=  OrderStatus)
-            await update.message.reply_text(f"order {order_id}")
+                return
+
+            order = services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
+            await update.message.reply_text(
+                f"order {order.order_number} accepted",
+                reply_to_message_id=update.message.message_id
+                )
 
     else:
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
@@ -242,7 +246,7 @@ def get_order_message(order: models.shop.ShopOrder):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
-                "Accept order", callback_data=f"ACCEPT_ORDER-{order.id}")
+                "Accept order", callback_data=f"ACCEPT_ORDER-{order.uuid}")
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)

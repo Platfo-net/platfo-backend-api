@@ -87,5 +87,14 @@ class OrderServices:
             query = query.filter(self.model.status.in_(status))
         return query.all()
 
+    def change_status(
+        self, db: Session, *, order: models.shop.ShopOrder, status: str
+    ):
+        order.status = status
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+        return order
+
 
 order = OrderServices(models.shop.ShopOrder)
