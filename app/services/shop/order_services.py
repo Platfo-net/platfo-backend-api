@@ -80,7 +80,7 @@ class OrderServices:
         return order
 
     def get_shop_orders(
-        self, db: Session, *, shop_id: int, status: List[str]
+        self, db: Session, *, shop_id: int, status: List[str] = []
     ):
         query = db.query(self.model).filter(self.model.shop_id == shop_id)
         if status:

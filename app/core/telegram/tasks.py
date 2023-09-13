@@ -16,8 +16,8 @@ def telegram_support_bot_task(data):
     db = SessionLocal()
     try:
         asyncio.run(telegram_support_bot_handler(db, data))
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
 
     db.close()
 
@@ -70,10 +70,14 @@ async def telegram_support_bot_handler(db: Session, data: dict):
         callback = data.get("callback_query").get("data")
         command, order_id = callback.split("-")
         if command == "ACCEPT_ORDER":
-            update.message.reply_text(f"order {order_id}")
+            order = services.shop.order.get(db , id = order_id)
+            if not order:
+                return    
+            
+            services.shop.order.change_status(db , order_id = order.id , status=  OrderStatus)
+            await update.message.reply_text(f"order {order_id}")
 
     else:
-
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
         if update.message.text == "/start":
             await update.message.reply_text("Enter your code")
@@ -82,13 +86,19 @@ async def telegram_support_bot_handler(db: Session, data: dict):
             # TODO witch orders ??
             chat_id = update.message.chat_id
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(db, chat_id=chat_id)
+
             if not shop_telegram_bot:
                 await update.message.reply_text(
                     "Your account doesn't have any shop or not registered as support account"
                 )
                 return
 
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id) # noqa
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id)  # noqa
+            text, reply_markup = get_order_message(orders[0])
+            await update.message.reply_text(
+                text, reply_markup=reply_markup
+            )
+            return
             # TODO send orders
 
         else:
@@ -231,9 +241,10 @@ def get_order_message(order: models.shop.ShopOrder):
 
     keyboard = [
         [
-            telegram.KeyboardButton(
-                "Accept order", callback_data=f"ACCEPT_ORDER-{order.order_number}")
+            telegram.InlineKeyboardButton(
+                "Accept order", callback_data=f"ACCEPT_ORDER-{order.id}")
         ]
     ]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
-    return text, keyboard
+    return text, reply_markup
