@@ -115,9 +115,9 @@ async def telegram_support_bot_handler(db: Session, data: dict):
             for order in orders:
                 text = get_accepted_order_message(order)
 
-            await update.message.reply_text(
-                text
-            )
+                await update.message.reply_text(
+                    text
+                )
             return
             # TODO send orders
 
