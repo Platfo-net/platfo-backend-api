@@ -83,10 +83,12 @@ async def telegram_support_bot_handler(db: Session, data: dict):
             chat_id = update.message.chat_id
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(db, chat_id=chat_id)
             if not shop_telegram_bot:
-                await update.message.reply_text("Your account doesn't have any shop or not registered as support account")
+                await update.message.reply_text(
+                    "Your account doesn't have any shop or not registered as support account"
+                )
                 return
 
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id)
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id) # noqa
             # TODO send orders
 
         else:

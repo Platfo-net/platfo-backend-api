@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.routers.shop import category, product, shop, shop_telegram, order
+from app.api.api_v1.routers.shop import (category, order, product, shop,
+                                         shop_telegram)
 
 router = APIRouter(prefix='/shop', tags=['Shop'])
 

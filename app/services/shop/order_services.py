@@ -1,4 +1,5 @@
 from typing import List
+
 from pydantic import UUID4
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
@@ -77,9 +78,9 @@ class OrderServices:
         db.commit()
         db.refresh(order)
         return order
-    
+
     def get_shop_orders(
-        self, db: Session, *,shop_id : int , status : List[str] 
+        self, db: Session, *, shop_id: int, status: List[str]
     ):
         query = db.query(self.model).filter(self.model.shop_id == shop_id)
         if status:
