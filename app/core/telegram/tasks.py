@@ -91,7 +91,7 @@ async def telegram_support_bot_handler(db: Session, data: dict):
                 return
 
             orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAID])  # noqa
-            
+
             for order in orders:
                 text, reply_markup = get_paid_order_message(order)
                 await update.message.reply_text(
@@ -110,7 +110,7 @@ async def telegram_support_bot_handler(db: Session, data: dict):
                 )
                 return
 
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id , status= [OrderStatus.ACCEPTED])  # noqa
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.ACCEPTED])  # noqa
 
             for order in orders:
                 text = get_accepted_order_message(order)
