@@ -69,27 +69,20 @@ async def telegram_support_bot_handler(db: Session, data: dict):
             {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
         callback = data.get("callback_query").get("data")
-        command, order_id = callback.split("-")
-        if command == "ACCEPT_ORDER":
-            order = services.shop.order.get_by_uuid(db, id=order_id)
-            if not order:
-                return
 
-            order = services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
-            await update.message.reply_text(
-                f"order {order.order_number} accepted",
-                reply_to_message_id=update.message.message_id
-                )
+        command, order_id = callback.split(":")
+        if command == "ACCEPT_ORDER":
+            await accept_order_handler(db, update, order_id)
 
     else:
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
         if update.message.text == "/start":
             await update.message.reply_text("Enter your code")
 
-        elif update.message.text == "/orders":
-            # TODO witch orders ??
+        elif update.message.text == "/paid_orders":
             chat_id = update.message.chat_id
-            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(db, chat_id=chat_id)
+            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+                db, chat_id=chat_id)
 
             if not shop_telegram_bot:
                 await update.message.reply_text(
@@ -97,10 +90,33 @@ async def telegram_support_bot_handler(db: Session, data: dict):
                 )
                 return
 
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id)  # noqa
-            text, reply_markup = get_order_message(orders[0])
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAID])  # noqa
+            
+            for order in orders:
+                text, reply_markup = get_paid_order_message(order)
+                await update.message.reply_text(
+                    text, reply_markup=reply_markup
+                )
+            return
+        elif update.message.text == "/accepted_orders":
+            # TODO witch orders ??
+            chat_id = update.message.chat_id
+            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+                db, chat_id=chat_id)
+
+            if not shop_telegram_bot:
+                await update.message.reply_text(
+                    "Your account doesn't have any shop or not registered as support account"
+                )
+                return
+
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id , status= [OrderStatus.ACCEPTED])  # noqa
+
+            for order in orders:
+                text = get_accepted_order_message(order)
+
             await update.message.reply_text(
-                text, reply_markup=reply_markup
+                text
             )
             return
             # TODO send orders
@@ -127,6 +143,21 @@ async def telegram_support_bot_handler(db: Session, data: dict):
             )
             services.shop.shop_telegram_bot.set_support_account_chat_id(
                 db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
+
+
+async def accept_order_handler(db: Session, update: telegram.Update, order_id):
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        return
+
+    order = services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
+    services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
+    await update.message.reply_text(
+        f"order {order.order_number} accepted",
+        reply_to_message_id=update.message.message_id
+    )
+    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
+    await update.message.edit_text(text=get_accepted_order_message(order))
 
 
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
@@ -234,21 +265,35 @@ def get_shop_menu(bot_id: UUID4, lead_id: UUID4):
     return reply_markup
 
 
-def get_order_message(order: models.shop.ShopOrder):
+def get_paid_order_message(order: models.shop.ShopOrder):
     text = f"Order No: {order.order_number} \n"
     total_price = 0
     for item in order.items:
         text += f"{item.product.title} : {item.count}\n"
         total_price += item.product.price * item.count
 
-    text += f"Total: {total_price}"
+    text += f"Total: {total_price}\n\n"
+    text += f"Status: {order.status}"
 
     keyboard = [
         [
             telegram.InlineKeyboardButton(
-                "Accept order", callback_data=f"ACCEPT_ORDER-{order.uuid}")
+                "Accept order", callback_data=f"ACCEPT_ORDER:{order.uuid}")
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
     return text, reply_markup
+
+
+def get_accepted_order_message(order: models.shop.ShopOrder):
+    text = f"Order No: {order.order_number} \n"
+    total_price = 0
+    for item in order.items:
+        text += f"{item.product.title} : {item.count}\n"
+        total_price += item.product.price * item.count
+
+    text += f"Total: {total_price}\n\n"
+    text += f"Status: {order.status}"
+
+    return text
