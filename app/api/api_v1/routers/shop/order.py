@@ -98,7 +98,7 @@ def pay_order(
     return
 
 
-@router.get("/{order_id}", status_code=schemas.shop.OrderSummary)
+@router.get("/{order_id}", response_model=schemas.shop.OrderSummary)
 def get_order(
     *,
     db: Session = Depends(deps.get_db),
