@@ -118,8 +118,6 @@ async def telegram_support_bot_handler(db: Session, data: dict):
                 await update.message.reply_text(
                     text
                 )
-            return
-            # TODO send orders
 
         else:
             code = update.message.text.lstrip().rstrip()

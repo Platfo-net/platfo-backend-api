@@ -55,6 +55,7 @@ def add_telegram_bot(
 
     try:
         res = asyncio.run(set_webhook(obj_in.bot_token, bot_id))
+
     except Exception:
         raise_http_exception(Error.TELEGRAM_SERVER_SET_WEBHOOK_ERROR)
 
