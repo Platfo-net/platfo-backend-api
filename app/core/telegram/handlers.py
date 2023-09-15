@@ -1,4 +1,3 @@
-import sys
 from jinja2 import FileSystemLoader, Environment
 import telegram
 from pydantic import UUID4
@@ -42,6 +41,7 @@ async def telegram_support_bot_handler(db: Session, data: dict):
 
             for order in orders:
                 text, reply_markup = get_paid_order_message(order)
+                print(text)
                 await update.message.reply_text(
                     text, reply_markup=reply_markup
                 )
@@ -92,9 +92,10 @@ async def telegram_support_bot_handler(db: Session, data: dict):
 
 
 def load_message(lang, template_name, **kwargs) -> str:
-    file_loader = FileSystemLoader(f'app/templates/telegram/{lang}/{template_name}.txt')
+    file_path = f'app/templates/telegram/{lang}'
+    file_loader = FileSystemLoader(file_path)
     env = Environment(loader=file_loader)
-    template = env.get_template(sys.argv[1])
+    template = env.get_template(f"{template_name}.txt")
     return template.render(**kwargs)
 
 
@@ -104,9 +105,8 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id):
         return
 
     order = services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
-    services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
 
-    message = load_message("fa", "accepted_orders.txt", order_number=order.order_number)
+    message = load_message("fa", "accept_order", order_number=order.order_number)
 
     await update.message.reply_text(
         message,
@@ -227,7 +227,7 @@ def get_paid_order_message(order: models.shop.ShopOrder):
         total_price += item.product.price * item.count
 
     text = load_message(
-        "fa", "accepted_orders",
+        "fa", "paid_order",
         amount=total_price,
         order=order
     )
@@ -243,13 +243,9 @@ def get_paid_order_message(order: models.shop.ShopOrder):
 
 
 def get_accepted_order_message(order: models.shop.ShopOrder):
-    text = f"Order No: {order.order_number} \n"
-    total_price = 0
+    amount = 0
     for item in order.items:
-        text += f"{item.product.title} : {item.count}\n"
-        total_price += item.product.price * item.count
-
-    text += f"Total: {total_price}\n\n"
-    text += f"Status: {order.status}"
+        amount += item.product.price * item.count
+    text = load_message("fa", "accepted_order", amount=amount, order=order)
 
     return text

@@ -10,6 +10,8 @@ async def send_message(message, chat_id):
 
 async def set_support_bot_webhook():
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
+    m = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/support-bot"
+    print(m)
     await bot.set_webhook(
         f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/support-bot"
     )

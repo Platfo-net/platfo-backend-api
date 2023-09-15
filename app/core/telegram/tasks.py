@@ -7,10 +7,7 @@ from app.core.telegram import handlers as telegram_handlers
 @celery.task
 def telegram_support_bot_task(data):
     db = SessionLocal()
-    try:
-        asyncio.run(telegram_handlers.telegram_support_bot_handler(db, data))
-    except Exception as e:
-        print(e)
+    asyncio.run(telegram_handlers.telegram_support_bot_handler(db, data))
 
     db.close()
 
