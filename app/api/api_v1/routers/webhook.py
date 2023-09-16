@@ -1,16 +1,13 @@
-import telegram
 from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
                      status)
-from sqlalchemy.orm import Session
 
-from app import models, services
+from app import models
 from app.api import deps
 from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
 from app.core.instagram import tasks
 from app.core.telegram import tasks as telegram_tasks
-from app.db.session import SessionLocal
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
@@ -67,5 +64,5 @@ async def telegram_set_webhook(
 @router.post('/telegram/support-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_support_listener(request: Request):
     data = await request.json()
-    telegram_tasks.telegram_support_bot_task.delay(data)
+    telegram_tasks.telegram_support_bot_task.delay(data, "fa")
     return

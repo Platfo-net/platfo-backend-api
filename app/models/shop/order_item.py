@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, Integer
+from sqlalchemy import BigInteger, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -20,6 +20,8 @@ class ShopOrderItem(Base):
     )
 
     count = Column(Integer, default=1)
+    price = Column(Float(), nullable=True)
+    currency = Column(String(32), nullable=True)
 
     order = relationship('ShopOrder', back_populates='items')
     product = relationship('ShopProduct', back_populates='order_items')

@@ -1,15 +1,19 @@
-from jinja2 import FileSystemLoader, Environment
 import telegram
+from jinja2 import Environment, FileSystemLoader
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import models, schemas, services
 from app.constants.order_status import OrderStatus
+from app.constants.telegram_callback_command import TelegramCallbackCommand
+from app.constants.telegram_support_bot_commands import \
+    TelegramSupportBotCommand
 from app.core.config import settings
+from app.core.telegram.messages import SupportBotMessage
 
 
-async def telegram_support_bot_handler(db: Session, data: dict):
+async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
     bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
     if data.get("callback_query"):
         update = telegram.Update.de_json(
@@ -17,43 +21,45 @@ async def telegram_support_bot_handler(db: Session, data: dict):
         )
         callback = data.get("callback_query").get("data")
 
-        command, order_id = callback.split(":")
-        if command == "ACCEPT_ORDER":
-            await accept_order_handler(db, update, order_id)
+        command, arg = callback.split(":")
+        if command == TelegramCallbackCommand.ACCEPT_ORDER["command"]:
+            await accept_order_handler(db, update, arg, lang)
+
+        if command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT["command"]:
+            await verify_support_account(db, update, arg, lang)
 
     else:
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
-        if update.message.text == "/start":
-            await update.message.reply_text("Enter your code")
+        if update.message.text == TelegramSupportBotCommand.START["command"]:
+            await update.message.reply_text(SupportBotMessage.ENTER_CODE[lang])
 
-        elif update.message.text == "/paid_orders":
+        elif update.message.text == TelegramSupportBotCommand.PAID_ORDERS["command"]:
             chat_id = update.message.chat_id
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=chat_id)
 
             if not shop_telegram_bot:
                 await update.message.reply_text(
-                    "Your account doesn't have any shop or not registered as support account"
+                    SupportBotMessage.ACCOUNT_NOT_REGISTER[lang]
                 )
                 return
 
             orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAID])  # noqa
 
             for order in orders:
-                text, reply_markup = get_paid_order_message(order)
+                text, reply_markup = get_paid_order_message(order, lang)
                 await update.message.reply_text(
                     text, reply_markup=reply_markup
                 )
             return
-        elif update.message.text == "/accepted_orders":
-            # TODO witch orders ??
+        elif update.message.text == TelegramSupportBotCommand.ACCEPTED_ORDERS["command"]:
             chat_id = update.message.chat_id
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=chat_id)
 
             if not shop_telegram_bot:
                 await update.message.reply_text(
-                    "Your account doesn't have any shop or not registered as support account"
+                    SupportBotMessage.ACCOUNT_NOT_REGISTER[lang]
                 )
                 return
 
@@ -65,29 +71,50 @@ async def telegram_support_bot_handler(db: Session, data: dict):
                 await update.message.reply_text(
                     text
                 )
+        elif update.message.text == TelegramSupportBotCommand.UNPAID_ORDERS["command"]:
+            chat_id = update.message.chat_id
+            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+                db, chat_id=chat_id)
+
+            if not shop_telegram_bot:
+                await update.message.reply_text(
+                    SupportBotMessage.ACCOUNT_NOT_REGISTER[lang]
+                )
+                return
+
+            orders = services.shop.order.get_shop_orders(
+                db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.UNPAID])  # noqa
+
+            for order in orders:
+                text = get_unpaid_order_message(order, lang)
+
+                await update.message.reply_text(
+                    text
+                )
 
         else:
             code = update.message.text.lstrip().rstrip()
             if len(code) != 8:
-                await update.message.reply_text("Wrong code.")
+                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
                 db, support_token=code)
             if not shop_telegram_bot:
-                await update.message.reply_text("Wrong code.")
+                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
             if shop_telegram_bot.is_support_verified:
                 await update.message.reply_text(
-                    f"Your shop '{shop_telegram_bot.shop.title}' is"
-                    " already connected to an account.")
+                    SupportBotMessage.SHOP_ALREADY_CONNECTED[lang].format(
+                        title=shop_telegram_bot.shop.title)
+                )
                 return
-
+            text, reply_markup = verify_shop_support_account_message(shop_telegram_bot, lang)
             await update.message.reply_text(
-                f"You are trying to connect your account to {shop_telegram_bot.shop.title} shop,\n"
-                f"Enter this code in app: {shop_telegram_bot.support_bot_token}"
+                text, reply_markup=reply_markup
             )
             services.shop.shop_telegram_bot.set_support_account_chat_id(
                 db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
+            return
 
 
 def load_message(lang, template_name, **kwargs) -> str:
@@ -98,21 +125,46 @@ def load_message(lang, template_name, **kwargs) -> str:
     return template.render(**kwargs)
 
 
-async def accept_order_handler(db: Session, update: telegram.Update, order_id):
+async def verify_support_account(db: Session, update: telegram.Update,
+                                 shop_telegram_bot_uuid: UUID4, lang: str):
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_uuid(
+        db, uuid=shop_telegram_bot_uuid)
+    if not shop_telegram_bot_uuid:
+        await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang])
+
+    services.shop.shop_telegram_bot.verify_support_account(db, db_obj=shop_telegram_bot)
+
+
+async def verify_shop_support_account_message(shop_telegram_bot: models.shop.ShopShopTelegramBot,
+                                              lang: str):
+    text = SupportBotMessage.ACCEPT_SHOP[lang].format(title=shop_telegram_bot.shop.title)
+    keyboard = [
+        [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT["title"],
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT['command']}:{shop_telegram_bot.uuid}")  # noqa
+        ]
+    ]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    return text, reply_markup
+
+
+async def accept_order_handler(db: Session, update: telegram.Update, order_id, lang):
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
     if not order:
         return
 
     order = services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
 
-    message = load_message("fa", "accept_order", order_number=order.order_number)
+    message = load_message(lang, "accept_order", order_number=order.order_number)
 
     await update.message.reply_text(
         message,
         reply_to_message_id=update.message.message_id
     )
     await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
-    await update.message.edit_text(text=get_accepted_order_message(order))
+    await update.message.edit_text(text=get_accepted_order_message(order, lang))
 
 
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
@@ -148,7 +200,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
 
 
 async def send_lead_order_to_bot_handler(
-        db: Session, telegram_bot_id: int, lead_id: int, order_id: int):
+        db: Session, telegram_bot_id: int, lead_id: int, order_id: int, lang):
+
     telegram_bot = services.telegram_bot.get(db, id=telegram_bot_id)
     if not telegram_bot:
         return
@@ -165,18 +218,19 @@ async def send_lead_order_to_bot_handler(
     if lead.telegram_bot_id != telegram_bot.id:
         return
 
-    m = f"No: {order.order_number}\nItems:"
-
+    amount = 0
     for item in order.items:
-        m += f"\n {item.product.title}"
+        amount += item.count * item.price
+
+    text = load_message(lang, "new_order", amount=amount, order=order)
 
     bot = Bot(token=telegram_bot.bot_token)
-    await bot.send_message(chat_id=lead.chat_id, text=m)
+    await bot.send_message(chat_id=lead.chat_id, text=text)
     return
 
 
 async def send_lead_order_to_shop_support_handler(
-        db: Session, telegram_bot_id: int, lead_id: int, order_id: int):
+        db: Session, telegram_bot_id: int, lead_id: int, order_id: int, lang):
 
     lead = services.social.telegram_lead.get(db, id=lead_id)
     if not lead:
@@ -195,13 +249,13 @@ async def send_lead_order_to_shop_support_handler(
 
     if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
         return
-
-    m = f"No: {order.order_number}\nItems:"
-
+    amount = 0
     for item in order.items:
-        m += f"\n {item.product.title}"
+        amount += item.count * item.price
+
+    text = load_message(lang, "new_order", amount=amount, order=order)
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
-    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=m)
+    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
     return
 
 
@@ -220,20 +274,21 @@ def get_shop_menu(bot_id: UUID4, lead_id: UUID4):
     return reply_markup
 
 
-def get_paid_order_message(order: models.shop.ShopOrder):
+def get_paid_order_message(order: models.shop.ShopOrder, lang):
     total_price = 0
     for item in order.items:
-        total_price += item.product.price * item.count
+        total_price += item.price * item.count
 
     text = load_message(
-        "fa", "paid_order",
+        lang, "paid_order",
         amount=total_price,
         order=order
     )
     keyboard = [
         [
             telegram.InlineKeyboardButton(
-                "Accept order", callback_data=f"ACCEPT_ORDER:{order.uuid}")
+                TelegramCallbackCommand.ACCEPT_ORDER["title"],
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}")
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -241,10 +296,19 @@ def get_paid_order_message(order: models.shop.ShopOrder):
     return text, reply_markup
 
 
-def get_accepted_order_message(order: models.shop.ShopOrder):
+def get_accepted_order_message(order: models.shop.ShopOrder, lang):
     amount = 0
     for item in order.items:
-        amount += item.product.price * item.count
-    text = load_message("fa", "accepted_order", amount=amount, order=order)
+        amount += item.price * item.count
+    text = load_message(lang, "accepted_order", amount=amount, order=order)
+
+    return text
+
+
+def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
+    amount = 0
+    for item in order.items:
+        amount += item.price * item.count
+    text = load_message(lang, "unpaid_order", amount=amount, order=order)
 
     return text

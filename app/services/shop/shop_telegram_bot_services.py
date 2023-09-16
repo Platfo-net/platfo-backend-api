@@ -127,5 +127,18 @@ class ShopTelegramBotServices:
             .first()
         )
 
+    def get_by_uuid(
+        self,
+        db: Session,
+        *,
+        uuid: UUID4,
+    ) -> models.shop.ShopShopTelegramBot:
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.uuid == uuid)
+            .first()
+        )
+
 
 shop_telegram_bot = ShopTelegramBotServices(models.shop.ShopShopTelegramBot)

@@ -49,6 +49,8 @@ def create_telegram_shop_order(
         order_items.append(schemas.shop.OrderItemCreate(
             product_id=product.id,
             count=item.count,
+            price=product.price,
+            currency=product.currency,
         ))
     last_order_number = services.shop.order.get_last_order_number(db, shop_id=shop.id)
 
@@ -64,10 +66,10 @@ def create_telegram_shop_order(
     services.shop.order_item.create_bulk(db, objs_in=order_items, order_id=order.id)
 
     telegram_tasks.send_lead_order_to_bot_task.delay(
-        shop_telegram_bot.telegram_bot.id, lead.id, order.id)
+        shop_telegram_bot.telegram_bot.id, lead.id, order.id, "fa")
 
     telegram_tasks.send_lead_order_to_shop_support_task.delay(
-        shop_telegram_bot.telegram_bot.id, lead.id, order.id)
+        shop_telegram_bot.telegram_bot.id, lead.id, order.id, "fa")
 
     return schemas.shop.order.OrderCreateResponse(
         order_number=order.order_number

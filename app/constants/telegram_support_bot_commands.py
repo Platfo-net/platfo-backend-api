@@ -1,15 +1,23 @@
 class TelegramSupportBotCommand:
+    START = {
+        "command": "/start",
+        "description": "Start",
+    }
     PAID_ORDERS = {
-        "name": "paid_orders",
+        "command": "/paid_orders",
         "description": "Paid Orders",
     }
 
     UNPAID_ORDERS = {
-        "name": "unpaid_orders",
+        "command": "/unpaid_orders",
         "description": "Unpaid Orders",
     }
 
     ACCEPTED_ORDERS = {
-        "name": "accepted_orders",
+        "command": "/accepted_orders",
         "description": "Accepted Orders",
     }
+
+    commands = [
+        START, PAID_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS
+    ]

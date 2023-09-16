@@ -30,6 +30,8 @@ class OrderCreateResponse(BaseModel):
 class OrderItemCreate(BaseModel):
     product_id: int
     count: int
+    price: float
+    currency: str
 
 
 class OrderAddPaymentInfo(BaseModel):
