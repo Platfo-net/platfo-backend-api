@@ -58,7 +58,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAYMENT_CHECK])  # noqa
 
             for order in orders:
-                text, reply_markup = get_payment_check_order_message(order, lang)
+                text = get_payment_check_order_message(order, lang)
+                reply_markup = get_payment_check_order_reply_markup(order, lang)
                 await update.message.reply_text(
                     text, reply_markup=reply_markup
                 )
@@ -229,14 +230,16 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
 
     order = services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
 
-    message = load_message(lang, "accept_order", order_number=order.order_number)
+    message = SupportBotMessage.ACCEPT_ORDER[lang].format(order_number=order.order_number)
 
     await update.message.reply_text(
         message,
         reply_to_message_id=update.message.message_id
     )
-    await update.message.edit_reply_markup(get_accepted_order_reply_markup(order, lang))
-    await update.message.edit_text(text=get_accepted_order_message(order, lang))
+    await update.message.edit_text(
+        text=get_accepted_order_message(order, lang),
+        reply_markup=get_accepted_order_reply_markup(order, lang)
+    )
 
 
 async def decline_order_handler(db: Session, update: telegram.Update, order_id, lang):
@@ -269,8 +272,10 @@ async def decline_payment_order_handler(db: Session, update: telegram.Update, or
         reply_to_message_id=update.message.message_id
     )
 
-    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
-    await update.message.edit_text(text=get_unpaid_order_message(order, lang))
+    await update.message.edit_text(
+        text=get_unpaid_order_message(order, lang),
+        reply_markup=telegram.InlineKeyboardMarkup([])
+    )
 
 
 async def prepare_order_handler(db: Session, update: telegram.Update, order_id, lang):
@@ -285,8 +290,10 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
         message,
         reply_to_message_id=update.message.message_id
     )
-    await update.message.edit_reply_markup(get_prepare_order_reply_markup(order, lang))
-    await update.message.edit_text(text=get_prepare_order_message(order, lang))
+    await update.message.edit_text(
+        text=get_prepare_order_message(order, lang),
+        reply_markup=get_prepare_order_reply_markup(order, lang)
+    )
 
 
 async def send_order_handler(db: Session, update: telegram.Update, order_id, lang):
@@ -301,8 +308,10 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
         message,
         reply_to_message_id=update.message.message_id
     )
-    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
-    await update.message.edit_text(text=get_send_order_message(order, lang))
+    await update.message.edit_text(
+        text=get_send_order_message(order, lang),
+        reply_markup=telegram.InlineKeyboardMarkup([])
+    )
 
 
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
@@ -452,7 +461,7 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.PREPARE_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"),  # noqa
+                callback_data=f"{TelegramCallbackCommand.PREPARE_ORDER['command']}:{order.uuid}"),  # noqa
             ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
