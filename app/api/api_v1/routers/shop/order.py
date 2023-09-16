@@ -12,6 +12,7 @@ from app.core.telegram import tasks as telegram_tasks
 
 router = APIRouter(prefix='/orders/telegram')
 
+
 @router.post("/{order_id}/pay", status_code=status.HTTP_202_ACCEPTED)
 def pay_order(
     *,
@@ -116,7 +117,6 @@ def create_telegram_shop_order(
     return schemas.shop.order.OrderCreateResponse(
         order_number=order.order_number
     )
-
 
 
 @router.get("/{order_id}", response_model=schemas.shop.OrderSummary)

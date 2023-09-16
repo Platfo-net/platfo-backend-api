@@ -102,7 +102,7 @@ class OrderServices:
 
     def get_by_order_number_and_shop_id(
         self, db: Session, *, order_number: int, shop_id: int
-    )-> models.shop.ShopOrder:
+    ) -> models.shop.ShopOrder:
         return (
             db.query(self.model)
             .filter(self.model.order_number == order_number)

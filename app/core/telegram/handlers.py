@@ -170,7 +170,9 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         db, order_number=order_number, shop_id=shop_telegram_bot.shop_id)
 
     if not order:
-        await update.message.reply_text(SupportBotMessage.ORDER_NOT_FOUND["fa"].format(order_number=order_number))
+        await update.message.reply_text(
+            SupportBotMessage.ORDER_NOT_FOUND["fa"].format(order_number=order_number)
+        )
         return
 
     amount = 0
@@ -462,12 +464,13 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.PREPARE_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.PREPARE_ORDER['command']}:{order.uuid}"),  # noqa
-            ], [
+        ],
+        [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"),  # noqa
-            ],
-        ]
+        ],
+    ]
 
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     return reply_markup
@@ -507,12 +510,13 @@ def get_prepare_order_message(order: models.shop.ShopOrder, lang):
 
 def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
-            [
+        [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"),  # noqa
-            ],
-        ]
+                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"
+            ),  # noqa
+        ],
+    ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     return reply_markup
 
