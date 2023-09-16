@@ -25,5 +25,8 @@ class SupportBotMessage:
         "fa" : "فروشگاه {title} با موفقیت به اکانت شما متصل شد. \n \n قدرت گرفته از پلتفو "
     }
     PAY_ORDER_NOTIFICATION = {
-        "fa" : "سفارش قبت شده با شماره {order_number} پرداخت شد."
+        "fa" : "سفارش ثبت شده با شماره {order_number} پرداخت شد."
+    }
+    ORDER_NOT_FOUND = {
+        "fa" : "سفارش با شماره {order_number} یافت نشد."
     }

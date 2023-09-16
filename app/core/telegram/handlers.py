@@ -91,8 +91,11 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 await update.message.reply_text(
                     text
                 )
-
+        elif update.message.text.isnumeric():
+            order_number = int(update.message.text)
+            await send_order(db, update, order_number, lang)
         else:
+
             code = update.message.text.lstrip().rstrip()
             if len(code) != 8:
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
@@ -138,6 +141,40 @@ async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_i
 
     bot = Bot(settings.SUPPORT_BOT_TOKEN)
     await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=message)
+
+
+async def send_order(db: Session, update: telegram.Update, order_number: int, lang: str):
+    bot = Bot(settings.SUPPORT_BOT_TOKEN)
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+        db, chat_id=update.message.chat_id)
+
+    if not shop_telegram_bot:
+        return
+
+    order = services.shop.order.get_by_order_number_and_shop_id(
+        db, order_number=order_number, shop_id=shop_telegram_bot.shop_id)
+
+    if not order:
+        await bot.send_message(SupportBotMessage.ORDER_NOT_FOUND["fa"].format(order_number=order_number))
+        return
+
+    amount = 0
+    for item in order.items:
+        amount += item.price * item.count
+
+    text = load_message(lang, "order", amount=amount, order=order)
+    if order.status == OrderStatus.PAID:
+        keyboard = [
+        [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.ACCEPT_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}")  # noqa
+        ]
+    ]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text, reply_markup=reply_markup)
 
 
 async def verify_support_account(db: Session, update: telegram.Update,

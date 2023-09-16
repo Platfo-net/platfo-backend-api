@@ -100,5 +100,15 @@ class OrderServices:
         db.refresh(order)
         return order
 
+    def get_by_order_number_and_shop_id(
+        self, db: Session, *, order_number: int, shop_id: int
+    )-> models.shop.ShopOrder:
+        return (
+            db.query(self.model)
+            .filter(self.model.order_number == order_number)
+            .filter(self.model.shop_id == shop_id)
+            .first()
+        )
+
 
 order = OrderServices(models.shop.ShopOrder)
