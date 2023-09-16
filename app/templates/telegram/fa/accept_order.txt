@@ -1,1 +1,11 @@
-سفاش به شماره ی {{ order_number }} تایید شد.
+شماره سفارش: {{ order.order_number }}
+آیتم ها
+{% for item in order.items -%}
+    {{ item.product.title }} : {{ item.count }}  
+{% endfor %}
+
+جمع: {{ amount }}
+وضعیت: {{ order.status }}
+
+
+قدرت گرفته از پلتفو

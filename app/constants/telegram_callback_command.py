@@ -8,6 +8,18 @@ class TelegramCallbackCommand:
         },
         "command": "ACCEPT_ORDER"
     }
+    DECLINE_ORDER = {
+        "title": {
+            "fa": "رد سفارش",
+        },
+        "command": "DECLINE_ORDER"
+    }
+    DECLINE_PAYMENT_ORDER = {
+        "title": {
+            "fa": "رد پرداخت سفارش",
+        },
+        "command": "DECLINE_PAYMENT_ORDER"
+    }
     ACCEPT_SHOP_SUPPORT_ACCOUNT = {
         "title":
             {
@@ -15,4 +27,20 @@ class TelegramCallbackCommand:
             },
 
         "command": "ACCEPT_SHOP"
+    }
+    PREPARE_ORDER = {
+        "title":
+            {
+                "fa": "آماده سازی سفارش",
+            },
+
+        "command": "PREPARE_ORDER"
+    }
+    SEND_ORDER = {
+        "title":
+            {
+                "fa": "ارسال سفارش",
+            },
+
+        "command": "SEND_ORDER"
     }

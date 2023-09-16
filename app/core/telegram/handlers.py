@@ -20,10 +20,21 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
         callback = data.get("callback_query").get("data")
-        print(callback)
         command, arg = callback.split(":")
         if command == TelegramCallbackCommand.ACCEPT_ORDER["command"]:
             await accept_order_handler(db, update, arg, lang)
+
+        if command == TelegramCallbackCommand.DECLINE_ORDER["command"]:
+            await decline_order_handler(db, update, arg, lang)
+
+        if command == TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["command"]:
+            await decline_payment_order_handler(db, update, arg, lang)
+
+        if command == TelegramCallbackCommand.PREPARE_ORDER["command"]:
+            await prepare_order_handler(db, update, arg, lang)
+
+        if command == TelegramCallbackCommand.SEND_ORDER["command"]:
+            await send_order_handler(db, update, arg, lang)
 
         if command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT["command"]:
             await verify_support_account(db, update, arg, lang)
@@ -33,7 +44,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         if update.message.text == TelegramSupportBotCommand.START["command"]:
             await update.message.reply_text(SupportBotMessage.ENTER_CODE[lang])
 
-        elif update.message.text == TelegramSupportBotCommand.PAID_ORDERS["command"]:
+        elif update.message.text == TelegramSupportBotCommand.PAYMANE_CHECK_ORDERS["command"]:
             chat_id = update.message.chat_id
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=chat_id)
@@ -47,7 +58,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAYMENT_CHECK])  # noqa
 
             for order in orders:
-                text, reply_markup = get_paid_order_message(order, lang)
+                text, reply_markup = get_payment_check_order_message(order, lang)
                 await update.message.reply_text(
                     text, reply_markup=reply_markup
                 )
@@ -67,9 +78,11 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
             for order in orders:
                 text = get_accepted_order_message(order, lang)
+                reply_markup = get_accepted_order_reply_markup(order)
 
                 await update.message.reply_text(
-                    text
+                    text,
+                    reply_markup = reply_markup,
                 )
         elif update.message.text == TelegramSupportBotCommand.UNPAID_ORDERS["command"]:
             chat_id = update.message.chat_id
@@ -169,9 +182,28 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ACCEPT_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"),  # noqa
+            ], [telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.DECLINE_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.DECLINE_ORDER['command']}:{order.uuid}"),  # noqa
+            ], [telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}"),  # noqa
         ]
-    ]
+        ]
+
+    elif order.status == OrderStatus.ACCEPTED:
+        keyboard = get_accepted_order_reply_markup(order)
+    
+    elif order.status == OrderStatus.PREPARATION:
+        keyboard = [
+            [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.SEND_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"),  # noqa
+            ],
+        ]
+
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(text=text, reply_markup=reply_markup)
@@ -223,6 +255,71 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
     )
     await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
     await update.message.edit_text(text=get_accepted_order_message(order, lang))
+
+
+async def decline_order_handler(db: Session, update: telegram.Update, order_id, lang):
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        return
+
+    order = services.shop.order.change_status(db, order=order, status=OrderStatus.DECLINED)
+
+    message = SupportBotMessage.DECLINE_ORDER[lang].format(order_number=order.order_number)
+
+    await update.message.reply_text(
+        message,
+        reply_to_message_id=update.message.message_id
+    )
+    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
+    await update.message.edit_text(text=get_declined_order_message(order, lang))
+
+
+async def decline_payment_order_handler(db: Session, update: telegram.Update, order_id, lang):
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        return
+
+    order = services.shop.order.change_status(db, order=order, status=OrderStatus.UNPAID)
+    message = SupportBotMessage.DECLINE_PAYMENT_ORDER[lang].format(order_number=order.order_number)
+
+    await update.message.reply_text(
+        message,
+        reply_to_message_id=update.message.message_id
+    )
+    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
+    await update.message.edit_text(text=get_unpaid_order_message(order, lang))
+
+
+async def prepare_order_handler(db: Session, update: telegram.Update, order_id, lang):
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        return
+
+    order = services.shop.order.change_status(db, order=order, status=OrderStatus.PREPARATION)
+    message = SupportBotMessage.PREPARE_ORDER[lang].format(order_number=order.order_number)
+
+    await update.message.reply_text(
+        message,
+        reply_to_message_id=update.message.message_id
+    )
+    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
+    await update.message.edit_text(text=get_prepare_order_message(order, lang))
+
+
+async def send_order_handler(db: Session, update: telegram.Update, order_id, lang):
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        return
+
+    order = services.shop.order.change_status(db, order=order, status=OrderStatus.SENT)
+    message = SupportBotMessage.SEND_ORDER[lang].format(order_number=order.order_number)
+
+    await update.message.reply_text(
+        message,
+        reply_to_message_id=update.message.message_id
+    )
+    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
+    await update.message.edit_text(text=get_send_order_message(order, lang))
 
 
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
@@ -332,13 +429,13 @@ def get_shop_menu(bot_id: UUID4, lead_id: UUID4):
     return reply_markup
 
 
-def get_paid_order_message(order: models.shop.ShopOrder, lang):
+def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
     total_price = 0
     for item in order.items:
         total_price += item.price * item.count
 
     text = load_message(
-        lang, "paid_order",
+        lang, "payment_check",
         amount=total_price,
         order=order
     )
@@ -363,10 +460,60 @@ def get_accepted_order_message(order: models.shop.ShopOrder, lang):
     return text
 
 
+def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
+    return [
+        [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.PREPARE_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"),  # noqa
+            ], [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.SEND_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"),  # noqa
+            ],
+        ]
+
+
+def get_declined_order_message(order: models.shop.ShopOrder, lang):
+    amount = 0
+    for item in order.items:
+        amount += item.price * item.count
+    text = load_message(lang, "declined_order", amount=amount, order=order)
+
+    return text
+
+
 def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
     amount = 0
     for item in order.items:
         amount += item.price * item.count
     text = load_message(lang, "unpaid_order", amount=amount, order=order)
 
+    return text
+
+
+def get_prepare_order_message(order: models.shop.ShopOrder, lang):
+    total_price = 0
+    for item in order.items:
+        total_price += item.price * item.count
+
+    text = load_message(
+        lang, "order",
+        amount=total_price,
+        order=order
+    )
+
+    return text
+
+
+def get_send_order_message(order: models.shop.ShopOrder, lang):
+    total_price = 0
+    for item in order.items:
+        total_price += item.price * item.count
+
+    text = load_message(
+        lang, "order",
+        amount=total_price,
+        order=order
+    )
     return text
