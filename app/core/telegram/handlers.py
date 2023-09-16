@@ -44,7 +44,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 )
                 return
 
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAID])  # noqa
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAYMENT_CHECK])  # noqa
 
             for order in orders:
                 text, reply_markup = get_paid_order_message(order, lang)
@@ -144,7 +144,6 @@ async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_i
 
 
 async def send_order(db: Session, update: telegram.Update, order_number: int, lang: str):
-    bot = Bot(settings.SUPPORT_BOT_TOKEN)
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
         db, chat_id=update.message.chat_id)
@@ -156,7 +155,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         db, order_number=order_number, shop_id=shop_telegram_bot.shop_id)
 
     if not order:
-        await bot.send_message(SupportBotMessage.ORDER_NOT_FOUND["fa"].format(order_number=order_number))
+        await update.message.reply_text(SupportBotMessage.ORDER_NOT_FOUND["fa"].format(order_number=order_number))
         return
 
     amount = 0
@@ -164,7 +163,8 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         amount += item.price * item.count
 
     text = load_message(lang, "order", amount=amount, order=order)
-    if order.status == OrderStatus.PAID:
+    keyboard = []
+    if order.status == OrderStatus.PAYMENT_CHECK:
         keyboard = [
         [
             telegram.InlineKeyboardButton(
@@ -174,7 +174,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
-    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text, reply_markup=reply_markup)
+    await update.message.reply_text(text=text, reply_markup=reply_markup)
 
 
 async def verify_support_account(db: Session, update: telegram.Update,

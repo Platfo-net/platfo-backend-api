@@ -12,6 +12,32 @@ from app.core.telegram import tasks as telegram_tasks
 
 router = APIRouter(prefix='/orders/telegram')
 
+@router.post("/{order_id}/pay", status_code=status.HTTP_202_ACCEPTED)
+def pay_order(
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.shop.OrderAddPaymentInfo,
+    order_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.SHOP['name'],
+            Role.ADMIN['name'],
+        ],
+    ),
+):
+
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
+    if not order.status == OrderStatus.UNPAID:
+        raise_http_exception(Error.SHOP_ORDER_HAS_BEEN_ALREADY_PAID)
+
+    services.shop.order.pay_order(db, order=order, payment_info=obj_in)
+    telegram_tasks.send_lead_pay_notification_to_support_bot_task.delay(order.id, "fa")
+
+    return
+
 
 @router.post("/{shop_id}/{lead_id}", response_model=schemas.shop.OrderCreateResponse)
 def create_telegram_shop_order(
@@ -91,30 +117,6 @@ def create_telegram_shop_order(
         order_number=order.order_number
     )
 
-
-@router.post("/{order_id}/pay", status_code=status.HTTP_202_ACCEPTED)
-def pay_order(
-    *,
-    db: Session = Depends(deps.get_db),
-    obj_in: schemas.shop.OrderAddPaymentInfo,
-    order_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.SHOP['name'],
-            Role.ADMIN['name'],
-        ],
-    ),
-):
-
-    order = services.shop.order.get_by_uuid(db, uuid=order_id)
-    if not order:
-        raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
-
-    services.shop.order.pay_order(db, order=order, payment_info=obj_in)
-    telegram_tasks.send_lead_pay_notification_to_support_bot_task.delay(order.id, "fa")
-
-    return
 
 
 @router.get("/{order_id}", response_model=schemas.shop.OrderSummary)

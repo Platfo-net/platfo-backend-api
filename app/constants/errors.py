@@ -370,6 +370,11 @@ class Error:
         "status_code": 404,
         "code": 176,
     }
+    SHOP_ORDER_HAS_BEEN_ALREADY_PAID = {
+        "text": "Order has been already paid.",
+        "status_code": 400,
+        "code": 177,
+    }
 
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {
