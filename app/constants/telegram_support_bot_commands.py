@@ -3,7 +3,7 @@ class TelegramSupportBotCommand:
         "command": "/start",
         "description": "Start",
     }
-    PAYMANE_CHECK_ORDERS = {
+    PAYMENT_CHECK_ORDERS = {
         "command": "/payment_check_orders",
         "description": "Payment Check Orders",
     }
@@ -19,5 +19,5 @@ class TelegramSupportBotCommand:
     }
 
     commands = [
-        START, PAYMANE_CHECK_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS
+        START, PAYMENT_CHECK_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS
     ]
