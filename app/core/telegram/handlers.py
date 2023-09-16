@@ -41,7 +41,6 @@ async def telegram_support_bot_handler(db: Session, data: dict):
 
             for order in orders:
                 text, reply_markup = get_paid_order_message(order)
-                print(text)
                 await update.message.reply_text(
                     text, reply_markup=reply_markup
                 )

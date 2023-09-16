@@ -10,7 +10,6 @@ async def send_message(message, chat_id):
 
 async def set_support_bot_webhook():
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
-    m = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/support-bot"
 
 
     await bot.set_webhook(
@@ -18,8 +17,9 @@ async def set_support_bot_webhook():
     )
     await bot.set_my_commands(
         commands = [
-            telegram.BotCommand("/paid_orders"),
-            telegram.BotCommand("/accepted_orders"),
+            telegram.BotCommand("/unpaid_orders" , "Unpaid Orders"),
+            telegram.BotCommand("/paid_orders" , "Paid Orders"),
+            telegram.BotCommand("/accepted_orders" , "Accepted Orders"),
         ]
         
     )
