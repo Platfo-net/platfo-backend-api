@@ -2,7 +2,7 @@
 
 from typing import List
 
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -98,3 +98,30 @@ def get_categories(
         )
         for category in categories
     ]
+
+
+@router.delete('/{id}', status_code=status.HTTP_200_OK)
+def delete_category(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+
+    category = services.shop.category.get_by_uuid(db, uuid=id)
+    if not category:
+        raise_http_exception(Error.CATEGORY_NOT_FOUND)
+
+    if category.shop.user_id != current_user.id:
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
+
+    services.shop.category.delete(db, db_obj=category)
+
+    return

@@ -21,6 +21,8 @@ class OrderCreate(BaseModel):
     city: Optional[str] = None
     address: Optional[str] = None
     postal_code: Optional[str] = None
+    payment_method_id: UUID4
+    shipment_method_id: UUID4
 
 
 class OrderCreateResponse(BaseModel):

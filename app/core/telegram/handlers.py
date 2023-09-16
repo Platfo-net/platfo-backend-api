@@ -133,16 +133,21 @@ async def verify_support_account(db: Session, update: telegram.Update,
         await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang])
 
     services.shop.shop_telegram_bot.verify_support_account(db, db_obj=shop_telegram_bot)
-    await update.message.reply_text(SupportBotMessage.ACCOUNT_CONNECTED_SUCCESSFULLY["fa"].format(title = shop_telegram_bot.shop.title))
+    await update.message.reply_text(
+        SupportBotMessage.ACCOUNT_CONNECTED_SUCCESSFULLY["fa"].format(
+            title=shop_telegram_bot.shop.title
+        )
+    )
     await update.message.edit_reply_markup(reply_markup=telegram.InlineKeyboardMarkup([]))
 
+
 def verify_shop_support_account_message(shop_telegram_bot: models.shop.ShopShopTelegramBot,
-                                              lang: str):
+                                        lang: str):
     text = SupportBotMessage.ACCEPT_SHOP[lang].format(title=shop_telegram_bot.shop.title)
     keyboard = [
         [
             telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT["title"],
+                TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT['command']}:{shop_telegram_bot.uuid}")  # noqa
         ]
     ]
@@ -288,7 +293,7 @@ def get_paid_order_message(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.ACCEPT_ORDER["title"],
+                TelegramCallbackCommand.ACCEPT_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}")
         ]
     ]

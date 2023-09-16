@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -202,3 +202,30 @@ def get_shop_products(
         items=products_list,
         pagination=pagination,
     )
+
+
+@router.delete('/{id}', status_code=status.HTTP_200_OK)
+def delete_product(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+
+    product = services.shop.product.get_by_uuid(db, uuid=id)
+    if not product:
+        raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR)
+
+    if product.shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED)
+
+    services.shop.product.delete(db, db_obj=product)
+
+    return

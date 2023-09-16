@@ -24,3 +24,5 @@ class ShopShop(Base):
     shop_telegram_bot = relationship("ShopShopTelegramBot", back_populates="shop")
     categories = relationship("ShopCategory", back_populates="shop")
     products = relationship("ShopProduct", back_populates="shop")
+    payment_methods = relationship("ShopPaymentMethod", back_populates="shop")
+    shipment_methods = relationship("ShopShipmentMethod", back_populates="shop")

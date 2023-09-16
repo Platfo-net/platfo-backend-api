@@ -19,8 +19,10 @@ class OrderServices:
         obj_in: schemas.shop.OrderCreate,
         shop_id: int,
         lead_id: int,
+        payment_method_id: int,
+        shipment_method_id: int,
         order_number: int,
-        status: str,
+
     ) -> models.shop.ShopOrder:
         db_obj = self.model(
             first_name=obj_in.first_name,
@@ -34,6 +36,8 @@ class OrderServices:
             order_number=order_number,
             shop_id=shop_id,
             lead_id=lead_id,
+            shipment_method_id=shipment_method_id,
+            payment_method_id=payment_method_id,
         )
 
         db.add(db_obj)

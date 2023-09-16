@@ -347,6 +347,30 @@ class Error:
         "code": 172,
     }
 
+    SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR = {
+        "text": "Shipment method not found",
+        "status_code": 404,
+        "code": 173,
+    }
+
+    SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED = {
+        "text": "Shipment method not found",
+        "status_code": 404,
+        "code": 174,
+    }
+
+    SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR = {
+        "text": "Payment method not found",
+        "status_code": 404,
+        "code": 175,
+    }
+
+    SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED = {
+        "text": "Payment method not found",
+        "status_code": 404,
+        "code": 176,
+    }
+
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {
         "text": "Lead not found",
