@@ -24,3 +24,6 @@ class SupportBotMessage:
     ACCOUNT_CONNECTED_SUCCESSFULLY = {
         "fa" : "فروشگاه {title} با موفقیت به اکانت شما متصل شد. \n \n قدرت گرفته از پلتفو "
     }
+    PAY_ORDER_NOTIFICATION = {
+        "fa" : "سفارش قبت شده با شماره {order_number} پرداخت شد."
+    }

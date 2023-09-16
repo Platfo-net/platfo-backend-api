@@ -37,6 +37,18 @@ def send_lead_order_to_bot_task(telegram_bot_id: int, lead_id: int, order_id: in
 
 
 @celery.task
+def send_lead_pay_notification_to_support_bot_task(order_id: int, lang: str):
+    db = SessionLocal()
+    try:
+        asyncio.run(telegram_handlers.send_lead_pay_notification_to_support_bot_handler(
+            db, order_id, lang))
+    except Exception as e:
+        print(e)
+
+    db.close()
+
+
+@celery.task
 def send_lead_order_to_shop_support_task(telegram_bot_id: int, lead_id: int, order_id: int, lang):
     db = SessionLocal()
     try:

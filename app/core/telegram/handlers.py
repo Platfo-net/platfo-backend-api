@@ -125,6 +125,21 @@ def load_message(lang, template_name, **kwargs) -> str:
     return template.render(**kwargs)
 
 
+async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_id: int, lang: str):
+    order = services.shop.order.get(db, id=order_id)
+    if not order:
+        return
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    if not shop_telegram_bot:
+        return
+
+    message = SupportBotMessage.PAY_ORDER_NOTIFICATION[lang].format(
+        order_number=order.order_number)
+
+    bot = Bot(settings.SUPPORT_BOT_TOKEN)
+    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=message)
+
+
 async def verify_support_account(db: Session, update: telegram.Update,
                                  shop_telegram_bot_uuid: UUID4, lang: str):
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_uuid(

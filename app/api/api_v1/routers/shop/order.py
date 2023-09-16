@@ -112,6 +112,7 @@ def pay_order(
         raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
 
     services.shop.order.pay_order(db, order=order, payment_info=obj_in)
+    telegram_tasks.send_lead_pay_notification_to_support_bot_task.delay(order.id, "fa")
 
     return
 
