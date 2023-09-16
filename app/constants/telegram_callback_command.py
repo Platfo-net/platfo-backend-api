@@ -2,7 +2,7 @@
 
 class TelegramCallbackCommand:
     ACCEPT_ORDER = {
-        "title": "Accept Order",
+        "title": "تایید سفارش",
         "command": "ACCEPT_ORDER"
     }
     ACCEPT_SHOP_SUPPORT_ACCOUNT = {

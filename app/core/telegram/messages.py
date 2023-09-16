@@ -11,13 +11,16 @@ class SupportBotMessage:
         "fa": "اکانت شما در حال حاضر به یک فروشگاه متصل است"
     }
     SHOP_ALREADY_CONNECTED = {
-        "fa": "Your shop '{title}' is already connected to an account."
+        "fa": "فروشگاه {title} به یک اکانت متصل است."
     }
 
     ACCEPT_SHOP = {
-        "fa": "You are trying to connect your account to {title} shop, press OK if you are ok"
+        "fa": "شما در حال تلاش برای اتصال به فروشگاه {title} هستید . در صورت موافقت روی OK بزنید."
     }
 
     ENTER_CODE = {
         "fa": "کد خود را وارد نمایید"
+    }
+    ACCOUNT_CONNECTED_SUCCESSFULLY = {
+        "fa" : "فروشگاه {title} با موفقیت به اکانت شما متصل شد. \n \n قدرت گرفته از پلتفو "
     }

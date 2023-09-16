@@ -20,7 +20,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
         callback = data.get("callback_query").get("data")
-
+        print(callback)
         command, arg = callback.split(":")
         if command == TelegramCallbackCommand.ACCEPT_ORDER["command"]:
             await accept_order_handler(db, update, arg, lang)
@@ -66,7 +66,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.ACCEPTED])  # noqa
 
             for order in orders:
-                text = get_accepted_order_message(order)
+                text = get_accepted_order_message(order, lang)
 
                 await update.message.reply_text(
                     text
@@ -133,9 +133,10 @@ async def verify_support_account(db: Session, update: telegram.Update,
         await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang])
 
     services.shop.shop_telegram_bot.verify_support_account(db, db_obj=shop_telegram_bot)
+    await update.message.reply_text(SupportBotMessage.ACCOUNT_CONNECTED_SUCCESSFULLY["fa"].format(title = shop_telegram_bot.shop.title))
+    await update.message.edit_reply_markup(reply_markup=telegram.InlineKeyboardMarkup([]))
 
-
-async def verify_shop_support_account_message(shop_telegram_bot: models.shop.ShopShopTelegramBot,
+def verify_shop_support_account_message(shop_telegram_bot: models.shop.ShopShopTelegramBot,
                                               lang: str):
     text = SupportBotMessage.ACCEPT_SHOP[lang].format(title=shop_telegram_bot.shop.title)
     keyboard = [
