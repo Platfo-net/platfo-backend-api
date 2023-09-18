@@ -55,7 +55,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 )
                 return
 
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAYMENT_CHECK])  # noqa
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAYMENT_CHECK["value"]])  # noqa
 
             for order in orders:
                 text = get_payment_check_order_message(order, lang)
@@ -75,7 +75,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 )
                 return
 
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.ACCEPTED])  # noqa
+            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.ACCEPTED["value"]])  # noqa
 
             for order in orders:
                 text = get_accepted_order_message(order, lang)
@@ -97,7 +97,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 return
 
             orders = services.shop.order.get_shop_orders(
-                db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.UNPAID])  # noqa
+                db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.UNPAID["value"]])  # noqa
 
             for order in orders:
                 text = get_unpaid_order_message(order, lang)
@@ -179,16 +179,36 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
     for item in order.items:
         amount += item.price * item.count
 
-    text = load_message(lang, "order", amount=amount, order=order)
-    if order.status == OrderStatus.PAYMENT_CHECK:
+    reply_markup = telegram.InlineKeyboardMarkup([])
+    text = ""
+
+    if order.status == OrderStatus.PAYMENT_CHECK["value"]:
         reply_markup = get_payment_check_order_reply_markup(order, lang)
+        text = load_message(lang, "order", amount=amount, order=order,
+                            order_status=OrderStatus.PAYMENT_CHECK["title"][lang])
 
-    elif order.status == OrderStatus.ACCEPTED:
+    elif order.status == OrderStatus.ACCEPTED["value"]:
         reply_markup = get_accepted_order_reply_markup(order, lang)
+        text = load_message(lang, "order", amount=amount, order=order,
+                            order_status=OrderStatus.ACCEPTED["title"][lang])
 
-    elif order.status == OrderStatus.PREPARATION:
+    elif order.status == OrderStatus.PREPARATION["value"]:
         reply_markup = get_prepare_order_reply_markup(order, lang)
-    else:
+        text = load_message(lang, "order", amount=amount, order=order,
+                            order_status=OrderStatus.PREPARATION["title"][lang])
+
+    elif order.status == OrderStatus.UNPAID["value"]:
+        reply_markup = get_unpaid_order_reply_markup(order, lang)
+        text = load_message(lang, "order", amount=amount, order=order,
+                            order_status=OrderStatus.UNPAID["title"][lang])
+
+    elif order.status == OrderStatus.DECLINED["value"]:
+        text = load_message(lang, "order", amount=amount, order=order,
+                            order_status=OrderStatus.DECLINED["title"][lang])
+
+    elif order.status == OrderStatus.SENT["value"]:
+        text = load_message(lang, "order", amount=amount, order=order,
+                            order_status=OrderStatus.SENT["title"][lang])
         reply_markup = telegram.InlineKeyboardMarkup([])
 
     await update.message.reply_text(text=text, reply_markup=reply_markup)
@@ -230,7 +250,8 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
     if not order:
         return
 
-    order = services.shop.order.change_status(db, order=order, status=OrderStatus.ACCEPTED)
+    order = services.shop.order.change_status(
+        db, order=order, status=OrderStatus.ACCEPTED["value"])
 
     message = SupportBotMessage.ACCEPT_ORDER[lang].format(order_number=order.order_number)
 
@@ -249,7 +270,8 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
     if not order:
         return
 
-    order = services.shop.order.change_status(db, order=order, status=OrderStatus.DECLINED)
+    order = services.shop.order.change_status(
+        db, order=order, status=OrderStatus.DECLINED["value"])
 
     message = SupportBotMessage.DECLINE_ORDER[lang].format(order_number=order.order_number)
 
@@ -266,7 +288,7 @@ async def decline_payment_order_handler(db: Session, update: telegram.Update, or
     if not order:
         return
 
-    order = services.shop.order.change_status(db, order=order, status=OrderStatus.UNPAID)
+    order = services.shop.order.change_status(db, order=order, status=OrderStatus.UNPAID["value"])
     message = SupportBotMessage.DECLINE_PAYMENT_ORDER[lang].format(order_number=order.order_number)
 
     await update.message.reply_text(
@@ -285,7 +307,8 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
     if not order:
         return
 
-    order = services.shop.order.change_status(db, order=order, status=OrderStatus.PREPARATION)
+    order = services.shop.order.change_status(
+        db, order=order, status=OrderStatus.PREPARATION["value"])
     message = SupportBotMessage.PREPARE_ORDER[lang].format(order_number=order.order_number)
 
     await update.message.reply_text(
@@ -303,7 +326,7 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
     if not order:
         return
 
-    order = services.shop.order.change_status(db, order=order, status=OrderStatus.SENT)
+    order = services.shop.order.change_status(db, order=order, status=OrderStatus.SENT["value"])
     message = SupportBotMessage.SEND_ORDER[lang].format(order_number=order.order_number)
 
     await update.message.reply_text(

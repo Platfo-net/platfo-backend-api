@@ -17,7 +17,7 @@ class ShopOrder(Base):
     city = Column(String(255), nullable=True)
     address = Column(String(255), nullable=True)
     postal_code = Column(String(255), nullable=True)
-    status = Column(String(255), default=OrderStatus.UNPAID)
+    status = Column(String(255), default=OrderStatus.UNPAID["value"])
 
     # payment information
     payment_reference_number = Column(String(255), nullable=True)

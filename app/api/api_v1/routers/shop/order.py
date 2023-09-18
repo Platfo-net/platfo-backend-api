@@ -31,7 +31,7 @@ def pay_order(
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
     if not order:
         raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
-    if not order.status == OrderStatus.UNPAID:
+    if not order.status == OrderStatus.UNPAID["value"]:
         raise_http_exception(Error.SHOP_ORDER_HAS_BEEN_ALREADY_PAID)
 
     services.shop.order.pay_order(db, order=order, payment_info=obj_in)
@@ -103,7 +103,7 @@ def create_telegram_shop_order(
         order_number=last_order_number + 1,
         shipment_method_id=shipment_method.id,
         payment_method_id=payment_method.id,
-        status=OrderStatus.UNPAID,
+        status=OrderStatus.UNPAID["value"],
     )
 
     services.shop.order_item.create_bulk(db, objs_in=order_items, order_id=order.id)

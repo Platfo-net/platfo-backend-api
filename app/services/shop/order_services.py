@@ -73,7 +73,7 @@ class OrderServices:
         order: models.shop.ShopOrder,
         payment_info: schemas.shop.OrderAddPaymentInfo
     ):
-        order.status = OrderStatus.PAYMENT_CHECK
+        order.status = OrderStatus.PAYMENT_CHECK["value"]
         order.payment_card_last_four_number = payment_info.payment_reference_number
         order.payment_card_last_four_number = payment_info.payment_card_last_four_number
         order.payment_card_last_four_number = payment_info.payment_datetime

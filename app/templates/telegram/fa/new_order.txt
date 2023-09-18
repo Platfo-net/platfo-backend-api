@@ -7,7 +7,7 @@
 {% endfor %}
 
 جمع: {{ amount }}
-وضعیت: {{ order.status }}
+وضعیت: {{ order_status }}
 
 
 قدرت گرفته از پلتفو
