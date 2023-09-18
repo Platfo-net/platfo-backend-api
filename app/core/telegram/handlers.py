@@ -101,9 +101,10 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
             for order in orders:
                 text = get_unpaid_order_message(order, lang)
+                reply_markup = get_unpaid_order_reply_markup(order, lang)
 
                 await update.message.reply_text(
-                    text
+                    text, reply_markup=reply_markup
                 )
         # TODO for all status orders
         elif update.message.text.isnumeric():
@@ -442,7 +443,10 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ACCEPT_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}")
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"),
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}")
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -492,6 +496,19 @@ def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
     text = load_message(lang, "unpaid_order", amount=amount, order=order)
 
     return text
+
+
+def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
+    keyboard = [
+        [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.ACCEPT_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"
+            ),  # noqa
+        ],
+    ]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+    return reply_markup
 
 
 def get_prepare_order_message(order: models.shop.ShopOrder, lang):
