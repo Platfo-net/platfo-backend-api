@@ -454,7 +454,8 @@ def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
     text = load_message(
         lang, "payment_check",
         amount=total_price,
-        order=order
+        order=order,
+        status=OrderStatus.PAYMENT_CHECK["title"][lang],
     )
 
     return text
@@ -480,7 +481,12 @@ def get_accepted_order_message(order: models.shop.ShopOrder, lang):
     amount = 0
     for item in order.items:
         amount += item.price * item.count
-    text = load_message(lang, "accepted_order", amount=amount, order=order)
+    text = load_message(
+        lang, "accepted_order",
+        amount=amount,
+        order=order,
+        status=OrderStatus.ACCEPTED["title"][lang],
+    )
 
     return text
 
@@ -507,7 +513,13 @@ def get_declined_order_message(order: models.shop.ShopOrder, lang):
     amount = 0
     for item in order.items:
         amount += item.price * item.count
-    text = load_message(lang, "declined_order", amount=amount, order=order)
+    text = load_message(
+        lang,
+        "declined_order",
+        amount=amount,
+        order=order,
+        status=OrderStatus.DECLINED["title"][lang],
+    )
 
     return text
 
@@ -516,7 +528,13 @@ def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
     amount = 0
     for item in order.items:
         amount += item.price * item.count
-    text = load_message(lang, "unpaid_order", amount=amount, order=order)
+    text = load_message(
+        lang,
+        "unpaid_order",
+        amount=amount,
+        order=order,
+        order_status=OrderStatus.UNPAID["title"][lang]
+    )
 
     return text
 
@@ -542,7 +560,8 @@ def get_prepare_order_message(order: models.shop.ShopOrder, lang):
     text = load_message(
         lang, "order",
         amount=total_price,
-        order=order
+        order=order,
+        order_status=OrderStatus.PREPARATION["title"][lang]
     )
 
     return text
@@ -569,6 +588,7 @@ def get_send_order_message(order: models.shop.ShopOrder, lang):
     text = load_message(
         lang, "order",
         amount=total_price,
-        order=order
+        order=order,
+        order_status=OrderStatus.SENT["title"][lang]
     )
     return text
