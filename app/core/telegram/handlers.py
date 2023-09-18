@@ -455,7 +455,7 @@ def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
         lang, "payment_check",
         amount=total_price,
         order=order,
-        status=OrderStatus.PAYMENT_CHECK["title"][lang],
+        order_status=OrderStatus.PAYMENT_CHECK["title"][lang],
     )
 
     return text
@@ -485,7 +485,7 @@ def get_accepted_order_message(order: models.shop.ShopOrder, lang):
         lang, "accepted_order",
         amount=amount,
         order=order,
-        status=OrderStatus.ACCEPTED["title"][lang],
+        order_status=OrderStatus.ACCEPTED["title"][lang],
     )
 
     return text
@@ -518,7 +518,7 @@ def get_declined_order_message(order: models.shop.ShopOrder, lang):
         "declined_order",
         amount=amount,
         order=order,
-        status=OrderStatus.DECLINED["title"][lang],
+        order_status=OrderStatus.DECLINED["title"][lang],
     )
 
     return text
