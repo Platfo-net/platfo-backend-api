@@ -106,7 +106,6 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 await update.message.reply_text(
                     text, reply_markup=reply_markup
                 )
-        # TODO for all status orders
         elif update.message.text.isnumeric():
             order_number = int(update.message.text)
             await send_order(db, update, order_number, lang)
