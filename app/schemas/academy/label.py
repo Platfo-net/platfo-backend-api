@@ -21,14 +21,14 @@ class Label(BaseModel):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LabelInDB(LabelBase):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LabelListApi(BaseModel):
@@ -41,11 +41,11 @@ class LabelListItemContent(BaseModel):
     name: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LabelContent(BaseModel):
     label_id: Optional[UUID4] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

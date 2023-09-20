@@ -25,7 +25,7 @@ class Chatflow(ChatflowBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ChatflowListApi(BaseModel):
@@ -33,4 +33,4 @@ class ChatflowListApi(BaseModel):
     pagination: Pagination
 
     class Config:
-        orm_mode = True
+        from_attributes = True

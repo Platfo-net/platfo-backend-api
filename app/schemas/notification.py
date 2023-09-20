@@ -24,7 +24,7 @@ class Notification(NotificationBase):
     created_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class NotificationListItem(NotificationBase):
@@ -33,7 +33,7 @@ class NotificationListItem(NotificationBase):
     is_read: Optional[bool] = True
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class NotificationListApi(BaseModel):
@@ -41,4 +41,4 @@ class NotificationListApi(BaseModel):
     pagination: Pagination
 
     class Config:
-        orm_mode = True
+        from_attributes = True

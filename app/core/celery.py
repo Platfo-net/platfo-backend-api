@@ -8,8 +8,8 @@ celery = Celery(
              'app.core.notifier.tasks', 'app.core.tasks'],
 )
 
-celery.conf.broker_url = settings.CELERY_URI
-celery.conf.result_backend = settings.CELERY_URI
+celery.conf.broker_url = str(settings.CELERY_URI)
+celery.conf.result_backend = str(settings.CELERY_URI)
 celery.conf.update(
     task_serializer='json',
     result_serializer='json',

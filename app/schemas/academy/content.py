@@ -67,14 +67,14 @@ class Content(BaseModel):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentInDB(ContentBase):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentDetailList(ContentBase):
@@ -84,28 +84,28 @@ class ContentDetailList(ContentBase):
     labels: List[LabelListItemContent]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentDetail(BaseModel):
     content_detail: List[ContentDetailList]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentCategory(BaseModel):
     category: CategoryListItemContent
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentLabel(BaseModel):
     label: LabelListItemContent
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentListItem(ContentBaseList):
@@ -114,8 +114,8 @@ class ContentListItem(ContentBaseList):
     content_labels: Optional[List[ContentLabel]] = Field(alias='labels')
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        populate_by_name = True
 
 
 class ContentListApi(BaseModel):
@@ -123,7 +123,7 @@ class ContentListApi(BaseModel):
     pagination: Pagination
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ContentSearch(BaseModel):
@@ -131,4 +131,4 @@ class ContentSearch(BaseModel):
     pagination: Pagination
 
     class Config:
-        orm_mode = True
+        from_attributes = True

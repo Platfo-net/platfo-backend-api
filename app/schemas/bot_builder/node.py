@@ -45,7 +45,7 @@ class Node(NodeBase):
     is_head: Optional[bool] = False
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class MessageWidgetCreate(BaseModel):

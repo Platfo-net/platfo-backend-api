@@ -29,7 +29,7 @@ class Invoice(InvoiceBase):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class InvoiceListItem(BaseModel):
@@ -41,7 +41,7 @@ class InvoiceListItem(BaseModel):
     module: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class InvoiceList(BaseModel):

@@ -34,7 +34,7 @@ class Login(BaseModel):
     role: Role
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TokenPayload(BaseModel):

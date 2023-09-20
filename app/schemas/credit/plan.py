@@ -30,4 +30,4 @@ class DetailedPlan(Plan):
     features: List[Feature]
 
     class Config:
-        orm_mode = True
+        from_attributes = True

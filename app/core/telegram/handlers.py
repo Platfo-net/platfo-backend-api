@@ -470,7 +470,7 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
         ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}")
+                callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}") # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)

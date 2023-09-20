@@ -21,7 +21,7 @@ class RoleInDBBase(RoleBase):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Role(RoleInDBBase):

@@ -24,7 +24,7 @@ class ConnectionInDBBase(ConnectionBase):
     account_id: Optional[UUID4] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Connection(ConnectionInDBBase):

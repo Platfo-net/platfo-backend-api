@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from dotenv import load_dotenv
-from pydantic import BaseSettings, PostgresDsn, RedisDsn, validator
+from pydantic import PostgresDsn, RedisDsn, validator
+from pydantic_settings import BaseSettings
 
 load_dotenv()
 
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
     SERVER_ADDRESS_NAME: str
 
     ENVIRONMENT: Optional[str]
-    BASE_DIR = Path(__file__).resolve().parent.parent.parent
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
 
     FIRST_ADMIN_EMAIL: str
     FIRST_ADMIN_PASSWORD: str
@@ -58,16 +59,16 @@ class Settings(BaseSettings):
 
     FACEBOOK_WEBHOOK_VERIFY_TOKEN: str = None
 
-    REDIS_HOST: str = None
-    REDIS_PASSWORD: str = None
-    REDIS_PORT: str = None
+    REDIS_HOST: str
+    REDIS_PASSWORD: str
+    REDIS_PORT: int
     REDIS_DB_CELERY: str = None
     REDIS_DB_CACHE: str = None
 
     REDIS_RESET_PASSWORD_DB: int = 4
     REDIS_USER_ACTIVATION_DB: int = 5
 
-    CELERY_URI: Optional[str] = None
+    CELERY_URI: Optional[RedisDsn] = None
 
     S3_ROOT_USER: str = None
     S3_ROOT_PASSWORD: str = None
@@ -109,11 +110,11 @@ class Settings(BaseSettings):
 
         return PostgresDsn.build(
             scheme='postgresql',
-            user=values.get('POSTGRES_USER'),
+            username=values.get('POSTGRES_USER'),
             password=values.get('POSTGRES_PASSWORD'),
             host=values.get('DB_HOST'),
-            port=str(values.get('DB_PORT')),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
+            port=values.get('DB_PORT'),
+            path=values.get('POSTGRES_DB'),
         )
 
     @validator('CELERY_URI', pre=True)
@@ -127,7 +128,7 @@ class Settings(BaseSettings):
             host=values.get('REDIS_HOST'),
             port=values.get('REDIS_PORT'),
             password=values.get('REDIS_PASSWORD'),
-            path=f"/{values.get('REDIS_DB_CELERY') or ''}",
+            path=f"{values.get('REDIS_DB_CELERY') or ''}",
         )
 
     class Config:
