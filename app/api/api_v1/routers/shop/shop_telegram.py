@@ -143,3 +143,44 @@ def connect_shop_to_telegram_bot(
         db, db_obj=shop_telegram_bot, telegram_bot_id=telegram_bot.id)
 
     return
+
+
+@router.post('/check-support-bot', status_code=status.HTTP_200_OK)
+def check_shop_is_connected_to_support_account(
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.shop.ShopConnectTelegramBot,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+    shop = services.shop.shop.get_by_uuid(db, uuid=obj_in.shop_id)
+
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    telegram_bot = services.telegram_bot.get_by_uuid(db, uuid=obj_in.bot_id)
+
+    if not telegram_bot:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT)
+
+    if telegram_bot.user_id != current_user.id:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT_ACCESS_DENIED)
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=shop.id)
+
+    if shop_telegram_bot.telegram_bot_id:
+        raise_http_exception(Error.SHOP_SHOP_HAS_BEEN_ALREADY_CONNECTED_TO_TELEGRAM_BOT)
+
+    if not shop_telegram_bot.support_account_chat_id:
+        raise_http_exception(Error.SHOP_DOESNT_HAVE_SUPPORT_ACCOUNT)
+
+    return

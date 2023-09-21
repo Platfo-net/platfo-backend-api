@@ -375,6 +375,11 @@ class Error:
         "status_code": 400,
         "code": 177,
     }
+    SHOP_DOESNT_HAVE_SUPPORT_ACCOUNT = {
+        "text": "Shop doesn't have support account",
+        "status_code": 404,
+        "code": 178,
+    }
 
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {
