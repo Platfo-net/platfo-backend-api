@@ -1,4 +1,5 @@
 from uuid import uuid4
+
 from sqlalchemy import BigInteger, Column
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import as_declarative

@@ -20,5 +20,5 @@ class ShopTelegramBotRegister(BaseModel):
 
 
 class ShopConnectTelegramBot(BaseModel):
-    bot_id: UUID4
+    bot_token: str
     shop_id: UUID4

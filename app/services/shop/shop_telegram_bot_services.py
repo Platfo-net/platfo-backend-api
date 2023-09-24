@@ -92,7 +92,7 @@ class ShopTelegramBotServices:
         self,
         db: Session,
         *,
-        shop_id: UUID4
+        shop_id: int
     ) -> models.shop.ShopShopTelegramBot:
         return (
             db.query(self.model)
