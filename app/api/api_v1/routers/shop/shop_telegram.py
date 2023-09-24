@@ -197,6 +197,8 @@ def check_shop_is_connected_to_support_account(
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=shop.id)
+    if not shop_telegram_bot:
+        raise_http_exception(Error.SHOP_DOESNT_HAVE_SUPPORT_ACCOUNT)
 
     if not shop_telegram_bot.support_account_chat_id:
         raise_http_exception(Error.SHOP_DOESNT_HAVE_SUPPORT_ACCOUNT)
