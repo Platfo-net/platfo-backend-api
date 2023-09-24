@@ -169,7 +169,7 @@ def connect_shop_to_telegram_bot(
     bot = services.telegram_bot.create(db, obj_in=bot_in, user_id=current_user.id)
 
     services.shop.shop_telegram_bot.connect_telegram_bot(
-        db, db_obj=shop_telegram_bot, telegram_bot_id=telegram_bot.id)
+        db, db_obj=shop_telegram_bot, telegram_bot_id=bot.id)
 
     return
 
