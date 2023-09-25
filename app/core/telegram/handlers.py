@@ -21,24 +21,23 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         )
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
-        match command:
-            case TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
-                await accept_order_handler(db, update, arg, lang)
+        if command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
+            await accept_order_handler(db, update, arg, lang)
 
-            case TelegramCallbackCommand.DECLINE_ORDER.get("command"):
-                await decline_order_handler(db, update, arg, lang)
+        elif command == TelegramCallbackCommand.DECLINE_ORDER.get("command"):
+            await decline_order_handler(db, update, arg, lang)
 
-            case  TelegramCallbackCommand.DECLINE_PAYMENT_ORDER("command"):
-                await decline_payment_order_handler(db, update, arg, lang)
+        elif command == TelegramCallbackCommand.DECLINE_PAYMENT_ORDER("command"):
+            await decline_payment_order_handler(db, update, arg, lang)
 
-            case  TelegramCallbackCommand.PREPARE_ORDER("command"):
-                await prepare_order_handler(db, update, arg, lang)
+        elif command == TelegramCallbackCommand.PREPARE_ORDER("command"):
+            await prepare_order_handler(db, update, arg, lang)
 
-            case  TelegramCallbackCommand.SEND_ORDER("command"):
-                await send_order_handler(db, update, arg, lang)
+        elif command == TelegramCallbackCommand.SEND_ORDER("command"):
+            await send_order_handler(db, update, arg, lang)
 
-            case  TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT("command"):
-                await verify_support_account(db, update, arg, lang)
+        elif command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT("command"):
+            await verify_support_account(db, update, arg, lang)
 
     else:
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
