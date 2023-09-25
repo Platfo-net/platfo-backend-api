@@ -67,13 +67,13 @@ def send_lead_order_to_shop_support_task(telegram_bot_id: int, lead_id: int, ord
 
 
 @celery.task
-def send_shop_bot_connection_notification_task(telegram_bot_id: int, lang):
+def send_shop_bot_connection_notification_task(shop_telegram_bot_id: int, lang):
     db = SessionLocal()
     try:
         asyncio.run(
             telegram_handlers.send_shop_bot_connection_notification_handler(
                 db,
-                telegram_bot_id,
+                shop_telegram_bot_id,
                 lang,
             )
         )

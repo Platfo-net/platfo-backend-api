@@ -140,5 +140,18 @@ class ShopTelegramBotServices:
             .first()
         )
 
+    def get(
+        self,
+        db: Session,
+        *,
+        id: int,
+    ) -> models.shop.ShopShopTelegramBot:
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.id == id)
+            .first()
+        )
+
 
 shop_telegram_bot = ShopTelegramBotServices(models.shop.ShopShopTelegramBot)

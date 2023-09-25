@@ -447,10 +447,10 @@ async def send_lead_order_to_shop_support_handler(
 
 
 async def send_shop_bot_connection_notification_handler(
-        db: Session, telegram_bot_id: int, lang):
+        db: Session, shop_telegram_bot_id: int, lang):
 
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
-        db, telegram_bot_id=telegram_bot_id)
+    shop_telegram_bot = services.shop.shop_telegram_bot.get(
+        db, id=shop_telegram_bot_id)
     if not shop_telegram_bot:
         return
 
