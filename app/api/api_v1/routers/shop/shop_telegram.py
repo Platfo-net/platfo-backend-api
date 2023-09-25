@@ -11,7 +11,7 @@ from app.api.api_v1.routers.telegram_bot import get_me, set_webhook
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
-from app.core.utils import generate_random_token, generate_random_support_token
+from app.core.utils import generate_random_support_token
 
 router = APIRouter(prefix='/telegram')
 
@@ -170,7 +170,6 @@ def connect_shop_to_telegram_bot(
 
     services.shop.shop_telegram_bot.connect_telegram_bot(
         db, db_obj=shop_telegram_bot, telegram_bot_id=bot.id)
-
     return
 
 
