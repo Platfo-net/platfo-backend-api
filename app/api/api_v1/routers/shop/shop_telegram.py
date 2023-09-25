@@ -12,6 +12,7 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 from app.core.utils import generate_random_support_token
+from app.core.telegram import tasks as telegram_tasks
 
 router = APIRouter(prefix='/telegram')
 
@@ -170,6 +171,9 @@ def connect_shop_to_telegram_bot(
 
     services.shop.shop_telegram_bot.connect_telegram_bot(
         db, db_obj=shop_telegram_bot, telegram_bot_id=bot.id)
+    
+    telegram_tasks.send_shop_bot_connection_notification_task.delay(
+        shop_telegram_bot.id, "fa")
     return
 
 

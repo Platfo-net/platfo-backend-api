@@ -446,6 +446,20 @@ async def send_lead_order_to_shop_support_handler(
     return
 
 
+async def send_shop_bot_connection_notification_handler(
+        db: Session, telegram_bot_id: int, lang):
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
+        db, telegram_bot_id=telegram_bot_id)
+    if not shop_telegram_bot:
+        return
+
+    bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
+    text = f"Your shop {shop_telegram_bot.shop.title} connected to {shop_telegram_bot.telegram_bot.username}.\n برو به بچه محلات نشون بده"
+    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
+    return
+
+
 def get_shop_menu(bot_id: UUID4, lead_id: UUID4):
     keyboard = [
         [
