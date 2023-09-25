@@ -11,7 +11,7 @@ from app.api.api_v1.routers.telegram_bot import get_me, set_webhook
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
-from app.core.utils import generate_random_token
+from app.core.utils import generate_random_token, generate_random_support_token
 
 router = APIRouter(prefix='/telegram')
 
@@ -36,19 +36,19 @@ def create_shop_for_telegram_bot(
     if shop and shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_SHOP_IS_EXIST)
 
-    support_token = generate_random_token(length=8)
+    support_token = generate_random_support_token(length=7)
 
     while services.shop.shop_telegram_bot.get_by_support_token(
             db, support_token=support_token
     ):
-        support_token = generate_random_token(length=8)
+        support_token = generate_random_support_token(length=7)
 
-    support_bot_token = generate_random_token(length=8)
+    support_bot_token = generate_random_support_token(length=7)
 
     while services.shop.shop_telegram_bot.get_by_support_bot_token(
             db, support_bot_token=support_bot_token
     ):
-        support_bot_token = generate_random_token(length=8)
+        support_bot_token = generate_random_support_token(length=7)
 
     shop = services.shop.shop.create(
         db,

@@ -54,3 +54,8 @@ class SupportBotMessage:
         "fa": "سفارش به شماره ی {order_number} به وضعیت `ارسال شده` تغییر پیدا کرد."
 
     }
+    
+    ENTER_ORDER_NUMBER = {
+        "fa": "شماره سفارش را وارد کنید."
+
+    }

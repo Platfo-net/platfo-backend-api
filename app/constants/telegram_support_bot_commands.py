@@ -18,6 +18,11 @@ class TelegramSupportBotCommand:
         "description": "Accepted Orders",
     }
 
+    SEARCH_ORDER = {
+        "command": "/search_order",
+        "description": "Search Order",
+    }
+
     commands = [
-        START, PAYMENT_CHECK_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS
+        START, PAYMENT_CHECK_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS, SEARCH_ORDER
     ]

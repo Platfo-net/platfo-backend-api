@@ -21,28 +21,32 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         )
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
-        if command == TelegramCallbackCommand.ACCEPT_ORDER["command"]:
-            await accept_order_handler(db, update, arg, lang)
+        match command:
+            case TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
+                await accept_order_handler(db, update, arg, lang)
 
-        if command == TelegramCallbackCommand.DECLINE_ORDER["command"]:
-            await decline_order_handler(db, update, arg, lang)
+            case TelegramCallbackCommand.DECLINE_ORDER.get("command"):
+                await decline_order_handler(db, update, arg, lang)
 
-        if command == TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["command"]:
-            await decline_payment_order_handler(db, update, arg, lang)
+            case  TelegramCallbackCommand.DECLINE_PAYMENT_ORDER("command"):
+                await decline_payment_order_handler(db, update, arg, lang)
 
-        if command == TelegramCallbackCommand.PREPARE_ORDER["command"]:
-            await prepare_order_handler(db, update, arg, lang)
+            case  TelegramCallbackCommand.PREPARE_ORDER("command"):
+                await prepare_order_handler(db, update, arg, lang)
 
-        if command == TelegramCallbackCommand.SEND_ORDER["command"]:
-            await send_order_handler(db, update, arg, lang)
+            case  TelegramCallbackCommand.SEND_ORDER("command"):
+                await send_order_handler(db, update, arg, lang)
 
-        if command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT["command"]:
-            await verify_support_account(db, update, arg, lang)
+            case  TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT("command"):
+                await verify_support_account(db, update, arg, lang)
 
     else:
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
         if update.message.text == TelegramSupportBotCommand.START["command"]:
             await update.message.reply_text(SupportBotMessage.ENTER_CODE[lang])
+
+        if update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
+            await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang])
 
         elif update.message.text == TelegramSupportBotCommand.PAYMENT_CHECK_ORDERS["command"]:
             chat_id = update.message.chat_id
@@ -110,33 +114,34 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             order_number = int(update.message.text)
             await send_order(db, update, order_number, lang)
         else:
-
             code = update.message.text.lstrip().rstrip()
+            if not len(code):
+                return await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
             if len(code) != 8:
-                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
-                return
+                return await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
+
+            if not code[0] == "P":
+                return await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
 
             support_account = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
             if support_account:
-                await update.message.reply_text(
+                return await update.message.reply_text(
                     SupportBotMessage.SUPPORT_ACCOUNT_ALREADY_CONNECTED[lang].format(
                         title=shop_telegram_bot.shop.title)
                 )
-                return
 
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
                 db, support_token=code)
             if not shop_telegram_bot:
-                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
-                return
+                return await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
 
             if shop_telegram_bot.support_account_chat_id:
-                await update.message.reply_text(
+                return await update.message.reply_text(
                     SupportBotMessage.SHOP_ALREADY_CONNECTED[lang].format(
                         title=shop_telegram_bot.shop.title)
                 )
-                return
+
             text, reply_markup = verify_shop_support_account_message(shop_telegram_bot, lang)
             await update.message.reply_text(
                 text, reply_markup=reply_markup

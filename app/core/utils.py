@@ -143,3 +143,10 @@ def paginate(total_count, page, page_size) -> schemas.Pagination:
         total_pages=math.ceil(total_count / page_size),
         total_count=total_count,
     )
+
+
+def generate_random_support_token(length: int) -> str:
+    token = ''.join(
+        random.choice(string.digits) for _ in range(length)
+    )
+    return "P" + token
