@@ -27,16 +27,16 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif command == TelegramCallbackCommand.DECLINE_ORDER.get("command"):
             await decline_order_handler(db, update, arg, lang)
 
-        elif command == TelegramCallbackCommand.DECLINE_PAYMENT_ORDER("command"):
+        elif command == TelegramCallbackCommand.DECLINE_PAYMENT_ORDER.get("command"):
             await decline_payment_order_handler(db, update, arg, lang)
 
-        elif command == TelegramCallbackCommand.PREPARE_ORDER("command"):
+        elif command == TelegramCallbackCommand.PREPARE_ORDER.get("command"):
             await prepare_order_handler(db, update, arg, lang)
 
-        elif command == TelegramCallbackCommand.SEND_ORDER("command"):
+        elif command == TelegramCallbackCommand.SEND_ORDER.get("command"):
             await send_order_handler(db, update, arg, lang)
 
-        elif command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT("command"):
+        elif command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT.get("command"):
             await verify_support_account(db, update, arg, lang)
 
     else:
