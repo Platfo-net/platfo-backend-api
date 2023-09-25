@@ -14,6 +14,10 @@ class SupportBotMessage:
         "fa": "فروشگاه {title} به یک اکانت متصل است."
     }
 
+    SUPPORT_ACCOUNT_ALREADY_CONNECTED = {
+        "fa": "شما در حال حاضر به فروشگاه {title} متصل هستید."
+    }
+
     ACCEPT_SHOP = {
         "fa": "شما در حال تلاش برای اتصال به فروشگاه {title} هستید . در صورت موافقت روی OK بزنید."
     }

@@ -115,12 +115,23 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             if len(code) != 8:
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
+
+            support_account = services.shop.shop_telegram_bot.get_by_chat_id(
+                db, chat_id=update.message.chat_id)
+            if support_account:
+                await update.message.reply_text(
+                    SupportBotMessage.SUPPORT_ACCOUNT_ALREADY_CONNECTED[lang].format(
+                        title=shop_telegram_bot.shop.title)
+                )
+                return
+
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
                 db, support_token=code)
             if not shop_telegram_bot:
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
-            if shop_telegram_bot.is_support_verified:
+
+            if shop_telegram_bot.support_account_chat_id:
                 await update.message.reply_text(
                     SupportBotMessage.SHOP_ALREADY_CONNECTED[lang].format(
                         title=shop_telegram_bot.shop.title)
@@ -470,7 +481,7 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
         ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}") # noqa
+                callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}")  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
