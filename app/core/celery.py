@@ -10,6 +10,7 @@ celery = Celery(
 
 celery.conf.broker_url = str(settings.CELERY_URI)
 celery.conf.result_backend = str(settings.CELERY_URI)
+celery.conf.broker_connection_retry_on_startup = True
 celery.conf.update(
     task_serializer='json',
     result_serializer='json',

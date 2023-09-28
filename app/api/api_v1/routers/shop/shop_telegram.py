@@ -171,7 +171,7 @@ def connect_shop_to_telegram_bot(
 
     services.shop.shop_telegram_bot.connect_telegram_bot(
         db, db_obj=shop_telegram_bot, telegram_bot_id=bot.id)
-    
+
     telegram_tasks.send_shop_bot_connection_notification_task.delay(
         shop_telegram_bot.id, "fa")
     return
