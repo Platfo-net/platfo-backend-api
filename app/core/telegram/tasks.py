@@ -1,6 +1,7 @@
 import asyncio
+
 from app.core.celery import celery
-from app.core.telegram import support_bot_handlers, bot_handlers, handlers
+from app.core.telegram import bot_handlers, handlers, support_bot_handlers
 from app.db.session import SessionLocal
 
 

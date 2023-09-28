@@ -1,10 +1,11 @@
-from pydantic import UUID4
 import telegram
+from pydantic import UUID4
+from sqlalchemy.orm import Session
+from telegram import Bot
+
 from app import services
 from app.core.config import settings
 from app.core.telegram import helpers
-from telegram import Bot
-from sqlalchemy.orm import Session
 
 
 def get_shop_menu(bot_id: UUID4, lead_id: UUID4):

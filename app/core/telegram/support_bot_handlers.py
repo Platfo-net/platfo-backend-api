@@ -6,7 +6,6 @@ from telegram import Bot
 from app import models, services
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_callback_command import TelegramCallbackCommand
-
 from app.core.config import settings
 from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
