@@ -87,21 +87,21 @@ class Settings(BaseSettings):
     SAMPLE_FACEBOOK_PAGE_ID: int = 20
     SAMPLE_LEAD_IGS_ID: int = 10
 
-    SMS_IR_USER_ACTIVATION_TEMPLATE_ID: int = None
-    SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID: int = None
+    SMS_IR_USER_ACTIVATION_TEMPLATE_ID: int = 0
+    SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID: int = 0
 
-    SMS_IR_API_KEY: str = None
-    SMS_IR_LINE_NUMBER: str = None
+    SMS_IR_API_KEY: str = ""
+    SMS_IR_LINE_NUMBER: str = ""
 
-    LOKI_LOG_PUSH_URL: str = None
+    LOKI_LOG_PUSH_URL: str = ""
 
-    OTEL_EXPORTER_OTLP_ENDPOINT: str = None
+    OTEL_EXPORTER_OTLP_ENDPOINT: str = ""
 
-    OTEL_SERVICE_NAME: str = None
-    OTEL_EXPORTER_OTLP_INSECURE: str = None
+    OTEL_SERVICE_NAME: str = ""
+    OTEL_EXPORTER_OTLP_INSECURE: str = ""
 
-    SUPPORT_BOT_TOKEN: str = None
-    PLATFO_SHOPS_BASE_URL: str
+    SUPPORT_BOT_TOKEN: str = ""
+    PLATFO_SHOPS_BASE_URL: str = ""
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
