@@ -49,7 +49,6 @@ class Settings(BaseSettings):
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
-
     FACEBOOK_APP_ID: str = None
     FACEBOOK_APP_SECRET: str = None
 
@@ -74,7 +73,7 @@ class Settings(BaseSettings):
     S3_PORT: str = ""
     S3_HOST: str = ""
 
-    S3_ACADEMY_ATTACHMENT_BUCKET: str =  "academy_attachment_bucket"
+    S3_ACADEMY_ATTACHMENT_BUCKET: str = "academy_attachment_bucket"
     S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow_media_bucket"
     S3_CAMPAIGN_BUCKET: str = "notifier_campaign_bucket"
     S3_USER_PROFILE_BUCKET: str = 'user_profile_bucket'
