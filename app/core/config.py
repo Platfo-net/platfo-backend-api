@@ -69,10 +69,10 @@ class Settings(BaseSettings):
 
     CELERY_URI: Optional[RedisDsn] = None
 
-    S3_ROOT_USER: str = None
-    S3_ROOT_PASSWORD: str = None
-    S3_PORT: str = None
-    S3_HOST: str = None
+    S3_ROOT_USER: str = ""
+    S3_ROOT_PASSWORD: str = ""
+    S3_PORT: str = ""
+    S3_HOST: str = ""
 
     S3_ACADEMY_ATTACHMENT_BUCKET: str =  "academy_attachment_bucket"
     S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow_media_bucket"
