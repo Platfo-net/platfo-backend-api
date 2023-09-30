@@ -7,7 +7,7 @@ from app import models, schemas, services
 @pytest.fixture
 def sample_role(db: Session):
     role_in = schemas.RoleCreate(
-        name='SampleRole', description='Sample',
+        name='SampleRole', description='Sample', persian_name="Sample",
     )
     role = services.role.create(db, obj_in=role_in)
     yield role
@@ -20,6 +20,6 @@ def test_create_role_successfully(db: Session, sample_role):
 
 def test_update_role_successfully(db: Session, sample_role: models.Role):
     new_role = services.role.update(db, db_obj=sample_role, obj_in=schemas.RoleUpdate(
-        name='NewSampleRole', description='New Sample'
+        name='NewSampleRole', description='New Sample', persian_name="Sample"
     ))
     assert isinstance(new_role, models.Role)
