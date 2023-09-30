@@ -3,10 +3,13 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class Credit(BaseModel):
-    module: str
+class ShopCredit(BaseModel):
     expires_at: Optional[datetime] = None
-    count: Optional[int] = None
+    is_expired: bool
+
+
+class AddDaysCredit(BaseModel):
+    days_added: int = Field(default=0, min=0)

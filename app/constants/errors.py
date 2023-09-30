@@ -236,6 +236,12 @@ class Error:
         'code': 140,
     }
 
+    SHOP_CREDIT_NOT_FOUND = {
+        'text': 'There is no credit for this shop.',
+        'status_code': 404,
+        'code': 141,
+    }
+
     # telegram bot errors
 
     INVALID_TELEGRAM_BOT = {

@@ -18,6 +18,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         update = telegram.Update.de_json(
             {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
+
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
         if command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
@@ -40,6 +41,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
     else:
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
+
         if update.message.text == TelegramSupportBotCommand.START["command"]:
             await update.message.reply_text(SupportBotMessage.ENTER_CODE[lang])
 

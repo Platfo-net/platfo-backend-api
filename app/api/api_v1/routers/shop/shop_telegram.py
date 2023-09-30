@@ -65,6 +65,7 @@ def create_shop_for_telegram_bot(
             shop_id=shop.id,
         )
     )
+    services.credit.shop_credit.create(db, shop_id=shop.id, free_days=7)
 
     return schemas.shop.ShopTelegramBotRegister(
         id=shop.uuid,

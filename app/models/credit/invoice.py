@@ -35,4 +35,3 @@ class Invoice(Base):
     )
 
     user = relationship('User', back_populates='invoices')
-    credit_logs = relationship('CreditLog', back_populates='invoice')

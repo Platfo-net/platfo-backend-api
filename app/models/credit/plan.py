@@ -33,7 +33,6 @@ class Plan(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     features = relationship('PlanFeature', back_populates='plan')
-    credit_logs = relationship('CreditLog', back_populates='plan')
 
 
 class PlanFeature(Base):

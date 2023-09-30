@@ -19,6 +19,9 @@ async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_i
     if not shop_telegram_bot:
         return
 
+    if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
+        return
+
     message = SupportBotMessage.PAY_ORDER_NOTIFICATION[lang].format(
         order_number=order.order_number)
 
@@ -27,11 +30,13 @@ async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_i
 
 
 async def send_order(db: Session, update: telegram.Update, order_number: int, lang: str):
-
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
         db, chat_id=update.message.chat_id)
 
     if not shop_telegram_bot:
+        return
+
+    if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
         return
 
     order = services.shop.order.get_by_order_number_and_shop_id(
@@ -87,7 +92,10 @@ async def verify_support_account(db: Session, update: telegram.Update,
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_uuid(
         db, uuid=shop_telegram_bot_uuid)
     if not shop_telegram_bot_uuid:
-        await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang])
+        return await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang])
+
+    if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
+        return
 
     services.shop.shop_telegram_bot.verify_support_account(db, db_obj=shop_telegram_bot)
     await update.message.reply_text(
@@ -118,6 +126,9 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
     if not order:
         return
 
+    if not helpers.has_credit_by_shop_id(db, order.shop_id):
+        return
+
     order = services.shop.order.change_status(
         db, order=order, status=OrderStatus.ACCEPTED["value"])
 
@@ -138,6 +149,9 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
     if not order:
         return
 
+    if not helpers.has_credit_by_shop_id(db, order.shop_id):
+        return
+
     order = services.shop.order.change_status(
         db, order=order, status=OrderStatus.DECLINED["value"])
 
@@ -154,6 +168,9 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
 async def decline_payment_order_handler(db: Session, update: telegram.Update, order_id, lang):
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
     if not order:
+        return
+
+    if not helpers.has_credit_by_shop_id(db, order.shop_id):
         return
 
     order = services.shop.order.change_status(db, order=order, status=OrderStatus.UNPAID["value"])
@@ -175,6 +192,9 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
     if not order:
         return
 
+    if not helpers.has_credit_by_shop_id(db, order.shop_id):
+        return
+
     order = services.shop.order.change_status(
         db, order=order, status=OrderStatus.PREPARATION["value"])
     message = SupportBotMessage.PREPARE_ORDER[lang].format(order_number=order.order_number)
@@ -194,6 +214,9 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
     if not order:
         return
 
+    if not helpers.has_credit_by_shop_id(db, order.shop_id):
+        return
+
     order = services.shop.order.change_status(db, order=order, status=OrderStatus.SENT["value"])
     message = SupportBotMessage.SEND_ORDER[lang].format(order_number=order.order_number)
 
@@ -210,9 +233,21 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
 async def send_lead_order_to_shop_support_handler(
         db: Session, telegram_bot_id: int, lead_id: int, order_id: int, lang):
 
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
+        db, telegram_bot_id=telegram_bot_id)
+    if not shop_telegram_bot:
+        return
+
+    if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
+        return
+
     lead = services.social.telegram_lead.get(db, id=lead_id)
     if not lead:
         return
+
+    if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
+        return
+
     order = services.shop.order.get(db, id=order_id)
     if not order:
         return
@@ -220,13 +255,6 @@ async def send_lead_order_to_shop_support_handler(
     if lead.id != order.lead_id:
         return
 
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
-        db, telegram_bot_id=telegram_bot_id)
-    if not shop_telegram_bot:
-        return
-
-    if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
-        return
     amount = 0
     for item in order.items:
         amount += item.count * item.price
@@ -243,6 +271,9 @@ async def send_shop_bot_connection_notification_handler(
     shop_telegram_bot = services.shop.shop_telegram_bot.get(
         db, id=shop_telegram_bot_id)
     if not shop_telegram_bot:
+        return
+
+    if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
         return
 
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)

@@ -3,7 +3,7 @@ from app.models.academy import (Category, Content, ContentCategory,
                                 ContentLabel, Label)
 from app.models.bot_builder import Chatflow, Edge, Node, NodeUI
 from app.models.connection import Connection
-from app.models.credit import Credit, CreditLog, Invoice, Plan, PlanFeature
+from app.models.credit import ShopCredit, Invoice, Plan, PlanFeature
 from app.models.databoard import (CommentStat, FollowerStat, LeadMessageStat,
                                   LeadStat, LiveCommentStat)
 from app.models.instagram_page import InstagramPage

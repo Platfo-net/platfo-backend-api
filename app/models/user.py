@@ -51,8 +51,6 @@ class User(Base):
 
     campaigns = relationship('Campaign', back_populates='user')
     invoices = relationship('Invoice', back_populates='user')
-    credit_logs = relationship('CreditLog', back_populates='user')
-    credits = relationship('Credit', back_populates='user')
     messages = relationship('Message', back_populates='user')
     leads = relationship('Lead', back_populates='user')
 

@@ -29,6 +29,12 @@ async def send_lead_order_to_bot_handler(
     telegram_bot = services.telegram_bot.get(db, id=telegram_bot_id)
     if not telegram_bot:
         return
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
+        db, telegram_bot_id=telegram_bot_id)
+
+    if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
+        return
+
     lead = services.social.telegram_lead.get(db, id=lead_id)
     if not lead:
         return
