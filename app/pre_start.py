@@ -1,10 +1,12 @@
 import logging
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.core.config import settings
 
 from sqlalchemy.sql import text
 from tenacity import (after_log, before_log, retry, stop_after_attempt,
                       wait_fixed)
 
-from app.db.session import SessionLocal
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,7 +23,10 @@ wait_seconds = 1
 )
 def init() -> None:
     try:
-        db = SessionLocal()
+        url = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.POSTGRES_DB}"
+        engine = create_engine(url, pool_pre_ping=True)
+        Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        db = Session()
         # Try to create session to check if DB is awake
         db.execute(text('SELECT 1'))
     except Exception as e:

@@ -3,6 +3,7 @@
 export ENVIRONMENT="dev"
 
 python ./app/pre_start.py
+python ./app/create_db.py
 
 alembic upgrade head
 

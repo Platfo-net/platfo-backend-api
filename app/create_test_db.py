@@ -4,8 +4,8 @@ from app.core.config import settings
 
 conn_string = "host='{}' user='{}' password='{}' port='{}'".format(
     settings.DB_HOST,
-    settings.POSTGRES_USER,
-    settings.POSTGRES_PASSWORD,
+    settings.DB_USER,
+    settings.DB_PASSWORD,
     settings.DB_PORT,
 )
 connection = psycopg2.connect(conn_string)
@@ -13,6 +13,6 @@ connection.autocommit = True
 cursor = connection.cursor()
 
 print('Creating test database')
-query = f'CREATE database {settings.POSTGRES_DB}_test;'
+query = f'CREATE database {settings.DB_NAME}_test;'
 cursor.execute(query)
 print('Test database created successfully')

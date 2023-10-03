@@ -37,13 +37,13 @@ def get_url():
 
     from app.core.config import settings
 
-    user = settings.POSTGRES_USER
-    password = settings.POSTGRES_PASSWORD
+    user = settings.DB_USER
+    password = settings.DB_PASSWORD
     host = settings.DB_HOST
     db = (
-        f'{settings.POSTGRES_DB}_test'
+        f'{settings.DB_NAME}_test'
         if os.environ.get('ENVIRONMENT') == 'test'
-        else settings.POSTGRES_DB
+        else settings.DB_NAME
     )
 
     return f'postgresql://{user}:{password}@{host}/{db}'
