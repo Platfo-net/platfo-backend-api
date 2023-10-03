@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -151,6 +152,25 @@ class ShopTelegramBotServices:
             .join(self.model.shop)
             .filter(self.model.id == id)
             .first()
+        )
+
+    def all(
+        self,
+        db: Session,
+    ) -> models.shop.ShopShopTelegramBot:
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .join(self.model.telegram_bot)
+            .all()
+        )
+
+    def get_multi_by_shop_ids(self, db: Session, *, shop_ids: List[int]) -> List[models.shop.ShopShopTelegramBot]:
+        return (
+            db.query(self.model)
+            .filter(self.model.shop_id.in_(shop_ids))
+            .join(self.model.telegram_bot)
+            .all()
         )
 
 

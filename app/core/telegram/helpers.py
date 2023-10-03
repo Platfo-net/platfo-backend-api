@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from typing import Optional, Union
 from sqlalchemy.orm import Session
 from jinja2 import Environment, FileSystemLoader
 from app import services
@@ -30,3 +31,21 @@ def has_credit_telegram_bot(db, shop_id):
     if not credit:
         return False
     return datetime.now() <= credit.expires_at
+
+
+def get_expires_close_shops(db) -> dict[int, dict[str, Union[str, datetime]]]:
+    lower = datetime.now()
+    upper = datetime.now() - timedelta(days=5)
+    shops_credit = services.credit.shop_credit.get_expire_between(db, lower=lower, upper=upper)
+    shop_ids = [shop.shop_id for shop in shops_credit]
+    bots = services.shop.shop_telegram_bot.get_multi_by_shop_ids(db, shop_ids=shop_ids)
+    shops = {}
+    for bot in bots:
+        for shop_credit in shops_credit:
+            if bot.shop_id == shop_credit.shop_id:
+                shops[bot.shop_id] = {
+                    "chat_id": bot.support_account_chat_id,
+                    "expires_at": shop_credit.expires_at,
+                }
+
+    return shops

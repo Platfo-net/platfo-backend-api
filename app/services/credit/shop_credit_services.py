@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
+from typing import List
 from pydantic import UUID4
+from sqlalchemy import and_
 
 from sqlalchemy.orm import Session
 
@@ -40,6 +42,15 @@ class ShopCreditServices:
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
+    def get_expire_between(self, db: Session, *, lower: datetime, upper: datetime)-> List[models.credit.ShopCredit]:
+        return (
+            db.query(self.model, models.shop.ShopShopTelegramBot)
+            .filter(
+                and_(self.model.expires_at <= upper, self.model.expires_at >= lower))
+            .join(self.model.shop)
+            .all()
+        )
 
 
 shop_credit = ShopCreditServices(models.credit.ShopCredit)

@@ -1,7 +1,9 @@
 import asyncio
+from datetime import datetime, timedelta
+from app import services
 
 from app.core.celery import celery
-from app.core.telegram import bot_handlers, handlers, support_bot_handlers
+from app.core.telegram import bot_handlers, handlers, helpers, support_bot_handlers
 from app.db.session import SessionLocal
 
 
@@ -66,4 +68,16 @@ def send_shop_bot_connection_notification_task(shop_telegram_bot_id: int, lang):
         )
     )
 
+    db.close()
+
+
+@celery.task
+def send_expiration_soon_notification_task():
+    db = SessionLocal()
+    asyncio.run(
+        support_bot_handlers.send_expiration_soon_notification(
+            db,
+            "fa",
+        )
+    )
     db.close()

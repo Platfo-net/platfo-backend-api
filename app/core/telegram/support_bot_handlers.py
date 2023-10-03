@@ -1,3 +1,4 @@
+from datetime import datetime
 import telegram
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -433,3 +434,13 @@ def get_send_order_message(order: models.shop.ShopOrder, lang):
         order_status=OrderStatus.SENT["title"][lang]
     )
     return text
+
+
+async def send_expiration_soon_notification(db: Session, lang):
+    shops = helpers.get_expires_close_shops(db)
+    bot = Bot(settings.SUPPORT_BOT_TOKEN)
+    for shop in shops:
+        days = (shop["expires_at"] - datetime.now()).days
+        text = SupportBotMessage.EXPIRATION_NOTIFICATION[lang].format(days=days)
+        await bot.send_message(chat_id=shop["chat_id"], text=text)
+    return
