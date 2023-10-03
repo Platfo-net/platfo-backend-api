@@ -31,7 +31,7 @@ def create_product(
     category = None
     shop = None
 
-    if not (obj_in.shop_id and obj_in.category_id):
+    if not (obj_in.shop_id or obj_in.category_id):
         raise_http_exception(Error.SHOP_CATEGORY_OR_SHOP_NOT_PROVIDED)
 
     elif not obj_in.shop_id and obj_in.category_id:
