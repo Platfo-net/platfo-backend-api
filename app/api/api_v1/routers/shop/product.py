@@ -9,6 +9,7 @@ from app.constants.role import Role
 from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception
+from app.core.telegram.helpers import has_credit_by_shop_id
 
 router = APIRouter(prefix='/products')
 
@@ -229,3 +230,50 @@ def delete_product(
     services.shop.product.delete(db, db_obj=product)
 
     return
+
+
+@router.get('/{shop_id}/telegram-shop', response_model=schemas.shop.ProductListAPI)
+def get_shop_products_for_telegram_shop(
+    *,
+    db: Session = Depends(deps.get_db),
+    page: int = 1,
+    page_size: int = 20,
+    shop_id: UUID4,
+):
+
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if not has_credit_by_shop_id(db, shop.id):
+        raise_http_exception(Error.SHOP_SHOP_NOT_AVAILABLE)
+
+    items, pagination = services.shop.product.get_multi_by_shop_id(
+        db, shop_id=shop.id, page=page, page_size=page_size)
+
+    products_list = []
+    for product in items:
+        image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+        category = None
+        if product.category_id:
+            category = schemas.shop.Category(
+                id=product.category.uuid,
+                title=product.category.title,
+            )
+        products_list.append(
+            schemas.shop.Product(
+                id=product.uuid,
+                title=product.title,
+                price=product.price,
+                image=image_url,
+                currency=product.currency,
+                created_at=product.created_at,
+                updated_at=product.updated_at,
+                category=category
+            ))
+
+    return schemas.shop.ProductListAPI(
+        items=products_list,
+        pagination=pagination,
+    )

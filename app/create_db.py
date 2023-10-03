@@ -1,4 +1,3 @@
-from time import sleep
 import psycopg2
 
 from app.core.config import settings
@@ -15,9 +14,11 @@ cursor = connection.cursor()
 
 print('Creating database')
 cursor.execute(
-    "select exists(select * from information_schema.tables where table_name=%s)", ('alembic_version',))
+    "select exists(select * from information_schema.tables where table_name=%s)", ('alembic_version',))  # noqa
 if not cursor.fetchone()[0]:
-    query = f"CREATE ROLE {settings.DB_USER} WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD '{settings.DB_PASSWORD}';"
+    query = "CREATE ROLE {} WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD '{}';".format(  # noqa
+        settings.DB_USER, settings.DB_PASSWORD
+    )
     cursor.execute(query)
 
     query = f'CREATE database {settings.DB_NAME};'

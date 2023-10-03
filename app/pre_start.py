@@ -23,7 +23,13 @@ wait_seconds = 1
 )
 def init() -> None:
     try:
-        url = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.POSTGRES_DB}"
+        url = "postgresql://{}:{}@{}:{}/{}".format(
+            settings.POSTGRES_USER,
+            settings.POSTGRES_PASSWORD,
+            settings.DB_HOST,
+            settings.DB_PORT,
+            settings.POSTGRES_DB
+        )
         engine = create_engine(url, pool_pre_ping=True)
         Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         db = Session()

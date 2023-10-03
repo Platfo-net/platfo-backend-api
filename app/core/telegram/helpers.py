@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import Union
 from sqlalchemy.orm import Session
 from jinja2 import Environment, FileSystemLoader
 from app import services

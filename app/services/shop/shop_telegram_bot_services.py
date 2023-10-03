@@ -165,7 +165,9 @@ class ShopTelegramBotServices:
             .all()
         )
 
-    def get_multi_by_shop_ids(self, db: Session, *, shop_ids: List[int]) -> List[models.shop.ShopShopTelegramBot]:
+    def get_multi_by_shop_ids(
+        self, db: Session, *, shop_ids: List[int]
+    ) -> List[models.shop.ShopShopTelegramBot]:
         return (
             db.query(self.model)
             .filter(self.model.shop_id.in_(shop_ids))

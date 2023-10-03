@@ -386,6 +386,11 @@ class Error:
         "status_code": 404,
         "code": 178,
     }
+    SHOP_SHOP_NOT_AVAILABLE = {
+        "text": "Shop doesn't available",
+        "status_code": 400,
+        "code": 179,
+    }
 
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {

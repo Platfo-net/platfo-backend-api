@@ -33,7 +33,9 @@ class ShopCreditServices:
         db.refresh(db_obj)
         return db_obj
 
-    def create(self, db: Session, *, shop_id: int, free_days: int) -> models.credit.ShopCredit:
+    def create(
+        self, db: Session, *, shop_id: int, free_days: int
+    ) -> models.credit.ShopCredit:
         db_obj = self.model(
             shop_id=shop_id,
             expires_at=datetime.now() + timedelta(days=free_days),
@@ -43,7 +45,9 @@ class ShopCreditServices:
         db.refresh(db_obj)
         return db_obj
 
-    def get_expire_between(self, db: Session, *, lower: datetime, upper: datetime)-> List[models.credit.ShopCredit]:
+    def get_expire_between(
+        self, db: Session, *, lower: datetime, upper: datetime
+    ) -> List[models.credit.ShopCredit]:
         return (
             db.query(self.model, models.shop.ShopShopTelegramBot)
             .filter(
