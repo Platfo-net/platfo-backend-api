@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from jinja2 import Environment, FileSystemLoader
 from app import services
+from app.core.config import settings
 
 
 def load_message(lang, template_name, **kwargs) -> str:
@@ -13,6 +14,8 @@ def load_message(lang, template_name, **kwargs) -> str:
 
 
 def has_credit_by_shop_id(db: Session, shop_id: int) -> bool:
+    if settings.ENVIRONMENT != "prod":
+        return True
 
     credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop_id)
     if not credit:
@@ -21,6 +24,8 @@ def has_credit_by_shop_id(db: Session, shop_id: int) -> bool:
 
 
 def has_credit_telegram_bot(db, shop_id):
+    if settings.ENVIRONMENT != "prod":
+        return True
     credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop_id)
     if not credit:
         return False
