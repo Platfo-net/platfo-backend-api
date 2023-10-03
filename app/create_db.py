@@ -22,6 +22,4 @@ if not cursor.fetchone()[0]:
 
     query = f'CREATE database {settings.DB_NAME};'
     cursor.execute(query)
-sleep(5)
-
 print('Database created successfully')
