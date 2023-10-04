@@ -465,9 +465,14 @@ class ShopCategories(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.title
+
     class Meta:
         managed = False
         db_table = 'shop_categories'
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
 
 
 class ShopOrderItems(models.Model):
@@ -650,6 +655,8 @@ class Users(models.Model):
         managed = False
         db_table = 'users'
         unique_together = (('phone_country_code', 'phone_number'),)
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
 
 
 models_list = [
