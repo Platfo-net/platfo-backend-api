@@ -28,3 +28,4 @@ class CreditShopAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
+admin.site.register(models.CreditShopCredits, CreditShopAdmin)
