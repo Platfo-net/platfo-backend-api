@@ -11,4 +11,12 @@ class UserAdmin(admin.ModelAdmin):
     )
 
 
+class ShopAdmin(admin.ModelAdmin):
+    model = models.ShopShops
+    list_display = (
+        "user", "title", "description", "category"
+    )
+
+
 admin.site.register(models.Users, UserAdmin)
+admin.site.register(models.ShopShops, ShopAdmin)

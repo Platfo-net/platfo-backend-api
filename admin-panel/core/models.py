@@ -643,6 +643,9 @@ class Users(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return f"+{self.phone_country_code}-{self.phone_number}"
+
     class Meta:
         managed = False
         db_table = 'users'
