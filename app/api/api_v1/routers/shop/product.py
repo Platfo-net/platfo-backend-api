@@ -177,6 +177,7 @@ def get_shop_products(
 
     items, pagination = services.shop.product.get_multi_by_shop_id(
         db, shop_id=shop.id, page=page, page_size=page_size)
+    
 
     products_list = []
     for product in items:

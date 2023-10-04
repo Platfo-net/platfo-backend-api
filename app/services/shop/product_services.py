@@ -82,9 +82,8 @@ class ProductServices:
         page_size: int = 20,
     ) -> dict[List[models.shop.ShopProduct], schemas.Pagination]:
         items = (db.query(self.model)
-                 .join(self.model.category)
-                 .join(self.model.shop)
                  .filter(self.model.shop_id == shop_id)
+                 .join(self.model.category , isouter=True)
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)
