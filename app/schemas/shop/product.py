@@ -18,8 +18,8 @@ class ProductBase(BaseModel):
 
 
 class ProductCreate(ProductBase):
-    category_id: UUID4
-    shop_id: UUID4
+    category_id: Optional[UUID4] = None
+    shop_id: Optional[UUID4] = None
 
 
 class ProductUpdate(ProductBase):
