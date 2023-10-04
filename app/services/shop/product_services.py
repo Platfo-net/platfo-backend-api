@@ -80,7 +80,7 @@ class ProductServices:
         shop_id: int,
         page: int = 1,
         page_size: int = 20,
-    ) -> dict[List[models.shop.ShopProduct], schemas.Pagination]:
+    ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
         items = (db.query(self.model)
                  .filter(self.model.shop_id == shop_id)
                  .join(self.model.category , isouter=True)
