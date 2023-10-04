@@ -34,6 +34,17 @@ class ShopCategoryAdmin(admin.ModelAdmin):
     search_fields = ("shop", "title")
 
 
+class ShopProductAdmin(admin.ModelAdmin):
+    model = models.ShopProducts
+    list_display = (
+        "shop", "title", "category", "get_price"
+    )
+
+    def get_price(self, obj: models.ShopProducts):
+        return f"{obj.price} {obj.currency}"
+    search_fields = ("shop", "title")
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)

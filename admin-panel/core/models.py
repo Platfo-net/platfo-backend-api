@@ -557,7 +557,12 @@ class ShopProducts(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.title
+
     class Meta:
+        verbose_name = 'Product'
+        verbose_name_plural = 'Products'
         managed = False
         db_table = 'shop_products'
 
