@@ -600,6 +600,8 @@ class ShopShops(models.Model):
     class Meta:
         managed = False
         db_table = 'shop_shops'
+        verbose_name = 'Shop'
+        verbose_name_plural = 'Shops'
 
 
 class SocialTelegramLeads(models.Model):
