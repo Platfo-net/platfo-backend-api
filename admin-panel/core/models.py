@@ -597,6 +597,8 @@ class ShopShops(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.title
     class Meta:
         managed = False
         db_table = 'shop_shops'
