@@ -7,8 +7,8 @@ class UserAdmin(admin.ModelAdmin):
     list_display = (
         "first_name", "last_name",
         "phone_country_code", "phone_number",
-        "is_active", "is_email_verified" , "role"
-     )
+        "is_active", "is_email_verified", "role"
+    )
 
 
 admin.site.register(models.Users, UserAdmin)

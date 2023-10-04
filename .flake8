@@ -12,6 +12,8 @@ exclude =
         webhook.py,
         stress.py,
         app/db/base.py,
+        migrations,
+        settings.py
 
 
 ignore =
