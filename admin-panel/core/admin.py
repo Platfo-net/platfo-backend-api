@@ -18,5 +18,13 @@ class ShopAdmin(admin.ModelAdmin):
     )
 
 
+class CreditShopAdmin(admin.ModelAdmin):
+    model = models.CreditShopCredits
+    list_display = (
+        "shop", "expires_at"
+    )
+    search_fields = ("shop",)
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)

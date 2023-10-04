@@ -222,11 +222,15 @@ class CreditShopCredits(models.Model):
     expires_at = models.DateTimeField(blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
+    
+    def __str__(self) -> str:
+        return self.shop.title
 
     class Meta:
         managed = False
         db_table = 'credit_shop_credits'
-
+        verbose_name = 'Shop Credit'
+        verbose_name_plural = 'Shop Credits'
 
 class DataboardCommentStats(models.Model):
     facebook_page_id = models.BigIntegerField(blank=True, null=True)
