@@ -26,6 +26,15 @@ class CreditShopAdmin(admin.ModelAdmin):
     search_fields = ("shop",)
 
 
+class ShopCategoryAdmin(admin.ModelAdmin):
+    model = models.ShopCategories
+    list_display = (
+        "shop", "title",
+    )
+    search_fields = ("shop", "title")
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)
+admin.site.register(models.ShopCategories, ShopCategoryAdmin)
