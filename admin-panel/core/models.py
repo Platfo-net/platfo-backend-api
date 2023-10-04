@@ -594,9 +594,14 @@ class ShopShopTelegramBots(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.telegram_bot
+
     class Meta:
         managed = False
         db_table = 'shop_shop_telegram_bots'
+        verbose_name = 'Shop Telegram Bot'
+        verbose_name_plural = 'Shop Telegram Bots'
 
 
 class ShopShops(models.Model):
@@ -641,9 +646,14 @@ class TelegramBots(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.username
+
     class Meta:
         managed = False
         db_table = 'telegram_bots'
+        verbose_name = 'Telegram Bot'
+        verbose_name_plural = 'Telegram Bots'
 
 
 class Users(models.Model):

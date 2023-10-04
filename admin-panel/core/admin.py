@@ -45,7 +45,24 @@ class ShopProductAdmin(admin.ModelAdmin):
     search_fields = ("shop", "title")
 
 
+class ShopTelegramBotAdmin(admin.ModelAdmin):
+    model = models.ShopShopTelegramBots
+    list_display = (
+        "shop", "telegram_bot"
+    )
+
+
+class TelegramBotAdmin(admin.ModelAdmin):
+    model = models.TelegramBots
+    list_display = (
+        "user", "username"
+    )
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)
 admin.site.register(models.ShopCategories, ShopCategoryAdmin)
+admin.site.register(models.ShopProducts, ShopProductAdmin)
+admin.site.register(models.ShopShopTelegramBots, ShopTelegramBotAdmin)
+admin.site.register(models.TelegramBots, TelegramBotAdmin)
