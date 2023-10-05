@@ -64,3 +64,35 @@ def get_shop(
         category=shop.category,
         description=shop.description
     )
+
+
+@router.put('/{id}', response_model=schemas.shop.Shop)
+def update_shop(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    obj_in: schemas.shop.ShopCreate,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+    shop = services.shop.shop.get_by_uuid(db, uuid=id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    new_shop = services.shop.shop.update(db, db_obj=shop, obj_in=obj_in)
+
+    return schemas.shop.Shop(
+        id=new_shop.uuid,
+        title=new_shop.title,
+        category=new_shop.category,
+        description=new_shop.description
+    )
