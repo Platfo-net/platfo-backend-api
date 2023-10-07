@@ -49,5 +49,11 @@ class TelegramBotServices:
     ) -> models.TelegramBot:
         return db.query(self.model).filter(self.model.id == id).first()
 
+    def all(
+            self,
+            db: Session,
+    ) -> List[models.TelegramBot]:
+        return db.query(self.model).all()
+
 
 telegram_bot = TelegramBotServices(models.TelegramBot)

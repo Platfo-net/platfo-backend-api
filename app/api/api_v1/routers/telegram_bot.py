@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.api import deps
+from app.constants.telegram_bot_command import TelegramSupportBotCommand
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.config import settings
@@ -24,10 +25,19 @@ async def get_me(token):
 
 async def set_webhook(token, bot_id):
     bot = telegram.Bot(token=token)
-    res = await bot.set_webhook(
+    await bot.set_webhook(
         f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/bot/{bot_id}"
     )
-    return res
+    await bot.set_my_commands(
+        commands=[
+            telegram.BotCommand(
+                command["command"],
+                command["description"],
+            ) for command in TelegramSupportBotCommand.commands
+        ]
+    )
+
+    return True
 
 
 @router.post('', response_model=schemas.TelegramBot)

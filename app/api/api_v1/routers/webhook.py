@@ -1,8 +1,10 @@
+from sqlalchemy.orm import Session
 from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
                      status)
 
-from app import models
+from app import models, services
 from app.api import deps
+from app.api.api_v1.routers.telegram_bot import set_webhook
 from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
@@ -59,6 +61,23 @@ async def telegram_set_webhook(
         return await support_bot.set_support_bot_webhook()
     except:
         return
+
+
+@router.post('/telegram/bot/set-webhook', status_code=status.HTTP_200_OK)
+async def telegram_set_webhook(
+    *,
+    db: Session = deps.get_db,
+    current_user: models.User = Security(
+        deps.get_current_user,
+        scopes=[
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    )
+):
+    bots = services.telegram_bot.all(db)
+    for bot in bots:
+        await set_webhook(bot.bot_token, bot.bot_id)
 
 
 @router.post('/telegram/support-bot', status_code=status.HTTP_200_OK)

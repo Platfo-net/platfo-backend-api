@@ -7,6 +7,8 @@ from app.constants.order_status import OrderStatus
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
+from app.constants.telegram_bot_command import \
+    TelegramBotCommand
 from app.core.config import settings
 from app.core.telegram import bot_handlers, helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
@@ -133,7 +135,21 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                                     lead_id=lead.id, message=message)
         await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
         return
-    await update.message.reply_text(
-        text=f"Hi, you are using `{shop_telegram_bot.shop.title}` shop",
-        reply_markup=bot_handlers.get_shop_menu(telegram_bot.uuid, shop_telegram_bot.shop.uuid)
-    )
+
+    elif update.message.text == TelegramBotCommand.START["command"]:
+        text = helpers.load_message(lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)
+        await update.message.reply_text(
+            text=text,
+            reply_markup=bot_handlers.get_shop_menu(telegram_bot.uuid, shop_telegram_bot.shop.uuid)
+        )
+
+    elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
+        text = helpers.load_message(lang, "lead_to_support_message_helper")
+        await update.message.reply_text(
+            text=text,
+        )
+        text = helpers.load_message(lang, "lead_to_support_message_sample")
+
+        await update.message.reply_text(
+            text=text,
+        )

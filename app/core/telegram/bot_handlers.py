@@ -12,7 +12,7 @@ def get_shop_menu(bot_id: UUID4, lead_id: UUID4):
     keyboard = [
         [
             telegram.MenuButtonWebApp(
-                text="View Shop",
+                text="View",
                 web_app=telegram.WebAppInfo(f"{settings.PLATFO_SHOPS_BASE_URL}/{bot_id}/{lead_id}")
             )
         ],
