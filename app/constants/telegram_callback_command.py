@@ -44,3 +44,12 @@ class TelegramCallbackCommand:
 
         "command": "SEND_ORDER"
     }
+    
+    SEND_DIRECT_MESSAGE = {
+        "title":
+            {
+                "fa": "ارسال پیام به مشتری",
+            },
+
+        "command": "SEND_DIRECT_MESSAGE"
+    }

@@ -105,6 +105,7 @@ class OrderServices:
     ) -> models.shop.ShopOrder:
         return (
             db.query(self.model)
+            .join(self.model.lead, isouter=True)
             .filter(self.model.order_number == order_number)
             .filter(self.model.shop_id == shop_id)
             .first()

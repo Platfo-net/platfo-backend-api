@@ -8,7 +8,7 @@ from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
 from app.core.config import settings
-from app.core.telegram import bot_handlers, support_bot_handlers
+from app.core.telegram import bot_handlers, helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
 
 
@@ -44,6 +44,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT.get("command"):
             await support_bot_handlers.verify_support_account(db, update, arg, lang)
             return
+        elif command == TelegramCallbackCommand.SEND_DIRECT_MESSAGE.get("command"):
+            await support_bot_handlers.send_lead_information_to_support_bot(db, update, arg, lang)
+            return
 
     else:
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
@@ -54,6 +57,11 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         if update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
             await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang])
+            return
+
+        if update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
+            message = helpers.load_message(lang, "direct_message_helper")
+            await update.message.reply_text(message)
             return
 
         elif update.message.text == TelegramSupportBotCommand.PAYMENT_CHECK_ORDERS["command"]:

@@ -23,8 +23,5 @@ async def set_support_bot_webhook():
                 command["command"],
                 command["description"],
             ) for command in TelegramSupportBotCommand.commands
-
-
         ]
-
     )

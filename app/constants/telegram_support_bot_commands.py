@@ -22,6 +22,10 @@ class TelegramSupportBotCommand:
         "command": "/search_order",
         "description": "Search Order",
     }
+    HELP_DIRECT_MESSAGE = {
+        "command": "/help_send_direct_message",
+        "description": "How to send direct message",
+    }
 
     commands = [
         START, PAYMENT_CHECK_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS, SEARCH_ORDER
