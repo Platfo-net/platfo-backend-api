@@ -1,3 +1,4 @@
+from uuid import uuid4
 from django.db import models
 
 
@@ -486,7 +487,7 @@ class ShopOrderItems(models.Model):
     product = models.ForeignKey(
         'ShopProducts', models.DO_NOTHING, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
-    uuid = models.UUIDField(blank=True, null=True)
+    uuid = models.UUIDField(blank=True, null=True, default=uuid4)
     count = models.IntegerField(blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
     currency = models.CharField(max_length=32, blank=True, null=True)
@@ -498,6 +499,16 @@ class ShopOrderItems(models.Model):
         verbose_name_plural = 'Order Items'
 
 
+status_choices = (
+    ("UNPAID", "UNPAID"),
+    ("ACCEPTED", "ACCEPTED"),
+    ("PAYMENT_CHECK", "PAYMENT_CHECK"),
+    ("PREPARATION", "PREPARATION"),
+    ("SENT", "SENT"),
+    ("DECLINED", "DECLINED"),
+)
+
+
 class ShopOrders(models.Model):
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)
@@ -507,14 +518,14 @@ class ShopOrders(models.Model):
     city = models.CharField(max_length=255, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     postal_code = models.CharField(max_length=255, blank=True, null=True)
-    status = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(max_length=255, blank=True, null=True, choices=status_choices)
     order_number = models.IntegerField(blank=True, null=True)
     lead = models.ForeignKey('SocialTelegramLeads',
                              models.DO_NOTHING, blank=True, null=True)
     shop = models.ForeignKey(
         'ShopShops', models.DO_NOTHING, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
-    uuid = models.UUIDField(blank=True, null=True)
+    uuid = models.UUIDField(blank=True, null=True, default=uuid4)
     payment_reference_number = models.CharField(
         max_length=255, blank=True, null=True)
     payment_card_last_four_number = models.CharField(
