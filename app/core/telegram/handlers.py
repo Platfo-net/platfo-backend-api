@@ -126,7 +126,11 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
         )
     bot = Bot(token=telegram_bot.bot_token)
     update = telegram.Update.de_json(data, bot)
-
+    if update.message.text == "Hi":
+        bot = Bot(settings.SUPPORT_BOT_TOKEN)
+        await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id,
+                               text="Customer say hello to you")
+        return
     await update.message.reply_text(
         text=f"Hi, you are using `{shop_telegram_bot.shop.title}` shop",
         reply_markup=bot_handlers.get_shop_menu(telegram_bot.uuid, shop_telegram_bot.shop.uuid)
