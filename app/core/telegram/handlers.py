@@ -124,7 +124,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             for order in orders:
                 text = support_bot_handlers.get_unpaid_order_message(order, lang)
                 reply_markup = support_bot_handlers.get_unpaid_order_reply_markup(
-                    order, chat_id, lang)
+                    order, lang)
 
                 await update.message.reply_text(
                     text, reply_markup=reply_markup
