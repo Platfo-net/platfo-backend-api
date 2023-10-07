@@ -67,3 +67,7 @@ class SupportBotMessage:
     DIRECT_MESSAGE_SEND_SUCCESSFULLY = {
         "fa": "پیام شما با موفقیت ارسال شد."  # noqa
     }
+
+    INVALID_COMMAND = {
+        "fa": "پیام غیر قابل پردازش"  # noqa
+    }

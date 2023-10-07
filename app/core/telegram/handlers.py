@@ -55,11 +55,11 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await update.message.reply_text(SupportBotMessage.ENTER_CODE[lang])
             return
 
-        if update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
+        elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
             await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang])
             return
 
-        if update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
+        elif update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
             message = helpers.load_message(lang, "direct_message_helper")
             await update.message.reply_text(message)
             message = helpers.load_message(lang, "direct_message_sample")
@@ -68,123 +68,36 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
 
         elif update.message.text == TelegramSupportBotCommand.PAYMENT_CHECK_ORDERS["command"]:
-            chat_id = update.message.chat_id
-            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
-                db, chat_id=chat_id)
-
-            if not shop_telegram_bot:
-                await update.message.reply_text(
-                    SupportBotMessage.ACCOUNT_NOT_REGISTER[lang]
-                )
-                return
-
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.PAYMENT_CHECK["value"]])  # noqa
-
-            for order in orders:
-                text = support_bot_handlers.get_payment_check_order_message(order, lang)
-                reply_markup = support_bot_handlers.get_payment_check_order_reply_markup(
-                    order, lang)
-                await update.message.reply_text(
-                    text, reply_markup=reply_markup
-                )
+            await support_bot_handlers.send_all_order_by_status(
+                db, update, OrderStatus.PAYMENT_CHECK,
+                support_bot_handlers.get_payment_check_order_message,
+                support_bot_handlers.get_payment_check_order_reply_markup,
+                lang,
+            )
             return
         elif update.message.text == TelegramSupportBotCommand.ACCEPTED_ORDERS["command"]:
-            chat_id = update.message.chat_id
-            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
-                db, chat_id=chat_id)
-
-            if not shop_telegram_bot:
-                await update.message.reply_text(
-                    SupportBotMessage.ACCOUNT_NOT_REGISTER[lang]
-                )
-                return
-
-            orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.ACCEPTED["value"]])  # noqa
-
-            for order in orders:
-                text = support_bot_handlers.get_accepted_order_message(order, lang)
-                reply_markup = support_bot_handlers.get_accepted_order_reply_markup(order, lang)
-
-                await update.message.reply_text(
-                    text,
-                    reply_markup=reply_markup,
-                )
+            await support_bot_handlers.send_all_order_by_status(
+                db, update, OrderStatus.ACCEPTED,
+                support_bot_handlers.get_accepted_order_message,
+                support_bot_handlers.get_accepted_order_reply_markup,
+                lang,
+            )
             return
+
         elif update.message.text == TelegramSupportBotCommand.UNPAID_ORDERS["command"]:
-            chat_id = update.message.chat_id
-            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
-                db, chat_id=chat_id)
-
-            if not shop_telegram_bot:
-                await update.message.reply_text(
-                    SupportBotMessage.ACCOUNT_NOT_REGISTER[lang]
-                )
-                return
-
-            orders = services.shop.order.get_shop_orders(
-                db, shop_id=shop_telegram_bot.shop_id, status=[OrderStatus.UNPAID["value"]])  # noqa
-
-            for order in orders:
-                text = support_bot_handlers.get_unpaid_order_message(order, lang)
-                reply_markup = support_bot_handlers.get_unpaid_order_reply_markup(
-                    order, lang)
-
-                await update.message.reply_text(
-                    text, reply_markup=reply_markup
-                )
+            await support_bot_handlers.send_all_order_by_status(
+                db, update, OrderStatus.UNPAID,
+                support_bot_handlers.get_unpaid_order_message,
+                support_bot_handlers.get_unpaid_order_reply_markup,
+                lang,
+            )
             return
         elif update.message.text.isnumeric():
             order_number = int(update.message.text)
             await support_bot_handlers.send_order(db, update, order_number, lang)
             return
         else:
-            message = update.message.text.lstrip().rstrip()
-            if not len(message):
-                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
-                return
-            if message[0] == "#":
-                chat_id = update.message.chat_id
-                lead_id = message.split("\n")[0][1:]
-                m = "\n".join(message.split("\n")[1:])
-                await support_bot_handlers.send_direct_message(
-                    db, int(lead_id), chat_id, m, lang)
-                return
-            if len(message) != 8:
-                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
-                return
-
-            if not message[0] == "P":
-                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
-                return
-            support_account = services.shop.shop_telegram_bot.get_by_chat_id(
-                db, chat_id=update.message.chat_id)
-            if support_account:
-                await update.message.reply_text(
-                    SupportBotMessage.SUPPORT_ACCOUNT_ALREADY_CONNECTED[lang].format(
-                        title=shop_telegram_bot.shop.title)
-                )
-                return
-
-            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
-                db, support_token=message)
-            if not shop_telegram_bot:
-                await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
-                return
-
-            if shop_telegram_bot.support_account_chat_id:
-                await update.message.reply_text(
-                    SupportBotMessage.SHOP_ALREADY_CONNECTED[lang].format(
-                        title=shop_telegram_bot.shop.title)
-                )
-                return
-
-            text, reply_markup = support_bot_handlers.verify_shop_support_account_message(
-                shop_telegram_bot, lang)
-            await update.message.reply_text(
-                text, reply_markup=reply_markup
-            )
-            services.shop.shop_telegram_bot.set_support_account_chat_id(
-                db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
+            await support_bot_handlers.plain_message_handler(db, update)
             return
 
 
