@@ -7,15 +7,11 @@ from app import models, schemas
 
 class TelegramLeadServices:
     def __init__(self, model):
-        self.model: models.live_chat.TelegramLead = model
+        self.model: models.social.TelegramLead = model
 
     def create(self, db: Session, *, obj_in: schemas.social.TelegramLeadCreate):
         db_obj = self.model(
-            chat_id=obj_in.chat_id,
-            telegram_bot_id=obj_in.telegram_bot_id,
-            first_name=obj_in.first_name,
-            last_name=obj_in.last_name,
-            username=obj_in.username,
+            
         )
         db.add(db_obj)
         db.commit()

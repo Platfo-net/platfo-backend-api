@@ -5,7 +5,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 from telegram import Bot
 
-from app import models, services
+from app import models, schemas, services
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.core.config import settings
@@ -19,11 +19,8 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
         await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
         return
     if message[0] == "#":
-        chat_id = update.message.chat_id
-        lead_id = message.split("\n")[0][1:]
-        m = "\n".join(message.split("\n")[1:])
         await send_direct_message(
-            db, int(lead_id), chat_id, m, lang)
+            db, update, lang)
         return
 
     if len(message) > 10:
@@ -369,7 +366,12 @@ async def send_shop_bot_connection_notification_handler(
 
 
 async def send_direct_message(
-        db: Session, lead_id: int, chat_id: int, message: str, lang: str):
+        db: Session, update: telegram.Update, lang: str):
+
+    message = update.message.text
+    chat_id = update.message.chat_id
+    lead_id = message.split("\n")[0][1:]
+    message = "\n".join(message.split("\n")[1:])
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(db, chat_id=chat_id)
     if not shop_telegram_bot:
@@ -387,12 +389,20 @@ async def send_direct_message(
             text=SupportBotMessage.INVALID_LEAD[lang])
         return
 
-    m = helpers.load_message(lang, "support_direct_message", message=message)
-    await shop_bot.send_message(chat_id=lead.chat_id, text=m)
+    text = helpers.load_message(lang, "support_direct_message", message=message)
+    res: telegram.Message = await shop_bot.send_message(chat_id=lead.chat_id, text=text)
 
     await bot.send_message(
         chat_id=shop_telegram_bot.support_account_chat_id,
         text=SupportBotMessage.DIRECT_MESSAGE_SEND_SUCCESSFULLY[lang])
+
+    obj_in = schemas.social.TelegramLeadMessageCreate(
+        lead_id=lead.id,
+        is_lead_to_bot=False,
+        message_id=update.message.id,
+        mirror_message_id=res.message_id
+    )
+    services.social.telegram_lead_message.create(db, obj_in=obj_in)
     return
 
 

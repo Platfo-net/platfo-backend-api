@@ -1,1 +1,2 @@
 from .telegram_lead import TelegramLead
+from .telegram_lead_message import TelegramLeadMessage
