@@ -45,7 +45,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await support_bot_handlers.verify_support_account(db, update, arg, lang)
             return
         elif command == TelegramCallbackCommand.SEND_DIRECT_MESSAGE.get("command"):
-            await support_bot_handlers.send_lead_information_to_support_bot(db, update, arg, lang)
+            await support_bot_handlers.send_direct_message_helper(db, update, arg, lang)
             return
 
     else:
@@ -62,6 +62,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         if update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
             message = helpers.load_message(lang, "direct_message_helper")
             await update.message.reply_text(message)
+            message = helpers.load_message(lang, "direct_message_sample")
+            await update.message.reply_text(message)
+
             return
 
         elif update.message.text == TelegramSupportBotCommand.PAYMENT_CHECK_ORDERS["command"]:
