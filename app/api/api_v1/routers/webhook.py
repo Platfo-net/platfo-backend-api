@@ -38,7 +38,7 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
 async def telegram_webhook_listener(*, bot_id: int, request: Request):
     try:
         data = await request.json()
-        telegram_tasks.telegram_webhook_task.delay(data, bot_id)
+        telegram_tasks.telegram_webhook_task.delay(data, bot_id, "fa")
     except Exception as e:
         print(e)
     return
