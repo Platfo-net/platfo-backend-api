@@ -97,7 +97,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await support_bot_handlers.send_order(db, update, order_number, lang)
             return
         else:
-            await support_bot_handlers.plain_message_handler(db, update)
+            await support_bot_handlers.plain_message_handler(db, update, lang)
             return
 
 
