@@ -494,6 +494,8 @@ class ShopOrderItems(models.Model):
     class Meta:
         managed = False
         db_table = 'shop_order_items'
+        verbose_name = 'Order Item'
+        verbose_name_plural = 'Order Items'
 
 
 class ShopOrders(models.Model):
@@ -528,6 +530,8 @@ class ShopOrders(models.Model):
     class Meta:
         managed = False
         db_table = 'shop_orders'
+        verbose_name = 'Order'
+        verbose_name_plural = 'Orders'
 
 
 class ShopPaymentMethods(models.Model):
@@ -632,9 +636,14 @@ class SocialTelegramLeads(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.username
+
     class Meta:
         managed = False
         db_table = 'social_telegram_leads'
+        verbose_name = 'Social Telegram Lead'
+        verbose_name_plural = 'Social Telegram Leads'
 
 
 class TelegramBots(models.Model):
