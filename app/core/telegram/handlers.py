@@ -59,7 +59,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang])
             return
 
-        if update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
+        if update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
             message = helpers.load_message(lang, "direct_message_helper")
             await update.message.reply_text(message)
             return
