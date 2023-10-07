@@ -61,7 +61,7 @@ class TelegramBotAdmin(admin.ModelAdmin):
 
 class OrderItemInline(admin.TabularInline):
     model = models.ShopOrderItems
-    extra = 1
+    extra = 0
 
 
 class OrderAdmin(admin.ModelAdmin):
