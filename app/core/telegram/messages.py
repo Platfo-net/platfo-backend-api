@@ -61,3 +61,9 @@ class SupportBotMessage:
     EXPIRATION_NOTIFICATION = {
         "fa": "تا اتمام اعتبار شما {days} روز باقی مانده است. لطفا هرچه سریعتر از پنل خود اقدام به شارژ حساب خود کنید."  # noqa
     }
+    INVALID_LEAD = {
+        "fa": "کاربر نامعتبر است."  # noqa
+    }
+    DIRECT_MESSAGE_SEND_SUCCESSFULLY = {
+        "fa": "پیام شما با موفقیت ارسال شد."  # noqa
+    }

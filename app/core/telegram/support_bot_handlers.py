@@ -307,6 +307,32 @@ async def send_shop_bot_connection_notification_handler(
     return
 
 
+async def send_direct_message(
+        db: Session, lead_id: int, chat_id: int, message: str, lang: str):
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(db, chat_id=chat_id)
+    if not shop_telegram_bot:
+        return
+
+    if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
+        return
+    bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
+    shop_bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
+    lead = services.social.telegram_lead.get(db, id=lead_id)
+
+    if not lead or lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
+        await bot.send_message(
+            chat_id=shop_telegram_bot.support_account_chat_id, text=SupportBotMessage.INVALID_LEAD[lang])
+        return
+
+    m = helpers.load_message(lang, "support_direct_message", message=message)
+    await shop_bot.send_message(chat_id=lead.chat_id, message=m)
+
+    await bot.send_message(
+        chat_id=shop_telegram_bot.support_account_chat_id, text=SupportBotMessage.DIRECT_MESSAGE_SEND_SUCCESSFULLY[lang])
+    return
+
+
 def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
     total_price = 0
     for item in order.items:

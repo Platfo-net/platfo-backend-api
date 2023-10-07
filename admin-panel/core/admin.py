@@ -59,6 +59,18 @@ class TelegramBotAdmin(admin.ModelAdmin):
     )
 
 
+class OrderItemInline(admin.TabularInline):
+    model = models.ShopOrderItems
+
+
+class OrderAdmin(admin.ModelAdmin):
+    model = models.ShopOrders
+    inlines = [OrderItemInline]
+    list_display = (
+        "shop", "order_number"
+    )
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)
@@ -66,3 +78,4 @@ admin.site.register(models.ShopCategories, ShopCategoryAdmin)
 admin.site.register(models.ShopProducts, ShopProductAdmin)
 admin.site.register(models.ShopShopTelegramBots, ShopTelegramBotAdmin)
 admin.site.register(models.TelegramBots, TelegramBotAdmin)
+admin.site.register(models.ShopOrders, OrderAdmin)

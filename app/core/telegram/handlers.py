@@ -134,19 +134,25 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await support_bot_handlers.send_order(db, update, order_number, lang)
             return
         else:
-            if update.message.text.lstrip().rstrip()[0] == "#":
-                m = update.message.text.lstrip().rstrip().split("\n")[0][1:]
-                await update.message.reply_text(f"الکی مثلا پیام برای مشتری {m} ارسال شد")
-                return
-            code = update.message.text.lstrip().rstrip()
-            if not len(code):
+            message = update.message.text.lstrip().rstrip()
+            if not len(message):
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
-            if len(code) != 8:
+            if message[0] == "#":
+                chat_id = update.message.chat_id
+                lead_id = message.split("\n")[0][1:]
+                direct_message_lines = message.split("\n")[1:]
+                direct_message = ""
+                for line in direct_message_lines:
+                    direct_message += line
+                    direct_message += "\n"
+                await support_bot_handlers.send_direct_message(db, int(lead_id), chat_id, message, lang)
+                return
+            if len(message) != 8:
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
 
-            if not code[0] == "P":
+            if not message[0] == "P":
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
             support_account = services.shop.shop_telegram_bot.get_by_chat_id(
@@ -159,7 +165,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 return
 
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
-                db, support_token=code)
+                db, support_token=message)
             if not shop_telegram_bot:
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
                 return
