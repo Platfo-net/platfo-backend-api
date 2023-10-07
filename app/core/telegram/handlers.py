@@ -141,11 +141,6 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         await update.message.reply_text(
             text=text,
         )
-        text = helpers.load_message(lang, "lead_to_support_message_sample")
-
-        await update.message.reply_text(
-            text=text,
-        )
     else:
         message = update.message.text
         bot = Bot(settings.SUPPORT_BOT_TOKEN)
