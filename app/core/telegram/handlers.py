@@ -134,6 +134,10 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await support_bot_handlers.send_order(db, update, order_number, lang)
             return
         else:
+            if update.message.text.lstrip().rstrip()[0] == "#":
+                m = update.message.text.lstrip().rstrip().split("\n")[0][1:]
+                await update.message.reply_text(f"الکی مثلا پیام برای مشتری {m} ارسال شد")
+                return
             code = update.message.text.lstrip().rstrip()
             if not len(code):
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
