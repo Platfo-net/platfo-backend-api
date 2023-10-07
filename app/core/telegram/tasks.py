@@ -13,9 +13,9 @@ def telegram_support_bot_task(data, lang: str):
 
 
 @celery.task
-def telegram_webhook_task(data: dict, bot_id: int):
+def telegram_webhook_task(data: dict, bot_id: int, lang):
     db = SessionLocal()
-    asyncio.run(handlers.telegram_bot_webhook_handler(db, data, bot_id=bot_id))
+    asyncio.run(handlers.telegram_bot_webhook_handler(db, data, bot_id , lang))
 
     db.close()
 

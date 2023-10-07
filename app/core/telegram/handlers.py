@@ -101,7 +101,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
 
 
-async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
+async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lang):
     telegram_bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
     if not telegram_bot:
         return
@@ -126,10 +126,12 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int):
         )
     bot = Bot(token=telegram_bot.bot_token)
     update = telegram.Update.de_json(data, bot)
-    if update.message.text == "Hi":
+    if update.message.text.startswith == "S":
+        message = update.message.text.lstrip("S")
         bot = Bot(settings.SUPPORT_BOT_TOKEN)
-        await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id,
-                               text="Customer say hello to you")
+        text = helpers.load_message(lang, "lead_to_support_message",
+                                    lead_id=lead.id, message=message)
+        await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
         return
     await update.message.reply_text(
         text=f"Hi, you are using `{shop_telegram_bot.shop.title}` shop",
