@@ -538,6 +538,14 @@ class ShopOrders(models.Model):
     payment_method = models.ForeignKey(
         'ShopPaymentMethods', models.DO_NOTHING, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        last_order = ShopOrders.objects.filter(shop=self.shop).order_by("order_number").last()
+        order_number = 10000000
+        if last_order:
+            order_number = last_order.order_number + 1
+        self.order_number = order_number
+        super.save(*args, **kwargs)
+
     class Meta:
         managed = False
         db_table = 'shop_orders'

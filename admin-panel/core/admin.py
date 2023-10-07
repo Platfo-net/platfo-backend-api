@@ -67,6 +67,7 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     model = models.ShopOrders
     inlines = [OrderItemInline]
+    exclude = ["order_number"]
     list_display = (
         "shop", "order_number"
     )
