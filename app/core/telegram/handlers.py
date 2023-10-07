@@ -146,7 +146,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 for line in direct_message_lines:
                     direct_message += line
                     direct_message += "\n"
-                await support_bot_handlers.send_direct_message(db, int(lead_id), chat_id, message, lang)
+                await support_bot_handlers.send_direct_message(
+                    db, int(lead_id), chat_id, message, lang)
                 return
             if len(message) != 8:
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])

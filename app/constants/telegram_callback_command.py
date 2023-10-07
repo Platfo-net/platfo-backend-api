@@ -44,7 +44,7 @@ class TelegramCallbackCommand:
 
         "command": "SEND_ORDER"
     }
-    
+
     SEND_DIRECT_MESSAGE = {
         "title":
             {

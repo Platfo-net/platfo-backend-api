@@ -212,7 +212,8 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
     )
 
 
-async def send_lead_information_to_support_bot(db: Session, update: telegram.Update, lead_uuid, lang):
+async def send_lead_information_to_support_bot(
+        db: Session, update: telegram.Update, lead_uuid, lang):
     lead = services.social.telegram_lead.get_by_uuid(db, uuid=lead_uuid)
     if not lead:
         return
@@ -322,14 +323,16 @@ async def send_direct_message(
 
     if not lead or lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
         await bot.send_message(
-            chat_id=shop_telegram_bot.support_account_chat_id, text=SupportBotMessage.INVALID_LEAD[lang])
+            chat_id=shop_telegram_bot.support_account_chat_id,
+            text=SupportBotMessage.INVALID_LEAD[lang])
         return
 
     m = helpers.load_message(lang, "support_direct_message", message=message)
     await shop_bot.send_message(chat_id=lead.chat_id, message=m)
 
     await bot.send_message(
-        chat_id=shop_telegram_bot.support_account_chat_id, text=SupportBotMessage.DIRECT_MESSAGE_SEND_SUCCESSFULLY[lang])
+        chat_id=shop_telegram_bot.support_account_chat_id,
+        text=SupportBotMessage.DIRECT_MESSAGE_SEND_SUCCESSFULLY[lang])
     return
 
 
