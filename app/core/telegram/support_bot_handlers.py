@@ -58,32 +58,32 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
     lead_id = order.lead.uuid
 
     if order.status == OrderStatus.PAYMENT_CHECK["value"]:
-        reply_markup = get_payment_check_order_reply_markup(order, lead_id, lang)
+        reply_markup = get_payment_check_order_reply_markup(order, lang)
         text = helpers.load_message(lang, "order", amount=amount, order=order,
                                     order_status=OrderStatus.PAYMENT_CHECK["title"][lang])
 
     elif order.status == OrderStatus.ACCEPTED["value"]:
-        reply_markup = get_accepted_order_reply_markup(order, lead_id, lang)
+        reply_markup = get_accepted_order_reply_markup(order, lang)
         text = helpers.load_message(lang, "order", amount=amount, order=order,
                                     order_status=OrderStatus.ACCEPTED["title"][lang])
 
     elif order.status == OrderStatus.PREPARATION["value"]:
-        reply_markup = get_prepare_order_reply_markup(order, lead_id, lang)
+        reply_markup = get_prepare_order_reply_markup(order, lang)
         text = helpers.load_message(lang, "order", amount=amount, order=order,
                                     order_status=OrderStatus.PREPARATION["title"][lang])
 
     elif order.status == OrderStatus.UNPAID["value"]:
-        reply_markup = get_unpaid_order_reply_markup(order, lead_id, lang)
+        reply_markup = get_unpaid_order_reply_markup(order, lang)
         text = helpers.load_message(lang, "order", amount=amount, order=order,
                                     order_status=OrderStatus.UNPAID["title"][lang])
 
     elif order.status == OrderStatus.DECLINED["value"]:
-        reply_markup = get_declined_order_reply_markup(lead_id, lang)
+        reply_markup = get_declined_order_reply_markup(order, lang)
         text = helpers.load_message(lang, "order", amount=amount, order=order,
                                     order_status=OrderStatus.DECLINED["title"][lang])
 
     elif order.status == OrderStatus.SENT["value"]:
-        reply_markup = get_send_order_reply_markup(lead_id, lang)
+        reply_markup = get_send_order_reply_markup(order, lang)
         text = helpers.load_message(lang, "order", amount=amount, order=order,
                                     order_status=OrderStatus.SENT["title"][lang])
 
@@ -213,8 +213,8 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
 
 
 async def send_lead_information_to_support_bot(
-        db: Session, update: telegram.Update, lead_uuid, lang):
-    lead = services.social.telegram_lead.get_by_uuid(db, uuid=lead_uuid)
+        db: Session, update: telegram.Update, lead_id, lang):
+    lead = services.social.telegram_lead.get(db, id=lead_id)
     if not lead:
         return
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
@@ -351,7 +351,7 @@ def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
     return text
 
 
-def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, chat_id: int, lang):
+def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
@@ -364,7 +364,7 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, chat_id: 
         ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{chat_id}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}")  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -385,7 +385,7 @@ def get_accepted_order_message(order: models.shop.ShopOrder, lang):
     return text
 
 
-def get_accepted_order_reply_markup(order: models.shop.ShopOrder, chat_id: int, lang):
+def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
@@ -395,7 +395,11 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, chat_id: int, 
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{chat_id}"),  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"),  # noqa
+        ], [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"),  # noqa
         ],
     ]
 
@@ -433,7 +437,7 @@ def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
     return text
 
 
-def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, chat_id: int, lang):
+def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
@@ -444,7 +448,7 @@ def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, chat_id: int, la
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{chat_id}"
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"
             ),  # noqa
         ],
     ]
@@ -467,7 +471,7 @@ def get_prepare_order_message(order: models.shop.ShopOrder, lang):
     return text
 
 
-def get_prepare_order_reply_markup(order: models.shop.ShopOrder, chat_id: int, lang):
+def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
@@ -478,7 +482,7 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, chat_id: int, l
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{chat_id}"
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"
             ),  # noqa
         ],
     ]
@@ -500,12 +504,12 @@ def get_send_order_message(order: models.shop.ShopOrder, lang):
     return text
 
 
-def get_send_order_reply_markup(chat_id: int, lang):
+def get_send_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{chat_id}"
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"
             ),  # noqa
         ],
     ]
@@ -513,12 +517,12 @@ def get_send_order_reply_markup(chat_id: int, lang):
     return reply_markup
 
 
-def get_declined_order_reply_markup(chat_id: int, lang):
+def get_declined_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{chat_id}"
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"
             ),  # noqa
         ],
     ]
