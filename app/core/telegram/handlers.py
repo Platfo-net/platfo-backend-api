@@ -142,13 +142,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             if message[0] == "#":
                 chat_id = update.message.chat_id
                 lead_id = message.split("\n")[0][1:]
-                direct_message_lines = message.split("\n")[1:]
-                direct_message = ""
-                for line in direct_message_lines:
-                    direct_message += line
-                    direct_message += "\n"
+                m = message.lstrip("#{lead_id}\n")
                 await support_bot_handlers.send_direct_message(
-                    db, int(lead_id), chat_id, message, lang)
+                    db, int(lead_id), chat_id, m, lang)
                 return
             if len(message) != 8:
                 await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
