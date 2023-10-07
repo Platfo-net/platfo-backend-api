@@ -733,8 +733,8 @@ class Users(models.Model):
 
 
 models_list = [
-    Users, TelegramBots, SocialTelegramLeads,
+    Users, TelegramBots, SocialTelegramLeads, SocialTelegramLeadMessages,
     ShopShops, ShopShopTelegramBots,
     ShopShipmentMethods, ShopProducts, ShopPaymentMethods, ShopOrders, ShopOrderItems,
-    CreditShopCredits, ShopCategories, Roles,
+    CreditShopCredits, ShopCategories, Roles
 ]
