@@ -544,7 +544,7 @@ class ShopOrders(models.Model):
         if last_order:
             order_number = last_order.order_number + 1
         self.order_number = order_number
-        super.save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         managed = False
