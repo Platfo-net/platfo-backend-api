@@ -142,7 +142,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             if message[0] == "#":
                 chat_id = update.message.chat_id
                 lead_id = message.split("\n")[0][1:]
-                m = message.replace("#{lead_id}\n" , "")
+                m = "\n".join(message.split("\n")[1:])
                 await support_bot_handlers.send_direct_message(
                     db, int(lead_id), chat_id, m, lang)
                 return
