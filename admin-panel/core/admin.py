@@ -69,7 +69,7 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
     exclude = ["order_number"]
     list_display = (
-        "shop", "order_number"
+        "shop", "order_number", "status"
     )
 
 
