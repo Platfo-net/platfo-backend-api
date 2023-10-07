@@ -328,7 +328,7 @@ async def send_direct_message(
         return
 
     m = helpers.load_message(lang, "support_direct_message", message=message)
-    await shop_bot.send_message(chat_id=lead.chat_id, message=m)
+    await shop_bot.send_message(chat_id=lead.chat_id, text=m)
 
     await bot.send_message(
         chat_id=shop_telegram_bot.support_account_chat_id,
