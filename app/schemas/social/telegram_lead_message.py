@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -7,3 +8,4 @@ class TelegramLeadMessageCreate(BaseModel):
     message: str
     message_id: int
     mirror_message_id: int
+    reply_to_id: Optional[int] = None

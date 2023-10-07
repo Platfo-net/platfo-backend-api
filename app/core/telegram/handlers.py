@@ -148,12 +148,16 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                                     lead_id=lead.id, message=message)
         res: telegram.Message = await bot.send_message(
             chat_id=shop_telegram_bot.support_account_chat_id, text=text)
+        reply_to_id = None
+        if update.message.reply_to_message:
+            reply_to_id = update.message.reply_to_message.message_id
         obj_in = schemas.social.TelegramLeadMessageCreate(
             lead_id=lead.id,
             is_lead_to_bot=True,
             message=message,
             message_id=update.message.message_id,
             mirror_message_id=res.message_id,
+            reply_to_id=reply_to_id,
         )
         services.social.telegram_lead_message.create(db, obj_in=obj_in)
         return

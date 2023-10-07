@@ -14,7 +14,8 @@ class TelegramLeadMessageServices:
             is_lead_to_bot=obj_in.is_lead_to_bot,
             message=obj_in.message,
             message_id=obj_in.message_id,
-            mirror_message_id=obj_in.mirror_message_id
+            mirror_message_id=obj_in.mirror_message_id,
+            reply_to_id=obj_in.reply_to_id,
         )
         db.add(db_obj)
         db.commit()

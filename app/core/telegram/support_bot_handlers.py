@@ -396,11 +396,16 @@ async def send_direct_message(
         chat_id=shop_telegram_bot.support_account_chat_id,
         text=SupportBotMessage.DIRECT_MESSAGE_SEND_SUCCESSFULLY[lang])
 
+    reply_to_id = None
+    if update.message.reply_to_message:
+        reply_to_id = update.message.reply_to_message.message_id
     obj_in = schemas.social.TelegramLeadMessageCreate(
         lead_id=lead.id,
         is_lead_to_bot=False,
+        message=message,
         message_id=update.message.id,
-        mirror_message_id=res.message_id
+        mirror_message_id=res.message_id,
+        reply_to_id=reply_to_id
     )
     services.social.telegram_lead_message.create(db, obj_in=obj_in)
     return

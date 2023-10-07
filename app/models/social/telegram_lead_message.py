@@ -18,5 +18,6 @@ class TelegramLeadMessage(Base):
     message = Column(Text, nullable=True)
     message_id = Column(BigInteger, nullable=True, index=True)
     mirror_message_id = Column(BigInteger, nullable=True, index=True)
+    reply_to_id = Column(BigInteger, nullable=True, index=True)
 
     lead = relationship('TelegramLead', back_populates='messages')
