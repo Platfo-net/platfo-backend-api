@@ -126,7 +126,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         )
     bot = Bot(token=telegram_bot.bot_token)
     update = telegram.Update.de_json(data, bot)
-    if update.message.text.startswith == "S":
+    if update.message.text.startswith("S"):
         message = update.message.text.lstrip("S")
         bot = Bot(settings.SUPPORT_BOT_TOKEN)
         text = helpers.load_message(lang, "lead_to_support_message",
