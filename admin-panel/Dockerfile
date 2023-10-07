@@ -10,7 +10,6 @@ WORKDIR /app
 COPY ./requirements.txt ./requirements.txt
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN apt update
-RUN apt -y install gcc mono-mcs
 RUN pip install -r requirements.txt
 # Copy the application files into the image
 COPY . /app/

@@ -83,7 +83,7 @@ class SocialTelegramLeadAdmin(admin.ModelAdmin):
 class SocialTelegramLeadMessagesAdmin(admin.ModelAdmin):
     model = models.SocialTelegramLeadMessages
     list_display = (
-        "message", "telegram_lead"
+        "message", "lead"
     )
 
 
