@@ -666,6 +666,25 @@ class SocialTelegramLeads(models.Model):
         verbose_name_plural = 'Social Telegram Leads'
 
 
+class SocialTelegramLeadMessages(models.Model):
+    lead = models.ForeignKey('SocialTelegramLeads', models.DO_NOTHING, blank=True, null=True)
+    is_lead_to_bot = models.BooleanField(blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
+    message_id = models.BigIntegerField(blank=True, null=True)
+    mirror_message_id = models.BigIntegerField(blank=True, null=True)
+    id = models.BigAutoField(primary_key=True)
+    uuid = models.UUIDField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.message
+
+    class Meta:
+        managed = False
+        db_table = 'social_telegram_lead_messages'
+        verbose_name = 'Social Telegram Lead Message'
+        verbose_name_plural = 'Social Telegram Lead Messages'
+
+
 class TelegramBots(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     bot_token = models.CharField(max_length=255, blank=True, null=True)

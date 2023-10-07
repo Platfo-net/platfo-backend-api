@@ -1,5 +1,3 @@
-
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -9,7 +7,8 @@ class TelegramLeadMessageServices:
     def __init__(self, model):
         self.model: models.social.TelegramLeadMessage = model
 
-    def create(self, db: Session, *, obj_in: schemas.social.TelegramLeadMessageCreate) -> models.social.TelegramLeadMessage:
+    def create(self, db: Session, *, obj_in: schemas.social.TelegramLeadMessageCreate
+               ) -> models.social.TelegramLeadMessage:
         db_obj = self.model(
             lead_id=obj_in.lead_id,
             is_lead_to_bot=obj_in.is_lead_to_bot,

@@ -11,7 +11,11 @@ class TelegramLeadServices:
 
     def create(self, db: Session, *, obj_in: schemas.social.TelegramLeadCreate):
         db_obj = self.model(
-            
+            first_name=obj_in.first_name,
+            last_name=obj_in.last_name,
+            username=obj_in.username,
+            chat_id=obj_in.chat_id,
+            telegram_bot_id=obj_in.telegram_bot_id,
         )
         db.add(db_obj)
         db.commit()

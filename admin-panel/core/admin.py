@@ -73,6 +73,20 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
 
+class SocialTelegramLeadAdmin(admin.ModelAdmin):
+    model = models.SocialTelegramLeads
+    list_display = (
+        "username", "telegram_bot"
+    )
+
+
+class SocialTelegramLeadMessagesAdmin(admin.ModelAdmin):
+    model = models.SocialTelegramLeadMessages
+    list_display = (
+        "message", "telegram_lead"
+    )
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)
@@ -81,3 +95,5 @@ admin.site.register(models.ShopProducts, ShopProductAdmin)
 admin.site.register(models.ShopShopTelegramBots, ShopTelegramBotAdmin)
 admin.site.register(models.TelegramBots, TelegramBotAdmin)
 admin.site.register(models.ShopOrders, OrderAdmin)
+admin.site.register(models.SocialTelegramLeads, SocialTelegramLeadAdmin)
+admin.site.register(models.SocialTelegramLeadMessages, SocialTelegramLeadMessagesAdmin)

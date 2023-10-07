@@ -18,4 +18,4 @@ class TelegramLead(Base):
 
     telegram_bot = relationship('TelegramBot', back_populates='leads')
     orders = relationship('ShopOrder', back_populates='lead')
-    messages = relationship('ShopOrder', back_populates='lead')
+    messages = relationship('TelegramLeadMessage', back_populates='lead')
