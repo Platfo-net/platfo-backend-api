@@ -66,7 +66,7 @@ async def telegram_set_webhook(
 @router.post('/telegram/bot/set-webhook', status_code=status.HTTP_200_OK)
 async def telegram_set_webhook(
     *,
-    db: Session = deps.get_db,
+    db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_user,
         scopes=[

@@ -33,7 +33,7 @@ async def set_webhook(token, bot_id):
             telegram.BotCommand(
                 command["command"],
                 command["description"],
-            ) for command in TelegramSupportBotCommand.commands
+            ) for command in TelegramBotCommand.commands
         ]
     )
 
