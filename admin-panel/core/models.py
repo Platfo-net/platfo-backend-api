@@ -672,6 +672,7 @@ class SocialTelegramLeadMessages(models.Model):
     message = models.TextField(blank=True, null=True)
     message_id = models.BigIntegerField(blank=True, null=True)
     mirror_message_id = models.BigIntegerField(blank=True, null=True)
+    reply_to_id = models.BigIntegerField(blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
