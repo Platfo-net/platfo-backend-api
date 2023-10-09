@@ -265,7 +265,7 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
 
 async def send_direct_message_helper(
         db: Session, update: telegram.Update, lead_id, lang):
-    lead = services.social.telegram_lead.get(db, id=lead_id)
+    lead = services.social.telegram_lead.get(db, id=int(lead_id))
     if not lead:
         return
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
@@ -274,13 +274,13 @@ async def send_direct_message_helper(
     if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
         return
 
-    message = helpers.load_message(lang, "direct_message_lead_id", lead_id=lead.lead_number)
+    message = helpers.load_message(lang, "direct_message_lead_id", lead_number=lead.lead_number)
 
     await update.message.reply_text(
         message,
     )
 
-    message = helpers.load_message(lang, "direct_message_template", lead_id=lead.lead_number)
+    message = helpers.load_message(lang, "direct_message_template", lead_number=lead.lead_number)
 
     await update.message.reply_text(
         message,
