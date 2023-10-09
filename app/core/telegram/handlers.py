@@ -126,7 +126,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 first_name=user.get("first_name"),
                 last_name=user.get("last_name"),
                 username=user.get("username"),
-                lead_number=lead_number,
+                lead_number=lead_number+1,
             )
         )
     bot = Bot(token=telegram_bot.bot_token)
