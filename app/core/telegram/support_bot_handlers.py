@@ -442,7 +442,7 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
         ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}")  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -478,7 +478,7 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
         ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"),  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"),  # noqa
         ],
     ]
 
@@ -529,7 +529,7 @@ def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
             ),
         ],
     ]
@@ -564,7 +564,7 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
             ),
         ],
     ]
@@ -592,7 +592,7 @@ def get_send_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
             ),  # noqa
         ],
     ]
@@ -605,7 +605,7 @@ def get_declined_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
             ),  # noqa
         ],
     ]
