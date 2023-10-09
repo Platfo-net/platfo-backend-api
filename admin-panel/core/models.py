@@ -651,6 +651,7 @@ class SocialTelegramLeads(models.Model):
     last_name = models.CharField(max_length=255, blank=True, null=True)
     username = models.CharField(max_length=255, blank=True, null=True)
     chat_id = models.BigIntegerField(blank=True, null=True)
+    lead_number = models.BigIntegerField(blank=True, null=True)
     telegram_bot = models.ForeignKey(
         'TelegramBots', models.DO_NOTHING, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
