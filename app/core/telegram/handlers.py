@@ -118,7 +118,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
     if not lead:
         lead_number = services.social.telegram_lead.get_last_lead_number(
             db, telegram_bot_id=shop_telegram_bot.telegram_bot_id)
-        services.social.telegram_lead.create(
+        lead = services.social.telegram_lead.create(
             db,
             obj_in=schemas.social.TelegramLeadCreate(
                 telegram_bot_id=shop_telegram_bot.telegram_bot_id,
@@ -140,7 +140,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         )
 
     elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
-        text = helpers.load_message(lang, "lead_to_support_message_helper")
+        text = helpers.load_message(lang, "lead_to_support_message_helper" , lead_number = lead.lead_number)
         await update.message.reply_text(
             text=text,
         )
@@ -148,7 +148,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         message = update.message.text
         bot = Bot(settings.SUPPORT_BOT_TOKEN)
         text = helpers.load_message(lang, "lead_to_support_message",
-                                    lead_id=lead.id, message=message)
+                                    lead_number=lead.lead_number, message=message)
         res: telegram.Message = await bot.send_message(
             chat_id=shop_telegram_bot.support_account_chat_id, text=text)
         reply_to_id = None
