@@ -1,5 +1,6 @@
 سفارش جدید
 
+شماره مشتری: {{ lead_number }}
 شماره سفارش: {{ order.order_number }}
 آیتم ها
 {% for item in order.items -%}

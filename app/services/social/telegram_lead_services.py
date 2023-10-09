@@ -1,5 +1,6 @@
 
 from pydantic import UUID4
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -43,6 +44,23 @@ class TelegramLeadServices:
             db.query(self.model)
             .join(self.model.telegram_bot)
             .filter(self.model.chat_id == chat_id)
+            .first()
+        )
+
+    def get_last_lead_number(self, db: Session, *, telegram_bot_id: int) -> int:
+        lead = db.query(self.model).filter(self.model.telegram_bot_id == telegram_bot_id).order_by(
+            desc(self.model.lead_number)).first()
+        if not lead:
+            return 0
+        return lead.lead_number
+
+    def get_by_lead_number_and_telegram_bot_id(self, db: Session, *, lead_number: int, telegram_bot_id: int) -> int:
+        return (
+            db.query(self.model)
+            .filter(
+                self.model.telegram_bot_id == telegram_bot_id,
+                self.model.lead_number == lead_number
+            )
             .first()
         )
 

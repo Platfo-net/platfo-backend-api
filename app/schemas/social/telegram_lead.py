@@ -9,3 +9,4 @@ class TelegramLeadCreate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     username: Optional[str] = None
+    lead_number: int

@@ -274,13 +274,13 @@ async def send_direct_message_helper(
     if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
         return
 
-    message = helpers.load_message(lang, "direct_message_lead_id", lead_id=lead.id)
+    message = helpers.load_message(lang, "direct_message_lead_id", lead_id=lead.lead_number)
 
     await update.message.reply_text(
         message,
     )
 
-    message = helpers.load_message(lang, "direct_message_template", lead_id=lead.id)
+    message = helpers.load_message(lang, "direct_message_template", lead_id=lead.lead_number)
 
     await update.message.reply_text(
         message,
@@ -337,7 +337,8 @@ async def send_lead_order_to_shop_support_handler(
     for item in order.items:
         amount += item.count * item.price
 
-    text = helpers.load_message(lang, "new_order", amount=amount, order=order)
+    text = helpers.load_message(lang, "new_order", amount=amount,
+                                order=order, lead_number=lead.lead_number)
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
     await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
     return
@@ -370,7 +371,7 @@ async def send_direct_message(
 
     message = update.message.text
     chat_id = update.message.chat_id
-    lead_id = message.split("\n")[0][1:]
+    lead_number = message.split("\n")[0][1:]
     message = "\n".join(message.split("\n")[1:])
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(db, chat_id=chat_id)
@@ -381,9 +382,10 @@ async def send_direct_message(
         return
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
     shop_bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
-    lead = services.social.telegram_lead.get(db, id=lead_id)
+    lead = services.social.telegram_lead.get_by_lead_number_and_telegram_bot_id(
+        db, lead_number=int(lead_number), telegram_bot_id=shop_telegram_bot.telegram_bot_id)
 
-    if not lead or lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
+    if not lead:
         await bot.send_message(
             chat_id=shop_telegram_bot.support_account_chat_id,
             text=SupportBotMessage.INVALID_LEAD[lang])
@@ -405,7 +407,7 @@ async def send_direct_message(
         message=message,
         message_id=update.message.id,
         mirror_message_id=res.message_id,
-        reply_to_id=reply_to_id
+        reply_to_id=reply_to_id,
     )
     services.social.telegram_lead_message.create(db, obj_in=obj_in)
     return
@@ -421,6 +423,7 @@ def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
         amount=total_price,
         order=order,
         order_status=OrderStatus.PAYMENT_CHECK["title"][lang],
+        lead_number=order.lead.lead_number,
     )
 
     return text
@@ -439,7 +442,7 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
         ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}")  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -455,6 +458,7 @@ def get_accepted_order_message(order: models.shop.ShopOrder, lang):
         amount=amount,
         order=order,
         order_status=OrderStatus.ACCEPTED["title"][lang],
+        lead_number=order.lead.lead_number,
     )
 
     return text
@@ -474,7 +478,7 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
         ], [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"),  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"),  # noqa
         ],
     ]
 
@@ -492,6 +496,7 @@ def get_declined_order_message(order: models.shop.ShopOrder, lang):
         amount=amount,
         order=order,
         order_status=OrderStatus.DECLINED["title"][lang],
+        lead_number=order.lead.lead_number,
     )
 
     return text
@@ -506,7 +511,8 @@ def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
         "unpaid_order",
         amount=amount,
         order=order,
-        order_status=OrderStatus.UNPAID["title"][lang]
+        order_status=OrderStatus.UNPAID["title"][lang],
+        lead_number=order.lead.lead_number,
     )
 
     return text
@@ -523,7 +529,7 @@ def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
             ),
         ],
     ]
@@ -540,7 +546,8 @@ def get_prepare_order_message(order: models.shop.ShopOrder, lang):
         lang, "order",
         amount=total_price,
         order=order,
-        order_status=OrderStatus.PREPARATION["title"][lang]
+        order_status=OrderStatus.PREPARATION["title"][lang],
+        lead_number=order.lead.lead_number,
     )
 
     return text
@@ -557,7 +564,7 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
             ),
         ],
     ]
@@ -574,7 +581,8 @@ def get_send_order_message(order: models.shop.ShopOrder, lang):
         lang, "order",
         amount=total_price,
         order=order,
-        order_status=OrderStatus.SENT["title"][lang]
+        order_status=OrderStatus.SENT["title"][lang],
+        lead_number=order.lead.lead_number,
     )
     return text
 
@@ -584,7 +592,7 @@ def get_send_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
             ),  # noqa
         ],
     ]
@@ -597,7 +605,7 @@ def get_declined_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
+                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead.lead_number}"  # noqa
             ),  # noqa
         ],
     ]

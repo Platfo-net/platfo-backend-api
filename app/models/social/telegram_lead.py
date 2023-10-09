@@ -15,6 +15,7 @@ class TelegramLead(Base):
         ForeignKey('telegram_bots.id'),
         nullable=True,
     )
+    lead_number = Column(BigInteger, nullable=True, index=True)
 
     telegram_bot = relationship('TelegramBot', back_populates='leads')
     orders = relationship('ShopOrder', back_populates='lead')

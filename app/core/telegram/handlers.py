@@ -116,6 +116,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
     user = data["message"]["from"]
     lead = services.social.telegram_lead.get_by_chat_id(db, chat_id=user.get("id"))
     if not lead:
+        lead_number = services.social.telegram_lead.get_last_lead_number(
+            db, telegram_bot_id=shop_telegram_bot.telegram_bot_id)
         services.social.telegram_lead.create(
             db,
             obj_in=schemas.social.TelegramLeadCreate(
@@ -124,6 +126,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 first_name=user.get("first_name"),
                 last_name=user.get("last_name"),
                 username=user.get("username"),
+                lead_number=lead_number,
             )
         )
     bot = Bot(token=telegram_bot.bot_token)
@@ -133,7 +136,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         text = helpers.load_message(lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)
         await update.message.reply_text(
             text=text,
-            reply_markup=bot_handlers.get_shop_menu(telegram_bot.uuid, shop_telegram_bot.shop.uuid)
+            reply_markup=bot_handlers.get_shop_menu(shop_telegram_bot.shop.uuid , lead.uuid)
         )
 
     elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
