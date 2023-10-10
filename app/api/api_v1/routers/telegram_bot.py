@@ -8,9 +8,9 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.api import deps
-from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core.config import settings
 from app.core.exception import raise_http_exception
 

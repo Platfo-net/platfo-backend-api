@@ -1,6 +1,6 @@
-from sqlalchemy.orm import Session
 from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
                      status)
+from sqlalchemy.orm import Session
 
 from app import models, services
 from app.api import deps

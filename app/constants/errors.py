@@ -283,7 +283,7 @@ class Error:
     }
 
     SHOP_PRODUCT_NOT_FOUND_ERROR = {
-        "text": "Category not found",
+        "text": "Product not found",
         "status_code": 404,
         "code": 161,
     }
@@ -330,7 +330,7 @@ class Error:
     }
 
     SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED = {
-        "text": "Category not found",
+        "text": "Product not found",
         "status_code": 404,
         "code": 169,
     }

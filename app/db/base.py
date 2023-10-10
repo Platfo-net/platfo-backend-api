@@ -3,7 +3,7 @@ from app.models.academy import (Category, Content, ContentCategory,
                                 ContentLabel, Label)
 from app.models.bot_builder import Chatflow, Edge, Node, NodeUI
 from app.models.connection import Connection
-from app.models.credit import ShopCredit, Invoice, Plan, PlanFeature
+from app.models.credit import Invoice, Plan, PlanFeature, ShopCredit
 from app.models.databoard import (CommentStat, FollowerStat, LeadMessageStat,
                                   LeadStat, LiveCommentStat)
 from app.models.instagram_page import InstagramPage
@@ -16,6 +16,6 @@ from app.models.role import Role
 from app.models.shop import (ShopCategory, ShopOrder, ShopOrderItem,
                              ShopPaymentMethod, ShopProduct,
                              ShopShipmentMethod, ShopShop)
-from app.models.social import TelegramLead , TelegramLeadMessage
+from app.models.social import TelegramLead, TelegramLeadMessage
 from app.models.telegram_bot import TelegramBot
 from app.models.user import User

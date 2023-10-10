@@ -54,7 +54,8 @@ class TelegramLeadServices:
             return 0
         return lead.lead_number
 
-    def get_by_lead_number_and_telegram_bot_id(self, db: Session, *, lead_number: int, telegram_bot_id: int) -> int:
+    def get_by_lead_number_and_telegram_bot_id(
+            self, db: Session, *, lead_number: int, telegram_bot_id: int) -> int:
         return (
             db.query(self.model)
             .filter(

@@ -23,7 +23,7 @@ class ProductCreate(ProductBase):
 
 
 class ProductUpdate(ProductBase):
-    category_id: UUID4
+    category_id: Optional[UUID4] = None
 
 
 class Product(ProductBase):

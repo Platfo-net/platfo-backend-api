@@ -13,7 +13,8 @@ def get_shop_menu(bot_id: UUID4, lead_uuid: UUID4):
         [
             telegram.MenuButtonWebApp(
                 text="View",
-                web_app=telegram.WebAppInfo(f"{settings.PLATFO_SHOPS_BASE_URL}/{bot_id}/{lead_uuid}")
+                web_app=telegram.WebAppInfo(
+                    f"{settings.PLATFO_SHOPS_BASE_URL}/{bot_id}/{lead_uuid}")
             )
         ],
     ]
