@@ -60,7 +60,7 @@ class ProductServices:
     ) -> models.shop.ShopProduct:
         return (
             db.query(self.model)
-            .join(self.model.category)
+            .join(self.model.category, isouter=True)
             .filter(self.model.uuid == uuid)
             .first()
         )
@@ -71,7 +71,12 @@ class ProductServices:
         *,
         id: int
     ) -> models.shop.ShopProduct:
-        return db.query(self.model).join(self.model.category).filter(self.model.id == id).first()
+        return (
+            db.query(self.model)
+            .join(self.model.category, isouter=True)
+            .filter(self.model.id == id)
+            .first()
+        )
 
     def get_multi_by_shop_id(
         self,
@@ -83,7 +88,7 @@ class ProductServices:
     ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
         items = (db.query(self.model)
                  .filter(self.model.shop_id == shop_id)
-                 .join(self.model.category , isouter=True)
+                 .join(self.model.category, isouter=True)
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)
