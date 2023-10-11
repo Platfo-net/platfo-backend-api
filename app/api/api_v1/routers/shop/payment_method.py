@@ -31,10 +31,10 @@ def create_payment(
 ):
     shop = services.shop.shop.get_by_uuid(db, uuid=obj_in.shop_id)
     if not shop:
-        raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
     if shop.user_id != current_user.id:
-        raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
     payment = services.shop.payment_method.create(
         db,
@@ -79,10 +79,11 @@ def update_payment_method(
     )
 
 
-@router.get('/all', response_model=List[schemas.shop.PaymentMethod])
+@router.get('/{shop_id}/all', response_model=List[schemas.shop.PaymentMethod])
 def get_payment_methods(
     *,
     db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -92,7 +93,15 @@ def get_payment_methods(
         ],
     ),
 ):
-    payment_methods = services.shop.payment_method.get_multi_by_user(db, user_id=current_user.id)
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    payment_methods = services.shop.payment_method.get_multi_by_shop_id(
+        db, shop_id=shop_id)
 
     return [
         schemas.shop.PaymentMethod(
@@ -121,10 +130,10 @@ def delete_payment_method(
 
     payment_method = services.shop.payment_method.get_by_uuid(db, uuid=id)
     if not payment_method:
-        raise_http_exception(Error.CATEGORY_NOT_FOUND)
+        raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
 
     if payment_method.shop.user_id != current_user.id:
-        raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
+        raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     services.shop.payment_method.delete(db, db_obj=payment_method)
 
