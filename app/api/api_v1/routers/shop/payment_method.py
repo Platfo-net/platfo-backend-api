@@ -101,7 +101,7 @@ def get_payment_methods(
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
     payment_methods = services.shop.payment_method.get_multi_by_shop_id(
-        db, shop_id=shop_id)
+        db, shop_id=shop.id)
 
     return [
         schemas.shop.PaymentMethod(
