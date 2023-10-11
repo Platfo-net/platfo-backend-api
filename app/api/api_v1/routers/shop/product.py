@@ -129,7 +129,8 @@ def update_product(
         if category.shop_id != product.shop_id:
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_IN_THIS_SHOP)
 
-    product = services.shop.product.update(db, db_obj=product, obj_in=obj_in)
+    product = services.shop.product.update(
+        db, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
 
     image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4
 from sqlalchemy import desc
@@ -39,12 +39,13 @@ class ProductServices:
         *,
         db_obj: models.shop.ShopProduct,
         obj_in: schemas.shop.ProductUpdate,
+        category_id: Optional[int],
     ) -> models.shop.ShopProduct:
         db_obj.title = obj_in.title
         db_obj.image = obj_in.image
         db_obj.price = obj_in.price,
         db_obj.currency = obj_in.currency,
-        db_obj.category_id = obj_in.category_id,
+        db_obj.category_id = category_id,
 
         db.add(db_obj)
         db.commit()
