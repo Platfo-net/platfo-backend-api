@@ -101,7 +101,7 @@ class ProductServices:
 
         return items, pagination
 
-    def delete(db: Session, *, db_obj: models.shop.ShopProduct):
+    def delete(self, db: Session, *, db_obj: models.shop.ShopProduct):
         db.delete(db_obj)
         db.commit()
 
