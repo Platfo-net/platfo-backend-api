@@ -67,7 +67,7 @@ def update_payment_method(
     if not payment:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
 
-    if payment.user_id != current_user.id:
+    if payment.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     payment = services.shop.payment_method.update(db, db_obj=payment, obj_in=obj_in)
