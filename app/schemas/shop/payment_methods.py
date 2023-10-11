@@ -11,8 +11,7 @@ class PaymentMethodCreate(PaymentMethodBase):
 
 
 class PaymentMethodUpdate(PaymentMethodBase):
-    shop_id: UUID4
-
+    pass
 
 class PaymentMethod(PaymentMethodBase):
     id: UUID4
