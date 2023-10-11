@@ -7,8 +7,8 @@ from pydantic import UUID4, BaseModel
 
 class ShopBase(BaseModel):
     title: str
-    description: Optional[str]
-    category: Optional[str]
+    description: Optional[str] = None
+    category: Optional[str] = None
 
 
 class ShopCreate(ShopBase):
