@@ -38,14 +38,13 @@ class ProductServices:
         db: Session,
         *,
         db_obj: models.shop.ShopProduct,
-        obj_in: schemas.shop.ProductCreate,
-        category_id: int,
-
+        obj_in: schemas.shop.ProductUpdate,
     ) -> models.shop.ShopProduct:
         db_obj.title = obj_in.title
-        db_obj.category_id = category_id,
+        db_obj.image = obj_in.image
         db_obj.price = obj_in.price,
         db_obj.currency = obj_in.currency,
+        db_obj.category_id = obj_in.category_id,
 
         db.add(db_obj)
         db.commit()
