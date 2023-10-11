@@ -13,5 +13,6 @@ class PaymentMethodCreate(PaymentMethodBase):
 class PaymentMethodUpdate(PaymentMethodBase):
     pass
 
+
 class PaymentMethod(PaymentMethodBase):
     id: UUID4

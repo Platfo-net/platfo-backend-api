@@ -74,6 +74,18 @@ class ShipmentMethodServices:
             .all()
         )
 
+    def get_multi_by_shop_id(
+        self,
+        db: Session,
+        *,
+        shop_id: int
+    ) -> List[models.shop.ShopShipmentMethod]:
+        return (
+            db.query(self.model)
+            .filter(self.model.shop_id == shop_id)
+            .all()
+        )
+
     def delete(
         self,
         db: Session,

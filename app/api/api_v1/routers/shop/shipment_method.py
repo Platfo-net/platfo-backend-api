@@ -32,7 +32,7 @@ def create_shipment(
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
     if shop.user_id != current_user.id:
-        raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR)
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
     shipment = services.shop.shipment_method.create(
         db,
@@ -66,7 +66,7 @@ def update_shipment_method(
     if not shipment:
         raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR)
 
-    if shipment.user_id != current_user.id:
+    if shipment.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     shipment = services.shop.shipment_method.update(db, db_obj=shipment, obj_in=obj_in)
@@ -79,10 +79,11 @@ def update_shipment_method(
     )
 
 
-@router.get('/all', response_model=List[schemas.shop.ShipmentMethod])
+@router.get('/{shop_id}/all', response_model=List[schemas.shop.ShipmentMethod])
 def get_shipment_methods(
     *,
     db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -92,7 +93,14 @@ def get_shipment_methods(
         ],
     ),
 ):
-    shipment_methods = services.shop.shipment_method.get_multi_by_user(db, user_id=current_user.id)
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    shipment_methods = services.shop.shipment_method.get_multi_by_shop_id(db, shop_id=shop.id)
 
     return [
         schemas.shop.ShipmentMethod(
