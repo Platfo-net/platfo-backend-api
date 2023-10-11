@@ -118,7 +118,7 @@ def update_product(
 
     if product.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED)
-
+    category = None
     if obj_in.category_id:
         category = services.shop.category.get_by_uuid(db, uuid=obj_in.category_id)
         if not category:
