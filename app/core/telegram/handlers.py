@@ -22,7 +22,11 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
-        if command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
+        if command == TelegramCallbackCommand.NEW_CONNECTION.get("command"):
+            text = helpers.load_message(lang, "new_connection")
+            await update.message.reply_text(text)
+            return
+        elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.accept_order_handler(db, update, arg, lang)
             return
 
@@ -53,7 +57,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
 
         if update.message.text == TelegramSupportBotCommand.START["command"]:
-            await update.message.reply_text(SupportBotMessage.ENTER_CODE[lang])
+            text = support_bot_handlers.get_start_support_bot_message(lang)
+            reply_markup = support_bot_handlers.get_start_support_bot_reply_markup(lang)
+            await update.message.reply_text(text=text, reply_markup=reply_markup)
             return
 
         elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:

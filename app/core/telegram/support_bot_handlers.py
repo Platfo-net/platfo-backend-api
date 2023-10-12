@@ -29,14 +29,16 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
         return
 
     if not message[0] == "P":
-        await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
+        text = helpers.load_message(lang, "support_account_connection_wrong_code")
+        await update.message.reply_text(text)
         return
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
         db, support_token=message)
 
     if not shop_telegram_bot:
-        await update.message.reply_text(SupportBotMessage.WRONG_CODE[lang])
+        text = helpers.load_message(lang, "support_account_connection_wrong_code")
+        await update.message.reply_text(text)
         return
 
     support_account = services.shop.shop_telegram_bot.get_by_chat_id(
@@ -153,17 +155,18 @@ async def verify_support_account(db: Session, update: telegram.Update,
         return
 
     services.shop.shop_telegram_bot.verify_support_account(db, db_obj=shop_telegram_bot)
+    text = helpers.load_message(lang, "support_account_connection_successfully",
+                                shop_title=shop_telegram_bot.shop.title)
     await update.message.reply_text(
-        SupportBotMessage.ACCOUNT_CONNECTED_SUCCESSFULLY["fa"].format(
-            title=shop_telegram_bot.shop.title
-        )
+        text=text
     )
     await update.message.edit_reply_markup(reply_markup=telegram.InlineKeyboardMarkup([]))
 
 
 def verify_shop_support_account_message(shop_telegram_bot: models.shop.ShopShopTelegramBot,
                                         lang: str):
-    text = SupportBotMessage.ACCEPT_SHOP[lang].format(title=shop_telegram_bot.shop.title)
+    text = helpers.load_message(lang, "support_account_connection_confirmation",
+                                shop_title=shop_telegram_bot.shop.title)
     keyboard = [
         [
             telegram.InlineKeyboardButton(
@@ -360,7 +363,7 @@ async def send_shop_bot_connection_notification_handler(
 
     text = helpers.load_message(
         lang, "shop_connection", shop_title=shop_telegram_bot.shop.title,
-        bot_title=shop_telegram_bot.telegram_bot.username
+        bot_username=shop_telegram_bot.telegram_bot.username
     )
     await bot.send_message(
         chat_id=shop_telegram_bot.support_account_chat_id, text=text)
@@ -647,3 +650,20 @@ async def send_all_order_by_status(
         await update.message.reply_text(
             text, reply_markup=reply_markup
         )
+
+
+def get_start_support_bot_reply_markup(lang):
+    keyboard = [
+        [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.NEW_CONNECTION["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.NEW_CONNECTION['command']}:#"  # noqa
+            ),  # noqa
+        ],
+    ]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+    return reply_markup
+
+
+def get_start_support_bot_message(lang):
+    return helpers.load_message(lang, "start_support_bot")

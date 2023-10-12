@@ -53,3 +53,12 @@ class TelegramCallbackCommand:
 
         "command": "SEND_DIRECT_MESSAGE"
     }
+    
+    NEW_CONNECTION = {
+        "title":
+            {
+                "fa": "اتصال جدید",
+            },
+
+        "command": "NEW_CONNECTION"
+    }
