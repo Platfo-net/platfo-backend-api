@@ -23,7 +23,7 @@ class TelegramCallbackCommand:
     ACCEPT_SHOP_SUPPORT_ACCOUNT = {
         "title":
             {
-                "fa": "OK",
+                "fa": "اتصال",
             },
 
         "command": "ACCEPT_SHOP"

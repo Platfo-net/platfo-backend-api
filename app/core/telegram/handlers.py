@@ -57,10 +57,18 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
 
         if update.message.text == TelegramSupportBotCommand.START["command"]:
-            text = support_bot_handlers.get_start_support_bot_message(lang)
-            reply_markup = support_bot_handlers.get_start_support_bot_reply_markup(lang)
-            await update.message.reply_text(text=text, reply_markup=reply_markup)
-            return
+            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+                db, chat_id=update.message.chat_id)
+            if not shop_telegram_bot:
+                text = support_bot_handlers.get_start_support_bot_message(lang)
+                reply_markup = support_bot_handlers.get_start_support_bot_reply_markup(lang)
+                await update.message.reply_text(text=text, reply_markup=reply_markup)
+                return
+            else:
+                text = helpers.load_message(
+                    lang, "support_account_already_connected", shop_title=shop_telegram_bot.shop.title)
+                await update.message.reply_text(text=text)
+                return
 
         elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
             await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang])
