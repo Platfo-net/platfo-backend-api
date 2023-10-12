@@ -69,5 +69,5 @@ class SupportBotMessage:
     }
 
     INVALID_COMMAND = {
-        "fa": "پیام غیر قابل پردازش"  # noqa
+        "fa": "دستور نامعتبر است."  # noqa
     }
