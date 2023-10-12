@@ -16,6 +16,7 @@ from app.core.telegram.messages import SupportBotMessage
 
 async def plain_message_handler(db: Session, update: telegram.Update, lang: str):
     message = update.message.text.lstrip().rstrip()
+
     if not len(message):
         await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
         return
@@ -28,43 +29,40 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
         await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
         return
 
-    if not message[0] == "P":
-        text = helpers.load_message(lang, "support_account_connection_wrong_code")
-        await update.message.reply_text(text)
-        return
+    if message[0] == "P":
+        shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+            db, chat_id=update.message.chat_id)
+        if shop_telegram_bot:
+            await update.message.reply_text(
+                SupportBotMessage.SUPPORT_ACCOUNT_ALREADY_CONNECTED[lang].format(
+                    title=shop_telegram_bot.shop.title)
+            )
+            return
 
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
-        db, support_token=message)
+        shop_telegram_bot = services.shop.shop_telegram_bot.get_by_support_token(
+            db, support_token=message)
 
-    if not shop_telegram_bot:
-        text = helpers.load_message(lang, "support_account_connection_wrong_code")
-        await update.message.reply_text(text)
-        return
+        if not shop_telegram_bot:
+            text = helpers.load_message(lang, "support_account_connection_wrong_code")
+            await update.message.reply_text(text)
+            return
 
-    support_account = services.shop.shop_telegram_bot.get_by_chat_id(
-        db, chat_id=update.message.chat_id)
-    if support_account:
+        if shop_telegram_bot.support_account_chat_id:
+            await update.message.reply_text(
+                SupportBotMessage.SHOP_ALREADY_CONNECTED[lang].format(
+                    title=shop_telegram_bot.shop.title)
+            )
+            return
+
+        text, reply_markup = verify_shop_support_account_message(
+            shop_telegram_bot, lang)
+
         await update.message.reply_text(
-            SupportBotMessage.SUPPORT_ACCOUNT_ALREADY_CONNECTED[lang].format(
-                title=shop_telegram_bot.shop.title)
+            text, reply_markup=reply_markup
         )
+        services.shop.shop_telegram_bot.set_support_account_chat_id(
+            db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
         return
-
-    if shop_telegram_bot.support_account_chat_id:
-        await update.message.reply_text(
-            SupportBotMessage.SHOP_ALREADY_CONNECTED[lang].format(
-                title=shop_telegram_bot.shop.title)
-        )
-        return
-
-    text, reply_markup = verify_shop_support_account_message(
-        shop_telegram_bot, lang)
-    await update.message.reply_text(
-        text, reply_markup=reply_markup
-    )
-    services.shop.shop_telegram_bot.set_support_account_chat_id(
-        db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
-    return
 
 
 async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_id: int, lang: str):
