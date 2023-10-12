@@ -619,7 +619,7 @@ class ShopShopTelegramBots(models.Model):
     uuid = models.UUIDField(blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.telegram_bot
+        return "bot"
 
     class Meta:
         managed = False
