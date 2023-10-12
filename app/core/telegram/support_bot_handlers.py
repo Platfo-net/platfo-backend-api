@@ -20,6 +20,12 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
     if not len(message):
         await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
         return
+
+    elif update.message.text.isnumeric():
+        order_number = int(update.message.text)
+        await send_order(db, update, order_number, lang)
+        return
+
     elif message[0] == "#":
         await send_direct_message(
             db, update, lang)
