@@ -373,6 +373,11 @@ async def send_shop_bot_connection_notification_handler(
     )
     await bot.send_message(
         chat_id=shop_telegram_bot.support_account_chat_id, text=text)
+    text = helpers.load_message(
+        lang, "support_welcome_notification",
+    )
+    await bot.send_message(
+        chat_id=shop_telegram_bot.support_account_chat_id, text=text)
     return
 
 
