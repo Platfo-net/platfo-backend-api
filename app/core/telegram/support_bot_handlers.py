@@ -20,16 +20,16 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
     if not len(message):
         await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
         return
-    if message[0] == "#":
+    elif message[0] == "#":
         await send_direct_message(
             db, update, lang)
         return
 
-    if len(message) > 10:
+    elif len(message) > 10:
         await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
         return
 
-    if message[0] == "P":
+    elif message[0] == "P":
         shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
             db, chat_id=update.message.chat_id)
         if shop_telegram_bot:
@@ -63,6 +63,8 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
         services.shop.shop_telegram_bot.set_support_account_chat_id(
             db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
         return
+    update.message.reply_text(text=SupportBotMessage.INVALID_COMMAND[lang])
+    return
 
 
 async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_id: int, lang: str):

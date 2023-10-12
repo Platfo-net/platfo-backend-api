@@ -115,7 +115,6 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await support_bot_handlers.plain_message_handler(db, update, lang)
             return
 
-
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lang):
     telegram_bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
     if not telegram_bot:
