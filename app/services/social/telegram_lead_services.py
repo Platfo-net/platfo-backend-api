@@ -17,6 +17,7 @@ class TelegramLeadServices:
             username=obj_in.username,
             chat_id=obj_in.chat_id,
             telegram_bot_id=obj_in.telegram_bot_id,
+            lead_number=obj_in.lead_number,
         )
         db.add(db_obj)
         db.commit()
