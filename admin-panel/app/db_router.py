@@ -10,6 +10,7 @@ class MyDBRouter(object):
         return None
 
     def db_for_write(self, model, **hints):
-        if model == models_list:
+        if model in models_list:
             return "platfo"
         return None
+    
