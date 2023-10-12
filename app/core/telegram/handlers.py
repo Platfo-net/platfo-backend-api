@@ -108,7 +108,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             )
             return
         elif update.message.text.startswith("/"):
-            update.message.reply_text(text=SupportBotMessage.INVALID_COMMAND[lang])
+            await update.message.reply_text(text=SupportBotMessage.INVALID_COMMAND[lang])
+            return
         else:
             await support_bot_handlers.plain_message_handler(db, update, lang)
             return
