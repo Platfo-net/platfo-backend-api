@@ -85,17 +85,24 @@ class ProductServices:
         shop_id: int,
         page: int = 1,
         page_size: int = 20,
+        is_active: Optional[bool] = None
     ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
         items = (db.query(self.model)
-                 .filter(self.model.shop_id == shop_id)
-                 .join(self.model.category, isouter=True)
+                 .filter(self.model.shop_id == shop_id))
+        if is_active is not None:
+            items = items.filter(self.model.is_active == is_active)
+
+        items = (items.join(self.model.category, isouter=True)
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)
                  .all())
 
         total_count = db.query(self.model).filter(
-            self.model.shop_id == shop_id).count()
+            self.model.shop_id == shop_id)
+        if is_active is not None:
+            total_count = total_count.filter(self.model.is_active == is_active)
+        total_count = total_count.count()
 
         pagination = paginate(total_count, page, page_size)
 

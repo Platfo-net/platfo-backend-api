@@ -66,7 +66,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 return
             else:
                 text = helpers.load_message(
-                    lang, "support_account_already_connected", shop_title=shop_telegram_bot.shop.title)
+                    lang, "support_account_already_connected",
+                    shop_title=shop_telegram_bot.shop.title)
                 await update.message.reply_text(text=text)
                 return
 

@@ -13,4 +13,3 @@ class MyDBRouter(object):
         if model in models_list:
             return "platfo"
         return None
-    

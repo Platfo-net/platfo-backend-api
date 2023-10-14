@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import BigInteger, Column, DateTime, Float, ForeignKey, String
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -23,15 +23,17 @@ class ShopProduct(Base):
 
     category_id = Column(
         BigInteger,
-        ForeignKey('shop_categories.id'),
+        ForeignKey('shop_categories.id', ondelete="SET NULL"),
         nullable=True,
     )
 
     shop_id = Column(
         BigInteger,
-        ForeignKey('shop_shops.id'),
+        ForeignKey('shop_shops.id', ondelete="CASCADE"),
         nullable=True,
     )
+
+    is_active = Column(Boolean(), default=True)
 
     category = relationship('ShopCategory', back_populates='products')
     order_items = relationship('ShopOrderItem', back_populates="product")

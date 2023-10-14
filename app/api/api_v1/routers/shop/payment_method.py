@@ -138,3 +138,26 @@ def delete_payment_method(
     services.shop.payment_method.delete(db, db_obj=payment_method)
 
     return
+
+
+@router.get('/{shop_id}/telegram-shop', response_model=List[schemas.shop.PaymentMethod])
+def get_shop_payment_methods_for_telegram_shop(
+    *,
+    db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
+):
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    payment_methods = services.shop.payment_method.get_multi_by_shop_id(
+        db, shop_id=shop.id, is_active=True)
+
+    return [
+        schemas.shop.PaymentMethod(
+            id=payment_method.uuid,
+            title=payment_method.title,
+            description=payment_method.description,
+        )
+        for payment_method in payment_methods
+    ]

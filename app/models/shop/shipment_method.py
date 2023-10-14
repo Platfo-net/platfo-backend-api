@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, String
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -10,6 +10,8 @@ class ShopShipmentMethod(Base):
     title = Column(String(255), nullable=True)
     price = Column(String(255), nullable=True)
     currency = Column(String(255), nullable=True)
+
+    is_active = Column(Boolean(), default=True)
 
     shop_id = Column(
         BigInteger,

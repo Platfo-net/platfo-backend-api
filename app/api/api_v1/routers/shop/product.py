@@ -232,6 +232,9 @@ def delete_product(
 
     services.shop.product.delete(db, db_obj=product)
 
+    services.shop.order_item.set_product_title_after_delete_product(
+        db, product_id=product.id, product_title=product.title)
+
     return
 
 
@@ -253,7 +256,7 @@ def get_shop_products_for_telegram_shop(
         raise_http_exception(Error.SHOP_SHOP_NOT_AVAILABLE)
 
     items, pagination = services.shop.product.get_multi_by_shop_id(
-        db, shop_id=shop.id, page=page, page_size=page_size)
+        db, shop_id=shop.id, page=page, page_size=page_size, is_active=True)
 
     products_list = []
     for product in items:

@@ -15,7 +15,7 @@ class ShopOrderItem(Base):
 
     product_id = Column(
         BigInteger,
-        ForeignKey('shop_products.id'),
+        ForeignKey('shop_products.id', ondelete="SET NULL"),
         nullable=True,
     )
 
@@ -23,5 +23,6 @@ class ShopOrderItem(Base):
     price = Column(Float(), nullable=True)
     currency = Column(String(32), nullable=True)
 
+    product_title = Column(String(256), nullable=True)
     order = relationship('ShopOrder', back_populates='items')
     product = relationship('ShopProduct', back_populates='order_items')

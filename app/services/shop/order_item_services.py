@@ -28,5 +28,16 @@ class OrderItemServices:
         db.commit()
         return db_objs
 
+    def set_product_title_after_delete_product(
+        self,
+        db: Session,
+        *,
+        product_id: int,
+        product_title: str,
+    ):
+        (db.query(self.model)
+         .filter(self.model.product_id == product_id)
+         .update({"product_title": product_title}))
+
 
 order_item = OrderItemServices(models.shop.ShopOrderItem)

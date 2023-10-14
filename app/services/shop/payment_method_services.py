@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -75,13 +75,16 @@ class PaymentMethodServices:
         self,
         db: Session,
         *,
-        shop_id: int
+        shop_id: int,
+        is_active: Optional[bool] = None
     ) -> List[models.shop.ShopPaymentMethod]:
-        return (
+        items = (
             db.query(self.model)
             .filter(self.model.shop_id == shop_id)
-            .all()
         )
+        if is_active is not None:
+            items = items.filter(self.model.is_active == is_active)
+        return items.all()
 
     def delete(
         self,

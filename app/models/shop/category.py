@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, String
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -14,6 +14,8 @@ class ShopCategory(Base):
         ForeignKey('shop_shops.id'),
         nullable=True,
     )
+
+    is_active = Column(Boolean(), default=True)
 
     products = relationship('ShopProduct', back_populates='category')
 
