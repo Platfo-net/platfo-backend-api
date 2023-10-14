@@ -58,3 +58,4 @@ class ShopOrder(Base):
 
     payment_method = relationship("ShopPaymentMethod", back_populates="orders")
     shipment_method = relationship("ShopShipmentMethod", back_populates="orders")
+    telegram_order = relationship("ShopTelegramOrder", back_populates="order")

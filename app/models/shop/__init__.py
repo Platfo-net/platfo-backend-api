@@ -6,3 +6,4 @@ from .product import ShopProduct
 from .shipment_method import ShopShipmentMethod
 from .shop import ShopShop
 from .shop_telegram_bot import ShopShopTelegramBot
+from .shop_telegram_order import ShopTelegramOrder

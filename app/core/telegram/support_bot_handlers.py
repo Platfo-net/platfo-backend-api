@@ -372,8 +372,8 @@ async def send_lead_order_to_shop_support_handler(
         order_status=OrderStatus[order.status]["title"][lang]
     )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
-    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
-    return
+    message: telegram.Message = await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
+    return message.message_id
 
 
 async def send_shop_bot_connection_notification_handler(
