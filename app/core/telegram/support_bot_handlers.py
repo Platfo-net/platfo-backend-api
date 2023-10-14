@@ -347,8 +347,13 @@ async def send_lead_order_to_shop_support_handler(
     for item in order.items:
         amount += item.count * item.price
 
-    text = helpers.load_message(lang, "new_order", amount=amount,
-                                order=order, lead_number=lead.lead_number)
+    text = helpers.load_message(
+        lang, "order",
+        amount=amount,
+        order=order,
+        lead_number=lead.lead_number,
+        order_status=OrderStatus[order.status]["title"][lang]
+    )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
     await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
     return

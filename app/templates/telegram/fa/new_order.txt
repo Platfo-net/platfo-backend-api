@@ -1,14 +1,12 @@
-سفارش جدید
+سفارش شما با موفقیت ثبت شد.
 
-شماره مشتری: {{ lead_number }}
+اطلاعات سفارش:
 شماره سفارش: {{ order.order_number }}
-آیتم ها
+لیست محصولات:
 {% for item in order.items -%}
-    {{ item.product.title }} : {{ item.count }}  
+    {{ item.product.title }} : {{ item.count }} :‌ {{ item.product.price * item.count }}{{ item.product.currency }}  
 {% endfor %}
+--------
 
-جمع: {{ amount }}
-وضعیت: {{ order_status }}
-
-
-قدرت گرفته از پلتفو
+جمع: {{ amount }}{{ order.items[0].currency }}
+وضعیت سفارش: {{ order_status }}

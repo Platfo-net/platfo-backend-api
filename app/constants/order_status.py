@@ -41,3 +41,12 @@ class OrderStatus:
             "en": "declined"
         }
     }
+
+    items = {
+        "UNPAID": UNPAID,
+        "PAYMENT_CHECK": PAYMENT_CHECK,
+        "ACCEPTED": ACCEPTED,
+        "PREPARATION": PREPARATION,
+        "SENT": SENT,
+        "DECLINED": DECLINED,
+    }

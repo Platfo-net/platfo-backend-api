@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import services
+from app.constants.order_status import OrderStatus
 from app.core.config import settings
 from app.core.telegram import helpers
 
@@ -53,7 +54,12 @@ async def send_lead_order_to_bot_handler(
     for item in order.items:
         amount += item.count * item.price
 
-    text = helpers.load_message(lang, "new_order", amount=amount, order=order)
+    text = helpers.load_message(
+        lang, "new_order",
+        amount=amount,
+        order=order,
+        order_status=OrderStatus[order.status]["title"][lang]
+    )
 
     bot = Bot(token=telegram_bot.bot_token)
     await bot.send_message(chat_id=lead.chat_id, text=text)
