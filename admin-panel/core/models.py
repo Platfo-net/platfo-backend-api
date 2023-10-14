@@ -466,6 +466,7 @@ class Roles(models.Model):
 
 class ShopCategories(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
+    is_active = models.BooleanField(max_length=255, blank=True, null=True)
     shop = models.ForeignKey(
         'ShopShops', models.DO_NOTHING, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
@@ -487,6 +488,7 @@ class ShopOrderItems(models.Model):
     product = models.ForeignKey(
         'ShopProducts', models.DO_NOTHING, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
+    product_title = models.CharField(max_length=256, blank=True, null=True)
     uuid = models.UUIDField(blank=True, null=True, default=uuid4)
     count = models.IntegerField(blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
@@ -559,6 +561,7 @@ class ShopPaymentMethods(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     shop = models.ForeignKey(
         'ShopShops', models.DO_NOTHING, blank=True, null=True)
+    is_active = models.BooleanField(max_length=255, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 
@@ -574,6 +577,8 @@ class ShopProducts(models.Model):
     currency = models.CharField(max_length=32, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(blank=True, null=True)
+    is_available = models.BooleanField(blank=True, null=True)
     category = models.ForeignKey(
         ShopCategories, models.DO_NOTHING, blank=True, null=True)
     shop = models.ForeignKey(
@@ -597,6 +602,8 @@ class ShopShipmentMethods(models.Model):
     currency = models.CharField(max_length=255, blank=True, null=True)
     shop = models.ForeignKey(
         'ShopShops', models.DO_NOTHING, blank=True, null=True)
+    is_active = models.BooleanField(max_length=255, blank=True, null=True)
+
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
 

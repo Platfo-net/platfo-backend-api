@@ -1,4 +1,4 @@
-"""telegram-lead-shop
+"""0002_telegram-lead-shop
 
 Revision ID: 3279eb357e14
 Revises: 5dde70b22951

@@ -34,6 +34,7 @@ class ShopProduct(Base):
     )
 
     is_active = Column(Boolean(), default=True)
+    is_available = Column(Boolean(), default=True)
 
     category = relationship('ShopCategory', back_populates='products')
     order_items = relationship('ShopOrderItem', back_populates="product")

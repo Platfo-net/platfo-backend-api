@@ -1,4 +1,4 @@
-"""lead_message
+"""0005_lead_message
 
 Revision ID: 23432815e837
 Revises: 40a207bc26e2

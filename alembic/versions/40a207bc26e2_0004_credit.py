@@ -1,4 +1,4 @@
-"""credit
+"""0004_credit
 
 Revision ID: 40a207bc26e2
 Revises: 47008826c604

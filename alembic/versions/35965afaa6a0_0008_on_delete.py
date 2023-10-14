@@ -1,4 +1,4 @@
-"""on_delete
+"""0008_on_delete
 
 Revision ID: 35965afaa6a0
 Revises: b97c4f6f663a
