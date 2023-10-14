@@ -37,7 +37,7 @@ def send_lead_order_to_bot_and_support_bot_task(telegram_bot_id: int, lead_id: i
         db,
         telegram_order_id=telegram_order_id,
         bot_message_id=bot_message_id,
-        reply_to_message_id=reply_to_message_id,
+        message_reply_to_id=reply_to_message_id,
         support_bot_message_id=support_bot_message_id,
     )
 

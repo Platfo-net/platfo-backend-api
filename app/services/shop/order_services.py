@@ -22,6 +22,7 @@ class OrderServices:
         payment_method_id: int,
         shipment_method_id: int,
         order_number: int,
+        status : str
 
     ) -> models.shop.ShopOrder:
         db_obj = self.model(
@@ -29,6 +30,7 @@ class OrderServices:
             last_name=obj_in.last_name,
             phone_number=obj_in.phone_number,
             state=obj_in.state,
+            status = status,
             city=obj_in.city,
             address=obj_in.address,
             postal_code=obj_in.postal_code,

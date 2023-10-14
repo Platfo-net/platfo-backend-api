@@ -58,7 +58,7 @@ async def send_lead_order_to_bot_handler(
         lang, "lead_new_order",
         amount=amount,
         order=order,
-        order_status=OrderStatus[order.status]["title"][lang]
+        order_status=OrderStatus.items[order.status]["title"][lang]
     )
 
     bot = Bot(token=telegram_bot.bot_token)
