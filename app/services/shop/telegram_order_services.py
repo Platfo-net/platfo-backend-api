@@ -79,7 +79,7 @@ class TelegramOrderServices:
         return (
             db.query(self.model)
             .join(self.model.order)
-            .filter(self.model.message_reply_to_id == reply_to_id, self.model.order.lead_id == lead_id)
+            .filter(self.model.message_reply_to_id == reply_to_id, models.shop.ShopOrder.lead_id == lead_id)
             .options(contains_eager(self.model.order))
             .first()
         )
