@@ -18,7 +18,8 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
     message = update.message.text.lstrip().rstrip()
 
     if not len(message):
-        await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
+        await update.message.reply_text(
+            SupportBotMessage.INVALID_COMMAND[lang], parse_mode="HTML")
         return
 
     elif update.message.text.isnumeric():
@@ -32,7 +33,7 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
         return
 
     elif len(message) > 10:
-        await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang])
+        await update.message.reply_text(SupportBotMessage.INVALID_COMMAND[lang], parse_mode="HTML")
         return
 
     elif message[0] == "P":
@@ -41,7 +42,8 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
         if shop_telegram_bot:
             await update.message.reply_text(
                 SupportBotMessage.SUPPORT_ACCOUNT_ALREADY_CONNECTED[lang].format(
-                    title=shop_telegram_bot.shop.title)
+                    title=shop_telegram_bot.shop.title),
+                parse_mode="HTML"
             )
             return
 
@@ -50,13 +52,13 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
 
         if not shop_telegram_bot:
             text = helpers.load_message(lang, "support_account_connection_wrong_code")
-            await update.message.reply_text(text)
+            await update.message.reply_text(text, parse_mode="HTML")
             return
 
         if shop_telegram_bot.support_account_chat_id:
             await update.message.reply_text(
                 SupportBotMessage.SHOP_ALREADY_CONNECTED[lang].format(
-                    title=shop_telegram_bot.shop.title)
+                    title=shop_telegram_bot.shop.title), parse_mode="HTML"
             )
             return
 
@@ -64,12 +66,12 @@ async def plain_message_handler(db: Session, update: telegram.Update, lang: str)
             shop_telegram_bot, lang)
 
         await update.message.reply_text(
-            text, reply_markup=reply_markup
+            text, reply_markup=reply_markup, parse_mode="HTML"
         )
         services.shop.shop_telegram_bot.set_support_account_chat_id(
             db, db_obj=shop_telegram_bot, chat_id=update.message.chat_id)
         return
-    update.message.reply_text(text=SupportBotMessage.INVALID_COMMAND[lang])
+    update.message.reply_text(text=SupportBotMessage.INVALID_COMMAND[lang], parse_mode="HTML")
     return
 
 
@@ -106,7 +108,8 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
 
     if not order:
         await update.message.reply_text(
-            SupportBotMessage.ORDER_NOT_FOUND["fa"].format(order_number=order_number)
+            SupportBotMessage.ORDER_NOT_FOUND["fa"].format(order_number=order_number),
+            parse_mode="HTML"
         )
         return
 
@@ -147,7 +150,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         text = helpers.load_message(lang, "order", amount=amount, order=order,
                                     order_status=OrderStatus.SENT["title"][lang])
 
-    await update.message.reply_text(text=text, reply_markup=reply_markup)
+    await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
 
 
 async def verify_support_account(db: Session, update: telegram.Update,
@@ -155,7 +158,7 @@ async def verify_support_account(db: Session, update: telegram.Update,
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_uuid(
         db, uuid=shop_telegram_bot_uuid)
     if not shop_telegram_bot_uuid:
-        return await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang])
+        return await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang], parse_mode="HTML")
 
     if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
         return
@@ -164,7 +167,7 @@ async def verify_support_account(db: Session, update: telegram.Update,
     text = helpers.load_message(lang, "support_account_connection_successfully",
                                 shop_title=shop_telegram_bot.shop.title)
     await update.message.reply_text(
-        text=text
+        text=text, parse_mode="HTML"
     )
     await update.message.edit_reply_markup(reply_markup=telegram.InlineKeyboardMarkup([]))
 
@@ -200,11 +203,13 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
 
     await update.message.reply_text(
         message,
-        reply_to_message_id=update.message.message_id
+        reply_to_message_id=update.message.message_id,
+        parse_mode="HTML"
     )
     await update.message.edit_text(
         text=get_accepted_order_message(order, lang),
-        reply_markup=get_accepted_order_reply_markup(order, lang)
+        reply_markup=get_accepted_order_reply_markup(order, lang),
+        parse_mode="HTML"
     )
 
 
@@ -223,10 +228,14 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
 
     await update.message.reply_text(
         message,
-        reply_to_message_id=update.message.message_id
+        reply_to_message_id=update.message.message_id,
+        parse_mode="HTML"
     )
-    await update.message.edit_reply_markup(telegram.InlineKeyboardMarkup([]))
-    await update.message.edit_text(text=get_declined_order_message(order, lang))
+    await update.message.edit_text(
+        text=get_declined_order_message(order, lang),
+        reply_markup=telegram.InlineKeyboardMarkup([]),
+        parse_mode="HTML",
+    )
 
 
 async def decline_payment_order_handler(db: Session, update: telegram.Update, order_id, lang):
@@ -242,12 +251,14 @@ async def decline_payment_order_handler(db: Session, update: telegram.Update, or
 
     await update.message.reply_text(
         message,
-        reply_to_message_id=update.message.message_id
+        reply_to_message_id=update.message.message_id,
+        parse_mode="HTML",
     )
 
     await update.message.edit_text(
         text=get_unpaid_order_message(order, lang),
-        reply_markup=telegram.InlineKeyboardMarkup([])
+        reply_markup=telegram.InlineKeyboardMarkup([]),
+        parse_mode="HTML",
     )
 
 
@@ -265,11 +276,13 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
 
     await update.message.reply_text(
         message,
-        reply_to_message_id=update.message.message_id
+        reply_to_message_id=update.message.message_id,
+        parse_mode="HTML",
     )
     await update.message.edit_text(
         text=get_prepare_order_message(order, lang),
-        reply_markup=get_prepare_order_reply_markup(order, lang)
+        reply_markup=get_prepare_order_reply_markup(order, lang),
+        parse_mode="HTML",
     )
 
 
@@ -288,12 +301,14 @@ async def send_direct_message_helper(
 
     await update.message.reply_text(
         message,
+        parse_mode="HTML",
     )
 
     message = helpers.load_message(lang, "direct_message_template", lead_number=lead.lead_number)
 
     await update.message.reply_text(
         message,
+        parse_mode="HTML",
     )
 
 
@@ -310,11 +325,13 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
 
     await update.message.reply_text(
         message,
-        reply_to_message_id=update.message.message_id
+        reply_to_message_id=update.message.message_id,
+        parse_mode="HTML",
     )
     await update.message.edit_text(
         text=get_send_order_message(order, lang),
-        reply_markup=telegram.InlineKeyboardMarkup([])
+        reply_markup=telegram.InlineKeyboardMarkup([]),
+        parse_mode="HTML",
     )
 
 
@@ -474,7 +491,7 @@ def get_accepted_order_message(order: models.shop.ShopOrder, lang):
     for item in order.items:
         amount += item.price * item.count
     text = helpers.load_message(
-        lang, "accepted_order",
+        lang, "order",
         amount=amount,
         order=order,
         order_status=OrderStatus.ACCEPTED["title"][lang],
@@ -512,7 +529,7 @@ def get_declined_order_message(order: models.shop.ShopOrder, lang):
         amount += item.price * item.count
     text = helpers.load_message(
         lang,
-        "declined_order",
+        "order",
         amount=amount,
         order=order,
         order_status=OrderStatus.DECLINED["title"][lang],
@@ -528,7 +545,7 @@ def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
         amount += item.price * item.count
     text = helpers.load_message(
         lang,
-        "unpaid_order",
+        "order",
         amount=amount,
         order=order,
         order_status=OrderStatus.UNPAID["title"][lang],
@@ -653,7 +670,8 @@ async def send_all_order_by_status(
 
     if not shop_telegram_bot:
         await update.message.reply_text(
-            SupportBotMessage.ACCOUNT_NOT_REGISTER[lang]
+            text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang],
+            parse_mode="HTML",
         )
         return
 
@@ -664,7 +682,7 @@ async def send_all_order_by_status(
         reply_markup = get_reply_markup(
             order, lang)
         await update.message.reply_text(
-            text, reply_markup=reply_markup
+            text, reply_markup=reply_markup, parse_mode="HTML",
         )
 
 

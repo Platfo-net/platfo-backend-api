@@ -2,6 +2,3 @@
 متن پیام:
 
 {{ message }}
-
-
-<a href="https://platfo.net">قدرت گرفته از پلتفو</a>

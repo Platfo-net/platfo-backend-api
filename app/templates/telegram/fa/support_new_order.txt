@@ -1,0 +1,12 @@
+سفارش جدید:
+
+شماره مشتری: {{ lead_number }}
+شماره سفارش: {{ order.order_number }}
+لیست محصولات:
+{% for item in order.items -%}
+    {{ item.product.title }} : {{ item.count }} :‌ {{ item.product.price * item.count }}{{ item.product.currency }}  
+{% endfor %}
+--------
+
+جمع: {{ amount }}{{ order.items[0].currency }}
+وضعیت سفارش: {{ order_status }}

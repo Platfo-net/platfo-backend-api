@@ -55,7 +55,7 @@ async def send_lead_order_to_bot_handler(
         amount += item.count * item.price
 
     text = helpers.load_message(
-        lang, "new_order",
+        lang, "lead_new_order",
         amount=amount,
         order=order,
         order_status=OrderStatus[order.status]["title"][lang]

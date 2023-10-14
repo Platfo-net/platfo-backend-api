@@ -24,7 +24,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         command, arg = callback.split(":")
         if command == TelegramCallbackCommand.NEW_CONNECTION.get("command"):
             text = helpers.load_message(lang, "new_connection")
-            await update.message.reply_text(text)
+            await update.message.reply_text(text, parse_mode="HTML")
             return
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.accept_order_handler(db, update, arg, lang)
@@ -62,22 +62,22 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             if not shop_telegram_bot:
                 text = support_bot_handlers.get_start_support_bot_message(lang)
                 reply_markup = support_bot_handlers.get_start_support_bot_reply_markup(lang)
-                await update.message.reply_text(text=text, reply_markup=reply_markup)
+                await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
                 return
             else:
                 text = helpers.load_message(
                     lang, "support_account_already_connected",
                     shop_title=shop_telegram_bot.shop.title)
-                await update.message.reply_text(text=text)
+                await update.message.reply_text(text=text, parse_mode="HTML")
                 return
 
         elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
-            await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang])
+            await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang], parse_mode="HTML")
             return
 
         elif update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
             message = helpers.load_message(lang, "direct_message_helper")
-            await update.message.reply_text(message , parse_mode="HTML")
+            await update.message.reply_text(message, parse_mode="HTML")
             message = helpers.load_message(lang, "direct_message_sample")
             await update.message.reply_text(message, parse_mode="HTML")
 
@@ -109,7 +109,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             )
             return
         elif update.message.text.startswith("/"):
-            await update.message.reply_text(text=SupportBotMessage.INVALID_COMMAND[lang])
+            await update.message.reply_text(text=SupportBotMessage.INVALID_COMMAND[lang],
+                                            parse_mode="HTML")
             return
         else:
             await support_bot_handlers.plain_message_handler(db, update, lang)
@@ -149,7 +150,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         text = helpers.load_message(lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)
         await update.message.reply_text(
             text=text,
-            reply_markup=bot_handlers.get_shop_menu(shop_telegram_bot.shop.uuid, lead.uuid)
+            reply_markup=bot_handlers.get_shop_menu(shop_telegram_bot.shop.uuid, lead.uuid),
+            parse_mode="HTML"
         )
 
     elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
@@ -157,6 +159,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             lang, "lead_to_support_message_helper", lead_number=lead.lead_number)
         await update.message.reply_text(
             text=text,
+            parse_mode="HTML"
         )
     else:
         message = update.message.text

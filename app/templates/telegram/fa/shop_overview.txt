@@ -7,3 +7,7 @@
 همچنین میتوانید با استفاده از دستور زیر برای پشتیبانی فروشگاه مستقیما پیام ارسال کنید.
 
 /send_direct_message_helper
+
+<a href="https://platfo.net">
+<strong>قدرت گرفته از پلتفو</strong>
+</a>
