@@ -145,6 +145,20 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         )
     bot = Bot(token=telegram_bot.bot_token)
     update = telegram.Update.de_json(data, bot)
+    reply_to_id = update.message.reply_to_message.message_id
+    telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
+        db, lead_id=lead.id, reply_to_id=reply_to_id)
+    if telegram_order:
+        message = update.message.text
+        services.shop.telegram_order.add_message_text
+        await update.message.reply_text(
+            text="شما پرداخت کردید",
+            reply_to_message_id=telegram_order.bot_message_id,
+        )
+        support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
+        await support_bot.send_message(f"این بنده خدا پرداخت کرد , {message}",
+                                       reply_to_id=telegram_order.support_bot_message_id)
+        return
 
     if update.message.text == TelegramBotCommand.START["command"]:
         text = helpers.load_message(lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)

@@ -40,12 +40,24 @@ class TelegramOrderServices:
         })
         db.commit()
 
+    def add_message_text(
+        self,
+        db: Session,
+        *,
+        telegram_order_id: int,
+        text: str
+    ) -> None:
+        db.query(self.model).filter(self.model.id == telegram_order_id).update({
+            "message": text,
+        })
+        db.commit()
+
     def get_by_uuid(
         self,
         db: Session,
         *,
         uuid: UUID4
-    ) -> models.shop.ShopPaymentMethod:
+    ):
         return db.query(self.model).join(self.model.shop).filter(self.model.uuid == uuid).first()
 
     def get(
@@ -53,8 +65,21 @@ class TelegramOrderServices:
         db: Session,
         *,
         id: int
-    ) -> models.shop.ShopPaymentMethod:
+    ):
         return db.query(self.model).join(self.model.shop).filter(self.model.id == id).first()
+
+    def get_by_reply_to_id_and_lead_id(
+        self,
+        db: Session,
+        *,
+        reply_to_id: int,
+        lead_id: int
+    ) -> Optional[models.shop.ShopTelegramOrder]:
+        return (
+            db.query(self.model)
+            .filter(self.model.message_reply_to_id == reply_to_id, self.model.order.lead_id == lead_id)
+            .first()
+        )
 
 
 telegram_order = TelegramOrderServices(models.shop.ShopTelegramOrder)
