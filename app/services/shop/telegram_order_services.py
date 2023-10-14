@@ -38,6 +38,7 @@ class TelegramOrderServices:
             "message_reply_to_id": message_reply_to_id,
             "support_bot_message_id": support_bot_message_id,
         })
+        db.commit()
 
     def get_by_uuid(
         self,

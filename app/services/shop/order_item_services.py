@@ -38,6 +38,7 @@ class OrderItemServices:
         (db.query(self.model)
          .filter(self.model.product_id == product_id)
          .update({"product_title": product_title}))
+        db.commit()
 
 
 order_item = OrderItemServices(models.shop.ShopOrderItem)

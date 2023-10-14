@@ -101,8 +101,6 @@ def create_telegram_shop_order(
         shop_id=shop.id,
         lead_id=lead.id,
         order_number=last_order_number + 1,
-        shipment_method_id=None,
-        payment_method_id=None,
         status=OrderStatus.UNPAID["value"],
     )
 
