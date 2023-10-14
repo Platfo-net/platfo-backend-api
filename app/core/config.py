@@ -37,15 +37,15 @@ class Settings(BaseSettings):
     SHOP_USER_PHONE_NUMBER: str
     SHOP_USER_PHONE_COUNTRY_CODE: str
 
-    FIRST_USER_EMAIL: str = None
-    FIRST_USER_PASSWORD: str = None
+    FIRST_USER_EMAIL: Optional[str] = None
+    FIRST_USER_PASSWORD: Optional[str] = None
 
-    DB_HOST: str
+    DB_HOST: Optional[str] = None
     DB_PORT: int = 6432
 
-    DB_PASSWORD: str
-    DB_USER: str
-    DB_NAME: str
+    DB_PASSWORD: Optional[str] = None
+    DB_USER: Optional[str] = None
+    DB_NAME: Optional[str] = None
 
     POSTGRES_PASSWORD: str
     POSTGRES_USER: str
