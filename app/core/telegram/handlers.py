@@ -62,7 +62,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             if not shop_telegram_bot:
                 text = support_bot_handlers.get_start_support_bot_message(lang)
                 reply_markup = support_bot_handlers.get_start_support_bot_reply_markup(lang)
-                await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
+                await update.message.reply_text(
+                    text=text, reply_markup=reply_markup, parse_mode="HTML")
                 return
             else:
                 text = helpers.load_message(
@@ -72,7 +73,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 return
 
         elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
-            await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang], parse_mode="HTML")
+            await update.message.reply_text(
+                SupportBotMessage.ENTER_ORDER_NUMBER[lang], parse_mode="HTML")
             return
 
         elif update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
@@ -158,10 +160,20 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 reply_to_message_id=telegram_order.bot_message_id,
             )
             support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
-            await support_bot.send_message(text = f"این بنده خدا پرداخت کرد , {message}",
-                                           chat_id=shop_telegram_bot.support_account_chat_id,
-                                           reply_to_message_id=telegram_order.support_bot_message_id
-                                           )
+            await support_bot.send_message(
+                text=f"این بنده خدا پرداخت کرد , {message}",
+                chat_id=shop_telegram_bot.support_account_chat_id,
+                reply_to_message_id=telegram_order.support_bot_message_id
+            )
+            order = services.shop.order.get(db, id=telegram_order.order_id)
+            order = services.shop.order.change_status(
+                db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
+            await support_bot.edit_message_text(
+                text=support_bot_handlers.get_payment_check_order_message(order, lang),
+                chat_id=shop_telegram_bot.support_account_chat_id,
+                message_id=telegram_order.support_bot_message_id,
+                reply_markup=support_bot_handlers.get_payment_check_order_reply_markup,
+            )
             return
 
     if update.message.text == TelegramBotCommand.START["command"]:

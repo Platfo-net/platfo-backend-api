@@ -158,7 +158,8 @@ async def verify_support_account(db: Session, update: telegram.Update,
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_uuid(
         db, uuid=shop_telegram_bot_uuid)
     if not shop_telegram_bot_uuid:
-        return await update.message.reply_text(text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang], parse_mode="HTML")
+        return await update.message.reply_text(
+            text=SupportBotMessage.ACCOUNT_NOT_REGISTER[lang], parse_mode="HTML")
 
     if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
         return
@@ -372,7 +373,8 @@ async def send_lead_order_to_shop_support_handler(
         order_status=OrderStatus.items[order.status]["title"][lang]
     )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
-    message: telegram.Message = await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=text)
+    message: telegram.Message = await bot.send_message(
+        chat_id=shop_telegram_bot.support_account_chat_id, text=text)
     return message.message_id
 
 

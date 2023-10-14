@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import UUID4
-from sqlalchemy.orm import Session , contains_eager
+from sqlalchemy.orm import Session, contains_eager
 
-from app import models, schemas
+from app import models
 
 
 class TelegramOrderServices:
@@ -75,11 +75,12 @@ class TelegramOrderServices:
         reply_to_id: int,
         lead_id: int
     ) -> Optional[models.shop.ShopTelegramOrder]:
-        
+
         return (
             db.query(self.model)
             .join(self.model.order)
-            .filter(self.model.message_reply_to_id == reply_to_id, models.shop.ShopOrder.lead_id == lead_id)
+            .filter(self.model.message_reply_to_id == reply_to_id,
+                    models.shop.ShopOrder.lead_id == lead_id)
             .options(contains_eager(self.model.order))
             .first()
         )

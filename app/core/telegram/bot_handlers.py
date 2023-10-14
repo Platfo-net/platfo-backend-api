@@ -63,6 +63,7 @@ async def send_lead_order_to_bot_handler(
 
     bot = Bot(token=telegram_bot.bot_token)
     order_message: telegram.Message = await bot.send_message(chat_id=lead.chat_id, text=text)
-    payment_info_message: telegram.Message = await bot.send_message(chat_id=lead.chat_id, text="اینو ریپلای کن")
+    payment_info_message: telegram.Message = await bot.send_message(
+        chat_id=lead.chat_id, text="اینو ریپلای کن")
 
     return order_message.message_id, payment_info_message.message_id
