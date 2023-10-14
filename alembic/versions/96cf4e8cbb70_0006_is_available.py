@@ -1,4 +1,4 @@
-"""0009_is_available
+"""0006_is_available
 
 Revision ID: 96cf4e8cbb70
 Revises: 23432815e837
