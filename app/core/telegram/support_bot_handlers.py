@@ -458,7 +458,7 @@ def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
         total_price += item.price * item.count
 
     text = helpers.load_message(
-        lang, "payment_check",
+        lang, "order",
         amount=total_price,
         order=order,
         order_status=OrderStatus.PAYMENT_CHECK["title"][lang],
