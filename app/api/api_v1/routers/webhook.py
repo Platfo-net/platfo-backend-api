@@ -1,3 +1,4 @@
+import telegram
 from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
                      status)
 from sqlalchemy.orm import Session
@@ -40,7 +41,10 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
 async def telegram_webhook_listener(*, bot_id: int, request: Request):
     try:
         data = await request.json()
-        telegram_tasks.telegram_webhook_task.delay(data, bot_id, "fa")
+        print(data)
+        d = telegram.Message.de_json(data)
+        print(d)
+        # telegram_tasks.telegram_webhook_task.delay(data, bot_id, "fa")
     except Exception as e:
         print(e)
     return
