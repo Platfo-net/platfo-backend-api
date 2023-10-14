@@ -53,11 +53,11 @@ class Settings(BaseSettings):
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
-    FACEBOOK_APP_ID: str = None
-    FACEBOOK_APP_SECRET: str = None
+    FACEBOOK_APP_ID: Optional[str] = None
+    FACEBOOK_APP_SECRET: Optional[str] = None
 
-    FACEBOOK_GRAPH_BASE_URL: str = None
-    FACEBOOK_GRAPH_VERSION: str = None
+    FACEBOOK_GRAPH_BASE_URL: Optional[str] = None
+    FACEBOOK_GRAPH_VERSION: Optional[str] = None
 
     FACEBOOK_WEBHOOK_VERIFY_TOKEN: str = None
 
@@ -72,10 +72,10 @@ class Settings(BaseSettings):
 
     CELERY_URI: Optional[RedisDsn] = None
 
-    S3_ROOT_USER: str = ""
-    S3_ROOT_PASSWORD: str = ""
-    S3_PORT: str = ""
-    S3_HOST: str = ""
+    S3_ROOT_USER: Optional[str] = None
+    S3_ROOT_PASSWORD: Optional[str] = None
+    S3_PORT: Optional[str] = None
+    S3_HOST: Optional[str] = None
 
     S3_ACADEMY_ATTACHMENT_BUCKET: str = "academy_attachment_bucket"
     S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow_media_bucket"
@@ -84,27 +84,27 @@ class Settings(BaseSettings):
     S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop_product_image_bucket'
     PAYMENT_RECEIPT_IMAGE: str = 'payment_receipt_image_bucket'
 
-    CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: int = 150
-    CAMPAIGN_PERIOD_INTERVAL_MINUTES: int = 15
+    CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: Optional[int] = None
+    CAMPAIGN_PERIOD_INTERVAL_MINUTES: Optional[int] = None
 
-    SAMPLE_FACEBOOK_PAGE_ID: int = 20
-    SAMPLE_LEAD_IGS_ID: int = 10
+    SAMPLE_FACEBOOK_PAGE_ID: Optional[int] = None
+    SAMPLE_LEAD_IGS_ID: Optional[int] = None
 
-    SMS_IR_USER_ACTIVATION_TEMPLATE_ID: int = 0
-    SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID: int = 0
+    SMS_IR_USER_ACTIVATION_TEMPLATE_ID: Optional[int] = None
+    SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID: Optional[int] = None
 
-    SMS_IR_API_KEY: str = ""
-    SMS_IR_LINE_NUMBER: str = ""
+    SMS_IR_API_KEY: Optional[str] = None
+    SMS_IR_LINE_NUMBER: Optional[str] = None
 
-    LOKI_LOG_PUSH_URL: str = ""
+    LOKI_LOG_PUSH_URL: Optional[str] = None
 
-    OTEL_EXPORTER_OTLP_ENDPOINT: str = ""
+    OTEL_EXPORTER_OTLP_ENDPOINT: Optional[str] = None
 
-    OTEL_SERVICE_NAME: str = ""
-    OTEL_EXPORTER_OTLP_INSECURE: str = ""
+    OTEL_SERVICE_NAME: Optional[str] = None
+    OTEL_EXPORTER_OTLP_INSECURE: Optional[str] = None
 
-    SUPPORT_BOT_TOKEN: str = ""
-    PLATFO_SHOPS_BASE_URL: str = ""
+    SUPPORT_BOT_TOKEN: Optional[str] = None
+    PLATFO_SHOPS_BASE_URL: Optional[str] = None
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
