@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from pydantic import UUID4
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session , contains_eager
 
 from app import models, schemas
 
@@ -79,8 +79,8 @@ class TelegramOrderServices:
         return (
             db.query(self.model)
             .join(self.model.order)
-            .join(models.shop.ShopOrder.lead)
             .filter(self.model.message_reply_to_id == reply_to_id, self.model.order.lead_id == lead_id)
+            .options(contains_eager(self.model.order))
             .first()
         )
 
