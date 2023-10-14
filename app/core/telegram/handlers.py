@@ -77,9 +77,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         elif update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
             message = helpers.load_message(lang, "direct_message_helper")
-            await update.message.reply_text(message)
+            await update.message.reply_text(message , parse_mode="HTML")
             message = helpers.load_message(lang, "direct_message_sample")
-            await update.message.reply_text(message)
+            await update.message.reply_text(message, parse_mode="HTML")
 
             return
 
