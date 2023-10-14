@@ -172,7 +172,9 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 text=support_bot_handlers.get_payment_check_order_message(order, lang),
                 chat_id=shop_telegram_bot.support_account_chat_id,
                 message_id=telegram_order.support_bot_message_id,
-                reply_markup=support_bot_handlers.get_payment_check_order_reply_markup,
+                reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
+                    order, lang),
+                parse_mode="HTML"
             )
             return
 
