@@ -151,7 +151,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             db, lead_id=lead.id, reply_to_id=reply_to_message.message_id)
         if telegram_order:
             message = update.message.text
-            services.shop.telegram_order.add_message_text
+            services.shop.telegram_order.add_message_text(db, telegram_order_id=telegram_order.id)
             await update.message.reply_text(
                 text="شما پرداخت کردید",
                 reply_to_message_id=telegram_order.bot_message_id,

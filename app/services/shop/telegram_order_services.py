@@ -75,8 +75,11 @@ class TelegramOrderServices:
         reply_to_id: int,
         lead_id: int
     ) -> Optional[models.shop.ShopTelegramOrder]:
+        
         return (
             db.query(self.model)
+            .join(self.model.order)
+            .join(models.shop.ShopOrder.lead)
             .filter(self.model.message_reply_to_id == reply_to_id, self.model.order.lead_id == lead_id)
             .first()
         )
