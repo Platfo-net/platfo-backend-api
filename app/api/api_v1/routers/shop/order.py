@@ -47,13 +47,6 @@ def create_telegram_shop_order(
     obj_in: schemas.shop.OrderCreate,
     shop_id: UUID4,
     lead_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.SHOP['name'],
-            Role.ADMIN['name'],
-        ],
-    ),
 ):
     shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
 
