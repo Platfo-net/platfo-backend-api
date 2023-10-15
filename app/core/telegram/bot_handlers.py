@@ -9,13 +9,13 @@ from app.core.config import settings
 from app.core.telegram import helpers
 
 
-def get_shop_menu(bot_id: UUID4, lead_uuid: UUID4):
+def get_shop_menu(shop_id: UUID4, lead_id: UUID4):
     keyboard = [
         [
             telegram.MenuButtonWebApp(
                 text="View",
                 web_app=telegram.WebAppInfo(
-                    f"{settings.PLATFO_SHOPS_BASE_URL}/{bot_id}/{lead_uuid}")
+                    f"{settings.PLATFO_SHOPS_BASE_URL}/{shop_id}/{lead_id}")
             )
         ],
     ]
