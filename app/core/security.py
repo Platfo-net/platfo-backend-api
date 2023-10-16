@@ -55,12 +55,12 @@ def create_token(db: Session, *, user: models.User):
 
 
 def encrypt_telegram_token(token):
-    key = settings.TELEGRAM_TOKEN_ENCRYPTION_KEY
+    key = bytes(settings.TELEGRAM_TOKEN_ENCRYPTION_KEY, "utf-8")
     cipher = Fernet(key)
     return str(cipher.encrypt(bytes(token, "utf-8")))
 
 
 def decrypt_telegram_token(token):
-    key = settings.TELEGRAM_TOKEN_ENCRYPTION_KEY
+    key = bytes(settings.TELEGRAM_TOKEN_ENCRYPTION_KEY, "utf-8")
     cipher = Fernet(key)
     return str(cipher.decrypt(bytes(token, "utf-8")))
