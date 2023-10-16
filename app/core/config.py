@@ -106,6 +106,8 @@ class Settings(BaseSettings):
     SUPPORT_BOT_TOKEN: Optional[str] = None
     PLATFO_SHOPS_BASE_URL: Optional[str] = None
 
+    TELEGRAM_TOKEN_ENCRYPTION_KEY: Optional[str] = None
+
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):

@@ -1,3 +1,4 @@
+from cryptography.fernet import Fernet
 from datetime import datetime, timedelta
 from typing import Any, Union
 
@@ -51,3 +52,15 @@ def create_token(db: Session, *, user: models.User):
         token_payload, expires_delta=access_token_expires
     )
     return schemas.Token(access_token=access_token, token_type='bearer')
+
+
+def encrypt_telegram_token(token):
+    key = settings.TELEGRAM_TOKEN_ENCRYPTION_KEY
+    cipher = Fernet(key)
+    return str(cipher.encrypt(bytes(token, "utf-8")))
+
+
+def decrypt_telegram_token(token):
+    key = settings.TELEGRAM_TOKEN_ENCRYPTION_KEY
+    cipher = Fernet(key)
+    return str(cipher.decrypt(bytes(token, "utf-8")))

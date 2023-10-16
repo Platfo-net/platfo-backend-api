@@ -8,6 +8,7 @@ from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
+from app.core import security
 from app.core.config import settings
 from app.core.telegram import bot_handlers, helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
@@ -145,7 +146,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 lead_number=lead_number + 1,
             )
         )
-    bot = Bot(token=telegram_bot.bot_token)
+    bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
     update = telegram.Update.de_json(data, bot)
     reply_to_message = update.message.reply_to_message
     if reply_to_message:

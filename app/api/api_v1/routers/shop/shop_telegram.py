@@ -10,6 +10,7 @@ from app.api import deps
 from app.api.api_v1.routers.telegram_bot import get_me, set_webhook
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.core import security
 from app.core.exception import raise_http_exception
 from app.core.telegram import tasks as telegram_tasks
 from app.core.utils import generate_random_support_token
@@ -161,9 +162,8 @@ def connect_shop_to_telegram_bot(
 
     if not res:
         raise_http_exception(Error.TELEGRAM_SERVER_SET_WEBHOOK_ERROR)
-
     bot_in = schemas.TelegramBotCreate(
-        bot_token=obj_in.bot_token,
+        bot_token=security.encrypt_telegram_token(obj_in.bot_token),
         first_name=bot_information["first_name"],
         username=bot_information["username"],
         bot_id=bot_information["bot_id"],
