@@ -40,11 +40,11 @@ class TelegramLeadServices:
             .first()
         )
 
-    def get_by_chat_id(self, db: Session, *, chat_id: int) -> models.social.TelegramLead:
+    def get_by_chat_id(self, db: Session, *, chat_id: int, telegram_bot_id: int) -> models.social.TelegramLead:
         return (
             db.query(self.model)
             .join(self.model.telegram_bot)
-            .filter(self.model.chat_id == chat_id)
+            .filter(self.model.chat_id == chat_id, self.model.telegram_bot_id == telegram_bot_id)
             .first()
         )
 

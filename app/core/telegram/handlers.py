@@ -131,7 +131,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         return
 
     user = data["message"]["from"]
-    lead = services.social.telegram_lead.get_by_chat_id(db, chat_id=user.get("id"))
+    lead = services.social.telegram_lead.get_by_chat_id(
+        db, chat_id=user.get("id"), telegram_bot_id=telegram_bot.id)
     if not lead:
         lead_number = services.social.telegram_lead.get_last_lead_number(
             db, telegram_bot_id=shop_telegram_bot.telegram_bot_id)
