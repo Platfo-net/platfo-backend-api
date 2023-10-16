@@ -421,7 +421,6 @@ async def send_direct_message(
     if not helpers.has_credit_by_shop_id(db, shop_telegram_bot.shop_id):
         return
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
-    print(security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
     shop_bot = Bot(token=security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
     lead = services.social.telegram_lead.get_by_lead_number_and_telegram_bot_id(
         db, lead_number=int(lead_number), telegram_bot_id=shop_telegram_bot.telegram_bot_id)
