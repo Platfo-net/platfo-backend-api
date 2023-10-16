@@ -574,11 +574,11 @@ class ShopProducts(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     image = models.CharField(max_length=255, blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
-    currency = models.CharField(max_length=32, blank=True, null=True)
+    currency = models.CharField(max_length=32, blank=True, null=True, default="IRR")
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    is_active = models.BooleanField(blank=True, null=True)
-    is_available = models.BooleanField(blank=True, null=True)
+    is_active = models.BooleanField(blank=True, null=True, default=True)
+    is_available = models.BooleanField(blank=True, null=True, default=True)
     category = models.ForeignKey(
         ShopCategories, models.DO_NOTHING, blank=True, null=True)
     shop = models.ForeignKey(
