@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Callable
-from fastapi import security
 
 import telegram
 from pydantic import UUID4
@@ -13,6 +12,7 @@ from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.core.config import settings
 from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
+from app.core import security
 
 
 async def plain_message_handler(db: Session, update: telegram.Update, lang: str):
