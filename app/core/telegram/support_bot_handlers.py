@@ -203,16 +203,27 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
 
     message = SupportBotMessage.ACCEPT_ORDER[lang].format(order_number=order.order_number)
 
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+
     await update.message.reply_text(
         message,
         reply_to_message_id=update.message.message_id,
         parse_mode="HTML"
     )
     await update.message.edit_text(
-        text=get_accepted_order_message(order, lang),
+        text=get_accepted_order_message(order, lang, amount),
         reply_markup=get_accepted_order_reply_markup(order, lang),
         parse_mode="HTML"
     )
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
+    text = helpers.load_message(lang, "lead_order", order=order,
+                                order_status=OrderStatus.items[order.status][lang], amount=amount)
+
+    await bot.send_message(chat_id=order.lead.chat_id, text=text)
 
 
 async def decline_order_handler(db: Session, update: telegram.Update, order_id, lang):
@@ -226,6 +237,10 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
     order = services.shop.order.change_status(
         db, order=order, status=OrderStatus.DECLINED["value"])
 
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+
     message = SupportBotMessage.DECLINE_ORDER[lang].format(order_number=order.order_number)
 
     await update.message.reply_text(
@@ -234,10 +249,17 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
         parse_mode="HTML"
     )
     await update.message.edit_text(
-        text=get_declined_order_message(order, lang),
+        text=get_declined_order_message(order, lang, amount),
         reply_markup=telegram.InlineKeyboardMarkup([]),
         parse_mode="HTML",
     )
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
+
+    text = helpers.load_message(lang, "lead_order", order=order,
+                                order_status=OrderStatus.items[order.status][lang], amount=amount)
+
+    await bot.send_message(chat_id=order.lead.chat_id, text=text)
 
 
 async def decline_payment_order_handler(db: Session, update: telegram.Update, order_id, lang):
@@ -251,6 +273,10 @@ async def decline_payment_order_handler(db: Session, update: telegram.Update, or
     order = services.shop.order.change_status(db, order=order, status=OrderStatus.UNPAID["value"])
     message = SupportBotMessage.DECLINE_PAYMENT_ORDER[lang].format(order_number=order.order_number)
 
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+
     await update.message.reply_text(
         message,
         reply_to_message_id=update.message.message_id,
@@ -258,10 +284,17 @@ async def decline_payment_order_handler(db: Session, update: telegram.Update, or
     )
 
     await update.message.edit_text(
-        text=get_unpaid_order_message(order, lang),
+        text=get_unpaid_order_message(order, lang, amount),
         reply_markup=telegram.InlineKeyboardMarkup([]),
         parse_mode="HTML",
     )
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
+    text = helpers.load_message(lang, "lead_order", order=order,
+                                order_status=OrderStatus.items[order.status][lang], amount=amount)
+
+    await bot.send_message(chat_id=order.lead.chat_id, text=text)
 
 
 async def prepare_order_handler(db: Session, update: telegram.Update, order_id, lang):
@@ -276,16 +309,26 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
         db, order=order, status=OrderStatus.PREPARATION["value"])
     message = SupportBotMessage.PREPARE_ORDER[lang].format(order_number=order.order_number)
 
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+
     await update.message.reply_text(
         message,
         reply_to_message_id=update.message.message_id,
         parse_mode="HTML",
     )
     await update.message.edit_text(
-        text=get_prepare_order_message(order, lang),
+        text=get_prepare_order_message(order, lang, amount),
         reply_markup=get_prepare_order_reply_markup(order, lang),
         parse_mode="HTML",
     )
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
+    text = helpers.load_message(lang, "lead_order", order=order,
+                                order_status=OrderStatus.items[order.status][lang], amount=amount)
+
+    await bot.send_message(chat_id=order.lead.chat_id, text=text)
 
 
 async def send_direct_message_helper(
@@ -325,16 +368,27 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
     order = services.shop.order.change_status(db, order=order, status=OrderStatus.SENT["value"])
     message = SupportBotMessage.SEND_ORDER[lang].format(order_number=order.order_number)
 
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+
     await update.message.reply_text(
         message,
         reply_to_message_id=update.message.message_id,
         parse_mode="HTML",
     )
     await update.message.edit_text(
-        text=get_send_order_message(order, lang),
+        text=get_send_order_message(order, lang, amount),
         reply_markup=telegram.InlineKeyboardMarkup([]),
         parse_mode="HTML",
     )
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
+    text = helpers.load_message(lang, "lead_order", order=order,
+                                order_status=OrderStatus.items[order.status][lang], amount=amount)
+
+    await bot.send_message(chat_id=order.lead.chat_id, text=text)
 
 
 async def send_lead_order_to_shop_support_handler(
@@ -453,14 +507,11 @@ async def send_direct_message(
     return
 
 
-def get_payment_check_order_message(order: models.shop.ShopOrder, lang):
-    total_price = 0
-    for item in order.items:
-        total_price += item.price * item.count
+def get_payment_check_order_message(order: models.shop.ShopOrder, lang, amount):
 
     text = helpers.load_message(
         lang, "order",
-        amount=total_price,
+        amount=amount,
         order=order,
         order_status=OrderStatus.PAYMENT_CHECK["title"][lang],
         lead_number=order.lead.lead_number,
@@ -489,10 +540,8 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
     return reply_markup
 
 
-def get_accepted_order_message(order: models.shop.ShopOrder, lang):
-    amount = 0
-    for item in order.items:
-        amount += item.price * item.count
+def get_accepted_order_message(order: models.shop.ShopOrder, lang, amount):
+
     text = helpers.load_message(
         lang, "order",
         amount=amount,
@@ -526,10 +575,8 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
     return reply_markup
 
 
-def get_declined_order_message(order: models.shop.ShopOrder, lang):
-    amount = 0
-    for item in order.items:
-        amount += item.price * item.count
+def get_declined_order_message(order: models.shop.ShopOrder, lang, amount):
+
     text = helpers.load_message(
         lang,
         "order",
@@ -542,10 +589,8 @@ def get_declined_order_message(order: models.shop.ShopOrder, lang):
     return text
 
 
-def get_unpaid_order_message(order: models.shop.ShopOrder, lang):
-    amount = 0
-    for item in order.items:
-        amount += item.price * item.count
+def get_unpaid_order_message(order: models.shop.ShopOrder, lang, amount):
+
     text = helpers.load_message(
         lang,
         "order",
@@ -577,14 +622,10 @@ def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
     return reply_markup
 
 
-def get_prepare_order_message(order: models.shop.ShopOrder, lang):
-    total_price = 0
-    for item in order.items:
-        total_price += item.price * item.count
-
+def get_prepare_order_message(order: models.shop.ShopOrder, lang, amount):
     text = helpers.load_message(
         lang, "order",
-        amount=total_price,
+        amount=amount,
         order=order,
         order_status=OrderStatus.PREPARATION["title"][lang],
         lead_number=order.lead.lead_number,
@@ -612,14 +653,14 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
     return reply_markup
 
 
-def get_send_order_message(order: models.shop.ShopOrder, lang):
+def get_send_order_message(order: models.shop.ShopOrder, lang, amount):
     total_price = 0
     for item in order.items:
         total_price += item.price * item.count
 
     text = helpers.load_message(
         lang, "order",
-        amount=total_price,
+        amount=amount,
         order=order,
         order_status=OrderStatus.SENT["title"][lang],
         lead_number=order.lead.lead_number,
@@ -681,7 +722,10 @@ async def send_all_order_by_status(
     orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[status["value"]])  # noqa
 
     for order in orders:
-        text = get_message(order, lang)
+        amount = 0
+        for item in order.items:
+            amount += item.price * item.count
+        text = get_message(order, lang, amount)
         reply_markup = get_reply_markup(
             order, lang)
         await update.message.reply_text(

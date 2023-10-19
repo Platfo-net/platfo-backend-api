@@ -9,12 +9,16 @@ from app.core import security
 from app.core.config import settings
 from app.core.telegram import helpers
 
+VITRIN = {
+    "fa": "ویترین",
+}
 
-def get_shop_menu(shop_id: UUID4, lead_id: UUID4):
+
+def get_shop_menu(shop_id: UUID4, lead_id: UUID4, lang: str):
     keyboard = [
         [
             telegram.MenuButtonWebApp(
-                text="View",
+                text=VITRIN[lang],
                 web_app=telegram.WebAppInfo(
                     f"{settings.PLATFO_SHOPS_BASE_URL}/{shop_id}/{lead_id}")
             )
@@ -64,7 +68,11 @@ async def send_lead_order_to_bot_handler(
 
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
     order_message: telegram.Message = await bot.send_message(chat_id=lead.chat_id, text=text)
+    text = helpers.load_message(
+        "payment_notification",
+        payment_description=order.payment_method.description,
+        amount=amount)
     payment_info_message: telegram.Message = await bot.send_message(
-        chat_id=lead.chat_id, text="اینو ریپلای کن")
+        chat_id=lead.chat_id, text=text)
 
     return order_message.message_id, payment_info_message.message_id
