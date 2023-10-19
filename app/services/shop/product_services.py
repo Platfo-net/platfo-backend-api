@@ -34,7 +34,7 @@ class ProductServices:
 
     def update(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         db_obj: models.shop.ShopProduct,
         obj_in: schemas.shop.ProductUpdate,
@@ -46,9 +46,7 @@ class ProductServices:
         db_obj.currency = obj_in.currency,
         db_obj.category_id = category_id,
 
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def get_by_uuid(
@@ -107,9 +105,8 @@ class ProductServices:
 
         return items, pagination
 
-    def delete(self, db: Session, *, db_obj: models.shop.ShopProduct):
-        db.delete(db_obj)
-        db.commit()
+    def delete(self, uow: UnitOfWork, *, db_obj: models.shop.ShopProduct):
+        uow.delete(db_obj)
 
 
 product = ProductServices(models.shop.ShopProduct)

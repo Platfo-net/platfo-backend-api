@@ -10,6 +10,7 @@ from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception
 from app.core.telegram.helpers import has_credit_by_shop_id
+from app.core.unit_of_work import UnitOfWork
 
 router = APIRouter(prefix='/products')
 
@@ -68,12 +69,13 @@ def create_product(
         if category.shop_id != shop.id:
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_IN_THIS_SHOP)
 
-    product = services.shop.product.create(
-        db,
-        obj_in=obj_in,
-        shop_id=shop.id,
-        category_id=category.id if category else None
-    )
+    with UnitOfWork(db) as uow:
+        product = services.shop.product.create(
+            uow,
+            obj_in=obj_in,
+            shop_id=shop.id,
+            category_id=category.id if category else None
+        )
 
     image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
@@ -129,8 +131,9 @@ def update_product(
         if category.shop_id != product.shop_id:
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_IN_THIS_SHOP)
 
-    product = services.shop.product.update(
-        db, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
+    with UnitOfWork(db) as uow:
+        product = services.shop.product.update(
+            uow, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
 
     image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
@@ -230,10 +233,11 @@ def delete_product(
     if product.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    services.shop.product.delete(db, db_obj=product)
+    with UnitOfWork(db) as uow:
+        services.shop.product.delete(uow, db_obj=product)
 
-    services.shop.order_item.set_product_title_after_delete_product(
-        db, product_id=product.id, product_title=product.title)
+        services.shop.order_item.set_product_title_after_delete_product(
+            uow, product_id=product.id, product_title=product.title)
 
     return
 

@@ -28,7 +28,7 @@ class PaymentMethodServices:
 
     def update(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         db_obj: models.shop.ShopPaymentMethod,
         obj_in: schemas.shop.PaymentMethodCreate,
@@ -36,9 +36,7 @@ class PaymentMethodServices:
         db_obj.title = obj_in.title
         db_obj.description = obj_in.description,
 
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def get_by_uuid(
@@ -87,12 +85,11 @@ class PaymentMethodServices:
 
     def delete(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         db_obj: models.shop.ShopPaymentMethod
     ):
-        db.delete(db_obj)
-        db.commit()
+        uow.delete(db_obj)
 
 
 payment_method = PaymentMethodServices(models.shop.ShopPaymentMethod)

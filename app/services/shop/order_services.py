@@ -5,7 +5,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app import models, schemas
-from app.constants.order_status import OrderStatus
+from app.core.unit_of_work import UnitOfWork
 
 
 class OrderServices:
@@ -14,7 +14,7 @@ class OrderServices:
 
     def create(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         obj_in: schemas.shop.OrderCreate,
         shop_id: int,
@@ -38,9 +38,7 @@ class OrderServices:
             lead_id=lead_id,
         )
 
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def get_last_order_number(self, db: Session, *, shop_id: int) -> int:
@@ -65,21 +63,6 @@ class OrderServices:
             .filter(self.model.uuid == uuid)
             .first()
         )
-
-    def pay_order(
-        self, db: Session, *,
-        order: models.shop.ShopOrder,
-        payment_info: schemas.shop.OrderAddPaymentInfo
-    ):
-        order.status = OrderStatus.PAYMENT_CHECK["value"]
-        order.payment_card_last_four_number = payment_info.payment_reference_number
-        order.payment_card_last_four_number = payment_info.payment_card_last_four_number
-        order.payment_card_last_four_number = payment_info.payment_datetime
-        order.payment_card_last_four_number = payment_info.payment_receipt_image
-        db.add(order)
-        db.commit()
-        db.refresh(order)
-        return order
 
     def get_shop_orders(
         self, db: Session, *, shop_id: int, status: List[str] = []

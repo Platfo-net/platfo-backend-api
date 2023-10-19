@@ -11,6 +11,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
+from app.core.unit_of_work import UnitOfWork
 
 router = APIRouter(prefix='/payment-methods')
 
@@ -36,11 +37,12 @@ def create_payment(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
-    payment = services.shop.payment_method.create(
-        db,
-        obj_in=obj_in,
-        shop_id=shop.id,
-    )
+    with UnitOfWork(db) as uow:
+        payment = services.shop.payment_method.create(
+            uow,
+            obj_in=obj_in,
+            shop_id=shop.id,
+        )
     return schemas.shop.PaymentMethod(
         id=payment.uuid,
         title=payment.title,
@@ -70,7 +72,8 @@ def update_payment_method(
     if payment.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    payment = services.shop.payment_method.update(db, db_obj=payment, obj_in=obj_in)
+    with UnitOfWork(db) as uow:
+        payment = services.shop.payment_method.update(uow, db_obj=payment, obj_in=obj_in)
 
     return schemas.shop.PaymentMethod(
         id=payment.uuid,
@@ -134,8 +137,8 @@ def delete_payment_method(
 
     if payment_method.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
-
-    services.shop.payment_method.delete(db, db_obj=payment_method)
+    with UnitOfWork(db) as uow:
+        services.shop.payment_method.delete(uow, db_obj=payment_method)
 
     return
 

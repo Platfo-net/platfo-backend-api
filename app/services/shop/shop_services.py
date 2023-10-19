@@ -24,7 +24,7 @@ class ShopServices:
             category=obj_in.category,
             user_id=user_id,
         )
-        
+
         uow.add(db_obj)
         return db_obj
 

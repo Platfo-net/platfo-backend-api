@@ -1,7 +1,7 @@
-from cryptography.fernet import Fernet
 from datetime import datetime, timedelta
 from typing import Any, Union
 
+from cryptography.fernet import Fernet
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session

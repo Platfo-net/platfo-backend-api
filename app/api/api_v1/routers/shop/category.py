@@ -71,8 +71,9 @@ def update_category(
     if category.user_id != current_user.id:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    with UnitOfWork(db) as uow:    
+    with UnitOfWork(db) as uow:
         category = services.shop.category.update(uow, db_obj=category, obj_in=obj_in)
+
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,
@@ -125,6 +126,7 @@ def delete_category(
     if category.shop.user_id != current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
-    services.shop.category.delete(db, db_obj=category)
+    with UnitOfWork(db) as uow:
+        services.shop.category.delete(uow, db_obj=category)
 
     return

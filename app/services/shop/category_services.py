@@ -67,12 +67,11 @@ class CategoryServices:
 
     def delete(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         db_obj: models.shop.ShopCategory
     ):
-        db.delete(db_obj)
-        db.commit()
+        uow.delete(db_obj)
 
 
 category = CategoryServices(models.shop.ShopCategory)

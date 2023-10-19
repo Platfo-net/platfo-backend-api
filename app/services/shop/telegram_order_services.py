@@ -4,6 +4,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session, contains_eager
 
 from app import models
+from app.core.unit_of_work import UnitOfWork
 
 
 class TelegramOrderServices:
@@ -12,16 +13,14 @@ class TelegramOrderServices:
 
     def create(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         order_id: int,
     ) -> models.shop.ShopTelegramOrder:
         db_obj = self.model(
             order_id=order_id
         )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def add_message_info(
