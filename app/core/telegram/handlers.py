@@ -89,7 +89,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.PAYMENT_CHECK_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
                 db, update, OrderStatus.PAYMENT_CHECK,
-                support_bot_handlers.get_payment_check_order_message,
+                support_bot_handlers.get_order_message,
                 support_bot_handlers.get_payment_check_order_reply_markup,
                 lang,
             )
@@ -97,7 +97,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.ACCEPTED_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
                 db, update, OrderStatus.ACCEPTED,
-                support_bot_handlers.get_accepted_order_message,
+                support_bot_handlers.get_order_message,
                 support_bot_handlers.get_accepted_order_reply_markup,
                 lang,
             )
@@ -106,7 +106,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.UNPAID_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
                 db, update, OrderStatus.UNPAID,
-                support_bot_handlers.get_unpaid_order_message,
+                support_bot_handlers.get_order_message,
                 support_bot_handlers.get_unpaid_order_reply_markup,
                 lang,
             )
@@ -184,7 +184,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         text = helpers.load_message(lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)
         await update.message.reply_text(
             text=text,
-            reply_markup=bot_handlers.get_shop_menu(shop_telegram_bot.shop.uuid, lead.uuid , lang),
+            reply_markup=bot_handlers.get_shop_menu(shop_telegram_bot.shop.uuid, lead.uuid, lang),
             parse_mode="HTML"
         )
 

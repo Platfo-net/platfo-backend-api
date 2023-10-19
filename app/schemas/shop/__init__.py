@@ -1,5 +1,5 @@
 from .category import Category, CategoryCreate, CategoryUpdate
-from .order import (OrderAddPaymentInfo, OrderCreate, OrderCreateResponse,
+from .order import (OrderCreate, OrderCreateResponse,
                     OrderItemCreate, OrderItemOrderCreate, OrderSummary)
 from .payment_methods import (PaymentMethod, PaymentMethodCreate,
                               PaymentMethodUpdate)

@@ -213,7 +213,7 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
         parse_mode="HTML"
     )
     await update.message.edit_text(
-        text=get_accepted_order_message(order, lang, amount),
+        text=get_order_message(order, lang, amount),
         reply_markup=get_accepted_order_reply_markup(order, lang),
         parse_mode="HTML"
     )
@@ -249,7 +249,7 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
         parse_mode="HTML"
     )
     await update.message.edit_text(
-        text=get_declined_order_message(order, lang, amount),
+        text=get_order_message(order, lang, amount),
         reply_markup=telegram.InlineKeyboardMarkup([]),
         parse_mode="HTML",
     )
@@ -284,7 +284,7 @@ async def decline_payment_order_handler(db: Session, update: telegram.Update, or
     )
 
     await update.message.edit_text(
-        text=get_unpaid_order_message(order, lang, amount),
+        text=get_order_message(order, lang, amount),
         reply_markup=telegram.InlineKeyboardMarkup([]),
         parse_mode="HTML",
     )
@@ -319,7 +319,7 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
         parse_mode="HTML",
     )
     await update.message.edit_text(
-        text=get_prepare_order_message(order, lang, amount),
+        text=get_order_message(order, lang, amount),
         reply_markup=get_prepare_order_reply_markup(order, lang),
         parse_mode="HTML",
     )
@@ -378,7 +378,7 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
         parse_mode="HTML",
     )
     await update.message.edit_text(
-        text=get_send_order_message(order, lang, amount),
+        text=get_order_message(order, lang, amount),
         reply_markup=telegram.InlineKeyboardMarkup([]),
         parse_mode="HTML",
     )
@@ -507,13 +507,12 @@ async def send_direct_message(
     return
 
 
-def get_payment_check_order_message(order: models.shop.ShopOrder, lang, amount):
-
+def get_order_message(order: models.shop.ShopOrder, lang, amount):
     text = helpers.load_message(
         lang, "order",
         amount=amount,
         order=order,
-        order_status=OrderStatus.PAYMENT_CHECK["title"][lang],
+        order_status=OrderStatus.items[order.status][lang],
         lead_number=order.lead.lead_number,
     )
 
@@ -540,19 +539,6 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
     return reply_markup
 
 
-def get_accepted_order_message(order: models.shop.ShopOrder, lang, amount):
-
-    text = helpers.load_message(
-        lang, "order",
-        amount=amount,
-        order=order,
-        order_status=OrderStatus.ACCEPTED["title"][lang],
-        lead_number=order.lead.lead_number,
-    )
-
-    return text
-
-
 def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
@@ -575,34 +561,6 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
     return reply_markup
 
 
-def get_declined_order_message(order: models.shop.ShopOrder, lang, amount):
-
-    text = helpers.load_message(
-        lang,
-        "order",
-        amount=amount,
-        order=order,
-        order_status=OrderStatus.DECLINED["title"][lang],
-        lead_number=order.lead.lead_number,
-    )
-
-    return text
-
-
-def get_unpaid_order_message(order: models.shop.ShopOrder, lang, amount):
-
-    text = helpers.load_message(
-        lang,
-        "order",
-        amount=amount,
-        order=order,
-        order_status=OrderStatus.UNPAID["title"][lang],
-        lead_number=order.lead.lead_number,
-    )
-
-    return text
-
-
 def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
@@ -622,18 +580,6 @@ def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
     return reply_markup
 
 
-def get_prepare_order_message(order: models.shop.ShopOrder, lang, amount):
-    text = helpers.load_message(
-        lang, "order",
-        amount=amount,
-        order=order,
-        order_status=OrderStatus.PREPARATION["title"][lang],
-        lead_number=order.lead.lead_number,
-    )
-
-    return text
-
-
 def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
@@ -651,21 +597,6 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     return reply_markup
-
-
-def get_send_order_message(order: models.shop.ShopOrder, lang, amount):
-    total_price = 0
-    for item in order.items:
-        total_price += item.price * item.count
-
-    text = helpers.load_message(
-        lang, "order",
-        amount=amount,
-        order=order,
-        order_status=OrderStatus.SENT["title"][lang],
-        lead_number=order.lead.lead_number,
-    )
-    return text
 
 
 def get_send_order_reply_markup(order: models.shop.ShopOrder, lang):

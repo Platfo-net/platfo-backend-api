@@ -1,4 +1,4 @@
-from sqlalchemy import (BigInteger, Column, DateTime, ForeignKey, Integer,
+from sqlalchemy import (BigInteger, Column, ForeignKey, Integer,
                         String)
 from sqlalchemy.orm import relationship
 
@@ -18,13 +18,6 @@ class ShopOrder(Base):
     address = Column(String(255), nullable=True)
     postal_code = Column(String(255), nullable=True)
     status = Column(String(255), default=OrderStatus.UNPAID["value"])
-
-    # payment information
-    payment_reference_number = Column(String(255), nullable=True)
-    payment_card_last_four_number = Column(String(16), nullable=True)
-    payment_datetime = Column(DateTime, nullable=True)
-    payment_receipt_image = Column(String(255), nullable=True)
-    # -----
 
     order_number = Column(Integer, nullable=True, index=True)
     lead_id = Column(

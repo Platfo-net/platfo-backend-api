@@ -1,6 +1,3 @@
-
-
-from datetime import datetime
 from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
@@ -21,8 +18,7 @@ class OrderCreate(BaseModel):
     city: Optional[str] = None
     address: Optional[str] = None
     postal_code: Optional[str] = None
-    # payment_method_id: UUID4
-    # shipment_method_id: UUID4
+    payment_method_id: UUID4
 
 
 class OrderCreateResponse(BaseModel):
@@ -34,13 +30,6 @@ class OrderItemCreate(BaseModel):
     count: int
     price: float
     currency: str
-
-
-class OrderAddPaymentInfo(BaseModel):
-    payment_reference_number: Optional[str] = None
-    payment_card_last_four_number: Optional[str] = None
-    payment_datetime: Optional[datetime] = None
-    payment_receipt_image: Optional[str] = None
 
 
 class OrderSummary(BaseModel):
