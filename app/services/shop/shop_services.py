@@ -4,6 +4,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from app.core.unit_of_work import UnitOfWork
 
 
 class ShopServices:
@@ -12,7 +13,7 @@ class ShopServices:
 
     def create(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         obj_in: schemas.shop.ShopCreate,
         user_id: int
@@ -23,9 +24,8 @@ class ShopServices:
             category=obj_in.category,
             user_id=user_id,
         )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        
+        uow.add(db_obj)
         return db_obj
 
     def update(

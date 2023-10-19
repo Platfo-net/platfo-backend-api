@@ -11,6 +11,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
+from app.core.unit_of_work import UnitOfWork
 
 router = APIRouter(prefix='/categories')
 
@@ -36,11 +37,12 @@ def create_category(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
-    category = services.shop.category.create(
-        db,
-        obj_in=obj_in,
-        shop_id=shop.id,
-    )
+    with UnitOfWork(db) as uow:
+        category = services.shop.category.create(
+            uow,
+            obj_in=obj_in,
+            shop_id=shop.id,
+        )
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,
@@ -69,7 +71,8 @@ def update_category(
     if category.user_id != current_user.id:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    category = services.shop.category.update(db, db_obj=category, obj_in=obj_in)
+    with UnitOfWork(db) as uow:    
+        category = services.shop.category.update(uow, db_obj=category, obj_in=obj_in)
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,

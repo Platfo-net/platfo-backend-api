@@ -6,6 +6,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app import models
+from app.core.unit_of_work import UnitOfWork
 
 
 class ShopCreditServices:
@@ -34,15 +35,13 @@ class ShopCreditServices:
         return db_obj
 
     def create(
-        self, db: Session, *, shop_id: int, free_days: int
+        self, uow: UnitOfWork, *, shop_id: int, free_days: int
     ) -> models.credit.ShopCredit:
         db_obj = self.model(
             shop_id=shop_id,
             expires_at=datetime.now() + timedelta(days=free_days),
         )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def get_expire_between(

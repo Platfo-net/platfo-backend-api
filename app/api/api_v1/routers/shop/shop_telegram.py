@@ -13,6 +13,7 @@ from app.constants.role import Role
 from app.core import security
 from app.core.exception import raise_http_exception
 from app.core.telegram import tasks as telegram_tasks
+from app.core.unit_of_work import UnitOfWork
 from app.core.utils import generate_random_support_token
 
 router = APIRouter(prefix='/telegram')
@@ -52,21 +53,36 @@ def create_shop_for_telegram_bot(
     ):
         support_bot_token = generate_random_support_token(length=7)
 
-    shop = services.shop.shop.create(
-        db,
-        obj_in=obj_in,
-        user_id=current_user.id
-    )
-
-    shop_telegram_bot = services.shop.shop_telegram_bot.create(
-        db,
-        obj_in=schemas.shop.shop_telegram_bot.ShopTelegramBotCreate(
-            support_token=support_token,
-            support_bot_token=support_bot_token,
-            shop_id=shop.id,
+    with UnitOfWork(db) as uow:
+        shop = services.shop.shop.create(
+            uow,
+            obj_in=obj_in,
+            user_id=current_user.id
         )
-    )
-    services.credit.shop_credit.create(db, shop_id=shop.id, free_days=7)
+        shop_telegram_bot = services.shop.shop_telegram_bot.create(
+            uow,
+            obj_in=schemas.shop.shop_telegram_bot.ShopTelegramBotCreate(
+                support_token=support_token,
+                support_bot_token=support_bot_token,
+                shop_id=shop.id,
+            )
+        )
+        services.credit.shop_credit.create(uow, shop_id=shop.id, free_days=7)
+
+        sample_product = schemas.shop.ProductCreate(
+            title="محصول نمونه",
+            image=None,
+            price=200000,
+            currency="IRR",
+        )
+        services.shop.product.create(uow, obj_in=sample_product, shop_id=shop.id, category_id=None)
+
+        sample_payment_method = schemas.shop.PaymentMethodCreate(
+            title="کارت به کارت",
+            description="مبلغ خود را به شماره کارت زیر واریز کرده و در بات بفرستید.",
+            shop_id=shop.uuid,
+        )
+        services.shop.payment_method.create(uow, obj_in=sample_payment_method, shop_id=shop.id)
 
     return schemas.shop.ShopTelegramBotRegister(
         id=shop.uuid,

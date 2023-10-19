@@ -5,6 +5,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from app.core.unit_of_work import UnitOfWork
 from app.core.utils import paginate
 
 
@@ -14,7 +15,7 @@ class ProductServices:
 
     def create(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         obj_in: schemas.shop.ProductCreate,
         shop_id: int,
@@ -28,9 +29,7 @@ class ProductServices:
             category_id=category_id,
             shop_id=shop_id,
         )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def update(

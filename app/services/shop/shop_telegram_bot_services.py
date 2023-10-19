@@ -4,6 +4,7 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from app.core.unit_of_work import UnitOfWork
 
 
 class ShopTelegramBotServices:
@@ -12,7 +13,7 @@ class ShopTelegramBotServices:
 
     def create(
         self,
-        db: Session,
+        uow: UnitOfWork,
         *,
         obj_in: schemas.shop.ShopTelegramBotCreate,
     ) -> models.shop.ShopShopTelegramBot:
@@ -21,9 +22,7 @@ class ShopTelegramBotServices:
             support_bot_token=obj_in.support_bot_token,
             shop_id=obj_in.shop_id,
         )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.refresh(db_obj)
         return db_obj
 
     def get_by_support_token(

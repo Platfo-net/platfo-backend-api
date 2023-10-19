@@ -12,7 +12,7 @@ from .category import Category
 
 class ProductBase(BaseModel):
     title: str
-    image: str
+    image: Optional[str] = None
     price: float
     currency: str
 
