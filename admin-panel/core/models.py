@@ -559,15 +559,37 @@ class ShopOrders(models.Model):
 class ShopPaymentMethods(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
-    shop = models.ForeignKey(
-        'ShopShops', models.DO_NOTHING, blank=True, null=True)
-    is_active = models.BooleanField(max_length=255, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
+    information_fields = models.JSONField(blank=True, null=True)  # This field type is a guess.
+    payment_fields = models.JSONField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
         managed = False
         db_table = 'shop_payment_methods'
+        verbose_name = 'Payment Method'
+        verbose_name_plural = 'Payment Methods'
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+
+class ShopShopPaymentMethods(models.Model):
+    shop = models.ForeignKey('ShopShops', models.DO_NOTHING, blank=True, null=True)
+    payment_method = models.ForeignKey(
+        ShopPaymentMethods, models.DO_NOTHING, blank=True, null=True)
+    is_active = models.BooleanField(blank=True, null=True)
+    id = models.BigAutoField(primary_key=True)
+    uuid = models.UUIDField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"{self.shop} : {self.payment_method}"
+
+    class Meta:
+        managed = False
+        db_table = 'shop_shop_payment_methods'
+        verbose_name = 'Shop Payment Method'
+        verbose_name_plural = 'Shop Payment Methods'
 
 
 class ShopProducts(models.Model):
@@ -744,6 +766,6 @@ class Users(models.Model):
 models_list = [
     Users, TelegramBots, SocialTelegramLeads, SocialTelegramLeadMessages,
     ShopShops, ShopShopTelegramBots,
-    ShopShipmentMethods, ShopProducts, ShopPaymentMethods, ShopOrders, ShopOrderItems,
+    ShopShipmentMethods, ShopProducts, ShopPaymentMethods, ShopShopPaymentMethods, ShopOrders, ShopOrderItems,
     CreditShopCredits, ShopCategories, Roles
 ]

@@ -87,6 +87,20 @@ class SocialTelegramLeadMessagesAdmin(admin.ModelAdmin):
     )
 
 
+class ShopPaymentMethodAdmin(admin.ModelAdmin):
+    model = models.ShopPaymentMethods
+    list_display = (
+        "title",
+    )
+
+
+class ShopShopPaymentMethodAdmin(admin.ModelAdmin):
+    model = models.ShopShopPaymentMethods
+    list_display = (
+        "shop", "payment_method", "is_active"
+    )
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)
@@ -97,3 +111,5 @@ admin.site.register(models.TelegramBots, TelegramBotAdmin)
 admin.site.register(models.ShopOrders, OrderAdmin)
 admin.site.register(models.SocialTelegramLeads, SocialTelegramLeadAdmin)
 admin.site.register(models.SocialTelegramLeadMessages, SocialTelegramLeadMessagesAdmin)
+admin.site.register(models.ShopPaymentMethods, ShopPaymentMethodAdmin)
+admin.site.register(models.ShopShopPaymentMethods, ShopShopPaymentMethodAdmin)
