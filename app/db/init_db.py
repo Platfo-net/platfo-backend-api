@@ -121,6 +121,7 @@ def init_db(db: Session) -> None:
     init_roles(db)
     init_users(db)
     init_payment_methods(db)
+    temp_init(db)
 
 
 def init_test_db(db: Session) -> None:
