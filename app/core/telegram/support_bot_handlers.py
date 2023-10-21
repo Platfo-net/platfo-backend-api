@@ -91,7 +91,7 @@ async def send_lead_pay_notification_to_support_bot_handler(db: Session, order_i
         order_number=order.order_number)
 
     bot = Bot(settings.SUPPORT_BOT_TOKEN)
-    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=message)
+    await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id, text=message , parse_mode = "HTML")
 
 
 async def send_order(db: Session, update: telegram.Update, order_number: int, lang: str):

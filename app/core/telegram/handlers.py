@@ -165,7 +165,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             await support_bot.send_message(
                 text=f"این بنده خدا پرداخت کرد , {message}",
                 chat_id=shop_telegram_bot.support_account_chat_id,
-                reply_to_message_id=telegram_order.support_bot_message_id
+                reply_to_message_id=telegram_order.support_bot_message_id,
             )
             order = services.shop.order.get(db, id=telegram_order.order_id)
             order = services.shop.order.change_status(
@@ -201,7 +201,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         text = helpers.load_message(lang, "lead_to_support_message",
                                     lead_number=lead.lead_number, message=message)
         res: telegram.Message = await bot.send_message(
-            chat_id=shop_telegram_bot.support_account_chat_id, text=text)
+            chat_id=shop_telegram_bot.support_account_chat_id, text=text , parse_mode = "HTML")
         reply_to_id = None
         if update.message.reply_to_message:
             reply_to_id = update.message.reply_to_message.message_id

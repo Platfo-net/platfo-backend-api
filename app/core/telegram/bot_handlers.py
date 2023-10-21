@@ -67,12 +67,12 @@ async def send_lead_order_to_bot_handler(
     )
 
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
-    order_message: telegram.Message = await bot.send_message(chat_id=lead.chat_id, text=text)
+    order_message: telegram.Message = await bot.send_message(chat_id=lead.chat_id, text=text , parse_mode = "HTML")
     text = helpers.load_message(
         "payment_notification",
         payment_description=order.payment_method.description,
         amount=amount)
     payment_info_message: telegram.Message = await bot.send_message(
-        chat_id=lead.chat_id, text=text)
+        chat_id=lead.chat_id, text=text, parse_mode="HTML")
 
     return order_message.message_id, payment_info_message.message_id
