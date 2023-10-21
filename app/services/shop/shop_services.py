@@ -88,5 +88,11 @@ class ShopServices:
     ) -> models.shop.ShopShop:
         return db.query(self.model).filter(self.model.title == title).first()
 
+    def all(
+        self,
+        db: Session,
+    ) -> List[models.shop.ShopShop]:
+        return db.query(self.model).all()
+
 
 shop = ShopServices(models.shop.ShopShop)

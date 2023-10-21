@@ -1,10 +1,6 @@
-from typing import List, Optional
-
-from pydantic import UUID4
+from typing import List
 from sqlalchemy.orm import Session
-
 from app import models, schemas
-from app.core.unit_of_work import UnitOfWork
 
 
 class PaymentMethodServices:
@@ -13,83 +9,34 @@ class PaymentMethodServices:
 
     def create(
         self,
-        uow: UnitOfWork,
+        db: Session,
         *,
         obj_in: schemas.shop.PaymentMethodCreate,
-        shop_id: int,
     ) -> models.shop.ShopPaymentMethod:
         db_obj = self.model(
             title=obj_in.title,
-            shop_id=shop_id,
             description=obj_in.description,
+            information_fields=obj_in.information_fields,
+            payment_fields=obj_in.payment_fields,
         )
-        uow.add(db_obj)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
         return db_obj
 
-    def update(
-        self,
-        uow: UnitOfWork,
-        *,
-        db_obj: models.shop.ShopPaymentMethod,
-        obj_in: schemas.shop.PaymentMethodCreate,
-    ) -> models.shop.ShopPaymentMethod:
-        db_obj.title = obj_in.title
-        db_obj.description = obj_in.description,
-
-        uow.add(db_obj)
-        return db_obj
-
-    def get_by_uuid(
+    def get_by_title(
         self,
         db: Session,
         *,
-        uuid: UUID4
+        title: str
     ) -> models.shop.ShopPaymentMethod:
-        return db.query(self.model).join(self.model.shop).filter(self.model.uuid == uuid).first()
+        return db.query(self.model).filter(self.model.title == title).first()
 
-    def get(
+    def all(
         self,
         db: Session,
-        *,
-        id: int
-    ) -> models.shop.ShopPaymentMethod:
-        return db.query(self.model).join(self.model.shop).filter(self.model.id == id).first()
-
-    def get_multi_by_user(
-        self,
-        db: Session,
-        *,
-        user_id: int
     ) -> List[models.shop.ShopPaymentMethod]:
-        return (
-            db.query(self.model)
-            .join(self.model.shop)
-            .filter(self.model.shop.user_id == user_id)
-            .all()
-        )
-
-    def get_multi_by_shop_id(
-        self,
-        db: Session,
-        *,
-        shop_id: int,
-        is_active: Optional[bool] = None
-    ) -> List[models.shop.ShopPaymentMethod]:
-        items = (
-            db.query(self.model)
-            .filter(self.model.shop_id == shop_id)
-        )
-        if is_active is not None:
-            items = items.filter(self.model.is_active == is_active)
-        return items.all()
-
-    def delete(
-        self,
-        uow: UnitOfWork,
-        *,
-        db_obj: models.shop.ShopPaymentMethod
-    ):
-        uow.delete(db_obj)
+        return db.query(self.model).all()
 
 
 payment_method = PaymentMethodServices(models.shop.ShopPaymentMethod)

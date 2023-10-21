@@ -1,4 +1,4 @@
-from sqlalchemy import (BigInteger, Column, ForeignKey, Integer,
+from sqlalchemy import (JSON, BigInteger, Column, ForeignKey, Integer,
                         String)
 from sqlalchemy.orm import relationship
 
@@ -43,6 +43,8 @@ class ShopOrder(Base):
         ForeignKey('shop_payment_methods.id'),
         nullable=True,
     )
+
+    payment_information = Column(JSON, nullable=True)
 
     shop = relationship('ShopShop', back_populates='orders')
 

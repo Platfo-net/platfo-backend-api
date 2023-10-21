@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
+from sqlalchemy import Column, String, JSON
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -9,13 +9,9 @@ class ShopPaymentMethod(Base):
 
     title = Column(String(255), nullable=True)
     description = Column(String(255), nullable=True)
-    is_active = Column(Boolean(), default=True)
 
-    shop_id = Column(
-        BigInteger,
-        ForeignKey('shop_shops.id'),
-        nullable=True,
-    )
+    information_fields = Column(JSON(), nullable=True)
+    payment_fields = Column(JSON, nullable=True)
 
-    shop = relationship('ShopShop', back_populates="payment_methods")
+    shops = relationship('ShopShopPaymentMethod', back_populates="payment_method")
     orders = relationship('ShopOrder', back_populates="payment_method")

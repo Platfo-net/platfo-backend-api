@@ -7,7 +7,8 @@ class PaymentMethodBase(BaseModel):
 
 
 class PaymentMethodCreate(PaymentMethodBase):
-    shop_id: UUID4
+    information_fields: dict
+    payment_fields: dict
 
 
 class PaymentMethodUpdate(PaymentMethodBase):

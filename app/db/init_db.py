@@ -1,3 +1,4 @@
+from app.constants.payment_method import PaymentMethod
 from sqlalchemy.orm import Session
 
 from app import schemas, services
@@ -5,8 +6,7 @@ from app.constants.role import Role
 from app.core.config import settings
 
 
-def init_db(db: Session) -> None:
-    # Admin role
+def init_roles(db: Session) -> None:
     admin_role = services.role.get_by_name(db, name=Role.ADMIN['name'])
     if not admin_role:
         admin_role_in = schemas.RoleCreate(
@@ -43,6 +43,8 @@ def init_db(db: Session) -> None:
         )
         services.role.create(db, obj_in=shop_role_in)
 
+
+def init_users(db: Session) -> None:
     user = services.user.get_by_email(db, email=settings.FIRST_ADMIN_EMAIL)
     if not user:
         role = services.role.get_by_name(db, name=Role.ADMIN['name'])
@@ -92,6 +94,33 @@ def init_db(db: Session) -> None:
             db,
             obj_in=shop_in,
         )
+
+
+def init_payment_methods(db: Session):
+    card_transfer = services.shop.payment_method.get_by_title(
+        db, title=PaymentMethod.CARD_TRANSFER["title"])
+    if not card_transfer:
+        services.shop.payment_method.create(db, obj_in=schemas.shop.PaymentMethodCreate(
+            title=PaymentMethod.CARD_TRANSFER["title"],
+            description=PaymentMethod.CARD_TRANSFER["description"],
+            information_fields=PaymentMethod.CARD_TRANSFER["information_fields"],
+            payment_fields=PaymentMethod.CARD_TRANSFER["payment_fields"],
+        ))
+
+
+def temp_init(db: Session):
+    shops = services.shop.shop.all(db)
+    payment_methods = services.shop.payment_method.all(db)
+
+    for shop in shops:
+        for pay in payment_methods:
+            services.shop.shop_payment_method.create(db, shop_id=shop.id, payment_method_id=pay.id)
+
+
+def init_db(db: Session) -> None:
+    init_roles(db)
+    init_users(db)
+    init_payment_methods(db)
 
 
 def init_test_db(db: Session) -> None:

@@ -9,3 +9,4 @@ from .shipment_methods import (ShipmentMethod, ShipmentMethodCreate,
 from .shop import Shop, ShopConnectSupport, ShopCreate, ShopUpdate
 from .shop_telegram_bot import (ShopConnectTelegramBot, ShopTelegramBotCreate,
                                 ShopTelegramBotRegister)
+from .shop_payment_method import ShopPaymentMethodCreate
