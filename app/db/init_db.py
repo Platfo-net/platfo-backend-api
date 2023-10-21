@@ -108,20 +108,10 @@ def init_payment_methods(db: Session):
         ))
 
 
-def temp_init(db: Session):
-    shops = services.shop.shop.all(db)
-    payment_methods = services.shop.payment_method.all(db)
-
-    for shop in shops:
-        for pay in payment_methods:
-            services.shop.shop_payment_method.create(db, shop_id=shop.id, payment_method_id=pay.id)
-
-
 def init_db(db: Session) -> None:
     init_roles(db)
     init_users(db)
     init_payment_methods(db)
-    temp_init(db)
 
 
 def init_test_db(db: Session) -> None:
