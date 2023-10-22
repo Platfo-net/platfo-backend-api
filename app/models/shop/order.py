@@ -37,9 +37,9 @@ class ShopOrder(Base):
         nullable=True,
     )
 
-    payment_method_id = Column(
+    shop_payment_method_id = Column(
         BigInteger,
-        ForeignKey('shop_payment_methods.id'),
+        ForeignKey('shop_shop_payment_methods.id'),
         nullable=True,
     )
 
@@ -50,6 +50,6 @@ class ShopOrder(Base):
     items = relationship("ShopOrderItem", back_populates="order")
     lead = relationship("TelegramLead", back_populates="orders")
 
-    payment_method = relationship("ShopPaymentMethod", back_populates="orders")
+    shop_payment_method = relationship("ShopShopPaymentMethod", back_populates="orders")
     shipment_method = relationship("ShopShipmentMethod", back_populates="orders")
     telegram_order = relationship("ShopTelegramOrder", back_populates="order")

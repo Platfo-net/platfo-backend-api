@@ -14,4 +14,3 @@ class ShopPaymentMethod(Base):
     payment_fields = Column(JSON, nullable=True)
 
     shops = relationship('ShopShopPaymentMethod', back_populates="payment_method")
-    orders = relationship('ShopOrder', back_populates="payment_method")

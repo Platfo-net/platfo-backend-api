@@ -25,3 +25,5 @@ class ShopShopPaymentMethod(Base):
 
     shop = relationship('ShopShop', back_populates="payment_methods")
     payment_method = relationship('ShopPaymentMethod', back_populates="shops")
+
+    orders = relationship("ShopOrder", back_populates="shop_payment_method")

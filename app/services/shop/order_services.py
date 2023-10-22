@@ -19,6 +19,7 @@ class OrderServices:
         obj_in: schemas.shop.OrderCreate,
         shop_id: int,
         lead_id: int,
+        shop_payment_method_id: int,
         order_number: int,
         status: str
 
@@ -36,6 +37,7 @@ class OrderServices:
             order_number=order_number,
             shop_id=shop_id,
             lead_id=lead_id,
+            shop_payment_method_id=shop_payment_method_id,
         )
 
         uow.add(db_obj)

@@ -155,3 +155,29 @@ def get_payment_method(
         information=shop_payment_method.information,
         id=shop_payment_method.uuid,
     )
+
+
+@router.get('/{shop_id}/telegram-shop/all', response_model=List[schemas.shop.PaymentMethod])
+def get_shop_payment_methods_for_telegram_shop(
+    *,
+    db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
+):
+
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    shop_payment_methods = services.shop.shop_payment_method.get_multi_by_shop(
+        db, shop_id=shop.id, is_active=True)
+
+    return [
+        schemas.shop.PaymentMethod(
+            title=payment.payment_method.title,
+            description=payment.payment_method.description,
+            is_active=payment.is_active,
+            information_fields=payment.payment_method.information_fields,
+            id=payment.uuid,
+        )
+        for payment in shop_payment_methods
+    ]

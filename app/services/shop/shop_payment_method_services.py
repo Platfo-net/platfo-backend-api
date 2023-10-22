@@ -22,13 +22,16 @@ class ShopPaymentMethodServices:
         return db_obj
 
     def get_multi_by_shop(
-        self, db: Session, *, shop_id: int
+        self, db: Session, *, shop_id: int, is_active: Optional[bool] = None
     ) -> List[models.shop.ShopShopPaymentMethod]:
-        return (
+        queryset = (
             db.query(self.model)
             .filter(self.model.shop_id == shop_id)
-            .join(self.model.payment_method).all()
+            .join(self.model.payment_method)
         )
+        if is_active is not None:
+            queryset = queryset.filter(self.model.is_active == is_active)
+        return queryset.all()
 
     def get_by_uuid(
         self, db: Session, *, uuid: UUID4
