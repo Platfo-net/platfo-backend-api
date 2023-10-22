@@ -36,7 +36,7 @@ class ShopPaymentMethodServices:
         return (
             db.query(self.model)
             .filter(self.model.uuid == uuid)
-            .join(self.model.payment_method)
+            .join(self.model.payment_method, isouter=True)
             .first()
         )
 
