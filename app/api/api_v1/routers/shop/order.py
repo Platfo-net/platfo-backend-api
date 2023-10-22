@@ -70,12 +70,12 @@ def create_telegram_shop_order(
 
         telegram_order = services.shop.telegram_order.create(uow, order_id=order.id)
 
-        telegram_tasks.send_lead_order_to_bot_and_support_bot_task.delay(
-            shop_telegram_bot.telegram_bot.id, lead.id, order.id, telegram_order.id, "fa")
+    telegram_tasks.send_lead_order_to_bot_and_support_bot_task.delay(
+        shop_telegram_bot.telegram_bot.id, lead.id, order.id, telegram_order.id, "fa")
 
-        return schemas.shop.order.OrderCreateResponse(
-            order_number=str(order.order_number)
-        )
+    return schemas.shop.order.OrderCreateResponse(
+        order_number=str(order.order_number)
+    )
 
 
 @router.get("/{order_id}", response_model=schemas.shop.OrderSummary)

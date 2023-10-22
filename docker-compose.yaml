@@ -1,19 +1,19 @@
 services:
-  admin:
-    build: ./admin-panel
-    image: platfo-admin
-    container_name: platfo-admin 
-    command: sh -c "python manage.py wait_for_db &&
-                    python manage.py migrate && 
-                    python manage.py firstuser && 
-                    python manage.py runserver 0.0.0.0:8002"
-    ports:
-      - 8002:8002
-    restart: unless-stopped
-    volumes:
-      - ./admin-panel:/app
-    env_file:
-      - .env
+  # admin:
+  #   build: ./admin-panel
+  #   image: platfo-admin
+  #   container_name: platfo-admin 
+  #   command: sh -c "python manage.py wait_for_db &&
+  #                   python manage.py migrate && 
+  #                   python manage.py firstuser && 
+  #                   python manage.py runserver 0.0.0.0:8002"
+  #   ports:
+  #     - 8002:8002
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./admin-panel:/app
+  #   env_file:
+  #     - .env
   api:
     container_name: "${APP_NAME}-api"
     build:
@@ -102,19 +102,19 @@ services:
   #     - api
   #     - redis
 
-  celery-flower:
-    image: "platfo-backend-app"
-    build: .
-    container_name: "${APP_NAME}-celery-flower"
-    command: celery -A app.core.celery.celery flower --port=5566
-    volumes:
-      - .:/app
-    ports:
-      - "5566:5566"
-    depends_on:
-      - db
-      - api
-      - redis
+  # celery-flower:
+  #   image: "platfo-backend-app"
+  #   build: .
+  #   container_name: "${APP_NAME}-celery-flower"
+  #   command: celery -A app.core.celery.celery flower --port=5566
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "5566:5566"
+  #   depends_on:
+  #     - db
+  #     - api
+  #     - redis
 
 volumes:
   postgres-data:

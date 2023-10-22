@@ -53,7 +53,7 @@ class OrderServices:
     def get(self, db: Session, *, id: int) -> models.shop.ShopOrder:
         return (
             db.query(self.model)
-            .join(self.model.items)
+            .join(self.model.items , isouter = True)
             .filter(self.model.id == id)
             .first()
         )

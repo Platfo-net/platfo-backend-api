@@ -40,15 +40,16 @@ async def send_lead_order_to_bot_handler(
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot_id)
 
-    if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
-        return
-
+    # if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
+    #     return
+    print("123")
     lead = services.social.telegram_lead.get(db, id=lead_id)
     if not lead:
         return
     order = services.shop.order.get(db, id=order_id)
     if not order:
         return
+    print("789")
 
     if lead.id != order.lead_id:
         return
@@ -64,21 +65,20 @@ async def send_lead_order_to_bot_handler(
         lang, "lead_new_order",
         amount=amount,
         order=order,
-        order_status=OrderStatus.items[order.status]["title"][lang]
+        order_status=OrderStatus.items[order.status]["title"][lang],
+        payment_method = PaymentMethod.items[]
     )
-
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
     order_message: telegram.Message = await bot.send_message(
         chat_id=lead.chat_id, text=text, parse_mode="HTML")
 
     shop_payment_method = services.shop.shop_payment_method.get(
         db, id=order.shop_payment_method_id)
-
     # TODO handle other payment methods later
     currency = Currency.IRR["name"]
     text = helpers.load_message(
         lang,
-        "payment/card_transfer_payment_notification",
+        "card_transfer_payment_notification",
         amount=amount,
         currency=currency,
         card_number=shop_payment_method.information["card_number"],

@@ -4,7 +4,7 @@
 * اطلاعات سفارش:
 — شماره: {{ order.order_number }}
 — وضعیت: {{ order_status }} 🟠
-— نوع پرداخت: {{ order.payment_method.title }}
+— نوع پرداخت: {{ payment_method }}
 
 * لیست محصولات سفارش:
 {% for item in order.items -%}
