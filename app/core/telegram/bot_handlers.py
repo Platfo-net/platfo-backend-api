@@ -59,7 +59,6 @@ async def send_lead_order_to_bot_handler(
     amount = 0
     for item in order.items:
         amount += item.count * item.price
-    print(len(order.items))
     currency = Currency.IRR["name"]
 
     text = helpers.load_message(
