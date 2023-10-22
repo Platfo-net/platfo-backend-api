@@ -11,6 +11,7 @@ class CardTransferValidationSchema(BaseModel):
 class PaymentMethod:
     CARD_TRANSFER = {
         "title": "Card Transfer",
+        "fa" : "کارت به کارت",
         "description": "",
         "information_fields": {
             "Card Number": True,

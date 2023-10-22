@@ -6,6 +6,7 @@ from telegram import Bot
 from app import services
 from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
+from app.constants.payment_method import PaymentMethod
 from app.core import security
 from app.core.config import settings
 from app.core.telegram import helpers
@@ -66,7 +67,7 @@ async def send_lead_order_to_bot_handler(
         amount=amount,
         order=order,
         order_status=OrderStatus.items[order.status]["title"][lang],
-        payment_method = PaymentMethod.items[]
+        payment_method=PaymentMethod.items[order.shop_payment_method.title][lang]
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
     order_message: telegram.Message = await bot.send_message(
