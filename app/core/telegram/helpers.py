@@ -10,13 +10,6 @@ from app.core.config import settings
 
 def load_message(lang: str, template_name: str, **kwargs) -> str:
     file_path = f'app/templates/telegram/{lang}'
-    template_path = template_name.split("/")
-    if len(template_path) > 1:
-        template_name = template_path[-1]
-        template_path = template_path[:-1]
-        for folder in template_path:
-            file_path = file_path + "/" + folder
-    print(file_path)
     file_loader = FileSystemLoader(file_path)
     env = Environment(loader=file_loader)
     template = env.get_template(f"{template_name}.txt")
