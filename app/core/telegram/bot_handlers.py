@@ -61,13 +61,15 @@ async def send_lead_order_to_bot_handler(
     amount = 0
     for item in order.items:
         amount += item.count * item.price
+    currency = Currency.IRR["name"]
 
     text = helpers.load_message(
         lang, "lead_new_order",
         amount=amount,
         order=order,
         order_status=OrderStatus.items[order.status]["title"][lang],
-        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
+        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title][lang],
+        currency=currency,
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
     order_message: telegram.Message = await bot.send_message(
@@ -76,7 +78,6 @@ async def send_lead_order_to_bot_handler(
     shop_payment_method = services.shop.shop_payment_method.get(
         db, id=order.shop_payment_method_id)
     # TODO handle other payment methods later
-    currency = Currency.IRR["name"]
     text = helpers.load_message(
         lang,
         "card_transfer_payment_notification",
