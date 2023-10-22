@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import services
+from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
 from app.core import security
 from app.core.config import settings
@@ -69,10 +70,22 @@ async def send_lead_order_to_bot_handler(
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
     order_message: telegram.Message = await bot.send_message(
         chat_id=lead.chat_id, text=text, parse_mode="HTML")
+
+    shop_payment_method = services.shop.shop_payment_method.get(
+        db, id=order.shop_payment_method_id)
+
+    # TODO handle other payment methods later
+    currency = Currency.IRR["name"]
     text = helpers.load_message(
-        "payment_notification",
-        payment_description=order.payment_method.description,
-        amount=amount)
+        lang,
+        "payment/card_transfer_payment_notification",
+        amount=amount,
+        currency=currency,
+        card_number=shop_payment_method.information["card_number"],
+        name=shop_payment_method.information["name"],
+        bank=shop_payment_method.information.get("bank", "")
+    )
+
     payment_info_message: telegram.Message = await bot.send_message(
         chat_id=lead.chat_id, text=text, parse_mode="HTML")
 

@@ -67,6 +67,13 @@ class ShopPaymentMethodServices:
         db.commit()
         db.refresh(obj_in)
         return obj_in
-
+    
+    def get(
+            self,
+            db: Session,
+            *,
+            id: int
+    ) -> Optional[models.shop.ShopShopPaymentMethod]:
+        return db.query(self.model).filter(self.model.id == id).join(self.model.payment_method).first()
 
 shop_payment_method = ShopPaymentMethodServices(models.shop.ShopShopPaymentMethod)

@@ -89,3 +89,16 @@ async def upload_payment_receipt_image(
     )
 
     return storage.get_file(uploaded_file_name, settings.PAYMENT_RECEIPT_IMAGE)
+
+
+# @router.get('/download', status_code=status.HTTP_200_OK)
+# async def upload_payment_receipt_image(
+# ):
+
+#     res = requests.get(
+#         "https://dkstatics-public.digikala.com/digikala-products/e6e05344b69bb6ee64ef0d14b9052f7c48ab968e_1695628552.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/quality,q_90")
+#     with open("pic.jpg", "wb")as f:
+#         f.write(res.content)
+#     storage.add_file_to_s3("yechi.jpg", "pic.jpg", "sample")
+
+#     os.remove("pic.jpg")
