@@ -61,7 +61,7 @@ async def send_lead_order_to_bot_handler(
     for item in order.items:
         amount += item.count * item.price
         items.append({
-            "price": helpers.number_to_price(item.price),
+            "price": helpers.number_to_price(int(item.price)),
             "title": item.product.title,
             "count": item.count,
         })
