@@ -35,12 +35,12 @@ def create_telegram_shop_order(
     if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
         raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND_ACCESS_DENIED)
 
-    shop_payment_method = services.shop.shop_payment_method.get_by_uuid(db, uuid=obj_in.payment_method_id)
+    shop_payment_method = services.shop.shop_payment_method.get_by_uuid(
+        db, uuid=obj_in.payment_method_id)
     if not shop_payment_method:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
     if shop_payment_method.shop_id != shop_id:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
-
 
     with UnitOfWork(db)as uow:
         order_items = []
@@ -61,7 +61,7 @@ def create_telegram_shop_order(
             obj_in=obj_in,
             shop_id=shop.id,
             lead_id=lead.id,
-            shop_payment_method_id = shop_payment_method.id,
+            shop_payment_method_id=shop_payment_method.id,
             order_number=last_order_number + 1,
             status=OrderStatus.UNPAID["value"],
         )
