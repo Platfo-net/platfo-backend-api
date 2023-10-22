@@ -1,5 +1,6 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey
+from sqlalchemy import JSON, BigInteger, Boolean, Column, ForeignKey
 from sqlalchemy.orm import relationship
+
 from app.db.base_class import Base
 
 
@@ -17,6 +18,8 @@ class ShopShopPaymentMethod(Base):
         ForeignKey('shop_payment_methods.id', ondelete="CASCADE"),
         nullable=True,
     )
+
+    information = Column(JSON, nullable=True)
 
     is_active = Column(Boolean(), default=False)
 

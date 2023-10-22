@@ -201,7 +201,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         text = helpers.load_message(lang, "lead_to_support_message",
                                     lead_number=lead.lead_number, message=message)
         res: telegram.Message = await bot.send_message(
-            chat_id=shop_telegram_bot.support_account_chat_id, text=text , parse_mode = "HTML")
+            chat_id=shop_telegram_bot.support_account_chat_id, text=text, parse_mode="HTML")
         reply_to_id = None
         if update.message.reply_to_message:
             reply_to_id = update.message.reply_to_message.message_id

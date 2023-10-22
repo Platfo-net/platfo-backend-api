@@ -403,3 +403,9 @@ class Error:
         "status_code": 404,
         "code": 191,
     }
+
+    SHOP_PAYMENT_METHOD_INFORMATION_INVALID = {
+        "text": "Payment method data is invalid.",
+        "status_code": 400,
+        "code": 192,
+    }

@@ -17,3 +17,5 @@ class PaymentMethodUpdate(PaymentMethodBase):
 
 class PaymentMethod(PaymentMethodBase):
     id: UUID4
+    information_fields: dict
+    is_active: bool
