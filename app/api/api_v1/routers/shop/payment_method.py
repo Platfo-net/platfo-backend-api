@@ -105,7 +105,7 @@ def payment_method_fill_information(
     if not shop_payment_method:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
 
-    if not shop_payment_method.shop.user_id != current_user.id:
+    if shop_payment_method.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     try:
