@@ -41,16 +41,14 @@ async def send_lead_order_to_bot_handler(
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot_id)
 
-    # if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
-    #     return
-    print("123")
+    if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
+        return
     lead = services.social.telegram_lead.get(db, id=lead_id)
     if not lead:
         return
     order = services.shop.order.get(db, id=order_id)
     if not order:
         return
-    print("789")
 
     if lead.id != order.lead_id:
         return
@@ -61,6 +59,7 @@ async def send_lead_order_to_bot_handler(
     amount = 0
     for item in order.items:
         amount += item.count * item.price
+    print(len(order.items))
     currency = Currency.IRR["name"]
 
     text = helpers.load_message(
