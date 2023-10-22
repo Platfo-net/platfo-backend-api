@@ -55,17 +55,24 @@ async def send_lead_order_to_bot_handler(
 
     if lead.telegram_bot_id != telegram_bot.id:
         return
+    items = []
 
     amount = 0
     for item in order.items:
         amount += item.count * item.price
-        item.price = helpers.number_to_price(item.price)
+        items.append({
+            "price": helpers.number_to_price(item.price),
+            "title": item.title,
+            "count": item.count,
+
+        })
     currency = Currency.IRR["name"]
 
     text = helpers.load_message(
         lang, "lead_new_order",
         amount=helpers.number_to_price(int(amount)),
         order=order,
+        items=items,
         order_status=OrderStatus.items[order.status]["title"][lang],
         payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title][lang],
         currency=currency,
@@ -91,4 +98,3 @@ async def send_lead_order_to_bot_handler(
         chat_id=lead.chat_id, text=text, parse_mode="HTML")
 
     return order_message.message_id, payment_info_message.message_id
-
