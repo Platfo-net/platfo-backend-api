@@ -16,6 +16,7 @@ def load_message(lang: str, template_name: str, **kwargs) -> str:
         template_path = template_path[:-1]
         for folder in template_path:
             file_path = file_path + "/" + folder
+    print(file_path)
     file_loader = FileSystemLoader(file_path)
     env = Environment(loader=file_loader)
     template = env.get_template(f"{template_name}.txt")
