@@ -63,7 +63,7 @@ async def send_lead_order_to_bot_handler(
 
     text = helpers.load_message(
         lang, "lead_new_order",
-        amount=amount,
+        amount=helpers.number_to_price(int(amount)),
         order=order,
         order_status=OrderStatus.items[order.status]["title"][lang],
         payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title][lang],
@@ -79,7 +79,7 @@ async def send_lead_order_to_bot_handler(
     text = helpers.load_message(
         lang,
         "card_transfer_payment_notification",
-        amount=amount,
+        amount=helpers.number_to_price(int(amount)),
         currency=currency,
         card_number=shop_payment_method.information["card_number"],
         name=shop_payment_method.information["name"],
@@ -90,3 +90,4 @@ async def send_lead_order_to_bot_handler(
         chat_id=lead.chat_id, text=text, parse_mode="HTML")
 
     return order_message.message_id, payment_info_message.message_id
+
