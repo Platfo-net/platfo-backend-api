@@ -26,5 +26,5 @@ class PaymentMethod:
     }
 
     items = {
-        "CARD_TRANSFER": CARD_TRANSFER
+        "Card Transfer": CARD_TRANSFER
     }
