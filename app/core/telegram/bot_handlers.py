@@ -62,9 +62,8 @@ async def send_lead_order_to_bot_handler(
         amount += item.count * item.price
         items.append({
             "price": helpers.number_to_price(item.price),
-            "title": item.title,
+            "title": item.product.title,
             "count": item.count,
-
         })
     currency = Currency.IRR["name"]
 
