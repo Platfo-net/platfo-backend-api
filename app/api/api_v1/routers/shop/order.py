@@ -39,7 +39,7 @@ def create_telegram_shop_order(
         db, uuid=obj_in.payment_method_id)
     if not shop_payment_method:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
-    if shop_payment_method.shop_id != shop_id:
+    if shop_payment_method.shop_id != shop.id:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     with UnitOfWork(db)as uow:
