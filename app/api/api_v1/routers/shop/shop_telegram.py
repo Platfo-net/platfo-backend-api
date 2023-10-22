@@ -76,13 +76,9 @@ def create_shop_for_telegram_bot(
             currency="IRR",
         )
         services.shop.product.create(uow, obj_in=sample_product, shop_id=shop.id, category_id=None)
-
-        sample_payment_method = schemas.shop.PaymentMethodCreate(
-            title="کارت به کارت",
-            description="مبلغ خود را به شماره کارت زیر واریز کرده و در بات بفرستید.",
-            shop_id=shop.uuid,
-        )
-        services.shop.payment_method.create(uow, obj_in=sample_payment_method, shop_id=shop.id)
+        for payment_method in services.shop.payment_method.all(db):
+            services.shop.shop_payment_method.create(
+                uow, shop_id=shop.id, payment_method_id=payment_method.id)
 
     return schemas.shop.ShopTelegramBotRegister(
         id=shop.uuid,
