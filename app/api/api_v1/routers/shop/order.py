@@ -65,9 +65,8 @@ def create_telegram_shop_order(
             order_number=last_order_number + 1,
             status=OrderStatus.UNPAID["value"],
         )
-
+        db.commit()
         services.shop.order_item.create_bulk(uow, objs_in=order_items, order_id=order.id)
-
         telegram_order = services.shop.telegram_order.create(uow, order_id=order.id)
 
     telegram_tasks.send_lead_order_to_bot_and_support_bot_task.delay(
