@@ -47,6 +47,7 @@ def get_shop_payment_methods(
             is_active=payment.is_active,
             information_fields=payment.payment_method.information_fields,
             id=payment.uuid,
+            information=payment.information,
         )
         for payment in shop_payment_methods
     ]
@@ -178,6 +179,7 @@ def get_shop_payment_methods_for_telegram_shop(
             is_active=payment.is_active,
             information_fields=payment.payment_method.information_fields,
             id=payment.uuid,
+            information=payment.information,
         )
         for payment in shop_payment_methods
     ]

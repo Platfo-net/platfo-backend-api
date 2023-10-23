@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import UUID4, BaseModel
 
 
@@ -18,4 +20,5 @@ class PaymentMethodUpdate(PaymentMethodBase):
 class PaymentMethod(PaymentMethodBase):
     id: UUID4
     information_fields: dict
+    information: Optional[dict] = None
     is_active: bool

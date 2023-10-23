@@ -53,7 +53,6 @@ def get_expires_close_shops(db) -> dict[int, dict[str, Union[str, datetime]]]:
     return shops
 
 
-
 def number_to_price(number):
     number = list(reversed(list(str(number))))
     i = 0

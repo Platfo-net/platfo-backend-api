@@ -55,8 +55,8 @@ def create_telegram_shop_order(
             order_number=last_order_number + 1,
             status=OrderStatus.UNPAID["value"],
         )
-    
-    with UnitOfWork(db)as uow:  
+
+    with UnitOfWork(db)as uow:
         for item in obj_in.items:
             product = services.shop.product.get_by_uuid(db, uuid=item.product_id)
             if not product or product.shop_id != shop.id:
