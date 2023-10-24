@@ -233,7 +233,7 @@ async def handle_order_payment(
         # url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         await bot.send_message(
             chat_id=update["message"]["from"]["id"],
-            photo=str(res.file_id),
+            photo=res,
 
         )
         await support_bot.send_photo(
