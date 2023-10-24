@@ -151,7 +151,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
 
-    reply_to_message = update["message"].get("reply_to_message")
+    reply_to_message = data["message"].get("reply_to_message")
     if reply_to_message:
         telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
             db, lead_id=lead.id, reply_to_id=reply_to_message["message_id"])
