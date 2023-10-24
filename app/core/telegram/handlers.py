@@ -210,7 +210,7 @@ async def handle_order_payment(
     if data["message"].get("photo"):
         # TODO handler_photo
         photo_unique_id = data["message"]["photo"][-1]["file_unique_id"]
-        res = bot.get_file(file_id=photo_unique_id)
+        res = await bot.get_file(file_id=photo_unique_id)
         if not res.get("file_path"):
             bot.send_message(
                 chat_id=update["message"]["from"]["id"],
