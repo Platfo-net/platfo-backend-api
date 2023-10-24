@@ -77,7 +77,6 @@ class Settings(BaseSettings):
     S3_PORT: Optional[str] = None
     S3_HOST: Optional[str] = None
 
-    S3_ADDRESS: Optional[str] = ""
 
     S3_ACADEMY_ATTACHMENT_BUCKET: str = "academy_attachment_bucket"
     S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow_media_bucket"

@@ -33,7 +33,7 @@ def get_object_url(object_name, bucket_name):
         url = client.get_presigned_url(
             'GET', bucket_name, object_name, expires=timedelta(days=1)
         )
-        url = url.replace("minio" , settings.S3_ADDRESS)
+        
         return url
     except S3Error as exc:
         raise Exception(f'Error happen on getting object: {exc}')
