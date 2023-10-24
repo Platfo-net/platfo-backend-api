@@ -215,18 +215,18 @@ async def handle_order_payment(
                 chat_id=update["message"]["from"]["id"],
                 text="فایل مشکل داره. دوباره تلاش کن"
             )
-        # file_path = res.file_path
-        # res = requests.get(file_path)
-        # if not res.status_code == 200:
-        #     bot.send_message(
-        #         chat_id=update["message"]["from"]["id"],
-        #         text="فایل مشکل داره. دوباره تلاش کن"
-        #     )
-        #     return
-        # image_format = file_path.split(".")[-1]
-        # file_name = f"{uuid4()}.{image_format}"
-        # with open(file_name, "wb") as f:
-        #     f.write(res.content)
+        file_path = res.file_path
+        res = requests.get(file_path)
+        if not res.status_code == 200:
+            bot.send_message(
+                chat_id=update["message"]["from"]["id"],
+                text="فایل مشکل داره. دوباره تلاش کن"
+            )
+            return
+        image_format = file_path.split(".")[-1]
+        file_name = f"{uuid4()}.{image_format}"
+        with open(file_name, "wb") as f:
+            f.write(res.content)
 
         # storage.add_file_to_s3(
         #     file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
