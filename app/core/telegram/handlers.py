@@ -228,11 +228,10 @@ async def handle_order_payment(
         with open(file_name, "wb") as f:
             f.write(res.content)
 
-        print("uploading to minio")
-        result = storage.add_file_to_s3(
+        storage.add_file_to_s3(
             file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
-        print(result)
         url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        print(url)
         await support_bot.send_photo(photo=url, chat_id=update["message"]["from"]["id"])
         return
 

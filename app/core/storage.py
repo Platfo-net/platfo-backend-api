@@ -41,7 +41,6 @@ def get_object_url(object_name, bucket_name):
 
 
 def create_client():
-    print(f'{settings.S3_HOST}:{settings.S3_PORT}')
     try:
         client = Minio(
             f'{settings.S3_HOST}:{settings.S3_PORT}',
