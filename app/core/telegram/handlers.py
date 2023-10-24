@@ -210,13 +210,13 @@ async def handle_order_payment(
     if data["message"].get("photo"):
         # TODO handler_photo
         photo_unique_id = data["message"]["photo"][0]["file_id"]
-        res = await bot.get_file(file_id=photo_unique_id)
-        if not res.get("file_path"):
+        res : telegram.File = await bot.get_file(file_id=photo_unique_id)
+        if not res.file_path:
             bot.send_message(
                 chat_id=update["message"]["from"]["id"],
                 text="فایل مشکل داره. دوباره تلاش کن"
             )
-        file_path = res["file_path"]
+        file_path = res.file_path
         res = requests.get(file_path)
         if not res.status_code == 200:
             bot.send_message(
