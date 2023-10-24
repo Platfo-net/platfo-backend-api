@@ -209,7 +209,7 @@ async def handle_order_payment(
     print(data)
     if data["message"].get("photo"):
         # TODO handler_photo
-        photo_unique_id = data["message"]["photo"][-1]["file_unique_id"]
+        photo_unique_id = data["message"]["photo"][0]["file_id"]
         res = await bot.get_file(file_id=photo_unique_id)
         if not res.get("file_path"):
             bot.send_message(
