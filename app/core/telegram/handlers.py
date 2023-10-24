@@ -211,14 +211,14 @@ async def handle_order_payment(
         photo_unique_id = data["message"]["photo"][0]["file_id"]
         res: telegram.File = await bot.get_file(file_id=photo_unique_id)
         if not res.file_path:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=update["message"]["from"]["id"],
                 text="فایل مشکل داره. دوباره تلاش کن"
             )
         file_path = res.file_path
         res = requests.get(file_path)
         if not res.status_code == 200:
-            bot.send_message(
+            await bot.send_message(
                 chat_id=update["message"]["from"]["id"],
                 text="فایل مشکل داره. دوباره تلاش کن"
             )
@@ -231,9 +231,13 @@ async def handle_order_payment(
         # storage.add_file_to_s3(
         #     file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         # url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        await bot.send_message(
+            chat_id=update["message"]["from"]["id"],
+            photo=str(res.file_id),
 
+        )
         await support_bot.send_photo(
-            photo=res.file_id,
+            photo=str(res.file_id),
             chat_id=shop_telegram_bot.support_account_chat_id)
         return
 
