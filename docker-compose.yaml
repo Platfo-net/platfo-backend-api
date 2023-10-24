@@ -75,7 +75,7 @@ services:
       MINIO_ROOT_USER: "${S3_ROOT_USER}"
       MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
     volumes:
-      - 'minio_data:/bitnami/minio/data'
+      - 'minio-data:/bitnami/minio/data'
 
   celery-worker:
     image: "platfo-backend-app"
