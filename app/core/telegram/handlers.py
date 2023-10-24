@@ -233,7 +233,7 @@ async def handle_order_payment(
         url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
 
         await support_bot.send_photo(
-            photo=url,
+            photo="https://cdn.eizo.de/fileadmin/_processed_/3/b/csm_Monitortest_stage_6039da7295.jpg",
             chat_id=shop_telegram_bot.support_account_chat_id)
         return
 
