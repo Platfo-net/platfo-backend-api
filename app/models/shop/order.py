@@ -44,6 +44,7 @@ class ShopOrder(Base):
     )
 
     payment_information = Column(JSON, nullable=True)
+    payment_image = Column(String(255), nullable=True)
 
     shop = relationship('ShopShop', back_populates='orders')
 

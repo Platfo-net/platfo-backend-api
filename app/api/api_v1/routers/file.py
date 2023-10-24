@@ -85,10 +85,10 @@ async def upload_payment_receipt_image(
 ):
     filename = f'{uuid.uuid4()}-{file.filename}'
     uploaded_file_name = storage.add_file_to_s3(
-        filename, file.file.fileno(), settings.PAYMENT_RECEIPT_IMAGE
+        filename, file.file.fileno(), settings.S3_PAYMENT_RECEIPT_IMAGE
     )
 
-    return storage.get_file(uploaded_file_name, settings.PAYMENT_RECEIPT_IMAGE)
+    return storage.get_file(uploaded_file_name, settings.S3_PAYMENT_RECEIPT_IMAGE)
 
 
 # @router.get('/download', status_code=status.HTTP_200_OK)

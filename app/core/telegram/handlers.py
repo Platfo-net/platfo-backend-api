@@ -1,14 +1,16 @@
+from uuid import uuid4
+import requests
 import telegram
 from sqlalchemy.orm import Session
 from telegram import Bot
 
-from app import schemas, services
+from app import models, schemas, services
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
-from app.core import security
+from app.core import security, storage
 from app.core.config import settings
 from app.core.telegram import bot_handlers, helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
@@ -148,38 +150,16 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             )
         )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
-    update = telegram.Update.de_json(data, bot)
-    reply_to_message = update.message.reply_to_message
+
+    reply_to_message = update["message"].get("reply_to_message")
     if reply_to_message:
         telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
-            db, lead_id=lead.id, reply_to_id=reply_to_message.message_id)
+            db, lead_id=lead.id, reply_to_id=reply_to_message["message_id"])
         if telegram_order:
-            message = update.message.text
-            services.shop.telegram_order.add_message_text(
-                db, telegram_order_id=telegram_order.id, text=message)
-            await update.message.reply_text(
-                text="شما پرداخت کردید",
-                reply_to_message_id=telegram_order.bot_message_id,
-            )
-            support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
-            await support_bot.send_message(
-                text=f"این بنده خدا پرداخت کرد , {message}",
-                chat_id=shop_telegram_bot.support_account_chat_id,
-                reply_to_message_id=telegram_order.support_bot_message_id,
-            )
-            order = services.shop.order.get(db, id=telegram_order.order_id)
-            order = services.shop.order.change_status(
-                db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-            await support_bot.edit_message_text(
-                text=support_bot_handlers.get_payment_check_order_message(order, lang),
-                chat_id=shop_telegram_bot.support_account_chat_id,
-                message_id=telegram_order.support_bot_message_id,
-                reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
-                    order, lang),
-                parse_mode="HTML"
-            )
+            handle_order_payment(db, data, telegram_order, shop_telegram_bot, bot, lang)
             return
 
+    update = telegram.Update.de_json(data, bot)
     if update.message.text == TelegramBotCommand.START["command"]:
         text = helpers.load_message(lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)
         await update.message.reply_text(
@@ -215,3 +195,64 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         )
         services.social.telegram_lead_message.create(db, obj_in=obj_in)
         return
+
+
+async def handle_order_payment(
+    db: Session,
+    data: dict,
+    telegram_order: models.shop.ShopTelegramOrder,
+    shop_telegram_bot: models.shop.ShopShopTelegramBot,
+    bot: telegram.Bot,
+    lang: str
+):
+    support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
+    if data.get("photo"):
+        # TODO handler_photo
+        photo_unique_id = data["message"]["photo"][-1]["file_unique_id"]
+        res = bot.get_file(file_id=photo_unique_id)
+        if not res.get("file_path"):
+            bot.send_message(
+                chat_id=update["message"]["from"]["id"],
+                text="فایل مشکل داره. دوباره تلاش کن"
+            )
+        file_path = res["file_path"]
+        res = requests.get(file_path)
+        if not res.status_code == 200:
+            bot.send_message(
+                chat_id=update["message"]["from"]["id"],
+                text="فایل مشکل داره. دوباره تلاش کن"
+            )
+            return
+        image_format = file_path.split(".")[-1]
+        file_name = f"{uuid4()}.{image_format}"
+        with open(file_name, "wb") as f:
+            f.write(res.content)
+
+        storage.add_file_to_s3(file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        await support_bot.send_photo(photo=url, chat_id=update["message"]["from"]["id"])
+        return
+
+    update = telegram.Update.de_json(bot, data)
+    services.shop.telegram_order.add_message_text(
+        db, telegram_order_id=telegram_order.id, text=update.message.text)
+    await update.message.reply_text(
+        text="شما پرداخت کردید",
+        reply_to_message_id=telegram_order.bot_message_id,
+    )
+    await support_bot.send_message(
+        text=f"این بنده خدا پرداخت کرد , {update.message.text}",
+        chat_id=shop_telegram_bot.support_account_chat_id,
+        reply_to_message_id=telegram_order.support_bot_message_id,
+    )
+    order = services.shop.order.get(db, id=telegram_order.order_id)
+    order = services.shop.order.change_status(
+        db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
+    await support_bot.edit_message_text(
+        text=support_bot_handlers.get_payment_check_order_message(order, lang),
+        chat_id=shop_telegram_bot.support_account_chat_id,
+        message_id=telegram_order.support_bot_message_id,
+        reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
+            order, lang),
+        parse_mode="HTML"
+    )
