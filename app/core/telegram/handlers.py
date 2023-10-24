@@ -210,7 +210,7 @@ async def handle_order_payment(
     if data["message"].get("photo"):
         # TODO handler_photo
         photo_unique_id = data["message"]["photo"][0]["file_id"]
-        res : telegram.File = await bot.get_file(file_id=photo_unique_id)
+        res: telegram.File = await bot.get_file(file_id=photo_unique_id)
         if not res.file_path:
             bot.send_message(
                 chat_id=update["message"]["from"]["id"],
@@ -229,7 +229,9 @@ async def handle_order_payment(
         with open(file_name, "wb") as f:
             f.write(res.content)
 
-        storage.add_file_to_s3(file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        result = storage.add_file_to_s3(
+            file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        print(result)
         url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         await support_bot.send_photo(photo=url, chat_id=update["message"]["from"]["id"])
         return
