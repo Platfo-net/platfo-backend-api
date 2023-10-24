@@ -223,17 +223,17 @@ async def handle_order_payment(
                 text="فایل مشکل داره. دوباره تلاش کن"
             )
             return
-        image_format = file_path.split(".")[-1]
-        file_name = f"{uuid4()}.{image_format}"
-        with open(file_name, "wb") as f:
-            f.write(res.content)
+        # image_format = file_path.split(".")[-1]
+        # file_name = f"{uuid4()}.{image_format}"
+        # with open(file_name, "wb") as f:
+        #     f.write(res.content)
 
-        storage.add_file_to_s3(
-            file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
-        url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        # storage.add_file_to_s3(
+        #     file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        # url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
 
         await support_bot.send_photo(
-            photo="https://cdn.eizo.de/fileadmin/_processed_/3/b/csm_Monitortest_stage_6039da7295.jpg",
+            photo=photo_unique_id,
             chat_id=shop_telegram_bot.support_account_chat_id)
         return
 
