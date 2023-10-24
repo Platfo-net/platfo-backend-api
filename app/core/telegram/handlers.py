@@ -156,7 +156,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
             db, lead_id=lead.id, reply_to_id=reply_to_message["message_id"])
         if telegram_order:
-            handle_order_payment(db, data, telegram_order, shop_telegram_bot, bot, lang)
+            await handle_order_payment(db, data, telegram_order, shop_telegram_bot, bot, lang)
             return
 
     update = telegram.Update.de_json(data, bot)
