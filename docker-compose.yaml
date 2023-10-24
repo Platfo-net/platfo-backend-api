@@ -67,6 +67,7 @@ services:
       - .env
 
   minio:
+    restart: always
     image: docker.io/bitnami/minio:2023
     ports:
       - '9000:9000'
