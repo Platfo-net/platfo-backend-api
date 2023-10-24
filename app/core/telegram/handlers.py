@@ -231,8 +231,10 @@ async def handle_order_payment(
         storage.add_file_to_s3(
             file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
-        
-        await support_bot.send_photo(photo="http://141.98.210.31:9000/telegram/asd.png", chat_id=data["message"]["from"]["id"])
+
+        await support_bot.send_photo(
+            photo=url,
+            chat_id=shop_telegram_bot.support_account_chat_id)
         return
 
     update = telegram.Update.de_json(bot, data)
