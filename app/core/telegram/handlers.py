@@ -206,6 +206,7 @@ async def handle_order_payment(
     lang: str
 ):
     support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
+    print(data)
     if data.get("photo"):
         # TODO handler_photo
         photo_unique_id = data["message"]["photo"][-1]["file_unique_id"]
