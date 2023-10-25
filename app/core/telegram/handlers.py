@@ -243,7 +243,7 @@ async def handle_order_payment(
 
         # update = telegram.Update.de_json(bot, data)
         # services.shop.telegram_order.add_message_text(
-            # db, telegram_order_id=telegram_order.id, text=update.message.text)
+        # db, telegram_order_id=telegram_order.id, text=update.message.text)
 
         await bot.send_message(
             text="شما پرداخت کردید",
@@ -259,8 +259,12 @@ async def handle_order_payment(
         order = services.shop.order.change_status(
             db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
         services.shop.order.add_payment_image(db, db_obj=order, image_name=file_name)
+
+        amount = 0
+        for item in order.items:
+            amount += item.count * item.price
         await support_bot.edit_message_text(
-            text=support_bot_handlers.get_payment_check_order_message(order, lang),
+            text=support_bot_handlers.get_order_message(order, lang, amount),
             chat_id=shop_telegram_bot.support_account_chat_id,
             message_id=telegram_order.support_bot_message_id,
             reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(

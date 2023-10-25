@@ -76,7 +76,6 @@ class Settings(BaseSettings):
     S3_ROOT_PASSWORD: Optional[str] = None
     S3_HOST: Optional[str] = None
 
-
     S3_ACADEMY_ATTACHMENT_BUCKET: str = "academy_attachment_bucket"
     S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow_media_bucket"
     S3_CAMPAIGN_BUCKET: str = "notifier_campaign_bucket"

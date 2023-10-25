@@ -33,14 +33,14 @@ def get_object_url(object_name, bucket_name):
         url = client.get_presigned_url(
             'GET', bucket_name, object_name, expires=timedelta(days=1)
         )
-        
+
         return url
     except S3Error as exc:
         raise Exception(f'Error happen on getting object: {exc}')
 
 
 def create_client():
-    
+
     try:
         client = Minio(
             f'{settings.S3_HOST}',
