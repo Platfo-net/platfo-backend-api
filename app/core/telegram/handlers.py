@@ -233,7 +233,7 @@ async def handle_order_payment(
         #     file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         # url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         await support_bot.send_photo(
-            photo="https://platfo-minio.darkube.app/asdasdasdasd/re.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=TJBXAJITB8RSYRZAKZ60%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T102522Z&X-Amz-Expires=604800&X-Amz-Security-Token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiJUSkJYQUpJVEI4UlNZUlpBS1o2MCIsImV4cCI6MTY5ODI3MjY5OSwicGFyZW50IjoiNXlCTHRybFhGaDYxWUxrV0VETktGTk10MjdxMjdLT2QifQ.JCKkEAtu070-ggvze_VuBCwK3WQEEOX-3IDBkjuJq1JbhLVNvaQK0aPuMXOAptqM-tupxQMOOj3fIBXWj6SK2A&X-Amz-SignedHeaders=host&versionId=null&X-Amz-Signature=64b4c1b18eddb6b38cc52d62e015b2a3d37f66ada18de89f82a935bd3db1f7d5",
+            photo="https://platfo-minio.darkube.app/asdasdasdasd/asd.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=TJBXAJITB8RSYRZAKZ60%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T102630Z&X-Amz-Expires=604800&X-Amz-Security-Token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiJUSkJYQUpJVEI4UlNZUlpBS1o2MCIsImV4cCI6MTY5ODI3MjY5OSwicGFyZW50IjoiNXlCTHRybFhGaDYxWUxrV0VETktGTk10MjdxMjdLT2QifQ.JCKkEAtu070-ggvze_VuBCwK3WQEEOX-3IDBkjuJq1JbhLVNvaQK0aPuMXOAptqM-tupxQMOOj3fIBXWj6SK2A&X-Amz-SignedHeaders=host&versionId=null&X-Amz-Signature=153644cbbcfa855f54529494b9ee2311fcb58b705a1eb42695281ed3f74eb3a9",
             chat_id=shop_telegram_bot.support_account_chat_id)
         return
 
