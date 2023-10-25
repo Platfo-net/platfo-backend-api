@@ -43,7 +43,7 @@ def create_client():
     
     try:
         client = Minio(
-            f'{settings.S3_HOST}:{settings.S3_PORT}',
+            f'{settings.S3_HOST}',
             access_key=settings.S3_ROOT_USER,
             secret_key=settings.S3_ROOT_PASSWORD,
             secure=False,

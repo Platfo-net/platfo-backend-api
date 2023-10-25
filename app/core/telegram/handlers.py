@@ -210,31 +210,31 @@ async def handle_order_payment(
         # TODO handler_photo
         photo_unique_id = data["message"]["photo"][0]["file_id"]
         res: telegram.File = await bot.get_file(file_id=photo_unique_id)
-        print(data)
         if not res.file_path:
             await bot.send_message(
                 chat_id=data["message"]["from"]["id"],
                 text="فایل مشکل داره. دوباره تلاش کن"
             )
-        # file_path = res.file_path
-        # res = requests.get(file_path)
-        # if not res.status_code == 200:
-        #     await bot.send_message(
-        #         chat_id=data["message"]["from"]["id"],
-        #         text="فایل مشکل داره. دوباره تلاش کن"
-        #     )
-        #     return
-        # image_format = file_path.split(".")[-1]
-        # file_name = f"{uuid4()}.{image_format}"
-        # with open(file_name, "wb") as f:
-        #     f.write(res.content)
+        file_path = res.file_path
+        res = requests.get(file_path)
+        if not res.status_code == 200:
+            await bot.send_message(
+                chat_id=data["message"]["from"]["id"],
+                text="فایل مشکل داره. دوباره تلاش کن"
+            )
+            return
+        image_format = file_path.split(".")[-1]
+        file_name = f"{uuid4()}.{image_format}"
+        with open(file_name, "wb") as f:
+            f.write(res.content)
 
-        # storage.add_file_to_s3(
-        #     file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
-        # url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        storage.add_file_to_s3(
+            file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         await support_bot.send_photo(
-            photo="https://platfo-minio.darkube.app/asdasdasdasd/asd.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=TJBXAJITB8RSYRZAKZ60%2F20231025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20231025T102630Z&X-Amz-Expires=604800&X-Amz-Security-Token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiJUSkJYQUpJVEI4UlNZUlpBS1o2MCIsImV4cCI6MTY5ODI3MjY5OSwicGFyZW50IjoiNXlCTHRybFhGaDYxWUxrV0VETktGTk10MjdxMjdLT2QifQ.JCKkEAtu070-ggvze_VuBCwK3WQEEOX-3IDBkjuJq1JbhLVNvaQK0aPuMXOAptqM-tupxQMOOj3fIBXWj6SK2A&X-Amz-SignedHeaders=host&versionId=null&X-Amz-Signature=153644cbbcfa855f54529494b9ee2311fcb58b705a1eb42695281ed3f74eb3a9",
-            chat_id=shop_telegram_bot.support_account_chat_id)
+            caption=f"order {telegram_order.order.order_number} paid.",
+            photo=url,
+            chat_id=shop_telegram_bot.support_account_chat_id),
         return
 
     update = telegram.Update.de_json(bot, data)

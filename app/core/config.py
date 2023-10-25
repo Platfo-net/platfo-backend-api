@@ -74,7 +74,6 @@ class Settings(BaseSettings):
 
     S3_ROOT_USER: Optional[str] = None
     S3_ROOT_PASSWORD: Optional[str] = None
-    S3_PORT: Optional[str] = None
     S3_HOST: Optional[str] = None
 
 
