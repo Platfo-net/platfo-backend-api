@@ -94,5 +94,15 @@ class OrderServices:
             .first()
         )
 
+    def add_payment_image(
+        self, db: Session, *, db_obj: models.shop.ShopOrder, image_name: str
+    ) -> models.shop.ShopOrder:
+
+        db_obj.payment_image = image_name
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
 
 order = OrderServices(models.shop.ShopOrder)

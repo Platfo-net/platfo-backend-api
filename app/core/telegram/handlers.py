@@ -1,3 +1,4 @@
+import os
 from uuid import uuid4
 import requests
 import telegram
@@ -231,32 +232,38 @@ async def handle_order_payment(
         storage.add_file_to_s3(
             file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+
         await support_bot.send_photo(
             caption=f"order {telegram_order.order.order_number} paid.",
             photo=url,
+            reply_to_message_id=telegram_order.support_bot_message_id,
             chat_id=shop_telegram_bot.support_account_chat_id),
-        return
 
-    update = telegram.Update.de_json(bot, data)
-    services.shop.telegram_order.add_message_text(
-        db, telegram_order_id=telegram_order.id, text=update.message.text)
-    await update.message.reply_text(
-        text="شما پرداخت کردید",
-        reply_to_message_id=telegram_order.bot_message_id,
-    )
-    await support_bot.send_message(
-        text=f"این بنده خدا پرداخت کرد , {update.message.text}",
-        chat_id=shop_telegram_bot.support_account_chat_id,
-        reply_to_message_id=telegram_order.support_bot_message_id,
-    )
-    order = services.shop.order.get(db, id=telegram_order.order_id)
-    order = services.shop.order.change_status(
-        db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-    await support_bot.edit_message_text(
-        text=support_bot_handlers.get_payment_check_order_message(order, lang),
-        chat_id=shop_telegram_bot.support_account_chat_id,
-        message_id=telegram_order.support_bot_message_id,
-        reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
-            order, lang),
-        parse_mode="HTML"
-    )
+        os.remove(file_name)
+
+        # update = telegram.Update.de_json(bot, data)
+        # services.shop.telegram_order.add_message_text(
+            # db, telegram_order_id=telegram_order.id, text=update.message.text)
+
+        await bot.send_message(
+            text="شما پرداخت کردید",
+            # reply_to_message_id=telegram_order.bot_message_id,
+            chat_id=data["message"]["from"]["id"]
+        )
+        # await support_bot.send_message(
+        #     text=f"این بنده خدا پرداخت کرد , {update.message.text}",
+        #     chat_id=shop_telegram_bot.support_account_chat_id,
+        #     reply_to_message_id=telegram_order.support_bot_message_id,
+        # )
+        order = services.shop.order.get(db, id=telegram_order.order_id)
+        order = services.shop.order.change_status(
+            db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
+        services.shop.order.add_payment_image(db, db_obj=order, image_name=file_name)
+        await support_bot.edit_message_text(
+            text=support_bot_handlers.get_payment_check_order_message(order, lang),
+            chat_id=shop_telegram_bot.support_account_chat_id,
+            message_id=telegram_order.support_bot_message_id,
+            reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
+                order, lang),
+            parse_mode="HTML"
+        )
