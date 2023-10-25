@@ -516,7 +516,7 @@ def get_order_message(order: models.shop.ShopOrder, lang, amount):
         lang, "order",
         amount=amount,
         order=order,
-        order_status=OrderStatus.items[order.status][lang],
+        order_status=OrderStatus.items[order.status]["title"][lang],
         lead_number=order.lead.lead_number,
     )
 
