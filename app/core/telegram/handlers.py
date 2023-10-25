@@ -208,7 +208,7 @@ async def handle_order_payment(
     support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
     if data["message"].get("photo"):
         # TODO handler_photo
-        photo_unique_id = data["message"]["photo"][0]["file_id"]
+        photo_unique_id = data["message"]["photo"][-1]["file_id"]
         res: telegram.File = await bot.get_file(file_id=photo_unique_id)
         if not res.file_path:
             await bot.send_message(
