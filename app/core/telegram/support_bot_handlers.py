@@ -221,7 +221,7 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
         parse_mode="HTML"
     )
     await update.message.edit_text(
-        text=get_order_message(order, lang, helpers.number_to_price(int(amount))),
+        text=get_order_message(order, lang, amount),
         reply_markup=get_accepted_order_reply_markup(order, lang),
         parse_mode="HTML"
     )
