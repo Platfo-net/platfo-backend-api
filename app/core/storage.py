@@ -35,12 +35,13 @@ def get_object_url(object_name, bucket_name):
         )
 
         return url
-    except S3Error as exc:
-        raise Exception(f'Error happen on getting object: {exc}')
+    # except S3Error as exc:
+    #     raise Exception(f'Error happen on getting object: {exc}')
+    except Exception:
+        return ""
 
 
 def create_client():
-
     try:
         client = Minio(
             f'{settings.S3_HOST}',
