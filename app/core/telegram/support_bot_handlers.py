@@ -526,7 +526,8 @@ def get_order_message(order: models.shop.ShopOrder, lang, amount):
         order=order,
         order_status=OrderStatus.items[order.status]["title"][lang],
         lead_number=order.lead.lead_number,
-        currency=Currency.IRR["name"]
+        currency=Currency.IRR["name"],
+        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
     )
 
     return text
