@@ -221,7 +221,7 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
         parse_mode="HTML"
     )
     await update.message.edit_text(
-        text=get_order_message(order, lang, amount),
+        text=get_order_message(order, lang, helpers.number_to_price(int(amount))),
         reply_markup=get_accepted_order_reply_markup(order, lang),
         parse_mode="HTML"
     )
@@ -229,7 +229,7 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
     bot = Bot(token=shop_telegram_bot.telegram_bot.bot_token)
     text = helpers.load_message(lang, "lead_order", order=order,
-                                order_status=OrderStatus.items[order.status][lang], amount=amount)
+                                order_status=OrderStatus.items[order.status][lang], amount=helpers.number_to_price(int(amount)))
 
     await bot.send_message(chat_id=order.lead.chat_id, text=text)
 
@@ -522,10 +522,11 @@ async def send_direct_message(
 def get_order_message(order: models.shop.ShopOrder, lang, amount):
     text = helpers.load_message(
         lang, "order",
-        amount=amount,
+        amount=helpers.number_to_price(int(amount)),
         order=order,
         order_status=OrderStatus.items[order.status]["title"][lang],
         lead_number=order.lead.lead_number,
+        currency=Currency.IRR["name"]
     )
 
     return text
