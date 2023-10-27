@@ -129,33 +129,35 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
 
     if order.status == OrderStatus.PAYMENT_CHECK["value"]:
         reply_markup = get_payment_check_order_reply_markup(order, lang)
-        text = helpers.load_message(lang, "order", amount=amount, order=order,
-                                    order_status=OrderStatus.PAYMENT_CHECK["title"][lang])
+        text = helpers.load_message(lang, "order", amount=helpers.number_to_price(int(amount)), order=order,
+                                    order_status=OrderStatus.PAYMENT_CHECK["title"][lang], currency=Currency.IRR["name"])
 
     elif order.status == OrderStatus.ACCEPTED["value"]:
         reply_markup = get_accepted_order_reply_markup(order, lang)
-        text = helpers.load_message(lang, "order", amount=amount, order=order,
-                                    order_status=OrderStatus.ACCEPTED["title"][lang])
+        text = helpers.load_message(lang, "order", amount=helpers.number_to_price(int(amount)), order=order,
+                                    order_status=OrderStatus.ACCEPTED["title"][lang], currency=Currency.IRR["name"])
 
     elif order.status == OrderStatus.PREPARATION["value"]:
         reply_markup = get_prepare_order_reply_markup(order, lang)
-        text = helpers.load_message(lang, "order", amount=amount, order=order,
-                                    order_status=OrderStatus.PREPARATION["title"][lang])
+        text = helpers.load_message(lang, "order", amount=helpers.number_to_price(int(amount)), order=order,
+                                    order_status=OrderStatus.PREPARATION["title"][lang], currency=Currency.IRR["name"])
 
     elif order.status == OrderStatus.UNPAID["value"]:
         reply_markup = get_unpaid_order_reply_markup(order, lang)
-        text = helpers.load_message(lang, "order", amount=amount, order=order,
-                                    order_status=OrderStatus.UNPAID["title"][lang])
+        text = helpers.load_message(lang, "order", amount=helpers.number_to_price(int(amount)), order=order,
+                                    order_status=OrderStatus.UNPAID["title"][lang], currency=Currency.IRR["name"])
 
     elif order.status == OrderStatus.DECLINED["value"]:
         reply_markup = get_declined_order_reply_markup(order, lang)
-        text = helpers.load_message(lang, "order", amount=amount, order=order,
-                                    order_status=OrderStatus.DECLINED["title"][lang])
+        text = helpers.load_message(lang, "order", amount=helpers.number_to_price(int(amount)), order=order,
+                                    order_status=OrderStatus.DECLINED["title"][lang], currency=Currency.IRR["name"])
 
     elif order.status == OrderStatus.SENT["value"]:
         reply_markup = get_send_order_reply_markup(order, lang)
-        text = helpers.load_message(lang, "order", amount=amount, order=order,
-                                    order_status=OrderStatus.SENT["title"][lang])
+        text = helpers.load_message(
+            lang, "order",
+            amount=helpers.number_to_price(int(amount)), order=order,
+            order_status=OrderStatus.SENT["title"][lang], currency=Currency.IRR["name"])
 
     await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
 
@@ -430,7 +432,7 @@ async def send_lead_order_to_shop_support_handler(
 
     text = helpers.load_message(
         lang, "support_new_order",
-        amount=amount,
+        amount=helpers.number_to_price(int(amount)),
         order=order,
         lead_number=lead.lead_number,
         order_status=OrderStatus.items[order.status]["title"][lang],
@@ -539,10 +541,6 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}")  # noqa
-        ], [
-            telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}")  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -560,11 +558,7 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"),  # noqa
-        ], [
-            telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"),  # noqa
-        ],
+        ]
     ]
 
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -579,12 +573,12 @@ def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
                 callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"
             ),  # noqa
         ],
-        [
-            telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
-            ),
-        ],
+        # [
+        #     telegram.InlineKeyboardButton(
+        #         TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
+        #         callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
+        #     ),
+        # ],
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     return reply_markup
@@ -597,13 +591,7 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"
             ),  # noqa
-        ],
-        [
-            telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
-            ),
-        ],
+        ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     return reply_markup
@@ -611,12 +599,12 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
 
 def get_send_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
-        [
-            telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
-            ),  # noqa
-        ],
+        # [
+        #     telegram.InlineKeyboardButton(
+        #         TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
+        #         callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
+        #     ),  # noqa
+        # ],
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     return reply_markup

@@ -1,9 +1,12 @@
 شماره مشتری: {{ lead_number }}
 شماره سفارش: {{ order.order_number }}
-آیتم ها
+وضعیت: {{ order_status }}
+نوع پرداخت: {{ payment_method }}
+
+* لیست محصولات سفارش:
 {% for item in order.items -%}
-    {{ item.product.title }} : {{ item.count }}  
+    {{ item.product.title }} : ( تعداد:{{ item.count }} , قیمت:{{ item.price * item.count }}{{ currency }}  )
 {% endfor %}
 
-جمع: {{ amount }}
-وضعیت: {{ order_status }}
+——————————-
+💵 مبلغ نهایی سفارش: {{ amount }}{{ currency }}
