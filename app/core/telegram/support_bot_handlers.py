@@ -7,7 +7,9 @@ from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import models, schemas, services
+from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
+from app.constants.payment_method import PaymentMethod
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.core import security
 from app.core.config import settings
@@ -424,12 +426,16 @@ async def send_lead_order_to_shop_support_handler(
     for item in order.items:
         amount += item.count * item.price
 
+    payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
+
     text = helpers.load_message(
-        lang, "order",
+        lang, "support_new_order",
         amount=amount,
         order=order,
         lead_number=lead.lead_number,
-        order_status=OrderStatus.items[order.status]["title"][lang]
+        order_status=OrderStatus.items[order.status]["title"][lang],
+        currency=Currency.IRR["name"],
+        payment_method=payment_method
     )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
     message: telegram.Message = await bot.send_message(
