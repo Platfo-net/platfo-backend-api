@@ -520,6 +520,10 @@ async def send_direct_message(
 
 
 def get_order_message(order: models.shop.ShopOrder, lang, amount):
+    payment_method = PaymentMethod.CARD_TRANSFER[lang]
+    if order.shop_payment_method:
+        payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
+
     text = helpers.load_message(
         lang, "order",
         amount=helpers.number_to_price(int(amount)),
@@ -527,7 +531,7 @@ def get_order_message(order: models.shop.ShopOrder, lang, amount):
         order_status=OrderStatus.items[order.status]["title"][lang],
         lead_number=order.lead.lead_number,
         currency=Currency.IRR["name"],
-        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
+        payment_method=payment_method
     )
 
     return text
