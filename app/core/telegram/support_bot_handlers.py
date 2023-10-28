@@ -282,7 +282,7 @@ async def accept_order_handler(db: Session, update: telegram.Update, order_id, l
 
     text = helpers.load_message(
         lang, "lead_order", order=order,
-        order_status=OrderStatus.items[order.status][lang],
+        order_status=OrderStatus.items[order.status]["title"][lang],
         amount=helpers.number_to_price(int(amount)),
         payment_method=payment_method,
         items=items,
@@ -335,7 +335,7 @@ async def decline_order_handler(db: Session, update: telegram.Update, order_id, 
     text = helpers.load_message(
         lang, "lead_order",
         order=order,
-        order_status=OrderStatus.items[order.status][lang],
+        order_status=OrderStatus.items[order.status]["title"][lang],
         amount=amount,
         currency=Currency.IRR["name"],
         items=items,
@@ -388,7 +388,7 @@ async def decline_payment_order_handler(db: Session, update: telegram.Update, or
     text = helpers.load_message(
         lang, "lead_order",
         order=order,
-        order_status=OrderStatus.items[order.status][lang],
+        order_status=OrderStatus.items[order.status]["title"][lang],
         amount=amount,
         currency=Currency.IRR["name"],
         items=items,
@@ -440,7 +440,7 @@ async def prepare_order_handler(db: Session, update: telegram.Update, order_id, 
     text = helpers.load_message(
         lang, "lead_order",
         order=order,
-        order_status=OrderStatus.items[order.status][lang],
+        order_status=OrderStatus.items[order.status]["title"][lang],
         amount=amount,
         currency=Currency.IRR["name"],
         items=items,
@@ -518,7 +518,7 @@ async def send_order_handler(db: Session, update: telegram.Update, order_id, lan
     text = helpers.load_message(
         lang, "lead_order",
         order=order,
-        order_status=OrderStatus.items[order.status][lang],
+        order_status=OrderStatus.items[order.status]["title"][lang],
         amount=amount,
         currency=Currency.IRR["name"],
         items=items,
