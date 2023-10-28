@@ -209,7 +209,7 @@ async def handle_order_payment(
 ):
     support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
 
-    update = telegram.Update.message.de_json(data["message"], bot)
+    update = telegram.Message.de_json(data["message"], bot)
 
     if update.photo:
         photo_unique_id = update.photo[-1].file_id
