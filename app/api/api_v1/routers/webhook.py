@@ -11,6 +11,8 @@ from app.core import support_bot
 from app.core.config import settings
 from app.core.instagram import tasks
 from app.core.telegram import tasks as telegram_tasks
+import ipaddress
+
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
@@ -40,7 +42,15 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
 @router.post('/telegram/bot/{bot_id}', status_code=status.HTTP_200_OK)
 async def telegram_webhook_listener(*, bot_id: int, request: Request):
     try:
-        print(request.headers)
+        real_ip = request.headers.get("x-real-ip")
+        # forward_for = request.headers.get("x-forwarded-for")
+        if not (
+            ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+            or
+            ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
+        ):
+            return
+
         data = await request.json()
         telegram_tasks.telegram_webhook_task.delay(data, bot_id, "fa")
     except Exception as e:
@@ -84,6 +94,18 @@ async def telegram_bot_set_webhook(
 
 @router.post('/telegram/support-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_support_listener(request: Request):
-    data = await request.json()
-    telegram_tasks.telegram_support_bot_task.delay(data, "fa")
+    try:
+        real_ip = request.headers.get("x-real-ip")
+        # forward_for = request.headers.get("x-forwarded-for")
+        if not (
+            ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+            or
+            ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
+        ):
+            return
+        data = await request.json()
+        telegram_tasks.telegram_support_bot_task.delay(data, "fa")
+        return
+    except Exception as e:
+        print(e)
     return
