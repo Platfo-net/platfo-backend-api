@@ -1,8 +1,10 @@
+import asyncio
 from sqlalchemy.orm import Session
 
 from app import schemas, services
 from app.constants.payment_method import PaymentMethod
 from app.constants.role import Role
+from app.core import support_bot
 from app.core.config import settings
 
 
@@ -112,6 +114,7 @@ def init_db(db: Session) -> None:
     init_roles(db)
     init_users(db)
     init_payment_methods(db)
+    asyncio.run(support_bot.set_support_bot_webhook())
 
 
 def init_test_db(db: Session) -> None:
