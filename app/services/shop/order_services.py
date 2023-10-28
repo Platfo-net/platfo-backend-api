@@ -47,7 +47,7 @@ class OrderServices:
         last_order = db.query(self.model).filter(self.model.shop_id == shop_id).order_by(
             desc(self.model.order_number)).first()
         if not last_order:
-            return 0
+            return 1000
         return last_order.order_number
 
     def get(self, db: Session, *, id: int) -> models.shop.ShopOrder:
