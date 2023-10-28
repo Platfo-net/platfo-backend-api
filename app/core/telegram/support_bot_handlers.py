@@ -554,8 +554,14 @@ async def send_lead_order_to_shop_support_handler(
         return
 
     amount = 0
+    items = []
     for item in order.items:
         amount += item.count * item.price
+        items.append({
+            "price": helpers.number_to_price(int(item.price)),
+            "title": item.product.title,
+            "count": item.count,
+        })
 
     payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
 
@@ -566,7 +572,8 @@ async def send_lead_order_to_shop_support_handler(
         lead_number=lead.lead_number,
         order_status=OrderStatus.items[order.status]["title"][lang],
         currency=Currency.IRR["name"],
-        payment_method=payment_method
+        payment_method=payment_method,
+        items = items,
     )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
     message: telegram.Message = await bot.send_message(

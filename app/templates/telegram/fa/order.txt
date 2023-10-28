@@ -5,7 +5,7 @@
 
 * لیست محصولات سفارش:
 {% for item in items -%}
-    {{ item["title"] }} : ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] * item["count"] }}{{ currency }}  )
+    {{ item["title"] }} : ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] }}{{ currency }}  )
 {% endfor %}
 
 ——————————-
