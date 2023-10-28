@@ -253,7 +253,6 @@ async def handle_order_payment(
             text=text,
             reply_to_message_id=telegram_order.support_bot_message_id,
             chat_id=shop_telegram_bot.support_account_chat_id,
-            text=update.text
         )
 
     await update.reply_text(
