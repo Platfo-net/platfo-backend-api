@@ -104,5 +104,15 @@ class OrderServices:
         db.refresh(db_obj)
         return db_obj
 
+    def add_payment_information(
+        self, db: Session, *, db_obj: models.shop.ShopOrder, information: str
+    ) -> models.shop.ShopOrder:
+
+        db_obj.payment_information = information
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
 
 order = OrderServices(models.shop.ShopOrder)

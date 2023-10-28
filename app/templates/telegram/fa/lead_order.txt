@@ -1,12 +1,12 @@
 * اطلاعات سفارش:
 — شماره: {{ order.order_number }}
 — وضعیت: {{ order_status }} 🟠
-— نوع پرداخت: {{ order.payment_method.title }}
+— نوع پرداخت: {{ payment_method}}
 
 * لیست محصولات سفارش:
-{% for item in order.items -%}
-    {{ item.product.title }} : ( تعداد:{{ item.count }} , قیمت:{{ item.product.price * item.count }}{{ item.product.currency }}  )
+{% for item in items -%}
+    {{ item["title"] }} : ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] * item["count"] }}{{ currency }}  )
 {% endfor %}
 
 ——————————-
-💵 مبلغ نهایی سفارش: {{ amount }}{{ order.items[0].currency }}
+💵 مبلغ نهایی سفارش: {{ amount }}{{ currency }}

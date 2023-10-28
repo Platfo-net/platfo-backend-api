@@ -71,3 +71,6 @@ class SupportBotMessage:
     INVALID_COMMAND = {
         "fa": "دستور نامعتبر است."  # noqa
     }
+    PAYMENT_INFORMATION_SENT = {
+        "fa": "اطلاعات پرداخت شما با موفقیت برای پشتیبانی فروشگاه ارسال شد."
+    }

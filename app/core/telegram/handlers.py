@@ -1,5 +1,6 @@
 import os
 from uuid import uuid4
+
 import requests
 import telegram
 from sqlalchemy.orm import Session
@@ -207,67 +208,88 @@ async def handle_order_payment(
     lang: str
 ):
     support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
-    if data["message"].get("photo"):
-        # TODO handler_photo
-        photo_unique_id = data["message"]["photo"][-1]["file_id"]
-        res: telegram.File = await bot.get_file(file_id=photo_unique_id)
-        if not res.file_path:
-            await bot.send_message(
-                chat_id=data["message"]["from"]["id"],
-                text="فایل مشکل داره. دوباره تلاش کن"
-            )
-        file_path = res.file_path
-        res = requests.get(file_path)
-        if not res.status_code == 200:
-            await bot.send_message(
-                chat_id=data["message"]["from"]["id"],
-                text="فایل مشکل داره. دوباره تلاش کن"
-            )
-            return
-        image_format = file_path.split(".")[-1]
-        file_name = f"{uuid4()}.{image_format}"
-        with open(file_name, "wb") as f:
-            f.write(res.content)
 
-        storage.add_file_to_s3(
-            file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
-        url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+    update = telegram.Update.message.de_json(data["message"], bot)
 
-        await support_bot.send_photo(
-            caption=f"order {telegram_order.order.order_number} paid.",
-            photo=url,
-            reply_to_message_id=telegram_order.support_bot_message_id,
-            chat_id=shop_telegram_bot.support_account_chat_id),
+    if update.photo:
+        photo_unique_id = update.photo[-1].file_id
+        url, file_name = await download_and_upload_telegram_image(bot, photo_unique_id)
+        if not url:
+            await update.reply_text(text="Error in processing image")
 
-        os.remove(file_name)
-
-        # update = telegram.Update.de_json(bot, data)
-        # services.shop.telegram_order.add_message_text(
-        # db, telegram_order_id=telegram_order.id, text=update.message.text)
-
-        await bot.send_message(
-            text="شما پرداخت کردید",
-            # reply_to_message_id=telegram_order.bot_message_id,
-            chat_id=data["message"]["from"]["id"]
-        )
-        # await support_bot.send_message(
-        #     text=f"این بنده خدا پرداخت کرد , {update.message.text}",
-        #     chat_id=shop_telegram_bot.support_account_chat_id,
-        #     reply_to_message_id=telegram_order.support_bot_message_id,
-        # )
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(
             db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
         services.shop.order.add_payment_image(db, db_obj=order, image_name=file_name)
 
-        amount = 0
-        for item in order.items:
-            amount += item.count * item.price
-        await support_bot.edit_message_text(
-            text=support_bot_handlers.get_order_message(order, lang, amount),
-            chat_id=shop_telegram_bot.support_account_chat_id,
-            message_id=telegram_order.support_bot_message_id,
-            reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
-                order, lang),
-            parse_mode="HTML"
+        image_caption = helpers.load_message(
+            lang,
+            "payment_image_caption",
+            order_number=order.order_number,
+            lead_number=order.lead.lead_number
         )
+        await support_bot.send_photo(
+            caption=image_caption,
+            photo=url,
+            reply_to_message_id=telegram_order.support_bot_message_id,
+            chat_id=shop_telegram_bot.support_account_chat_id)
+
+        os.remove(file_name)
+
+    else:
+        order = services.shop.order.get(db, id=telegram_order.order_id)
+        order = services.shop.order.change_status(
+            db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
+        services.shop.order.add_payment_information(db, db_obj=order, information=update.text)
+
+        text = helpers.load_message(
+            lang,
+            "payment_image_caption",
+            order_number=order.order_number,
+            lead_number=order.lead.lead_number
+        )
+
+        await support_bot.send_message(
+            text=text,
+            reply_to_message_id=telegram_order.support_bot_message_id,
+            chat_id=shop_telegram_bot.support_account_chat_id,
+            text=update.text
+        )
+
+    await update.reply_text(
+        text=SupportBotMessage.PAYMENT_INFORMATION_SENT[lang],
+    )
+
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+    await support_bot.edit_message_text(
+        text=support_bot_handlers.get_order_message(order, lang, amount),
+        chat_id=shop_telegram_bot.support_account_chat_id,
+        message_id=telegram_order.support_bot_message_id,
+        reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
+            order, lang),
+        parse_mode="HTML"
+    )
+
+
+async def download_and_upload_telegram_image(bot, photo_unique_id):
+    res: telegram.File = await bot.get_file(file_id=photo_unique_id)
+    if not res.file_path:
+        return None, None
+    file_path = res.file_path
+    res = requests.get(file_path)
+
+    if not res.status_code == 200:
+        return None, None
+
+    image_format = file_path.split(".")[-1]
+
+    file_name = f"{uuid4()}.{image_format}"
+    with open(file_name, "wb") as f:
+        f.write(res.content)
+
+    storage.add_file_to_s3(
+        file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+    url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+    return url, file_name

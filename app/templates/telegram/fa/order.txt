@@ -4,8 +4,8 @@
 نوع پرداخت: {{ payment_method }}
 
 * لیست محصولات سفارش:
-{% for item in order.items -%}
-    {{ item.product.title }} : ( تعداد:{{ item.count }} , قیمت:{{ item.price * item.count }}{{ currency }}  )
+{% for item in items -%}
+    {{ item["title"] }} : ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] * item["count"] }}{{ currency }}  )
 {% endfor %}
 
 ——————————-
