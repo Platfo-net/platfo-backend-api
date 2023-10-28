@@ -42,6 +42,14 @@ class OrderStatus:
         }
     }
 
+    PAYMENT_DECLINED = {
+        "value": "PAYMENT_DECLINED",
+        "title": {
+            "fa": "پرداخت رد شده",
+            "en": "payment declined"
+        }
+    }
+
     items = {
         "UNPAID": UNPAID,
         "PAYMENT_CHECK": PAYMENT_CHECK,
@@ -49,4 +57,5 @@ class OrderStatus:
         "PREPARATION": PREPARATION,
         "SENT": SENT,
         "DECLINED": DECLINED,
+        "PAYMENT_DECLINED": PAYMENT_DECLINED,
     }

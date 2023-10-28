@@ -1,3 +1,5 @@
+import ipaddress
+
 import telegram
 from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
                      status)
@@ -11,8 +13,6 @@ from app.core import support_bot
 from app.core.config import settings
 from app.core.instagram import tasks
 from app.core.telegram import tasks as telegram_tasks
-import ipaddress
-
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)

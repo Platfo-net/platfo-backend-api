@@ -1,6 +1,7 @@
 
 
 class SupportBotMessage:
+
     ACCOUNT_NOT_REGISTER = {
         "fa": "اکانت شما به هیچ فروشگاهی متصل نشده است"
     }

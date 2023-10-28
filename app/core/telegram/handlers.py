@@ -32,23 +32,48 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await update.message.reply_text(text, parse_mode="HTML")
             return
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
-            await support_bot_handlers.accept_order_handler(db, update, arg, lang)
+            await support_bot_handlers.order_change_status_handler(
+                db, update, arg, lang,
+                OrderStatus.ACCEPTED,
+                SupportBotMessage.ACCEPT_ORDER,
+                support_bot_handlers.get_accepted_order_reply_markup,
+            )
             return
 
         elif command == TelegramCallbackCommand.DECLINE_ORDER.get("command"):
-            await support_bot_handlers.decline_order_handler(db, update, arg, lang)
+            await support_bot_handlers.order_change_status_handler(
+                db, update, arg, lang,
+                OrderStatus.DECLINED,
+                SupportBotMessage.DECLINE_ORDER,
+                support_bot_handlers.get_declined_order_reply_markup,
+            )
             return
 
         elif command == TelegramCallbackCommand.DECLINE_PAYMENT_ORDER.get("command"):
-            await support_bot_handlers.decline_payment_order_handler(db, update, arg, lang)
+            await support_bot_handlers.order_change_status_handler(
+                db, update, arg, lang,
+                OrderStatus.PAYMENT_DECLINED,
+                SupportBotMessage.DECLINE_PAYMENT_ORDER,
+                support_bot_handlers.get_empty_reply_markup,
+            )
             return
 
         elif command == TelegramCallbackCommand.PREPARE_ORDER.get("command"):
-            await support_bot_handlers.prepare_order_handler(db, update, arg, lang)
+            await support_bot_handlers.order_change_status_handler(
+                db, update, arg, lang,
+                OrderStatus.PREPARATION,
+                SupportBotMessage.PREPARE_ORDER,
+                support_bot_handlers.get_prepare_order_reply_markup,
+            )
             return
 
         elif command == TelegramCallbackCommand.SEND_ORDER.get("command"):
-            await support_bot_handlers.send_order_handler(db, update, arg, lang)
+            await support_bot_handlers.order_change_status_handler(
+                db, update, arg, lang,
+                OrderStatus.SENT,
+                SupportBotMessage.SEND_ORDER,
+                support_bot_handlers.get_empty_reply_markup,
+            )
             return
 
         elif command == TelegramCallbackCommand.ACCEPT_SHOP_SUPPORT_ACCOUNT.get("command"):
