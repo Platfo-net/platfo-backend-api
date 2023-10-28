@@ -245,7 +245,8 @@ async def handle_order_payment(
             lang,
             "payment_image_caption",
             order_number=order.order_number,
-            lead_number=order.lead.lead_number
+            lead_number=order.lead.lead_number,
+            text=update.text,
         )
 
         await support_bot.send_message(
