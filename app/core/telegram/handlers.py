@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import models, schemas, services
+from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
@@ -30,6 +31,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         if command == TelegramCallbackCommand.NEW_CONNECTION.get("command"):
             text = helpers.load_message(lang, "new_connection")
             await update.message.reply_text(text, parse_mode="HTML")
+            return
+        if command == TelegramCallbackCommand.CREDIT_PLAN.get("command"):
+            await handle_credit_plan(db, update, int(arg), lang)
             return
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
@@ -105,6 +109,10 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
             await update.message.reply_text(
                 SupportBotMessage.ENTER_ORDER_NUMBER[lang], parse_mode="HTML")
+            return
+
+        elif update.message.text == TelegramSupportBotCommand.CREDIT_EXTENDING["command"]:
+            await handle_credit_extending(db, update, lang)
             return
 
         elif update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
@@ -317,3 +325,35 @@ async def download_and_upload_telegram_image(bot, photo_unique_id):
         file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
     url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
     return url, file_name
+
+
+async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
+    text = helpers.load_message(lang, "credit_shop_pricing")
+
+    # TODO get dynamically from plans
+    keyboard = [
+        [
+            telegram.InlineKeyboardButton(
+                "یک ماهه",
+                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:1")  # noqa
+        ],
+        [
+            telegram.InlineKeyboardButton(
+                "دو ماهه",
+                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:2")  # noqa
+        ]
+    ]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(parse_mode="HTML", text=text, reply_markup=reply_markup)
+
+
+async def handle_credit_plan(db: Session, update: telegram.Update, month: int, lang: str):
+    plans = {
+        1: f"{helpers.number_to_price(5000000)} {Currency.IRR['name']}",
+        2: f"{helpers.number_to_price(10000000)} {Currency.IRR['name']}",
+    }
+    amount = plans[month]
+    text = helpers.load_message(lang, "credit_shop_plan", amount=amount)
+
+    await update.message.reply_text(text=text)

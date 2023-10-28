@@ -1,8 +1,13 @@
 
 
 class TelegramCallbackCommand:
+    CREDIT_PLAN = {
+        "title": {
+            "fa": "تایید سفارش",
+        },
+        "command": "ACCEPT_ORDER"
+    }
     ACCEPT_ORDER = {
-
         "title": {
             "fa": "تایید سفارش",
         },

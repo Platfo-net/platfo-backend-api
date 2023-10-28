@@ -3,6 +3,10 @@ class TelegramSupportBotCommand:
         "command": "/start",
         "description": "Start",
     }
+    CREDIT_EXTENDING = {
+        "command": "/extend_credit",
+        "description": "تمدید حساب",
+    }
     PAYMENT_CHECK_ORDERS = {
         "command": "/payment_check_orders",
         "description": "Payment Check Orders",
