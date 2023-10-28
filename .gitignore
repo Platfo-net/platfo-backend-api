@@ -166,3 +166,7 @@ local.env
 *.json
 
 docker-test.yaml
+
+*.jpg
+*.jpeg
+*.png
