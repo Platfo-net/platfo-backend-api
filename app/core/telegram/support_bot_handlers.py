@@ -294,18 +294,11 @@ async def order_change_status_handler(
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
 
-    payment_method = PaymentMethod.CARD_TRANSFER[lang]
-    if order.shop_payment_method:
-        payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
-
     bot = Bot(token=security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
     text = helpers.load_message(
-        lang, "lead_order", order=order,
+        lang, "order_change_status_notification",
         order_status=OrderStatus.items[order.status]["title"][lang],
-        amount=helpers.number_to_price(int(amount)),
-        payment_method=payment_method,
-        items=items,
-        currency=Currency.IRR["name"]
+        order_number=order.order_number
     )
 
     await bot.send_message(chat_id=order.lead.chat_id, text=text)
