@@ -347,7 +347,7 @@ async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
 async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
     text = helpers.load_message(lang, "credit_shop_pricing")
     plans = services.credit.plan.get_multi(
-        db, currency=Currency.IRR["name"])
+        db, currency=Currency.IRR["value"], module=Module.TELEGRAM_SHOP)
     keyboard = []
     for plan in plans:
         keyboard.append([
