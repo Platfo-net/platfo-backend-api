@@ -92,11 +92,11 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
 
     else:
+        
         message = telegram.Message.de_json(data["message"], bot)
         if message.photo:
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=message.chat_id)
-            print("inja")
             await handle_shop_credit_extending(
                 db, message,
                 settings.S3_SHOP_TELEGRAM_CREDIT_EXTENDING,
