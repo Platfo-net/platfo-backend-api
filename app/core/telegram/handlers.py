@@ -357,7 +357,7 @@ async def handle_credit_extending(db: Session, update: telegram.Update, lang: st
         ])
         items.append(
             {
-                "price": helpers.number_to_price(plan.discounted_price),
+                "price": helpers.number_to_price(int(plan.discounted_price)),
                 "title": plan.title
             }
         )
