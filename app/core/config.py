@@ -76,14 +76,14 @@ class Settings(BaseSettings):
     S3_ROOT_PASSWORD: Optional[str] = None
     S3_HOST: Optional[str] = None
 
-    S3_ACADEMY_ATTACHMENT_BUCKET: str = "academy_attachment_bucket"
-    S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow_media_bucket"
-    S3_CAMPAIGN_BUCKET: str = "notifier_campaign_bucket"
-    S3_USER_PROFILE_BUCKET: str = 'user_profile_bucket'
-    S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop_product_image_bucket'
-    S3_TELEGRAM_BOT_IMAGES_BUCKET: str = 'telegram_bot_image_bucket'
-    S3_PAYMENT_RECEIPT_IMAGE: str = 'payment_receipt_image_bucket'
-    S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop_telegram_credit_extending'
+    S3_ACADEMY_ATTACHMENT_BUCKET: str = "academy-attachment-bucket"
+    S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow-media-bucket"
+    S3_CAMPAIGN_BUCKET: str = "notifier-campaign-bucket"
+    S3_USER_PROFILE_BUCKET: str = 'user-profile-bucket'
+    S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop-product-image-bucket'
+    S3_TELEGRAM_BOT_IMAGES_BUCKET: str = 'telegram-bot-image-bucket'
+    S3_PAYMENT_RECEIPT_IMAGE: str = 'payment-receipt-image-bucket'
+    S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop-telegram-credit-extending'
 
     CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: Optional[int] = None
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: Optional[int] = None

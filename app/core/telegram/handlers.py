@@ -92,7 +92,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
 
     else:
-        
+
         message = telegram.Message.de_json(data["message"], bot)
         if message.photo:
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
@@ -413,4 +413,5 @@ async def handle_shop_credit_extending(
     services.credit.shop_telegram_payment_record.add_payment_image(
         db, db_obj=shop_telegram_payment_record, image_name=file_name)
     await message.reply_text("هر چه زودتر برات شارژش میکنیم.")
+    os.remove(file_name)
     return
