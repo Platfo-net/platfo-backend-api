@@ -345,17 +345,25 @@ async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
 
 
 async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
-    text = helpers.load_message(lang, "credit_shop_pricing")
     plans = services.credit.plan.get_multi(
         db, currency=Currency.IRR["value"], module=Module.TELEGRAM_SHOP)
     keyboard = []
+    items = []
     for plan in plans:
         keyboard.append([
             telegram.InlineKeyboardButton(
                 plan.title,
                 callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:{plan.uuid}")  # noqa
         ])
+        items.append(
+            {
+                "price": helpers.number_to_price(plan.discounted_price),
+                "title": plan.title
+            }
+        )
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+    text = helpers.load_message(lang, "credit_shop_pricing",
+                                items=items, currency=Currency.IRR["name"])
 
     await update.message.reply_text(parse_mode="HTML", text=text, reply_markup=reply_markup)
 
