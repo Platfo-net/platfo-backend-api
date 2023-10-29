@@ -1,9 +1,9 @@
 import os
 from uuid import uuid4
-from pydantic import UUID4
 
 import requests
 import telegram
+from pydantic import UUID4
 from sqlalchemy.orm import Session
 from telegram import Bot
 
@@ -261,7 +261,8 @@ async def handle_order_payment(
     update = telegram.Message.de_json(data["message"], bot)
     if update.photo:
         photo_unique_id = update.photo[-1].file_id
-        url, file_name = await download_and_upload_telegram_image(bot, photo_unique_id, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        url, file_name = await download_and_upload_telegram_image(
+            bot, photo_unique_id, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         if not url:
             await update.reply_text(text="Error in processing image")
 
@@ -372,13 +373,13 @@ async def handle_credit_plan(
         amount=helpers.number_to_price(plan.discounted_price),
         currency=plan.currency
     )
+    reply_to_message = await update.message.reply_text(text=text)
     services.credit.shop_telegram_payment_record.create(
         db,
         shop_id=shop_id,
         plan_id=plan.id,
         reply_to_message_id=reply_to_message.message_id,
     )
-    reply_to_message = await update.message.reply_text(text=text)
 
 
 async def handle_shop_credit_extending(db: Session, message: telegram.Message, bucket, lang):
