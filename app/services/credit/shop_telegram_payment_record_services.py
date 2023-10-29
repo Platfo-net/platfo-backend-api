@@ -30,6 +30,17 @@ class ShopTelegramPaymentRecordServices:
         db.refresh(db_obj)
         return db_obj
 
+    def change_status(
+            self, db: Session, *,
+            db_obj: models.credit.CreditShopTelegramPaymentRecord,
+            status: str
+    ):
+        db_obj.status = status
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
     def get_by_shop_and_reply_to_message_id(self, db: Session, *, shop_id: int, reply_to_message_id: int):
         return db.query(self.model).filter(
             self.model.reply_to_message_id == reply_to_message_id,
