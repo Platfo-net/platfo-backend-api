@@ -379,7 +379,7 @@ async def handle_credit_plan(
     text = helpers.load_message(
         lang, "credit_shop_plan",
         amount=helpers.number_to_price(int(plan.discounted_price)),
-        currency=plan.currency
+        currency=Currency.IRR["name"]
     )
     reply_to_message = await update.message.reply_text(text=text)
     services.credit.shop_telegram_payment_record.create(
