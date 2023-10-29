@@ -13,18 +13,14 @@ class CreditShopTelegramPaymentRecord(Base):
         BigInteger,
         ForeignKey('shop_shops.id'),
         primary_key=False,
-        nullable=False,
-        index=True,
-        unique=True,
+        nullable=True,
     )
 
     plan_id = Column(
         BigInteger,
         ForeignKey('credit_plans.id'),
         primary_key=False,
-        nullable=False,
-        index=True,
-        unique=True,
+        nullable=True,
     )
 
     reply_to_message_id = Column(BigInteger, nullable=True)
