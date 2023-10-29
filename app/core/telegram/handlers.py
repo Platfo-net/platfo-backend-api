@@ -412,7 +412,7 @@ async def handle_shop_credit_extending(
     if not url:
         await message.reply_text(text="Error in processing image")
     shop_telegram_payment_record = services.credit.shop_telegram_payment_record.add_payment_image(
-        db, db_obj=shop_telegram_payment_record, image_name=file_name)
+        db, db_obj=shop_telegram_payment_record, image_name=file_name, message_id=message.message_id)
 
     services.credit.shop_telegram_payment_record.change_status(
         db, db_obj=shop_telegram_payment_record,

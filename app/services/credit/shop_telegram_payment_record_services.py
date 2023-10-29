@@ -22,9 +22,11 @@ class ShopTelegramPaymentRecordServices:
     def add_payment_image(
             self, db: Session, *,
             db_obj: models.credit.CreditShopTelegramPaymentRecord,
-            image_name: str
+            image_name: str,
+            message_id: int,
     ):
         db_obj.image = image_name
+        db_obj.payment_message_id = message_id
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
