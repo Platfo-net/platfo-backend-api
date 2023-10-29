@@ -353,7 +353,7 @@ async def handle_credit_extending(db: Session, update: telegram.Update, lang: st
         keyboard.append([
             telegram.InlineKeyboardButton(
                 plan.title,
-                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:{plan.uuid}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:{plan.id}")  # noqa
         ])
         items.append(
             {
@@ -371,14 +371,14 @@ async def handle_credit_extending(db: Session, update: telegram.Update, lang: st
 async def handle_credit_plan(
     db: Session,
     update: telegram.Update,
-    plan_uuid: UUID4,
+    plan_id: UUID4,
     lang: str,
     shop_id: int,
 ):
-    plan = services.credit.plan.get_by_uuid(db, uuid=plan_uuid)
+    plan = services.credit.plan.get(db, plan_id)
     text = helpers.load_message(
         lang, "credit_shop_plan",
-        amount=helpers.number_to_price(plan.discounted_price),
+        amount=helpers.number_to_price(int(plan.discounted_price)),
         currency=plan.currency
     )
     reply_to_message = await update.message.reply_text(text=text)
