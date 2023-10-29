@@ -114,7 +114,7 @@ def init_db(db: Session) -> None:
     init_roles(db)
     init_users(db)
     init_payment_methods(db)
-    asyncio.run(support_bot.set_support_bot_webhook())
+    # asyncio.run(support_bot.set_support_bot_webhook())
 
 
 def init_test_db(db: Session) -> None:

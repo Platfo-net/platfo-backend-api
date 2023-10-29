@@ -202,6 +202,10 @@ CREDIT_PLAN_MODULE_CHOICES = (
     ("TELEGRAM_SHOP", 'TELEGRAM_SHOP')
 )
 
+CURRENCY_CHOICES = (
+    ("IRR", "ریال"),
+)
+
 
 class CreditPlans(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
@@ -212,16 +216,18 @@ class CreditPlans(models.Model):
     original_price = models.FloatField()
     discounted_price = models.FloatField()
     discount_percentage = models.FloatField()
-    is_discounted = models.FloatField()
-    currency = models.CharField(max_length=10)
+    currency = models.CharField(max_length=10, choices=CURRENCY_CHOICES)
     module = models.CharField(max_length=255, choices=CREDIT_PLAN_MODULE_CHOICES)
     created_at = models.DateTimeField(blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
-    uuid = models.UUIDField(blank=True, null=True)
+    uuid = models.UUIDField(blank=True, null=True , default=uuid4)
 
     class Meta:
         managed = False
         db_table = 'credit_plans'
+
+        verbose_name = 'Plan'
+        verbose_name_plural = 'Plans'
 
 
 class CreditShopCredits(models.Model):
