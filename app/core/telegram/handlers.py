@@ -1,5 +1,6 @@
 import os
 from uuid import uuid4
+from pydantic import UUID4
 
 import requests
 import telegram
@@ -8,6 +9,7 @@ from telegram import Bot
 
 from app import models, schemas, services
 from app.constants.currency import Currency
+from app.constants.module import Module
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
@@ -33,7 +35,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await update.message.reply_text(text, parse_mode="HTML")
             return
         if command == TelegramCallbackCommand.CREDIT_PLAN.get("command"):
-            await handle_credit_plan(db, update, int(arg), lang)
+            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+                db, chat_id=update.message.chat_id)
+            await handle_credit_plan(db, update, arg, lang, shop_telegram_bot.shop_id)
             return
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
@@ -88,6 +92,18 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
 
     else:
+        message = telegram.Message.de_json(data["message"], bot)
+        if message.photo:
+            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
+                db, chat_id=message.chat_id)
+
+            await handle_shop_credit_extending(
+                db, message,
+                settings.S3_SHOP_TELEGRAM_CREDIT_EXTENDING,
+                lang
+            )
+            return
+
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
 
         if update.message.text == TelegramSupportBotCommand.START["command"]:
@@ -245,7 +261,7 @@ async def handle_order_payment(
     update = telegram.Message.de_json(data["message"], bot)
     if update.photo:
         photo_unique_id = update.photo[-1].file_id
-        url, file_name = await download_and_upload_telegram_image(bot, photo_unique_id)
+        url, file_name = await download_and_upload_telegram_image(bot, photo_unique_id, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         if not url:
             await update.reply_text(text="Error in processing image")
 
@@ -305,7 +321,7 @@ async def handle_order_payment(
     )
 
 
-async def download_and_upload_telegram_image(bot, photo_unique_id):
+async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
     res: telegram.File = await bot.get_file(file_id=photo_unique_id)
     if not res.file_path:
         return None, None
@@ -322,38 +338,53 @@ async def download_and_upload_telegram_image(bot, photo_unique_id):
         f.write(res.content)
 
     storage.add_file_to_s3(
-        file_name, file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
-    url = storage.get_object_url(file_name, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        file_name, file_name, bucket)
+    url = storage.get_object_url(file_name, bucket)
     return url, file_name
 
 
 async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
     text = helpers.load_message(lang, "credit_shop_pricing")
-
-    # TODO get dynamically from plans
-    keyboard = [
-        [
+    plans = services.credit.plan.get_multi(
+        db, currency=Currency.IRR["name"], module=Module.TELEGRAM_SHOP)
+    keyboard = []
+    for plan in plans:
+        keyboard.append([
             telegram.InlineKeyboardButton(
-                "یک ماهه",
-                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:1")  # noqa
-        ],
-        [
-            telegram.InlineKeyboardButton(
-                "دو ماهه",
-                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:2")  # noqa
-        ]
-    ]
+                plan.title,
+                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:{plan.uuid}")  # noqa
+        ])
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(parse_mode="HTML", text=text, reply_markup=reply_markup)
 
 
-async def handle_credit_plan(db: Session, update: telegram.Update, month: int, lang: str):
-    plans = {
-        1: f"{helpers.number_to_price(5000000)} {Currency.IRR['name']}",
-        2: f"{helpers.number_to_price(10000000)} {Currency.IRR['name']}",
-    }
-    amount = plans[month]
-    text = helpers.load_message(lang, "credit_shop_plan", amount=amount)
+async def handle_credit_plan(
+    db: Session,
+    update: telegram.Update,
+    plan_uuid: UUID4,
+    lang: str,
+    shop_id: int,
+):
+    plan = services.credit.plan.get_by_uuid(db, uuid=plan_uuid)
+    text = helpers.load_message(
+        lang, "credit_shop_plan",
+        amount=helpers.number_to_price(plan.discounted_price),
+        currency=plan.currency
+    )
+    services.credit.shop_telegram_payment_record.create(
+        db,
+        shop_id=shop_id,
+        plan_id=plan.id,
+        reply_to_message_id=reply_to_message.message_id,
+    )
+    reply_to_message = await update.message.reply_text(text=text)
 
-    await update.message.reply_text(text=text)
+
+async def handle_shop_credit_extending(db: Session, message: telegram.Message, bucket, lang):
+    bot = Bot(settings.SUPPORT_BOT_TOKEN)
+    photo_unique_id = message.photo[-1].file_id
+    url, file_name = await download_and_upload_telegram_image(
+        bot, photo_unique_id, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+    if not url:
+        await message.reply_text(text="Error in processing image")

@@ -83,6 +83,7 @@ class Settings(BaseSettings):
     S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop_product_image_bucket'
     S3_TELEGRAM_BOT_IMAGES_BUCKET: str = 'telegram_bot_image_bucket'
     S3_PAYMENT_RECEIPT_IMAGE: str = 'payment_receipt_image_bucket'
+    S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop_telegram_credit_extending'
 
     CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: Optional[int] = None
     CAMPAIGN_PERIOD_INTERVAL_MINUTES: Optional[int] = None

@@ -1,3 +1,3 @@
 class Currency:
-    USD = {'name': 'USD', 'description': 'Dollar'}
-    IRR = {'name': 'ریال', 'description': 'Rial'}
+    USD = {'value': 'USD', 'name': 'USD', 'description': 'Dollar'}
+    IRR = {'value': 'IRR', 'name': 'ریال', 'description': 'Rial'}

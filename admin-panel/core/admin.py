@@ -101,6 +101,13 @@ class ShopShopPaymentMethodAdmin(admin.ModelAdmin):
     )
 
 
+class CreditPlansAdmin(admin.ModelAdmin):
+    model = models.CreditPlans
+    list_display = (
+        "title", "discounted_price", "currency",
+    )
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)
@@ -113,3 +120,4 @@ admin.site.register(models.SocialTelegramLeads, SocialTelegramLeadAdmin)
 admin.site.register(models.SocialTelegramLeadMessages, SocialTelegramLeadMessagesAdmin)
 admin.site.register(models.ShopPaymentMethods, ShopPaymentMethodAdmin)
 admin.site.register(models.ShopShopPaymentMethods, ShopShopPaymentMethodAdmin)
+admin.site.register(models.CreditPlans, CreditPlansAdmin)

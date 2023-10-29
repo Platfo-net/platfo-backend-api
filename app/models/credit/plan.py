@@ -26,13 +26,14 @@ class Plan(Base):
     discount_percentage = Column(Float(), nullable=False, default=0.0)
     is_discounted = Column(Float(), nullable=False, default=0.0)
 
-    currency = Column(String(10), nullable=False, default=Currency.IRR)
+    currency = Column(String(10), nullable=False, default=Currency.IRR["value"])
 
-    module = Column(String(255), nullable=False, default=Module.NOTIFIER)
+    module = Column(String(255), nullable=False, default=Module.TELEGRAM_SHOP)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     features = relationship('PlanFeature', back_populates='plan')
+    shop_telegram_payment_records = relationship('CreditShopTelegramPaymentRecord', back_populates='plan')
 
 
 class PlanFeature(Base):

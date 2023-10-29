@@ -1,2 +1,3 @@
 class Module:
     NOTIFIER = 'NOTIFIER'
+    TELEGRAM_SHOP = 'TELEGRAM_SHOP'

@@ -197,6 +197,12 @@ class CreditPlanFeatures(models.Model):
         db_table = 'credit_plan_features'
 
 
+CREDIT_PLAN_MODULE_CHOICES = (
+    ("NOTIFIER", 'NOTIFIER'),
+    ("TELEGRAM_SHOP", 'TELEGRAM_SHOP')
+)
+
+
 class CreditPlans(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -208,7 +214,7 @@ class CreditPlans(models.Model):
     discount_percentage = models.FloatField()
     is_discounted = models.FloatField()
     currency = models.CharField(max_length=10)
-    module = models.CharField(max_length=255)
+    module = models.CharField(max_length=255, choices=CREDIT_PLAN_MODULE_CHOICES)
     created_at = models.DateTimeField(blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
@@ -768,5 +774,5 @@ models_list = [
     ShopShops, ShopShopTelegramBots,
     ShopShipmentMethods, ShopProducts, ShopPaymentMethods,
     ShopShopPaymentMethods, ShopOrders, ShopOrderItems,
-    CreditShopCredits, ShopCategories, Roles
+    CreditShopCredits, ShopCategories, Roles, CreditPlans
 ]
