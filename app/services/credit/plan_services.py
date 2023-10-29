@@ -13,7 +13,6 @@ class PlanServices:
     def get(self, db: Session, id: int) -> Optional[models.credit.Plan]:
         return (
             db.query(self.model)
-            .join(self.model.features)
             .filter(self.model.id == id)
             .first()
         )
