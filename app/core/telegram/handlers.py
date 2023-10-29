@@ -100,6 +100,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await handle_shop_credit_extending(
                 db, message,
                 settings.S3_SHOP_TELEGRAM_CREDIT_EXTENDING,
+                shop_telegram_bot.shop_id,
                 lang
             )
             return
@@ -390,10 +391,26 @@ async def handle_credit_plan(
     )
 
 
-async def handle_shop_credit_extending(db: Session, message: telegram.Message, bucket, lang):
+async def handle_shop_credit_extending(
+    db: Session,
+    message: telegram.Message,
+    bucket,
+    shop_id: int,
+    lang: str,
+):
     bot = Bot(settings.SUPPORT_BOT_TOKEN)
+    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.\
+        get_by_shop_and_reply_to_message_id(
+            db, shop_id=shop_id, reply_to_message_id=message.reply_to_message.message_id
+        )
+    if not shop_telegram_payment_record:
+        return
     photo_unique_id = message.photo[-1].file_id
     url, file_name = await download_and_upload_telegram_image(
-        bot, photo_unique_id, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
+        bot, photo_unique_id, bucket)
     if not url:
         await message.reply_text(text="Error in processing image")
+    services.credit.shop_telegram_payment_record.add_payment_image(
+        db, db_obj=shop_telegram_payment_record, image_name=file_name)
+    await message.reply_text("هر چه زودتر برات شارژش میکنیم.")
+    return
