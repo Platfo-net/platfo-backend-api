@@ -139,6 +139,7 @@ def get_user_me(
             name=role.name,
             description=role.description,
             id=role.uuid,
+            persian_name=role.persian_name,
         ),
         profile_image=storage.get_file(
             user.profile_image, settings.S3_USER_PROFILE_BUCKET

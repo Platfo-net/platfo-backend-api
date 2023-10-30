@@ -122,6 +122,7 @@ def test_token(
             name=role.name,
             description=role.description,
             id=role.uuid,
+            persian_name=role.persian_name,
         ),
         profile_image=storage.get_file(
             current_user.profile_image, Settings.S3_USER_PROFILE_BUCKET
