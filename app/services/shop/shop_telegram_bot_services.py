@@ -22,7 +22,7 @@ class ShopTelegramBotServices:
             support_bot_token=obj_in.support_bot_token,
             shop_id=obj_in.shop_id,
         )
-        uow.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def get_by_support_token(
