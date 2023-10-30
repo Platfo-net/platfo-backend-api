@@ -17,7 +17,7 @@ cursor.execute(
     "select exists(select * from information_schema.tables where table_name=%s)", ('alembic_version',))  # noqa
 if not cursor.fetchone()[0]:
     query = "CREATE ROLE {} WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD '{}';".format(  # noqa
-        settings.DB_USER, settings.DB_PASSWORD
+        settings.POSTGRES_USER, settings.POSTGRES_PASSWORD
     )
     cursor.execute(query)
 
