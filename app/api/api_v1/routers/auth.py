@@ -12,7 +12,7 @@ from app import models, schemas, services
 from app.api import deps
 from app.constants.errors import Error
 from app.core import cache, security, storage, tasks, utils
-from app.core.config import Settings
+from app.core.config import settings
 from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
@@ -125,7 +125,7 @@ def test_token(
             persian_name=role.persian_name,
         ),
         profile_image=storage.get_file(
-            current_user.profile_image, Settings.S3_USER_PROFILE_BUCKET
+            current_user.profile_image, settings.S3_USER_PROFILE_BUCKET
         ),
     )
 
