@@ -254,7 +254,7 @@ def create_content(
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[Role.ADMIN['name'], Role.WRITER['name'], Role.DEVELOPER['name']],
+        scopes=[Role.ADMIN['name'], Role.DEVELOPER['name']],
     ),
 ):
     content = services.academy.content.create(

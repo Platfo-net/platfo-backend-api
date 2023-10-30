@@ -32,11 +32,6 @@ class Settings(BaseSettings):
     FIRST_DEVELOPER_PHONE_NUMBER: str
     FIRST_DEVELOPER_PHONE_COUNTRY_CODE: str
 
-    SHOP_USER_EMAIL: str
-    SHOP_USER_PASSWORD: str
-    SHOP_USER_PHONE_NUMBER: str
-    SHOP_USER_PHONE_COUNTRY_CODE: str
-
     FIRST_USER_EMAIL: Optional[str] = None
     FIRST_USER_PASSWORD: Optional[str] = None
 
@@ -55,7 +50,7 @@ class Settings(BaseSettings):
     FACEBOOK_GRAPH_BASE_URL: Optional[str] = None
     FACEBOOK_GRAPH_VERSION: Optional[str] = None
 
-    FACEBOOK_WEBHOOK_VERIFY_TOKEN: str = None
+    FACEBOOK_WEBHOOK_VERIFY_TOKEN: Optional[str] = None
 
     REDIS_HOST: str
     REDIS_PASSWORD: str

@@ -86,7 +86,6 @@ def get_order(
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
-            Role.SHOP['name'],
             Role.ADMIN['name'],
         ],
     ),

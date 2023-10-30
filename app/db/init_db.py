@@ -34,15 +34,6 @@ def init_roles(db: Session) -> None:
         )
         services.role.create(db, obj_in=developer_role_in)
 
-    shop_role = services.role.get_by_name(db, name=Role.SHOP['name'])
-    if not shop_role:
-        shop_role_in = schemas.RoleCreate(
-            name=Role.SHOP['name'],
-            description=Role.SHOP['description'],
-            persian_name=Role.SHOP['persian_name'],
-        )
-        services.role.create(db, obj_in=shop_role_in)
-
 
 def init_users(db: Session) -> None:
     user = services.user.get_by_email(db, email=settings.FIRST_ADMIN_EMAIL)
@@ -76,23 +67,6 @@ def init_users(db: Session) -> None:
         services.user.create(
             db,
             obj_in=developer_in,
-        )
-
-    shop = services.user.get_by_email(db, email=settings.SHOP_USER_EMAIL)
-    if not shop:
-        s_role = services.role.get_by_name(db, name=Role.SHOP['name'])
-        shop_in = schemas.UserCreate(
-            email=settings.SHOP_USER_EMAIL,
-            is_active=True,
-            phone_number=settings.SHOP_USER_PHONE_NUMBER,
-            phone_country_code=settings.SHOP_USER_PHONE_COUNTRY_CODE,
-            is_email_verified=True,
-            password=settings.SHOP_USER_PASSWORD,
-            role_id=s_role.id,
-        )
-        services.user.create(
-            db,
-            obj_in=shop_in,
         )
 
 

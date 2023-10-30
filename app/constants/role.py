@@ -18,13 +18,3 @@ class Role:
         'description': 'Developer of Application Ecosystem',
         'persian_name': 'توسعه دهنده',
     }
-    WRITER = {
-        'name': 'WRITER',
-        'description': 'Writer of Application Ecosystem',
-        'persian_name': 'نویسنده',
-    }
-    SHOP = {
-        'name': 'SHOP',
-        'description': 'Shop',
-        'persian_name': 'فروشگاه',
-    }
