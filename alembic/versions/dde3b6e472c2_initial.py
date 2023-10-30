@@ -1,8 +1,8 @@
-"""0001_initial
+"""initial
 
-Revision ID: 5dde70b22951
+Revision ID: dde3b6e472c2
 Revises: 
-Create Date: 2023-08-16 08:27:58.539428
+Create Date: 2023-10-30 08:00:10.340518
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '5dde70b22951'
+revision = 'dde3b6e472c2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,7 +41,6 @@ def upgrade():
     sa.Column('original_price', sa.Float(), nullable=False),
     sa.Column('discounted_price', sa.Float(), nullable=False),
     sa.Column('discount_percentage', sa.Float(), nullable=False),
-    sa.Column('is_discounted', sa.Float(), nullable=False),
     sa.Column('currency', sa.String(length=10), nullable=False),
     sa.Column('module', sa.String(length=255), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -138,6 +137,16 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
+    op.create_table('shop_payment_methods',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.String(length=255), nullable=True),
+    sa.Column('information_fields', sa.JSON(), nullable=True),
+    sa.Column('payment_fields', sa.JSON(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_payment_methods_id'), 'shop_payment_methods', ['id'], unique=False)
     op.create_table('credit_plan_features',
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
@@ -214,18 +223,6 @@ def upgrade():
     op.create_index(op.f('ix_connections_account_id'), 'connections', ['account_id'], unique=False)
     op.create_index(op.f('ix_connections_id'), 'connections', ['id'], unique=False)
     op.create_index(op.f('ix_connections_user_id'), 'connections', ['user_id'], unique=False)
-    op.create_table('credit_credits',
-    sa.Column('module', sa.String(length=20), nullable=False),
-    sa.Column('count', sa.Integer(), nullable=True),
-    sa.Column('expires_at', sa.DateTime(), nullable=True),
-    sa.Column('user_id', sa.BigInteger(), nullable=False),
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_credit_credits_id'), 'credit_credits', ['id'], unique=False)
-    op.create_index(op.f('ix_credit_credits_user_id'), 'credit_credits', ['user_id'], unique=False)
     op.create_table('credit_invoices',
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('payed_at', sa.DateTime(), nullable=True),
@@ -340,6 +337,30 @@ def upgrade():
     op.create_index(op.f('ix_notifier_campaigns_facebook_page_id'), 'notifier_campaigns', ['facebook_page_id'], unique=False)
     op.create_index(op.f('ix_notifier_campaigns_id'), 'notifier_campaigns', ['id'], unique=False)
     op.create_index(op.f('ix_notifier_campaigns_user_id'), 'notifier_campaigns', ['user_id'], unique=False)
+    op.create_table('shop_shops',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('category', sa.String(length=255), nullable=True),
+    sa.Column('user_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_shops_id'), 'shop_shops', ['id'], unique=False)
+    op.create_table('telegram_bots',
+    sa.Column('user_id', sa.BigInteger(), nullable=True),
+    sa.Column('bot_token', sa.String(length=255), nullable=True),
+    sa.Column('username', sa.String(length=255), nullable=True),
+    sa.Column('first_name', sa.String(length=255), nullable=True),
+    sa.Column('bot_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_telegram_bots_bot_id'), 'telegram_bots', ['bot_id'], unique=False)
+    op.create_index(op.f('ix_telegram_bots_id'), 'telegram_bots', ['id'], unique=False)
     op.create_table('academy_content_categories',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('content_id', sa.UUID(), nullable=True),
@@ -403,21 +424,32 @@ def upgrade():
     )
     op.create_index(op.f('ix_bot_builder_nodeuies_chatflow_id'), 'bot_builder_nodeuies', ['chatflow_id'], unique=False)
     op.create_index(op.f('ix_bot_builder_nodeuies_id'), 'bot_builder_nodeuies', ['id'], unique=False)
-    op.create_table('credit_credit_logs',
-    sa.Column('module', sa.String(length=20), nullable=False),
-    sa.Column('count', sa.Integer(), nullable=True),
-    sa.Column('days_added', sa.Integer(), nullable=True),
-    sa.Column('plan_id', sa.BigInteger(), nullable=False),
-    sa.Column('user_id', sa.BigInteger(), nullable=False),
-    sa.Column('invoice_id', sa.BigInteger(), nullable=False),
+    op.create_table('credit_shop_credits',
+    sa.Column('shop_id', sa.BigInteger(), nullable=False),
+    sa.Column('expires_at', sa.DateTime(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['invoice_id'], ['credit_invoices.id'], ),
-    sa.ForeignKeyConstraint(['plan_id'], ['credit_plans.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_credit_credit_logs_id'), 'credit_credit_logs', ['id'], unique=False)
+    op.create_index(op.f('ix_credit_shop_credits_id'), 'credit_shop_credits', ['id'], unique=False)
+    op.create_index(op.f('ix_credit_shop_credits_shop_id'), 'credit_shop_credits', ['shop_id'], unique=True)
+    op.create_table('credit_shop_telegram_payment_records',
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('plan_id', sa.BigInteger(), nullable=True),
+    sa.Column('reply_to_message_id', sa.BigInteger(), nullable=True),
+    sa.Column('image', sa.String(length=255), nullable=True),
+    sa.Column('payment_message_id', sa.BigInteger(), nullable=True),
+    sa.Column('status', sa.String(length=32), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['plan_id'], ['credit_plans.id'], ),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_credit_shop_telegram_payment_records_id'), 'credit_shop_telegram_payment_records', ['id'], unique=False)
     op.create_table('notifier_campaign_leads',
     sa.Column('lead_igs_id', sa.BigInteger(), nullable=True),
     sa.Column('is_sent', sa.Boolean(), nullable=True),
@@ -434,16 +466,200 @@ def upgrade():
     )
     op.create_index(op.f('ix_notifier_campaign_leads_campaign_id'), 'notifier_campaign_leads', ['campaign_id'], unique=False)
     op.create_index(op.f('ix_notifier_campaign_leads_id'), 'notifier_campaign_leads', ['id'], unique=False)
+    op.create_table('shop_categories',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_categories_id'), 'shop_categories', ['id'], unique=False)
+    op.create_table('shop_shipment_methods',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('price', sa.String(length=255), nullable=True),
+    sa.Column('currency', sa.String(length=255), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_shipment_methods_id'), 'shop_shipment_methods', ['id'], unique=False)
+    op.create_table('shop_shop_payment_methods',
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('payment_method_id', sa.BigInteger(), nullable=True),
+    sa.Column('information', sa.JSON(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['payment_method_id'], ['shop_payment_methods.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_shop_payment_methods_id'), 'shop_shop_payment_methods', ['id'], unique=False)
+    op.create_table('shop_shop_telegram_bots',
+    sa.Column('support_token', sa.String(length=255), nullable=True),
+    sa.Column('support_bot_token', sa.String(length=255), nullable=True),
+    sa.Column('support_account_chat_id', sa.BigInteger(), nullable=True),
+    sa.Column('is_support_verified', sa.Boolean(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('telegram_bot_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
+    sa.ForeignKeyConstraint(['telegram_bot_id'], ['telegram_bots.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_shop_telegram_bots_id'), 'shop_shop_telegram_bots', ['id'], unique=False)
+    op.create_index(op.f('ix_shop_shop_telegram_bots_support_account_chat_id'), 'shop_shop_telegram_bots', ['support_account_chat_id'], unique=False)
+    op.create_table('social_telegram_leads',
+    sa.Column('first_name', sa.String(length=255), nullable=True),
+    sa.Column('last_name', sa.String(length=255), nullable=True),
+    sa.Column('username', sa.String(length=255), nullable=True),
+    sa.Column('chat_id', sa.BigInteger(), nullable=True),
+    sa.Column('telegram_bot_id', sa.BigInteger(), nullable=True),
+    sa.Column('lead_number', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['telegram_bot_id'], ['telegram_bots.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_social_telegram_leads_chat_id'), 'social_telegram_leads', ['chat_id'], unique=False)
+    op.create_index(op.f('ix_social_telegram_leads_id'), 'social_telegram_leads', ['id'], unique=False)
+    op.create_index(op.f('ix_social_telegram_leads_lead_number'), 'social_telegram_leads', ['lead_number'], unique=False)
+    op.create_table('shop_orders',
+    sa.Column('first_name', sa.String(length=255), nullable=True),
+    sa.Column('last_name', sa.String(length=255), nullable=True),
+    sa.Column('phone_number', sa.String(length=255), nullable=True),
+    sa.Column('email', sa.String(length=255), nullable=True),
+    sa.Column('state', sa.String(length=255), nullable=True),
+    sa.Column('city', sa.String(length=255), nullable=True),
+    sa.Column('address', sa.String(length=255), nullable=True),
+    sa.Column('postal_code', sa.String(length=255), nullable=True),
+    sa.Column('status', sa.String(length=255), nullable=True),
+    sa.Column('order_number', sa.Integer(), nullable=True),
+    sa.Column('lead_id', sa.BigInteger(), nullable=True),
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('shipment_method_id', sa.BigInteger(), nullable=True),
+    sa.Column('shop_payment_method_id', sa.BigInteger(), nullable=True),
+    sa.Column('payment_information', sa.JSON(), nullable=True),
+    sa.Column('payment_image', sa.String(length=255), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['lead_id'], ['social_telegram_leads.id'], ),
+    sa.ForeignKeyConstraint(['shipment_method_id'], ['shop_shipment_methods.id'], ),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ),
+    sa.ForeignKeyConstraint(['shop_payment_method_id'], ['shop_shop_payment_methods.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_orders_id'), 'shop_orders', ['id'], unique=False)
+    op.create_index(op.f('ix_shop_orders_order_number'), 'shop_orders', ['order_number'], unique=False)
+    op.create_table('shop_products',
+    sa.Column('title', sa.String(length=255), nullable=True),
+    sa.Column('image', sa.String(length=255), nullable=True),
+    sa.Column('price', sa.Float(), nullable=True),
+    sa.Column('currency', sa.String(length=32), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('category_id', sa.BigInteger(), nullable=True),
+    sa.Column('shop_id', sa.BigInteger(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('is_available', sa.Boolean(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['category_id'], ['shop_categories.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['shop_id'], ['shop_shops.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_products_id'), 'shop_products', ['id'], unique=False)
+    op.create_table('social_telegram_lead_messages',
+    sa.Column('lead_id', sa.BigInteger(), nullable=True),
+    sa.Column('is_lead_to_bot', sa.Boolean(), nullable=True),
+    sa.Column('message', sa.Text(), nullable=True),
+    sa.Column('message_id', sa.BigInteger(), nullable=True),
+    sa.Column('mirror_message_id', sa.BigInteger(), nullable=True),
+    sa.Column('reply_to_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['lead_id'], ['social_telegram_leads.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_social_telegram_lead_messages_id'), 'social_telegram_lead_messages', ['id'], unique=False)
+    op.create_index(op.f('ix_social_telegram_lead_messages_message_id'), 'social_telegram_lead_messages', ['message_id'], unique=False)
+    op.create_index(op.f('ix_social_telegram_lead_messages_mirror_message_id'), 'social_telegram_lead_messages', ['mirror_message_id'], unique=False)
+    op.create_index(op.f('ix_social_telegram_lead_messages_reply_to_id'), 'social_telegram_lead_messages', ['reply_to_id'], unique=False)
+    op.create_table('shop_order_items',
+    sa.Column('order_id', sa.BigInteger(), nullable=True),
+    sa.Column('product_id', sa.BigInteger(), nullable=True),
+    sa.Column('count', sa.Integer(), nullable=True),
+    sa.Column('price', sa.Float(), nullable=True),
+    sa.Column('currency', sa.String(length=32), nullable=True),
+    sa.Column('product_title', sa.String(length=256), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['order_id'], ['shop_orders.id'], ),
+    sa.ForeignKeyConstraint(['product_id'], ['shop_products.id'], ondelete='SET NULL'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_order_items_id'), 'shop_order_items', ['id'], unique=False)
+    op.create_table('shop_telegram_orders',
+    sa.Column('message_reply_to_id', sa.Integer(), nullable=True),
+    sa.Column('support_bot_message_id', sa.Integer(), nullable=True),
+    sa.Column('bot_message_id', sa.Integer(), nullable=True),
+    sa.Column('message', sa.String(length=255), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('order_id', sa.BigInteger(), nullable=True),
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('uuid', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['order_id'], ['shop_orders.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_shop_telegram_orders_id'), 'shop_telegram_orders', ['id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index(op.f('ix_shop_telegram_orders_id'), table_name='shop_telegram_orders')
+    op.drop_table('shop_telegram_orders')
+    op.drop_index(op.f('ix_shop_order_items_id'), table_name='shop_order_items')
+    op.drop_table('shop_order_items')
+    op.drop_index(op.f('ix_social_telegram_lead_messages_reply_to_id'), table_name='social_telegram_lead_messages')
+    op.drop_index(op.f('ix_social_telegram_lead_messages_mirror_message_id'), table_name='social_telegram_lead_messages')
+    op.drop_index(op.f('ix_social_telegram_lead_messages_message_id'), table_name='social_telegram_lead_messages')
+    op.drop_index(op.f('ix_social_telegram_lead_messages_id'), table_name='social_telegram_lead_messages')
+    op.drop_table('social_telegram_lead_messages')
+    op.drop_index(op.f('ix_shop_products_id'), table_name='shop_products')
+    op.drop_table('shop_products')
+    op.drop_index(op.f('ix_shop_orders_order_number'), table_name='shop_orders')
+    op.drop_index(op.f('ix_shop_orders_id'), table_name='shop_orders')
+    op.drop_table('shop_orders')
+    op.drop_index(op.f('ix_social_telegram_leads_lead_number'), table_name='social_telegram_leads')
+    op.drop_index(op.f('ix_social_telegram_leads_id'), table_name='social_telegram_leads')
+    op.drop_index(op.f('ix_social_telegram_leads_chat_id'), table_name='social_telegram_leads')
+    op.drop_table('social_telegram_leads')
+    op.drop_index(op.f('ix_shop_shop_telegram_bots_support_account_chat_id'), table_name='shop_shop_telegram_bots')
+    op.drop_index(op.f('ix_shop_shop_telegram_bots_id'), table_name='shop_shop_telegram_bots')
+    op.drop_table('shop_shop_telegram_bots')
+    op.drop_index(op.f('ix_shop_shop_payment_methods_id'), table_name='shop_shop_payment_methods')
+    op.drop_table('shop_shop_payment_methods')
+    op.drop_index(op.f('ix_shop_shipment_methods_id'), table_name='shop_shipment_methods')
+    op.drop_table('shop_shipment_methods')
+    op.drop_index(op.f('ix_shop_categories_id'), table_name='shop_categories')
+    op.drop_table('shop_categories')
     op.drop_index(op.f('ix_notifier_campaign_leads_id'), table_name='notifier_campaign_leads')
     op.drop_index(op.f('ix_notifier_campaign_leads_campaign_id'), table_name='notifier_campaign_leads')
     op.drop_table('notifier_campaign_leads')
-    op.drop_index(op.f('ix_credit_credit_logs_id'), table_name='credit_credit_logs')
-    op.drop_table('credit_credit_logs')
+    op.drop_index(op.f('ix_credit_shop_telegram_payment_records_id'), table_name='credit_shop_telegram_payment_records')
+    op.drop_table('credit_shop_telegram_payment_records')
+    op.drop_index(op.f('ix_credit_shop_credits_shop_id'), table_name='credit_shop_credits')
+    op.drop_index(op.f('ix_credit_shop_credits_id'), table_name='credit_shop_credits')
+    op.drop_table('credit_shop_credits')
     op.drop_index(op.f('ix_bot_builder_nodeuies_id'), table_name='bot_builder_nodeuies')
     op.drop_index(op.f('ix_bot_builder_nodeuies_chatflow_id'), table_name='bot_builder_nodeuies')
     op.drop_table('bot_builder_nodeuies')
@@ -455,6 +671,11 @@ def downgrade():
     op.drop_table('bot_builder_edges')
     op.drop_table('academy_content_labels')
     op.drop_table('academy_content_categories')
+    op.drop_index(op.f('ix_telegram_bots_id'), table_name='telegram_bots')
+    op.drop_index(op.f('ix_telegram_bots_bot_id'), table_name='telegram_bots')
+    op.drop_table('telegram_bots')
+    op.drop_index(op.f('ix_shop_shops_id'), table_name='shop_shops')
+    op.drop_table('shop_shops')
     op.drop_index(op.f('ix_notifier_campaigns_user_id'), table_name='notifier_campaigns')
     op.drop_index(op.f('ix_notifier_campaigns_id'), table_name='notifier_campaigns')
     op.drop_index(op.f('ix_notifier_campaigns_facebook_page_id'), table_name='notifier_campaigns')
@@ -475,9 +696,6 @@ def downgrade():
     op.drop_table('instagram_pages')
     op.drop_index(op.f('ix_credit_invoices_id'), table_name='credit_invoices')
     op.drop_table('credit_invoices')
-    op.drop_index(op.f('ix_credit_credits_user_id'), table_name='credit_credits')
-    op.drop_index(op.f('ix_credit_credits_id'), table_name='credit_credits')
-    op.drop_table('credit_credits')
     op.drop_index(op.f('ix_connections_user_id'), table_name='connections')
     op.drop_index(op.f('ix_connections_id'), table_name='connections')
     op.drop_index(op.f('ix_connections_account_id'), table_name='connections')
@@ -490,6 +708,8 @@ def downgrade():
     op.drop_table('users')
     op.drop_index(op.f('ix_credit_plan_features_id'), table_name='credit_plan_features')
     op.drop_table('credit_plan_features')
+    op.drop_index(op.f('ix_shop_payment_methods_id'), table_name='shop_payment_methods')
+    op.drop_table('shop_payment_methods')
     op.drop_index(op.f('ix_roles_id'), table_name='roles')
     op.drop_table('roles')
     op.drop_index(op.f('ix_notifications_id'), table_name='notifications')

@@ -4,8 +4,8 @@ from app.core.config import settings
 
 conn_string = "host='{}' user='{}' password='{}' port='{}'".format(
     settings.DB_HOST,
-    settings.DB_USER,
-    settings.DB_PASSWORD,
+    settings.POSTGRES_USER,
+    settings.POSTGRES_PASSWORD,
     settings.DB_PORT,
 )
 connection = psycopg2.connect(conn_string)

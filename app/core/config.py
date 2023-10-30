@@ -43,10 +43,6 @@ class Settings(BaseSettings):
     DB_HOST: Optional[str] = None
     DB_PORT: int = 6432
 
-    DB_PASSWORD: Optional[str] = None
-    DB_USER: Optional[str] = None
-    DB_NAME: Optional[str] = None
-
     POSTGRES_PASSWORD: str
     POSTGRES_USER: str
     POSTGRES_DB: str
@@ -116,11 +112,11 @@ class Settings(BaseSettings):
 
         return PostgresDsn.build(
             scheme='postgresql',
-            username=values.get('DB_USER'),
-            password=values.get('DB_PASSWORD'),
+            username=values.get('POSTGRES_USER'),
+            password=values.get('POSTGRES_PASSWORD'),
             host=values.get('DB_HOST'),
             port=values.get('DB_PORT'),
-            path=values.get('DB_NAME'),
+            path=values.get('POSTGRES_DB'),
         )
 
     @validator('CELERY_URI', pre=True)
