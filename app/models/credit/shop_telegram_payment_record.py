@@ -2,8 +2,9 @@ import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
-from app.constants.shop_telegram_payment_status import ShopTelegramPaymentRecordStatus
 
+from app.constants.shop_telegram_payment_status import \
+    ShopTelegramPaymentRecordStatus
 from app.db.base_class import Base
 
 

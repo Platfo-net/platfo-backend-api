@@ -60,7 +60,7 @@ def create_shop_for_telegram_bot(
             user_id=current_user.id
         )
     with UnitOfWork(db) as uow:
-    
+
         shop_telegram_bot = services.shop.shop_telegram_bot.create(
             uow,
             obj_in=schemas.shop.shop_telegram_bot.ShopTelegramBotCreate(

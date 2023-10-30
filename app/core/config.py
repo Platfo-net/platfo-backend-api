@@ -100,6 +100,8 @@ class Settings(BaseSettings):
 
     TELEGRAM_TOKEN_ENCRYPTION_KEY: Optional[str] = None
 
+    SENTRY_DSN: Optional[str] = None
+
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):

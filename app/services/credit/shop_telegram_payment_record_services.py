@@ -43,7 +43,9 @@ class ShopTelegramPaymentRecordServices:
         db.refresh(db_obj)
         return db_obj
 
-    def get_by_shop_and_reply_to_message_id(self, db: Session, *, shop_id: int, reply_to_message_id: int):
+    def get_by_shop_and_reply_to_message_id(
+            self, db: Session, *,
+            shop_id: int, reply_to_message_id: int):
         return db.query(self.model).filter(
             self.model.reply_to_message_id == reply_to_message_id,
             self.model.shop_id == shop_id,

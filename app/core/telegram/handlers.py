@@ -11,7 +11,8 @@ from app import models, schemas, services
 from app.constants.currency import Currency
 from app.constants.module import Module
 from app.constants.order_status import OrderStatus
-from app.constants.shop_telegram_payment_status import ShopTelegramPaymentRecordStatus
+from app.constants.shop_telegram_payment_status import \
+    ShopTelegramPaymentRecordStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import \
@@ -412,7 +413,8 @@ async def handle_shop_credit_extending(
     if not url:
         await message.reply_text(text="Error in processing image")
     shop_telegram_payment_record = services.credit.shop_telegram_payment_record.add_payment_image(
-        db, db_obj=shop_telegram_payment_record, image_name=file_name, message_id=message.message_id)
+        db, db_obj=shop_telegram_payment_record, image_name=file_name,
+        message_id=message.message_id)
 
     services.credit.shop_telegram_payment_record.change_status(
         db, db_obj=shop_telegram_payment_record,
