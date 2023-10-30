@@ -108,7 +108,7 @@ def test_token(
 
     role = services.role.get(db, current_user.role_id)
 
-    schemas.User(
+    return schemas.User(
         id=current_user.uuid,
         email=current_user.email,
         is_active=current_user.is_active,
