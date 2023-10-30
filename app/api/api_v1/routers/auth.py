@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 from app import models, schemas, services
 from app.api import deps
 from app.constants.errors import Error
-from app.core import cache, security, tasks, utils
+from app.core import cache, security, storage, tasks, utils
+from app.core.config import Settings
 from app.core.exception import raise_http_exception
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
@@ -98,13 +99,34 @@ def login_access_token_swagger(
 def test_token(
     # logger: Logger = Depends(deps.logger_factory(router)),
     # tracer: Tracer = Depends(deps.tracer_factory(router)),
+    db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Test access token
     """
-    current_user.id = current_user.uuid
-    return current_user
+
+    role = services.role.get(db, current_user.role_id)
+
+    schemas.User(
+        id=current_user.uuid,
+        email=current_user.email,
+        is_active=current_user.is_active,
+        phone_number=current_user.phone_number,
+        phone_country_code=current_user.phone_country_code,
+        first_name=current_user.first_name,
+        last_name=current_user.last_name,
+        created_at=current_user.created_at,
+        updated_at=current_user.updated_at,
+        role=schemas.Role(
+            name=role.name,
+            description=role.description,
+            id=role.uuid,
+        ),
+        profile_image=storage.get_file(
+            current_user.profile_image, Settings.S3_USER_PROFILE_BUCKET
+        ),
+    )
 
 
 @router.post('/hash-password', response_model=str)
