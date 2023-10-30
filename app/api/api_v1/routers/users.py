@@ -124,10 +124,9 @@ def get_user_me(
     ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
-    user.id = user.uuid
-    user.role.id = user.role.uuid
+    role = services.role.get(db, user.role_id)
     return schemas.User(
-        id=user.id,
+        id=user.uuid,
         email=user.email,
         is_active=user.is_active,
         phone_number=user.phone_number,
@@ -136,7 +135,11 @@ def get_user_me(
         last_name=user.last_name,
         created_at=user.created_at,
         updated_at=user.updated_at,
-        role=user.role,
+        role=schemas.Role(
+            name=role.name,
+            description=role.description,
+            id=role.uuid,
+        ),
         profile_image=storage.get_file(
             user.profile_image, settings.S3_USER_PROFILE_BUCKET
         ),
