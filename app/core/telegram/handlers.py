@@ -258,7 +258,6 @@ async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
             {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
 
-
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
 
@@ -274,7 +273,8 @@ async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
 async def accept_credit_extending(db: Session, update: telegram.Update, shop_telegram_payment_record_id: int, lang):
     shop_telegram_payment_record = services.credit.shop_telegram_payment_record.get(
         db, id=shop_telegram_payment_record_id)
-    credit = services.credit.shop_credit.get_by_shop_id(db, shop_telegram_payment_record.shop_id)
+    credit = services.credit.shop_credit.get_by_shop_id(
+        db, shop_id=shop_telegram_payment_record.shop_id)
 
     services.credit.shop_credit.add_shop_credit(
         db, db_obj=credit, days=shop_telegram_payment_record.plan.extend_days
