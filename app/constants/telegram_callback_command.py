@@ -5,7 +5,7 @@ class TelegramCallbackCommand:
         "title": {
             "fa": "تعرفه های پرداخت",
         },
-        "command": "CREDIT_PLANS"
+        "command": "CREDIT_PLAN"
     }
     ACCEPT_ORDER = {
         "title": {
