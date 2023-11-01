@@ -67,3 +67,21 @@ class TelegramCallbackCommand:
 
         "command": "NEW_CONNECTION"
     }
+
+    ACCEPT_CREDIT_EXTENDING = {
+        "title":
+            {
+                "fa": "تایید افزایش اعتبار",
+            },
+
+        "command": "ACCEPT_CREDIT_EXTENDING"
+    }
+
+    DECLINE_CREDIT_EXTENDING = {
+        "title":
+            {
+                "fa": "رد افزایش اعتبار",
+            },
+
+        "command": "DECLINe_CREDIT_EXTENDING"
+    }

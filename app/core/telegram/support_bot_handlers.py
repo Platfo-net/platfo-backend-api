@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from typing import Callable
 
@@ -8,8 +9,10 @@ from telegram import Bot
 
 from app import models, schemas, services
 from app.constants.currency import Currency
+from app.constants.module import Module
 from app.constants.order_status import OrderStatus
 from app.constants.payment_method import PaymentMethod
+from app.constants.shop_telegram_payment_status import ShopTelegramPaymentRecordStatus
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.core import security
 from app.core.config import settings
@@ -622,3 +625,111 @@ def get_start_support_bot_message(lang):
 
 def get_empty_reply_markup(*args, **kwargs):
     return telegram.InlineKeyboardMarkup([])
+
+
+async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
+    plans = services.credit.plan.get_multi(
+        db, currency=Currency.IRR["value"], module=Module.TELEGRAM_SHOP)
+    keyboard = []
+    items = []
+    for plan in plans:
+        keyboard.append([
+            telegram.InlineKeyboardButton(
+                plan.title,
+                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:{plan.id}")  # noqa
+        ])
+        items.append(
+            {
+                "price": helpers.number_to_price(int(plan.discounted_price)),
+                "title": plan.title
+            }
+        )
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+    text = helpers.load_message(lang, "credit_shop_pricing",
+                                items=items, currency=Currency.IRR["name"])
+
+    await update.message.reply_text(parse_mode="HTML", text=text, reply_markup=reply_markup)
+
+
+async def handle_credit_plan(
+    db: Session,
+    update: telegram.Update,
+    plan_id: UUID4,
+    lang: str,
+    shop_id: int,
+):
+    plan = services.credit.plan.get(db, plan_id)
+    text = helpers.load_message(
+        lang, "credit_shop_plan",
+        amount=helpers.number_to_price(int(plan.discounted_price)),
+        currency=Currency.IRR["name"]
+    )
+    reply_to_message = await update.message.reply_text(text=text)
+    services.credit.shop_telegram_payment_record.create(
+        db,
+        shop_id=shop_id,
+        plan_id=plan.id,
+        reply_to_message_id=reply_to_message.message_id,
+    )
+
+
+async def handle_shop_credit_extending(
+    db: Session,
+    message: telegram.Message,
+    bucket,
+    shop_id: int,
+    lang: str,
+):
+    bot = Bot(settings.SUPPORT_BOT_TOKEN)
+    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.\
+        get_by_shop_and_reply_to_message_id(
+            db, shop_id=shop_id, reply_to_message_id=message.reply_to_message.message_id
+        )
+    if not shop_telegram_payment_record:
+        return
+    photo_unique_id = message.photo[-1].file_id
+    url, file_name = await helpers.download_and_upload_telegram_image(
+        bot, photo_unique_id, bucket)
+    if not url:
+        await message.reply_text(text="Error in processing image")
+    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.add_payment_image(
+        db, db_obj=shop_telegram_payment_record, image_name=file_name,
+        message_id=message.message_id)
+
+    services.credit.shop_telegram_payment_record.change_status(
+        db, db_obj=shop_telegram_payment_record,
+        status=ShopTelegramPaymentRecordStatus.PAID
+    )
+
+    await message.reply_text("هر چه زودتر برات شارژش میکنیم.")
+    admin_user = services.user.get_telegram_admin(db)
+    admin_bot = telegram.Bot(settings.TELEGRAM_ADMIN_BOT_TOKEN)
+    text = helpers.load_message(
+        lang,
+        "admin_bot_credit_approve",
+        plan_title=shop_telegram_payment_record.plan.title
+    )
+
+    await admin_bot.send_photo(
+        chat_id=admin_user.telegram_admin_bot_chat_id,
+        caption=text,
+        photo=url,
+    )
+    os.remove(file_name)
+    return
+
+
+def get_admin_credit_charge_reply_markup(
+        shop_telegram_payment_record: models.credit.CreditShopTelegramPaymentRecord):
+    keyboard = [[
+            telegram.InlineKeyboardButton(
+                "آره بابا. بدبخته",
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}")  # noqa
+        ], [
+            telegram.InlineKeyboardButton(
+                "نوچ",
+                callback_data=f"{TelegramCallbackCommand.DECLINE_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}")  # noqa
+        ]]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    return reply_markup

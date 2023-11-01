@@ -6,6 +6,15 @@ from app.core.telegram import bot_handlers, handlers, support_bot_handlers
 from app.db.session import SessionLocal
 
 
+
+@celery.task
+def telegram_admin_bot_task(data, lang: str):
+    db = SessionLocal()
+    asyncio.run(handlers.telegram_admin_bot_handler(db, data, lang))
+
+    db.close()
+
+
 @celery.task
 def telegram_support_bot_task(data, lang: str):
     db = SessionLocal()

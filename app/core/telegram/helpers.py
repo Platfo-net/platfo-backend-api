@@ -1,3 +1,6 @@
+from uuid import uuid4
+import requests
+import telegram
 from datetime import datetime, timedelta
 from typing import Union
 
@@ -5,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 from sqlalchemy.orm import Session
 
 from app import services
+from app.core import storage
 from app.core.config import settings
 
 
@@ -64,3 +68,26 @@ def number_to_price(number):
             new_number.append(",")
     new_number = reversed(new_number)
     return "".join(new_number)
+
+
+async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
+    res: telegram.File = await bot.get_file(file_id=photo_unique_id)
+    if not res.file_path:
+        return None, None
+    file_path = res.file_path
+    res = requests.get(file_path)
+
+    if not res.status_code == 200:
+        return None, None
+
+    image_format = file_path.split(".")[-1]
+
+    file_name = f"{uuid4()}.{image_format}"
+    with open(file_name, "wb") as f:
+        f.write(res.content)
+
+    storage.add_file_to_s3(
+        file_name, file_name, bucket)
+    url = storage.get_object_url(file_name, bucket)
+    print(url)
+    return url, file_name

@@ -39,7 +39,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         if command == TelegramCallbackCommand.CREDIT_PLAN.get("command"):
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
-            await handle_credit_plan(db, update, arg, lang, shop_telegram_bot.shop_id)
+            await support_bot_handlers.handle_credit_plan(db, update, arg, lang, shop_telegram_bot.shop_id)
             return
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
@@ -99,7 +99,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         if message.photo:
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=message.chat_id)
-            await handle_shop_credit_extending(
+            await support_bot_handlers.handle_shop_credit_extending(
                 db, message,
                 settings.S3_SHOP_TELEGRAM_CREDIT_EXTENDING,
                 shop_telegram_bot.shop_id,
@@ -131,7 +131,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
 
         elif update.message.text == TelegramSupportBotCommand.CREDIT_EXTENDING["command"]:
-            await handle_credit_extending(db, update, lang)
+            await support_bot_handlers.handle_credit_extending(db, update, lang)
             return
 
         elif update.message.text == TelegramSupportBotCommand.HELP_DIRECT_MESSAGE["command"]:
@@ -210,7 +210,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
             db, lead_id=lead.id, reply_to_id=reply_to_message["message_id"])
         if telegram_order:
-            await handle_order_payment(db, data, telegram_order, shop_telegram_bot, bot, lang)
+            await bot_handlers.handle_order_payment(db, data, telegram_order, shop_telegram_bot, bot, lang)
             return
 
     update = telegram.Update.de_json(data, bot)
@@ -251,178 +251,76 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         return
 
 
-async def handle_order_payment(
-    db: Session,
-    data: dict,
-    telegram_order: models.shop.ShopTelegramOrder,
-    shop_telegram_bot: models.shop.ShopShopTelegramBot,
-    bot: telegram.Bot,
-    lang: str
-):
-    support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
+async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
+    bot = telegram.Bot(settings.TELEGRAM_ADMIN_BOT_TOKEN)
+    update = telegram.Update.de_json(data, bot)
 
-    update = telegram.Message.de_json(data["message"], bot)
-    if update.photo:
-        photo_unique_id = update.photo[-1].file_id
-        url, file_name = await download_and_upload_telegram_image(
-            bot, photo_unique_id, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
-        if not url:
-            await update.reply_text(text="Error in processing image")
+    print(update.message.chat_id)
 
-        order = services.shop.order.get(db, id=telegram_order.order_id)
-        order = services.shop.order.change_status(
-            db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-        services.shop.order.add_payment_image(db, db_obj=order, image_name=file_name)
-
-        image_caption = helpers.load_message(
-            lang,
-            "payment_image_caption",
-            order_number=order.order_number,
-            lead_number=order.lead.lead_number
-        )
-        print(url)
-        await support_bot.send_photo(
-            caption=image_caption,
-            photo=url,
-            reply_to_message_id=telegram_order.support_bot_message_id,
-            chat_id=shop_telegram_bot.support_account_chat_id)
-
-        os.remove(file_name)
-
-    else:
-        order = services.shop.order.get(db, id=telegram_order.order_id)
-        order = services.shop.order.change_status(
-            db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-        services.shop.order.add_payment_information(db, db_obj=order, information=update.text)
-
-        text = helpers.load_message(
-            lang,
-            "payment_image_caption",
-            order_number=order.order_number,
-            lead_number=order.lead.lead_number,
-            text=update.text,
+    update.message.reply_text("helloooooo , wellcome to the hell")
+    if data.get("callback_query"):
+        update = telegram.Update.de_json(
+            {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
 
-        await support_bot.send_message(
-            text=text,
-            reply_to_message_id=telegram_order.support_bot_message_id,
-            chat_id=shop_telegram_bot.support_account_chat_id,
-        )
-
-    await update.reply_text(
-        text=SupportBotMessage.PAYMENT_INFORMATION_SENT[lang],
-    )
-
-    amount = 0
-    for item in order.items:
-        amount += item.count * item.price
-    await support_bot.edit_message_text(
-        text=support_bot_handlers.get_order_message(order, lang, amount),
-        chat_id=shop_telegram_bot.support_account_chat_id,
-        message_id=telegram_order.support_bot_message_id,
-        reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
-            order, lang),
-        parse_mode="HTML"
-    )
-
-
-async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
-    res: telegram.File = await bot.get_file(file_id=photo_unique_id)
-    if not res.file_path:
-        return None, None
-    file_path = res.file_path
-    res = requests.get(file_path)
-
-    if not res.status_code == 200:
-        return None, None
-
-    image_format = file_path.split(".")[-1]
-
-    file_name = f"{uuid4()}.{image_format}"
-    with open(file_name, "wb") as f:
-        f.write(res.content)
-
-    storage.add_file_to_s3(
-        file_name, file_name, bucket)
-    url = storage.get_object_url(file_name, bucket)
-    print(url)
-    return url, file_name
-
-
-async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
-    plans = services.credit.plan.get_multi(
-        db, currency=Currency.IRR["value"], module=Module.TELEGRAM_SHOP)
-    keyboard = []
-    items = []
-    for plan in plans:
-        keyboard.append([
-            telegram.InlineKeyboardButton(
-                plan.title,
-                callback_data=f"{TelegramCallbackCommand.CREDIT_PLAN['command']}:{plan.id}")  # noqa
-        ])
-        items.append(
-            {
-                "price": helpers.number_to_price(int(plan.discounted_price)),
-                "title": plan.title
-            }
-        )
-    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-    text = helpers.load_message(lang, "credit_shop_pricing",
-                                items=items, currency=Currency.IRR["name"])
-
-    await update.message.reply_text(parse_mode="HTML", text=text, reply_markup=reply_markup)
-
-
-async def handle_credit_plan(
-    db: Session,
-    update: telegram.Update,
-    plan_id: UUID4,
-    lang: str,
-    shop_id: int,
-):
-    plan = services.credit.plan.get(db, plan_id)
-    text = helpers.load_message(
-        lang, "credit_shop_plan",
-        amount=helpers.number_to_price(int(plan.discounted_price)),
-        currency=Currency.IRR["name"]
-    )
-    reply_to_message = await update.message.reply_text(text=text)
-    services.credit.shop_telegram_payment_record.create(
-        db,
-        shop_id=shop_id,
-        plan_id=plan.id,
-        reply_to_message_id=reply_to_message.message_id,
-    )
-
-
-async def handle_shop_credit_extending(
-    db: Session,
-    message: telegram.Message,
-    bucket,
-    shop_id: int,
-    lang: str,
-):
-    bot = Bot(settings.SUPPORT_BOT_TOKEN)
-    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.\
-        get_by_shop_and_reply_to_message_id(
-            db, shop_id=shop_id, reply_to_message_id=message.reply_to_message.message_id
-        )
-    if not shop_telegram_payment_record:
         return
-    photo_unique_id = message.photo[-1].file_id
-    url, file_name = await download_and_upload_telegram_image(
-        bot, photo_unique_id, bucket)
-    if not url:
-        await message.reply_text(text="Error in processing image")
-    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.add_payment_image(
-        db, db_obj=shop_telegram_payment_record, image_name=file_name,
-        message_id=message.message_id)
+
+        callback = data.get("callback_query").get("data")
+        command, arg = callback.split(":")
+
+        if command == TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING.get("command"):
+            await accept_credit_extending(db, update, int(arg), lang)
+            return
+
+        if command == TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING.get("command"):
+            await decline_credit_extending(db, update, int(arg), lang)
+            return
+
+
+async def accept_credit_extending(db: Session, update: telegram.Update, shop_telegram_payment_record_id: int, lang):
+    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.get(
+        db, id=shop_telegram_payment_record_id)
+    credit = services.credit.shop_credit.get_by_shop_id(db, shop_telegram_payment_record.shop_id)
+
+    services.credit.shop_credit.add_shop_credit(
+        db, db_obj=credit, days=shop_telegram_payment_record.plan.extend_days
+    )
 
     services.credit.shop_telegram_payment_record.change_status(
-        db, db_obj=shop_telegram_payment_record,
-        status=ShopTelegramPaymentRecordStatus.PAID
+        db, db_obj=shop_telegram_payment_record, status=ShopTelegramPaymentRecordStatus.APPLIED)
+
+    await update.message.reply_text("باشه", parse_mode="HTML")
+
+    support_bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
+        db, shop_id=shop_telegram_payment_record.shop_id)
+
+    await support_bot.send_message(
+        chat_id=shop_telegram_bot.support_account_chat_id,
+        text="حساب شما شارژ شد",
+        reply_to_message_id=shop_telegram_payment_record.payment_message_id,
     )
 
-    await message.reply_text("هر چه زودتر برات شارژش میکنیم.")
-    os.remove(file_name)
-    return
+
+async def decline_credit_extending(
+    db: Session,
+    update: telegram.Update,
+    shop_telegram_payment_record_id: int,
+    lang
+):
+    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.get(
+        db, id=shop_telegram_payment_record_id)
+    services.credit.shop_telegram_payment_record.change_status(
+        db, db_obj=shop_telegram_payment_record, status=ShopTelegramPaymentRecordStatus.DECLINED)
+
+    await update.message.reply_text("باشه", parse_mode="HTML")
+
+    support_bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
+        db, shop_id=shop_telegram_payment_record.shop_id)
+
+    await support_bot.send_message(
+        chat_id=shop_telegram_bot.support_account_chat_id,
+        text="حساب شما شارژ نشد",
+        reply_to_message_id=shop_telegram_payment_record.payment_message_id,
+    )

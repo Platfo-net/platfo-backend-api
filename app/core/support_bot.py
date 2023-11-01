@@ -25,3 +25,12 @@ async def set_support_bot_webhook():
             ) for command in TelegramSupportBotCommand.commands
         ]
     )
+
+
+
+async def set_admin_bot_webhook():
+    bot = Bot(token=settings.TELEGRAM_ADMIN_BOT_TOKEN)
+
+    await bot.set_webhook(
+        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/admin-bot"
+    )

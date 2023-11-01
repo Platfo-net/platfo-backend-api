@@ -73,6 +73,22 @@ async def telegram_set_webhook(
         return await support_bot.set_support_bot_webhook()
     except:
         return
+    
+@router.post('/telegram/admin-bot/set-webhook', status_code=status.HTTP_200_OK)
+async def telegram_set_admin_bot_webhook(
+    *,
+    current_user: models.User = Security(
+        deps.get_current_user,
+        scopes=[
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    )
+):
+    try:
+        return await support_bot.set_admin_bot_webhook()
+    except:
+        return
 
 
 @router.post('/telegram/telegram-bot/set-webhook', status_code=status.HTTP_200_OK)
@@ -105,6 +121,24 @@ async def telegram_webhook_support_listener(request: Request):
             return
         data = await request.json()
         telegram_tasks.telegram_support_bot_task.delay(data, "fa")
+        return
+    except Exception as e:
+        print(e)
+    return
+
+@router.post('/telegram/admin-bot', status_code=status.HTTP_200_OK)
+async def telegram_webhook_admin_listener(request: Request):
+    try:
+        real_ip = request.headers.get("x-real-ip")
+        # forward_for = request.headers.get("x-forwarded-for")
+        if not (
+            ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+            or
+            ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
+        ):
+            return
+        data = await request.json()
+        telegram_tasks.telegram_admin_bot_task.delay(data, "fa")
         return
     except Exception as e:
         print(e)

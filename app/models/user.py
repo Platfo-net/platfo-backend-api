@@ -37,6 +37,7 @@ class User(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
+    telegram_admin_bot_chat_id = Column(BigInteger, nullable=True, index=True)
     role = relationship('Role', back_populates='users')
 
     instagram_pages = relationship('InstagramPage', back_populates='user')

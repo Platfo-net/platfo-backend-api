@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.orm import Session
 
 from app import models
@@ -49,6 +50,11 @@ class ShopTelegramPaymentRecordServices:
         return db.query(self.model).filter(
             self.model.reply_to_message_id == reply_to_message_id,
             self.model.shop_id == shop_id,
+        ).first()
+
+    def get(self, db: Session, *, id: int)-> Optional[models.credit.CreditShopTelegramPaymentRecord]:
+        return db.query(self.model).filter(
+            self.model.id == id,
         ).first()
 
 

@@ -96,6 +96,7 @@ class Settings(BaseSettings):
     OTEL_EXPORTER_OTLP_INSECURE: Optional[str] = None
 
     SUPPORT_BOT_TOKEN: Optional[str] = None
+    TELEGRAM_ADMIN_BOT_TOKEN: Optional[str] = None
     PLATFO_SHOPS_BASE_URL: Optional[str] = None
 
     TELEGRAM_TOKEN_ENCRYPTION_KEY: Optional[str] = None

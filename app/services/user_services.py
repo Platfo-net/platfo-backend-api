@@ -106,6 +106,11 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             )
             .first()
         )
+        
+    def get_telegram_admin(
+        self , db:Session
+    ):
+        return db.query(self.model).filter(self.model.telegram_admin_bot_chat_id != None).first()
 
 
 user = UserServices(models.User)
