@@ -280,6 +280,7 @@ async def handle_order_payment(
             order_number=order.order_number,
             lead_number=order.lead.lead_number
         )
+        print(url)
         await support_bot.send_photo(
             caption=image_caption,
             photo=url,
@@ -344,6 +345,7 @@ async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
     storage.add_file_to_s3(
         file_name, file_name, bucket)
     url = storage.get_object_url(file_name, bucket)
+    print(url)
     return url, file_name
 
 
