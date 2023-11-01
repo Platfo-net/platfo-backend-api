@@ -253,9 +253,6 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
 
 async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
     bot = telegram.Bot(settings.TELEGRAM_ADMIN_BOT_TOKEN)
-    update = telegram.Update.de_json(data, bot)
-
-    await update.message.reply_text("helloooooo , wellcome to the hell")
     if data.get("callback_query"):
         update = telegram.Update.de_json(
             {"update_id": data["update_id"], **data["callback_query"]}, bot
