@@ -714,6 +714,7 @@ async def handle_shop_credit_extending(
         chat_id=admin_user.telegram_admin_bot_chat_id,
         caption=text,
         photo=url,
+        reply_markup=get_admin_credit_charge_reply_markup(shop_telegram_payment_record)
     )
     os.remove(file_name)
     return

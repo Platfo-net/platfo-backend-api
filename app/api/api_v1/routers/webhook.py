@@ -75,20 +75,6 @@ async def telegram_set_webhook(
         return
 
 
-@router.post('/telegram/admin-bot/set-webhook', status_code=status.HTTP_200_OK)
-async def telegram_set_admin_bot_webhook(
-    *,
-    current_user: models.User = Security(
-        deps.get_current_user,
-        scopes=[
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
-    )
-):
-    return await support_bot.set_admin_bot_webhook()
-
-
 @router.post('/telegram/telegram-bot/set-webhook', status_code=status.HTTP_200_OK)
 async def telegram_bot_set_webhook(
     *,
