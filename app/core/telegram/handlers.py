@@ -257,7 +257,7 @@ async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
 
     print(update.message.chat_id)
 
-    update.message.reply_text("helloooooo , wellcome to the hell")
+    await update.message.reply_text("helloooooo , wellcome to the hell")
     if data.get("callback_query"):
         update = telegram.Update.de_json(
             {"update_id": data["update_id"], **data["callback_query"]}, bot

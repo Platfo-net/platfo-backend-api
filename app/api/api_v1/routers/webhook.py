@@ -73,7 +73,8 @@ async def telegram_set_webhook(
         return await support_bot.set_support_bot_webhook()
     except:
         return
-    
+
+
 @router.post('/telegram/admin-bot/set-webhook', status_code=status.HTTP_200_OK)
 async def telegram_set_admin_bot_webhook(
     *,
@@ -85,10 +86,7 @@ async def telegram_set_admin_bot_webhook(
         ],
     )
 ):
-    try:
-        return await support_bot.set_admin_bot_webhook()
-    except:
-        return
+    return await support_bot.set_admin_bot_webhook()
 
 
 @router.post('/telegram/telegram-bot/set-webhook', status_code=status.HTTP_200_OK)
@@ -125,6 +123,7 @@ async def telegram_webhook_support_listener(request: Request):
     except Exception as e:
         print(e)
     return
+
 
 @router.post('/telegram/admin-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_admin_listener(request: Request):
