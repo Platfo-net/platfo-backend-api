@@ -106,11 +106,16 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             )
             .first()
         )
-        
+
     def get_telegram_admin(
-        self , db:Session
+        self, db: Session
     ):
-        return db.query(self.model).filter(self.model.telegram_admin_bot_chat_id != None).first()
+        return db.query(self.model).filter(self.model.telegram_admin_bot_chat_id != None).first()  # noqa
+
+    def get_telegram_admin_multi(
+        self, db: Session
+    ):
+        return db.query(self.model).filter(self.model.telegram_admin_bot_chat_id != None).all()  # noqa
 
 
 user = UserServices(models.User)

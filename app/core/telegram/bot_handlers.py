@@ -1,4 +1,5 @@
 import os
+
 import telegram
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -101,7 +102,6 @@ async def send_lead_order_to_bot_handler(
     return order_message.message_id, payment_info_message.message_id
 
 
-
 async def handle_order_payment(
     db: Session,
     data: dict,
@@ -175,4 +175,3 @@ async def handle_order_payment(
             order, lang),
         parse_mode="HTML"
     )
-

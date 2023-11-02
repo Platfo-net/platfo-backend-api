@@ -2,9 +2,19 @@ import asyncio
 
 from app import services
 from app.core.celery import celery
-from app.core.telegram import bot_handlers, handlers, support_bot_handlers
+from app.core.telegram import (admin_bot_handlers, bot_handlers, handlers,
+                               support_bot_handlers)
 from app.db.session import SessionLocal
 
+
+@celery.task
+def send_create_shop_notification_to_all_admins_task(shop_id, lang: str):
+    db = SessionLocal()
+    asyncio.run(
+        admin_bot_handlers.send_create_shop_notification_to_all_admins_handler(
+            db, shop_id, lang)
+    )
+    db.close()
 
 
 @celery.task

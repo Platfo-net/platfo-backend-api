@@ -1,25 +1,17 @@
-import os
-from uuid import uuid4
-
-import requests
 import telegram
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 from telegram import Bot
 
-from app import models, schemas, services
-from app.constants.currency import Currency
-from app.constants.module import Module
+from app import schemas, services
 from app.constants.order_status import OrderStatus
-from app.constants.shop_telegram_payment_status import \
-    ShopTelegramPaymentRecordStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
-from app.core import security, storage
+from app.core import security
 from app.core.config import settings
-from app.core.telegram import bot_handlers, helpers, support_bot_handlers
+from app.core.telegram import (admin_bot_handlers, bot_handlers, helpers,
+                               support_bot_handlers)
 from app.core.telegram.messages import SupportBotMessage
 
 
@@ -39,7 +31,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         if command == TelegramCallbackCommand.CREDIT_PLAN.get("command"):
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
-            await support_bot_handlers.handle_credit_plan(db, update, arg, lang, shop_telegram_bot.shop_id)
+            await support_bot_handlers.handle_credit_plan(
+                db, update, arg, lang, shop_telegram_bot.shop_id)
             return
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
@@ -210,7 +203,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
             db, lead_id=lead.id, reply_to_id=reply_to_message["message_id"])
         if telegram_order:
-            await bot_handlers.handle_order_payment(db, data, telegram_order, shop_telegram_bot, bot, lang)
+            await bot_handlers.handle_order_payment(
+                db, data, telegram_order, shop_telegram_bot, bot, lang)
             return
 
     update = telegram.Update.de_json(data, bot)
@@ -262,59 +256,9 @@ async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
         command, arg = callback.split(":")
 
         if command == TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING.get("command"):
-            await accept_credit_extending(db, update, int(arg), lang)
+            await admin_bot_handlers.accept_credit_extending(db, update, int(arg), lang)
             return
 
         if command == TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING.get("command"):
-            await decline_credit_extending(db, update, int(arg), lang)
+            await admin_bot_handlers.decline_credit_extending(db, update, int(arg), lang)
             return
-
-
-async def accept_credit_extending(db: Session, update: telegram.Update, shop_telegram_payment_record_id: int, lang):
-    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.get(
-        db, id=shop_telegram_payment_record_id)
-    credit = services.credit.shop_credit.get_by_shop_id(
-        db, shop_id=shop_telegram_payment_record.shop_id)
-
-    services.credit.shop_credit.add_shop_credit(
-        db, db_obj=credit, days=shop_telegram_payment_record.plan.extend_days
-    )
-
-    services.credit.shop_telegram_payment_record.change_status(
-        db, db_obj=shop_telegram_payment_record, status=ShopTelegramPaymentRecordStatus.APPLIED)
-
-    await update.message.reply_text("باشه", parse_mode="HTML")
-
-    support_bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
-        db, shop_id=shop_telegram_payment_record.shop_id)
-
-    await support_bot.send_message(
-        chat_id=shop_telegram_bot.support_account_chat_id,
-        text="حساب شما شارژ شد",
-        reply_to_message_id=shop_telegram_payment_record.payment_message_id,
-    )
-
-
-async def decline_credit_extending(
-    db: Session,
-    update: telegram.Update,
-    shop_telegram_payment_record_id: int,
-    lang
-):
-    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.get(
-        db, id=shop_telegram_payment_record_id)
-    services.credit.shop_telegram_payment_record.change_status(
-        db, db_obj=shop_telegram_payment_record, status=ShopTelegramPaymentRecordStatus.DECLINED)
-
-    await update.message.reply_text("باشه", parse_mode="HTML")
-
-    support_bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
-        db, shop_id=shop_telegram_payment_record.shop_id)
-
-    await support_bot.send_message(
-        chat_id=shop_telegram_bot.support_account_chat_id,
-        text="حساب شما شارژ نشد",
-        reply_to_message_id=shop_telegram_payment_record.payment_message_id,
-    )

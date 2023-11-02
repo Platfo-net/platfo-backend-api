@@ -12,7 +12,8 @@ from app.constants.currency import Currency
 from app.constants.module import Module
 from app.constants.order_status import OrderStatus
 from app.constants.payment_method import PaymentMethod
-from app.constants.shop_telegram_payment_status import ShopTelegramPaymentRecordStatus
+from app.constants.shop_telegram_payment_status import \
+    ShopTelegramPaymentRecordStatus
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.core import security
 from app.core.config import settings
@@ -721,8 +722,10 @@ async def handle_shop_credit_extending(
 
 
 def get_admin_credit_charge_reply_markup(
-        shop_telegram_payment_record: models.credit.CreditShopTelegramPaymentRecord):
-    keyboard = [[
+        shop_telegram_payment_record: models.credit.CreditShopTelegramPaymentRecord
+):
+    keyboard = [
+        [
             telegram.InlineKeyboardButton(
                 "آره بابا. بدبخته",
                 callback_data=f"{TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}")  # noqa
@@ -730,7 +733,8 @@ def get_admin_credit_charge_reply_markup(
             telegram.InlineKeyboardButton(
                 "نوچ",
                 callback_data=f"{TelegramCallbackCommand.DECLINE_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}")  # noqa
-        ]]
+        ]
+    ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
     return reply_markup
