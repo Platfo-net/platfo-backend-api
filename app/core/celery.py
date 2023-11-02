@@ -1,11 +1,6 @@
-from celery import Celery
+from celery import Celery, signals
 import sentry_sdk
 from app.core.config import settings
-
-sentry_sdk.init(
-    dsn=settings.SENTRY_DSN,
-    enable_tracing=True,
-)
 
 
 celery = Celery(
@@ -13,6 +8,15 @@ celery = Celery(
     include=['app.core.instagram.tasks', 'app.core.telegram.tasks',
              'app.core.notifier.tasks', 'app.core.tasks'],
 )
+
+
+@signals.celeryd_init.connect
+def init_sentry(**_kwargs):
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        enable_tracing=True,
+    )
+
 
 celery.conf.broker_url = str(settings.CELERY_URI)
 celery.conf.result_backend = str(settings.CELERY_URI)
