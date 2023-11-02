@@ -13,3 +13,8 @@ def send_user_reset_password_code(receptor, code):
     return send_verify_sms(
         receptor, code, settings.SMS_IR_USER_RESET_PASSWORD_TEMPLATE_ID
     )
+
+
+@celery.task
+def raise_error():
+    return 1/0
