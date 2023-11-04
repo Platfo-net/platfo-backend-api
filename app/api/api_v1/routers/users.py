@@ -10,6 +10,7 @@ from app.constants.role import Role
 from app.core import storage, utils
 from app.core.config import settings
 from app.core.exception import raise_http_exception
+from app.core.telegram.tasks import send_register_user_notification_to_all_admins_task
 
 router = APIRouter(prefix='/user', tags=['User'])
 
@@ -40,7 +41,9 @@ def register_user_by_phone_number(
         phone_country_code=user_in.phone_country_code,
         password=user_in.password,
     )
-    services.user.register(db, obj_in=obj_in)
+    user = services.user.register(db, obj_in=obj_in)
+
+    send_register_user_notification_to_all_admins_task.delay(user.id, "fa")
     return
 
 

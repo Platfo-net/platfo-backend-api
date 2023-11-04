@@ -15,6 +15,17 @@ def send_create_shop_notification_to_all_admins_task(shop_id, lang: str):
             db, shop_id, lang)
     )
     db.close()
+    
+
+
+@celery.task
+def send_register_user_notification_to_all_admins_task(user_id, lang: str):
+    db = SessionLocal()
+    asyncio.run(
+        admin_bot_handlers.send_register_user_notification_to_all_admins_handler(
+            db, user_id, lang)
+    )
+    db.close()
 
 
 @celery.task
