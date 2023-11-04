@@ -123,8 +123,7 @@ class ForgetPassword(BaseModel):
     email: EmailStr
 
 
-class ChangePassword(BaseModel):
-    email: EmailStr
+class ChangePassword(PhoneData):
     code: int
     password: str
     token: str

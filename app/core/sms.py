@@ -7,6 +7,7 @@ def send_verify_sms(receptor, code, template_id):
     sms_ir = SmsIr(
         api_key=settings.SMS_IR_API_KEY
     )
+    print(receptor)
     res = sms_ir.send_verify_code(
         number=receptor,
         template_id=template_id,

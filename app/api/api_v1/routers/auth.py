@@ -149,26 +149,32 @@ def forgot_password(
     redis_client: Redis = Depends(deps.get_redis_client_for_reset_password),
     # logger: Logger = Depends(deps.logger_factory(router)),
     # tracer: Tracer = Depends(deps.tracer_factory(router)),
-    email: schemas.PhoneData,
+    obj_in: schemas.PhoneData,
 ):
-    user = services.user.get_by_email(db, email=email)
+    user = services.user.get_by_phone_number(
+        db, phone_number=obj_in.phone_number, phone_country_code=obj_in.phone_country_code)
     if not user:
         raise_http_exception(Error.USER_NOT_FOUND)
 
-    data = cache.get_user_reset_password_code(redis_client, email)
+    data = cache.get_user_reset_password_code(
+        redis_client, user.phone_number, user.phone_country_code)
 
     if data:
         raise_http_exception(Error.RESET_PASSWORD_CODE_HAVE_BEEN_ALREADY_SENT)
 
     token = utils.generate_random_token(64)
-    code = utils.generate_random_code(6)
-    result = cache.set_user_reset_password_code(redis_client, email, code, token)
+    code = utils.generate_random_code(4)
+    result = cache.set_user_reset_password_code(
+        redis_client,
+        user.phone_number, user.phone_country_code,
+        code, token
+    )
 
     if not result:
         raise_http_exception(Error.UNEXPECTED_ERROR)
 
     tasks.send_user_reset_password_code.delay(
-        f'00{user.phone_country_code}{user.phone_number}', code
+        f'+{user.phone_country_code}{user.phone_number}', code
     )
     return schemas.RegisterCode(token=token)
 
@@ -182,11 +188,13 @@ def change_password(
     # tracer: Tracer = Depends(deps.tracer_factory(router)),
     obj_in: schemas.ChangePassword,
 ):
-    user = services.user.get_by_email(db, email=obj_in.email)
+    user = services.user.get_by_phone_number(
+        db, phone_number=obj_in.phone_number, phone_country_code=obj_in.phone_country_code)
     if not user:
         raise_http_exception(Error.USER_NOT_FOUND)
 
-    data = cache.get_user_registeration_activation_code(redis_client, obj_in.email)
+    data = cache.get_user_reset_password_code(
+        redis_client, obj_in.phone_number, obj_in.phone_country_code)
     if not data:
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
 
@@ -200,7 +208,7 @@ def change_password(
     if not code == obj_in.code:
         raise_http_exception(Error.INVALID_CODE_OR_TOKEN)
     services.user.change_password(db, db_user=user, password=obj_in.password)
-    cache.remove_data_from_cache(redis_client, obj_in.email)
+    cache.remove_data_from_cache(redis_client, f'{obj_in.phone_country_code}{obj_in.phone_number}')
     return
 
 

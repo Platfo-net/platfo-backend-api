@@ -141,8 +141,9 @@ def set_user_registeration_activation_code(
     return result
 
 
-def get_user_reset_password_code(client: Redis, email):
-    data = get_data_from_cache(client, email)
+def get_user_reset_password_code(client: Redis, phone_number, phone_country_code):
+
+    data = get_data_from_cache(client, f'{phone_country_code}{phone_number}')
     if data is None:
         return None
 
@@ -150,10 +151,17 @@ def get_user_reset_password_code(client: Redis, email):
     return data
 
 
-def set_user_reset_password_code(client: Redis, email, code, token):
+def set_user_reset_password_code(
+        client: Redis,
+        phone_number: str,
+        phone_country_code: str,
+        code,
+        token
+):
     data = dict(code=code, token=token)
     data = json.dumps(data)
-    result = set_data_to_cache(client, email, data, expire=120)
+    key = f'{phone_country_code}{phone_number}'
+    result = set_data_to_cache(client, key, data, expire=120)
     return result
 
 
