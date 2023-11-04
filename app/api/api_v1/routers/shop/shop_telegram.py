@@ -81,7 +81,7 @@ def create_shop_for_telegram_bot(
         for payment_method in services.shop.payment_method.all(db):
             services.shop.shop_payment_method.create(
                 uow, shop_id=shop.id, payment_method_id=payment_method.id)
-    telegram_tasks.send_create_shop_notification_to_all_admins.delay(shop.id, "fa")
+    telegram_tasks.send_create_shop_notification_to_all_admins_task.delay(shop.id, "fa")
 
     return schemas.shop.ShopTelegramBotRegister(
         id=shop.uuid,
