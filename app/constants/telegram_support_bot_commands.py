@@ -1,34 +1,34 @@
 class TelegramSupportBotCommand:
     START = {
         "command": "/start",
-        "description": "Start",
+        "description": "شروع",
     }
     CREDIT_EXTENDING = {
         "command": "/extend_credit",
-        "description": "تمدید حساب",
+        "description": "افزایش اعتبار",
     }
     PAYMENT_CHECK_ORDERS = {
         "command": "/payment_check_orders",
-        "description": "Payment Check Orders",
+        "description": " سفارشات در انتظار تعیین وضعیت پرداخت",
     }
 
     UNPAID_ORDERS = {
         "command": "/unpaid_orders",
-        "description": "Unpaid Orders",
+        "description": "سفارشات پرداخت نشده",
     }
 
     ACCEPTED_ORDERS = {
         "command": "/accepted_orders",
-        "description": "Accepted Orders",
+        "description": "سفارشات تایید شده",
     }
 
     SEARCH_ORDER = {
         "command": "/search_order",
-        "description": "Search Order",
+        "description": "جستجوی سفارشات",
     }
     HELP_DIRECT_MESSAGE = {
         "command": "/help_send_direct_message",
-        "description": "How to send direct message",
+        "description": "ارسال پیام مستقیم",
     }
 
     commands = [
