@@ -13,6 +13,6 @@ connection.autocommit = True
 cursor = connection.cursor()
 
 print('Droping test database!!!')
-query = f'DROP database {settings.POSTGRES_DB}_test;'
+query = f'DROP database {settings.POSTGRES_DB};'
 cursor.execute(query)
 print('Test database dropped!!!')

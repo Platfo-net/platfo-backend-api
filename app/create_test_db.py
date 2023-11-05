@@ -13,6 +13,6 @@ connection.autocommit = True
 cursor = connection.cursor()
 
 print('Creating test database')
-query = f'CREATE database {settings.DB_NAME}_test;'
+query = f'CREATE database {settings.DB_NAME};'
 cursor.execute(query)
 print('Test database created successfully')

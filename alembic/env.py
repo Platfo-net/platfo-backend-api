@@ -40,11 +40,7 @@ def get_url():
     user = settings.POSTGRES_USER
     password = settings.POSTGRES_PASSWORD
     host = settings.DB_HOST
-    db = (
-        f'{settings.POSTGRES_DB}_test'
-        if os.environ.get('ENVIRONMENT') == 'test'
-        else settings.POSTGRES_DB
-    )
+    db = settings.POSTGRES_DB
 
     return f'postgresql://{user}:{password}@{host}/{db}'
 
