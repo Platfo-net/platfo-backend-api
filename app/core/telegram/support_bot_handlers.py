@@ -305,8 +305,14 @@ async def order_change_status_handler(
         order_status=OrderStatus.items[order.status]["title"][lang],
         order_number=order.order_number
     )
-
-    await bot.send_message(chat_id=order.lead.chat_id, text=text)
+    try:
+        await bot.send_message(chat_id=order.lead.chat_id, text=text)
+    except telegram.error.Forbidden:
+        text = helpers.load_message(
+            lang, "bot_block_warning",
+            lead_number=order.lead.lead_number,
+        )
+        update.message.reply_text(text=text)
 
 
 async def send_direct_message_helper(
@@ -442,11 +448,18 @@ async def send_direct_message(
 
     text = helpers.load_message(lang, "support_direct_message", message=message)
 
-    res: telegram.Message = await shop_bot.send_message(chat_id=lead.chat_id, text=text)
+    try:
+        res: telegram.Message = await shop_bot.send_message(chat_id=lead.chat_id, text=text)
+        await bot.send_message(
+            chat_id=shop_telegram_bot.support_account_chat_id,
+            text=SupportBotMessage.DIRECT_MESSAGE_SEND_SUCCESSFULLY[lang])
 
-    await bot.send_message(
-        chat_id=shop_telegram_bot.support_account_chat_id,
-        text=SupportBotMessage.DIRECT_MESSAGE_SEND_SUCCESSFULLY[lang])
+    except telegram.error.Forbidden:
+        text = helpers.load_message(
+            lang, "bot_block_warning",
+            lead_number=lead.lead_number,
+        )
+        update.message.reply_text(text=text)
 
     reply_to_id = None
     if update.message.reply_to_message:

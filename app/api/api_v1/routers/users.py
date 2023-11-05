@@ -10,7 +10,8 @@ from app.constants.role import Role
 from app.core import storage, utils
 from app.core.config import settings
 from app.core.exception import raise_http_exception
-from app.core.telegram.tasks import send_register_user_notification_to_all_admins_task
+from app.core.telegram.tasks import \
+    send_register_user_notification_to_all_admins_task
 
 router = APIRouter(prefix='/user', tags=['User'])
 

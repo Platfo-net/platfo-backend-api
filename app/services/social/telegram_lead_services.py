@@ -1,4 +1,6 @@
 
+from typing import Optional
+
 from pydantic import UUID4
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
@@ -58,7 +60,8 @@ class TelegramLeadServices:
         return lead.lead_number
 
     def get_by_lead_number_and_telegram_bot_id(
-            self, db: Session, *, lead_number: int, telegram_bot_id: int) -> int:
+            self, db: Session, *, lead_number: int, telegram_bot_id: int
+    ) -> Optional[models.social.TelegramLead]:
         return (
             db.query(self.model)
             .filter(
