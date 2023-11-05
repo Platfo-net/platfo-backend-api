@@ -1,12 +1,17 @@
 class TelegramBotCommand:
     START = {
         "command": "/start",
-        "description": "Start",
+        "description": "شروع",
     }
 
     SEND_DIRECT_MESSAGE = {
         "command": "/send_direct_message_helper",
-        "description": "Send direct message to shop support"
+        "description": "ارسال پیام مستقیم به پشتیبانی"
+    }
+    
+    VITRIN = {
+        "command": "/vitrin",
+        "description": "ویترین"
     }
 
     commands = [START, SEND_DIRECT_MESSAGE]

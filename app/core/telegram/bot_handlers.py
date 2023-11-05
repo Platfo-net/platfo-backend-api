@@ -9,6 +9,7 @@ from app import models, services
 from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
 from app.constants.payment_method import PaymentMethod
+from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core import security
 from app.core.config import settings
 from app.core.telegram import helpers, support_bot_handlers
@@ -175,3 +176,17 @@ async def handle_order_payment(
             order, lang),
         parse_mode="HTML"
     )
+
+
+async def set_all_bot_commands_task_handler(db: Session, lang):
+    telegram_bots = services.telegram_bot.all(db)
+    for telegram_bot in telegram_bots:
+        bot = Bot(security.decrypt_telegram_token(telegram_bot.bot_token))
+        await bot.set_my_commands(
+            commands=[
+                telegram.BotCommand(
+                    command["command"],
+                    command["description"],
+                ) for command in TelegramBotCommand.commands
+            ]
+        )

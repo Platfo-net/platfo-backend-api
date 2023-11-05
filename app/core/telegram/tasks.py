@@ -15,7 +15,6 @@ def send_create_shop_notification_to_all_admins_task(shop_id, lang: str):
             db, shop_id, lang)
     )
     db.close()
-    
 
 
 @celery.task
@@ -105,6 +104,17 @@ def send_expiration_soon_notification_task():
         support_bot_handlers.send_expiration_soon_notification(
             db,
             "fa",
+        )
+    )
+    db.close()
+
+
+@celery.task
+def set_all_bot_commands_task():
+    db = SessionLocal()
+    asyncio.run(
+        bot_handlers.set_all_bot_commands_task_handler(
+            db, "fa"
         )
     )
     db.close()

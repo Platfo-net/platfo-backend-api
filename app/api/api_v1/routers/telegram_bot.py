@@ -36,7 +36,6 @@ async def set_webhook(token, bot_id):
             ) for command in TelegramBotCommand.commands
         ]
     )
-
     return True
 
 
