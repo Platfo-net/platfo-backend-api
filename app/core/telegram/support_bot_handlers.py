@@ -441,7 +441,7 @@ async def send_direct_message(
         return
 
     text = helpers.load_message(lang, "support_direct_message", message=message)
-    
+
     res: telegram.Message = await shop_bot.send_message(chat_id=lead.chat_id, text=text)
 
     await bot.send_message(
@@ -744,4 +744,3 @@ def get_admin_credit_charge_reply_markup(
 
 async def set_support_bot_commands_task_handler():
     await set_support_bot_webhook()
-    
