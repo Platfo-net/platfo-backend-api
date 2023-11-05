@@ -118,3 +118,12 @@ def set_all_bot_commands_task():
         )
     )
     db.close()
+
+
+@celery.task
+def set_support_bot_commands_task():
+    db = SessionLocal()
+    asyncio.run(
+        bot_handlers.set_support_bot_commands_task_handler()
+    )
+    db.close()

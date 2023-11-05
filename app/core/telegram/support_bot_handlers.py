@@ -17,6 +17,7 @@ from app.constants.shop_telegram_payment_status import \
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.core import security
 from app.core.config import settings
+from app.core.support_bot import set_support_bot_webhook
 from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
 
@@ -738,3 +739,8 @@ def get_admin_credit_charge_reply_markup(
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
     return reply_markup
+
+
+async def set_support_bot_commands_task_handler():
+    await set_support_bot_webhook()
+    
