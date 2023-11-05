@@ -42,14 +42,16 @@ def instagram_webhook_listener(*, facebook_webhook_body: dict):
 @router.post('/telegram/bot/{bot_id}', status_code=status.HTTP_200_OK)
 async def telegram_webhook_listener(*, bot_id: int, request: Request):
     try:
-        real_ip = request.headers.get("x-real-ip")
+        if settings.ENVIRONMENT == "prod":
+
+            real_ip = request.headers.get("x-real-ip")
         # forward_for = request.headers.get("x-forwarded-for")
-        if not (
-            ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
-            or
-            ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
-        ):
-            return
+            if not (
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                or
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
+            ):
+                return
 
         data = await request.json()
         telegram_tasks.telegram_webhook_task.delay(data, bot_id, "fa")
@@ -95,14 +97,15 @@ async def telegram_bot_set_webhook(
 @router.post('/telegram/support-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_support_listener(request: Request):
     try:
-        real_ip = request.headers.get("x-real-ip")
-        # forward_for = request.headers.get("x-forwarded-for")
-        if not (
-            ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
-            or
-            ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
-        ):
-            return
+        if settings.ENVIRONMENT == "prod":
+            real_ip = request.headers.get("x-real-ip")
+            # forward_for = request.headers.get("x-forwarded-for")
+            if not (
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                or
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
+            ):
+                return
         data = await request.json()
         telegram_tasks.telegram_support_bot_task.delay(data, "fa")
         return
@@ -114,14 +117,16 @@ async def telegram_webhook_support_listener(request: Request):
 @router.post('/telegram/admin-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_admin_listener(request: Request):
     try:
-        real_ip = request.headers.get("x-real-ip")
+        if settings.ENVIRONMENT == "prod":
+
+            real_ip = request.headers.get("x-real-ip")
         # forward_for = request.headers.get("x-forwarded-for")
-        if not (
-            ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
-            or
-            ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
-        ):
-            return
+            if not (
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                or
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
+            ):
+                return
         data = await request.json()
         telegram_tasks.telegram_admin_bot_task.delay(data, "fa")
         return
