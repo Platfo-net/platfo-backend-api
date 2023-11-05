@@ -459,7 +459,8 @@ async def send_direct_message(
             lang, "bot_block_warning",
             lead_number=lead.lead_number,
         )
-        update.message.reply_text(text=text)
+        await update.message.reply_text(text=text)
+        return
 
     reply_to_id = None
     if update.message.reply_to_message:
