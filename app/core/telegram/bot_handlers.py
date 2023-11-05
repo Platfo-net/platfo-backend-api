@@ -132,7 +132,6 @@ async def handle_order_payment(
             order_number=order.order_number,
             lead_number=order.lead.lead_number
         )
-        print(url)
         await support_bot.send_photo(
             caption=image_caption,
             photo=url,
@@ -141,7 +140,7 @@ async def handle_order_payment(
 
         os.remove(file_name)
 
-    else:
+    elif update.text:
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(
             db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
@@ -160,6 +159,9 @@ async def handle_order_payment(
             reply_to_message_id=telegram_order.support_bot_message_id,
             chat_id=shop_telegram_bot.support_account_chat_id,
         )
+    else:
+        await update.reply_text(text=SupportBotMessage.INVALID_INPUT[lang])
+        return
 
     await update.reply_text(
         text=SupportBotMessage.PAYMENT_INFORMATION_SENT[lang],

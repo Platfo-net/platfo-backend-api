@@ -441,6 +441,7 @@ async def send_direct_message(
         return
 
     text = helpers.load_message(lang, "support_direct_message", message=message)
+    
     res: telegram.Message = await shop_bot.send_message(chat_id=lead.chat_id, text=text)
 
     await bot.send_message(
@@ -703,7 +704,7 @@ async def handle_shop_credit_extending(
         status=ShopTelegramPaymentRecordStatus.PAID
     )
 
-    await message.reply_text("هر چه زودتر برات شارژش میکنیم.")
+    await message.reply_text(SupportBotMessage.CREDIT_EXTENDING_ADMIN_CHECK[lang])
     admin_user = services.user.get_telegram_admin(db)
     admin_bot = telegram.Bot(settings.TELEGRAM_ADMIN_BOT_TOKEN)
     text = helpers.load_message(

@@ -75,3 +75,10 @@ class SupportBotMessage:
     PAYMENT_INFORMATION_SENT = {
         "fa": "اطلاعات پرداخت شما با موفقیت برای پشتیبانی فروشگاه ارسال شد."
     }
+    
+    INVALID_INPUT = {
+        "fa": "ورودی نامعتبر"
+    }
+    CREDIT_EXTENDING_ADMIN_CHECK = {
+        "fa": "اطلاعات پرداخت شما برای پشتیبانی ارسال شد. در صورت صحت اطلاعات در اسرع وقت حساب شما را شارژ می کنیم."
+    }

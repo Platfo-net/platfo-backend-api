@@ -178,7 +178,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
 
     if not shop_telegram_bot:
         return
-
+    if not data.get("message"):
+        return
     user = data["message"]["from"]
     lead = services.social.telegram_lead.get_by_chat_id(
         db, chat_id=user.get("id"), telegram_bot_id=telegram_bot.id)
@@ -215,7 +216,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             reply_markup=bot_handlers.get_shop_menu(shop_telegram_bot.shop.uuid, lead.uuid, lang),
             parse_mode="HTML"
         )
-        
+
     elif update.message.text == TelegramBotCommand.VITRIN["command"]:
         await update.message.reply_text(
             text="ویترین",
