@@ -28,12 +28,14 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             text = helpers.load_message(lang, "new_connection")
             await update.message.reply_text(text, parse_mode="HTML")
             return
-        if command == TelegramCallbackCommand.CREDIT_PLAN.get("command"):
+
+        elif command == TelegramCallbackCommand.CREDIT_PLAN.get("command"):
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
             await support_bot_handlers.handle_credit_plan(
                 db, update, arg, lang, shop_telegram_bot.shop_id)
             return
+
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
                 db, update, arg, lang,
@@ -121,6 +123,10 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
             await update.message.reply_text(
                 SupportBotMessage.ENTER_ORDER_NUMBER[lang], parse_mode="HTML")
+            return
+
+        elif update.message.text == TelegramSupportBotCommand.CREDIT_VIEW["command"]:
+            support_bot_handlers.send_user_credit_information(db, update, shop_telegram_bot, lang)
             return
 
         elif update.message.text == TelegramSupportBotCommand.CREDIT_EXTENDING["command"]:

@@ -1,3 +1,5 @@
+import pytz
+import jdatetime
 import os
 from datetime import datetime
 from typing import Callable
@@ -758,3 +760,23 @@ def get_admin_credit_charge_reply_markup(
 
 async def set_support_bot_commands_task_handler():
     await set_support_bot_webhook()
+
+
+async def send_user_credit_information(
+    db: Session,
+    update: telegram.Update,
+    shop_telegram_bot: models.shop.ShopShopTelegramBot,
+    lang: str
+):
+    shop_credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop_telegram_bot.shop_id)
+    if not shop_credit:
+        return
+    iran_tz = pytz.timezone("Asia/Tehran")
+    expires_at_datetime = shop_credit.expires_at.astimezone(iran_tz)
+    jalali_date = jdatetime.GregorianToJalali(
+        expires_at_datetime.year, expires_at_datetime.month, expires_at_datetime.day)
+    date_str = f"{jalali_date.jyear}/{jalali_date.jmonth}/{jalali_date.jday}"
+    time_str = f"{expires_at_datetime.hour}:{expires_at_datetime.minute}"
+
+    text = helpers.load_message(lang, "shop_credit_view", date_str=date_str, time_str=time_str)
+    await update.message.reply_text(text=text)
