@@ -7,6 +7,10 @@ class TelegramSupportBotCommand:
         "command": "/extend_credit",
         "description": "افزایش اعتبار",
     }
+    CREDIT_VIEW = {
+        "command": "/view_credit",
+        "description": "مشاهده اعتبار",
+    }
     PAYMENT_CHECK_ORDERS = {
         "command": "/payment_check_orders",
         "description": " سفارشات در انتظار تعیین وضعیت پرداخت",
@@ -32,6 +36,6 @@ class TelegramSupportBotCommand:
     }
 
     commands = [
-        START, CREDIT_EXTENDING, PAYMENT_CHECK_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS,
+        START, CREDIT_EXTENDING, CREDIT_VIEW, PAYMENT_CHECK_ORDERS, UNPAID_ORDERS, ACCEPTED_ORDERS,
         SEARCH_ORDER, HELP_DIRECT_MESSAGE
     ]
