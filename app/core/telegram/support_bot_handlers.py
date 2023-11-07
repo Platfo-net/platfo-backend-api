@@ -721,7 +721,7 @@ async def handle_shop_credit_extending(
     )
 
     await message.reply_text(SupportBotMessage.CREDIT_EXTENDING_ADMIN_CHECK[lang])
-    admin_user = services.user.get_telegram_admin(db)
+    admin_user = services.user.get_telegram_payment_admin(db)
     admin_bot = telegram.Bot(settings.TELEGRAM_ADMIN_BOT_TOKEN)
     text = helpers.load_message(
         lang,

@@ -38,6 +38,8 @@ class User(Base):
     )
 
     telegram_admin_bot_chat_id = Column(BigInteger, nullable=True, index=True)
+    can_approve_payment = Column(Boolean, default=False)
+    
     role = relationship('Role', back_populates='users')
 
     instagram_pages = relationship('InstagramPage', back_populates='user')
