@@ -278,6 +278,4 @@ async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
         if command == TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING.get("command"):
             await admin_bot_handlers.decline_credit_extending(db, update, int(arg), lang)
             return
-    elif data.get("message"):
-        update = telegram.Update.de_json(data=data, bot=bot)
-        print(update.message.chat_id)
+        
