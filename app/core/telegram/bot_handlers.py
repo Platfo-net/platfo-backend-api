@@ -69,7 +69,7 @@ async def send_lead_order_to_bot_handler(
             "title": item.product.title,
             "count": item.count,
         })
-    currency = Currency.IRR["name"]
+    currency = Currency.IRT["name"]
 
     text = helpers.load_message(
         lang, "lead_new_order",

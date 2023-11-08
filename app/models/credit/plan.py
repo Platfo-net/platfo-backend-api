@@ -25,7 +25,7 @@ class Plan(Base):
 
     discount_percentage = Column(Float(), nullable=False, default=0.0)
 
-    currency = Column(String(10), nullable=False, default=Currency.IRR["value"])
+    currency = Column(String(10), nullable=False, default=Currency.IRT["value"])
 
     module = Column(String(255), nullable=False, default=Module.TELEGRAM_SHOP)
 

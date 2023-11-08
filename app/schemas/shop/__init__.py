@@ -3,7 +3,8 @@ from .order import (OrderCreate, OrderCreateResponse, OrderItemCreate,
                     OrderItemOrderCreate, OrderSummary)
 from .payment_methods import (PaymentMethod, PaymentMethodCreate,
                               PaymentMethodUpdate)
-from .product import Product, ProductCreate, ProductListAPI, ProductUpdate
+from .product import (Product, ProductCreate, ProductGetApi, ProductListAPI,
+                      ProductUpdate)
 from .shipment_methods import (ShipmentMethod, ShipmentMethodCreate,
                                ShipmentMethodUpdate)
 from .shop import Shop, ShopConnectSupport, ShopCreate, ShopUpdate

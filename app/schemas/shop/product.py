@@ -36,3 +36,7 @@ class Product(ProductBase):
 class ProductListAPI(BaseModel):
     items: List[Product]
     pagination: Pagination
+
+
+class ProductGetApi(Product):
+    image_id: Optional[UUID4] = None

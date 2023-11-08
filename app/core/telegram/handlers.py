@@ -128,7 +128,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.CREDIT_VIEW["command"]:
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
-            await support_bot_handlers.send_user_credit_information(db, update, shop_telegram_bot, lang)
+            await support_bot_handlers.send_user_credit_information(
+                db, update, shop_telegram_bot, lang)
             return
 
         elif update.message.text == TelegramSupportBotCommand.CREDIT_EXTENDING["command"]:

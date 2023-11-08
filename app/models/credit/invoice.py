@@ -15,7 +15,7 @@ class Invoice(Base):
     payed_at = Column(DateTime, nullable=True)
 
     amount = Column(Float(), nullable=False, default=0.0)
-    currency = Column(String(10), nullable=False, default=Currency.IRR)
+    currency = Column(String(10), nullable=False, default=Currency.IRT)
     bought_on_discount = Column(Boolean(), default=False)
 
     plan_name = Column(String(255), nullable=True)

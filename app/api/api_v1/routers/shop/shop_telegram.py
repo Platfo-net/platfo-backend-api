@@ -75,7 +75,7 @@ def create_shop_for_telegram_bot(
             title="محصول نمونه",
             image=None,
             price=200000,
-            currency="IRR",
+            currency="IRT",
         )
         services.shop.product.create(uow, obj_in=sample_product, shop_id=shop.id, category_id=None)
         for payment_method in services.shop.payment_method.all(db):

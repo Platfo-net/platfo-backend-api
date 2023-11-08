@@ -1,9 +1,9 @@
-import pytz
-import jdatetime
 import os
 from datetime import datetime
 from typing import Callable
 
+import jdatetime
+import pytz
 import telegram
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -147,7 +147,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             amount=helpers.number_to_price(int(amount)),
             order=order,
             order_status=OrderStatus.PAYMENT_CHECK["title"][lang],
-            currency=Currency.IRR["name"],
+            currency=Currency.IRT["name"],
             items=items,
         )
 
@@ -158,7 +158,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             amount=helpers.number_to_price(int(amount)),
             order=order,
             order_status=OrderStatus.ACCEPTED["title"][lang],
-            currency=Currency.IRR["name"],
+            currency=Currency.IRT["name"],
             items=items,
         )
 
@@ -169,7 +169,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             amount=helpers.number_to_price(int(amount)),
             order=order,
             order_status=OrderStatus.PREPARATION["title"][lang],
-            currency=Currency.IRR["name"],
+            currency=Currency.IRT["name"],
             items=items,
         )
 
@@ -180,7 +180,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             amount=helpers.number_to_price(int(amount)),
             order=order,
             order_status=OrderStatus.UNPAID["title"][lang],
-            currency=Currency.IRR["name"],
+            currency=Currency.IRT["name"],
             items=items,
         )
 
@@ -191,7 +191,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             amount=helpers.number_to_price(int(amount)),
             order=order,
             order_status=OrderStatus.DECLINED["title"][lang],
-            currency=Currency.IRR["name"],
+            currency=Currency.IRT["name"],
             items=items,
         )
 
@@ -202,7 +202,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             amount=helpers.number_to_price(int(amount)),
             order=order,
             order_status=OrderStatus.SENT["title"][lang],
-            currency=Currency.IRR["name"],
+            currency=Currency.IRT["name"],
             items=items,
         )
 
@@ -213,7 +213,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             amount=helpers.number_to_price(int(amount)),
             order=order,
             order_status=OrderStatus.PAYMENT_DECLINED["title"][lang],
-            currency=Currency.IRR["name"],
+            currency=Currency.IRT["name"],
             items=items,
         )
 
@@ -386,7 +386,7 @@ async def send_lead_order_to_shop_support_handler(
         order=order,
         lead_number=lead.lead_number,
         order_status=OrderStatus.items[order.status]["title"][lang],
-        currency=Currency.IRR["name"],
+        currency=Currency.IRT["name"],
         payment_method=payment_method,
         items=items,
     )
@@ -499,7 +499,7 @@ def get_order_message(order: models.shop.ShopOrder, lang, amount):
         order=order,
         order_status=OrderStatus.items[order.status]["title"][lang],
         lead_number=order.lead.lead_number,
-        currency=Currency.IRR["name"],
+        currency=Currency.IRT["name"],
         payment_method=payment_method,
         items=items,
     )
@@ -648,7 +648,7 @@ def get_empty_reply_markup(*args, **kwargs):
 
 async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
     plans = services.credit.plan.get_multi(
-        db, currency=Currency.IRR["value"], module=Module.TELEGRAM_SHOP)
+        db, currency=Currency.IRT["value"], module=Module.TELEGRAM_SHOP)
     keyboard = []
     items = []
     for plan in plans:
@@ -665,7 +665,7 @@ async def handle_credit_extending(db: Session, update: telegram.Update, lang: st
         )
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     text = helpers.load_message(lang, "credit_shop_pricing",
-                                items=items, currency=Currency.IRR["name"])
+                                items=items, currency=Currency.IRT["name"])
 
     await update.message.reply_text(parse_mode="HTML", text=text, reply_markup=reply_markup)
 
@@ -681,7 +681,7 @@ async def handle_credit_plan(
     text = helpers.load_message(
         lang, "credit_shop_plan",
         amount=helpers.number_to_price(int(plan.discounted_price)),
-        currency=Currency.IRR["name"]
+        currency=Currency.IRT["name"]
     )
     reply_to_message = await update.message.reply_text(text=text)
     services.credit.shop_telegram_payment_record.create(
