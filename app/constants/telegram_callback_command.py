@@ -49,6 +49,13 @@ class TelegramCallbackCommand:
 
         "command": "SEND_ORDER"
     }
+    ORDER_DETAIL = {
+        "title":
+            {
+                "fa": "جزئیات سفارش"
+            },
+        "command": "ORDER_DETAIL",
+    }
 
     SEND_DIRECT_MESSAGE = {
         "title":

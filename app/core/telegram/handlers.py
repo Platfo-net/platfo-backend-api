@@ -45,6 +45,12 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             )
             return
 
+        elif command == TelegramCallbackCommand.ORDER_DETAIL.get("command"):
+            await support_bot_handlers.send_order_detail(
+                db, update, arg, lang,
+            )
+            return
+
         elif command == TelegramCallbackCommand.DECLINE_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
                 db, update, arg, lang,

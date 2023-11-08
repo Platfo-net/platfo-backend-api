@@ -1,0 +1,29 @@
+جزئیات سفارش شماره {{ order.order_number }}
+
+-------
+
+{% if order.first_name is not none %}   
+نام : {{ order.first_name }}
+{% endif %}
+{% if order.last_name is not none %}   
+نام خانوادگی : {{ order.last_name }}
+{% endif %}
+{% if order.phone_number is not none %}   
+شماره تماس : {{ order.phone_number }}
+{% endif %}
+{% if order.email is not none %}   
+ایمیل : {{ order.email }}
+{% endif %}
+{% if order.state is not none %}
+استان : {{ order.state }}
+{% endif %}
+{% if order.city is not none %}
+شهر : {{ order.city }}
+{% endif %}
+{% if order.address is not none %}
+آدرس : {{ order.address }}
+{% endif %}
+{% if order.postal_code is not none %}
+کد پستی : {{ order.postal_code }}
+{% endif %}
+----------
