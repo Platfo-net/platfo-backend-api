@@ -17,6 +17,8 @@ class ShopCategory(Base):
 
     is_active = Column(Boolean(), default=True)
 
+    is_deleted = Column(Boolean(), nullable=False, default=False)
+
     products = relationship('ShopProduct', back_populates='category')
 
     shop = relationship('ShopShop', back_populates='categories')

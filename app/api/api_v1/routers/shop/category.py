@@ -80,10 +80,11 @@ def update_category(
     )
 
 
-@router.get('/all', response_model=List[schemas.shop.Category])
+@router.get('/{shop_id}/all', response_model=List[schemas.shop.Category])
 def get_categories(
     *,
     db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -93,7 +94,14 @@ def get_categories(
         ],
     ),
 ):
-    categories = services.shop.category.get_multi_by_user(db, user_id=current_user.id)
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    categories = services.shop.category.get_multi_by_shop(db, shop_id=shop.id)
 
     return [
         schemas.shop.Category(
@@ -127,6 +135,6 @@ def delete_category(
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
     with UnitOfWork(db) as uow:
-        services.shop.category.delete(uow, db_obj=category)
+        services.shop.category.soft_delete(uow, db_obj=category)
 
     return

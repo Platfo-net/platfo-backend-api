@@ -42,7 +42,8 @@ class CategoryServices:
         *,
         uuid: UUID4
     ) -> models.shop.ShopCategory:
-        return db.query(self.model).join(self.model.shop).filter(self.model.uuid == uuid).first()
+        return db.query(self.model).join(self.model.shop).filter(
+            self.model.uuid == uuid, self.model.is_deleted == False).first()  # noqa
 
     def get(
         self,
@@ -50,7 +51,8 @@ class CategoryServices:
         *,
         id: int
     ) -> models.shop.ShopCategory:
-        return db.query(self.model).join(self.model.shop).filter(self.model.id == id).first()
+        return db.query(self.model).join(self.model.shop).filter(
+            self.model.id == id, self.model.is_deleted == False).first()  # noqa
 
     def get_multi_by_user(
         self,
@@ -65,13 +67,27 @@ class CategoryServices:
             .all()
         )
 
-    def delete(
+    def get_multi_by_shop(
+        self,
+        db: Session,
+        *,
+        shop_id: int
+    ) -> List[models.shop.ShopCategory]:
+        return (
+            db.query(self.model)
+            .join(self.model.shop)
+            .filter(self.model.shop_id == shop_id, self.model.is_deleted == False)  # noqa
+            .all()
+        )
+
+    def soft_delete(
         self,
         uow: UnitOfWork,
         *,
         db_obj: models.shop.ShopCategory
     ):
-        uow.delete(db_obj)
+        db_obj.is_deleted = True
+        uow.add(db_obj)
 
 
 category = CategoryServices(models.shop.ShopCategory)

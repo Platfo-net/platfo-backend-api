@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -48,7 +48,7 @@ class ShopServices:
         db: Session,
         *,
         uuid: UUID4
-    ) -> models.shop.ShopShop:
+    ) -> Optional[models.shop.ShopShop]:
         return (
             db.query(self.model)
             .filter(self.model.uuid == uuid).first()
