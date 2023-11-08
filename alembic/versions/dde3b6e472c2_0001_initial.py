@@ -1,4 +1,4 @@
-"""initial
+"""0001_initial
 
 Revision ID: dde3b6e472c2
 Revises: 

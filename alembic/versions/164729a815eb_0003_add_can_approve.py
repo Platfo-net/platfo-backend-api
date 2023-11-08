@@ -1,6 +1,6 @@
 """0003_add_can_approve
 
-Revision ID: a4a1198057a5
+Revision ID: 164729a815eb
 Revises: 4299eebab347
 Create Date: 2023-11-07 18:04:49.260651
 
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a4a1198057a5'
+revision = '164729a815eb'
 down_revision = '4299eebab347'
 branch_labels = None
 depends_on = None
