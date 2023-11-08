@@ -1,3 +1,4 @@
+جزئیات سفارش شماره {{ order.order_number }}
 {% if order.first_name is not none %}   
 نام : {{ order.first_name }}
 {% endif %}
