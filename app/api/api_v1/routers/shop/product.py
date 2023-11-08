@@ -233,11 +233,12 @@ def delete_product(
     if product.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED)
 
+    has_order_items = services.shop.order_item.has_item_with_product_id(db, product_id=product.id)
     with UnitOfWork(db) as uow:
-        services.shop.product.delete(uow, db_obj=product)
-
-        services.shop.order_item.set_product_title_after_delete_product(
-            uow, product_id=product.id, product_title=product.title)
+        if has_order_items:
+            services.shop.product.soft_delete(uow, db_obj=product)
+        else:
+            services.shop.product.hard_delete(uow, db_obj=product)
 
     return
 

@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy.orm import Session
+
 from app import models, schemas
 from app.core.unit_of_work import UnitOfWork
 
@@ -11,7 +13,7 @@ class OrderItemServices:
     def create_bulk(
         self,
         uow: UnitOfWork,
-        objs_in: List[schemas.shop.OrderItemCreate],
+        objs_in: List[schemas.shop.OrderItem],
         order_id: int
     ) -> List[models.shop.ShopOrderItem]:
         db_objs = []
@@ -26,16 +28,13 @@ class OrderItemServices:
         uow.add_all(db_objs)
         return db_objs
 
-    def set_product_title_after_delete_product(
+    def has_item_with_product_id(
         self,
-        uow: UnitOfWork,
+        db: Session,
         *,
-        product_id: int,
-        product_title: str,
-    ):
-        (uow.query(self.model)
-         .filter(self.model.product_id == product_id)
-         .update({"product_title": product_title}))
+        product_id: int
+    ) -> bool:
+        return db.query(self.model).filter(self.model.product_id == product_id).exists()
 
 
 order_item = OrderItemServices(models.shop.ShopOrderItem)

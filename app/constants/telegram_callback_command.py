@@ -90,5 +90,5 @@ class TelegramCallbackCommand:
                 "fa": "رد افزایش اعتبار",
             },
 
-        "command": "DECLINe_CREDIT_EXTENDING"
+        "command": "DECLINE_CREDIT_EXTENDING"
     }

@@ -391,6 +391,11 @@ class Error:
         "status_code": 400,
         "code": 179,
     }
+    SHOP_ORDER_NOT_FOUND_ACCESS_DENIED = {
+        "text": "Order not found.",
+        "status_code": 404,
+        "code": 180,
+    }
 
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {

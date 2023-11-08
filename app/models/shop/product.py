@@ -34,8 +34,10 @@ class ShopProduct(Base):
         nullable=True,
     )
 
-    is_active = Column(Boolean(), default=True)
-    is_available = Column(Boolean(), default=True)
+    is_active = Column(Boolean(), default=True, nullable=False)
+    is_available = Column(Boolean(), default=True, nullable=False)
+
+    is_deleted = Column(Boolean, default=False, nullable=False)
 
     category = relationship('ShopCategory', back_populates='products')
     order_items = relationship('ShopOrderItem', back_populates="product")

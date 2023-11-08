@@ -1,4 +1,7 @@
-from sqlalchemy import JSON, BigInteger, Column, ForeignKey, Integer, String
+import datetime
+
+from sqlalchemy import (JSON, BigInteger, Column, DateTime, ForeignKey,
+                        Integer, String)
 from sqlalchemy.orm import relationship
 
 from app.constants.order_status import OrderStatus
@@ -19,6 +22,8 @@ class ShopOrder(Base):
     status = Column(String(255), default=OrderStatus.UNPAID["value"])
 
     order_number = Column(Integer, nullable=True, index=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
     lead_id = Column(
         BigInteger,
         ForeignKey('social_telegram_leads.id'),

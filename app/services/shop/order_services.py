@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import desc
@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.core.unit_of_work import UnitOfWork
+from app.core.utils import paginate
+from app.schemas.pagination import Pagination
 
 
 class OrderServices:
@@ -62,6 +64,7 @@ class OrderServices:
         return (
             db.query(self.model)
             .join(self.model.items)
+            .join(models.shop.ShopProduct)
             .filter(self.model.uuid == uuid)
             .first()
         )
@@ -113,6 +116,24 @@ class OrderServices:
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
+    def get_multi_by_shop_id(
+        self, db: Session, *, shop_id: int, page: int, page_size: int
+    ) -> Tuple[List[models.shop.ShopOrder], Pagination]:
+        items = (db.query(self.model)
+                 .filter(self.model.shop_id == shop_id)
+                 .join(self.model.items, isouter=True)
+                 .order_by(desc(self.model.created_at))
+                 .offset(page_size * (page - 1))
+                 .limit(page_size)
+                 .all())
+
+        total_count = db.query(self.model).filter(
+            self.model.shop_id == shop_id).count()
+
+        pagination = paginate(total_count, page, page_size)
+
+        return items, pagination
 
 
 order = OrderServices(models.shop.ShopOrder)
