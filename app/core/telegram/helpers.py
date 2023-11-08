@@ -15,7 +15,7 @@ from app.core.config import settings
 def load_message(lang: str, template_name: str, **kwargs) -> str:
     file_path = f'app/templates/telegram/{lang}'
     file_loader = FileSystemLoader(file_path)
-    env = Environment(loader=file_loader)
+    env = Environment(loader=file_loader, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template(f"{template_name}.txt")
     return template.render(**kwargs)
 
