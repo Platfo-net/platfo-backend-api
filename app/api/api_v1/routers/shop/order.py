@@ -106,3 +106,37 @@ def get_order(
         order_number=order.order_number,
         total_amount=sum
     )
+
+
+
+
+@router.get("/{shop_id}/all", response_model=schemas.shop.OrderSummary)
+def get_orders_multi(
+    *,
+    db: Session = Depends(deps.get_db),
+    order_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN['name'],
+            Role.USER['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
+
+    sum = 0
+    for item in order.items:
+        sum += item.product.price * item.count
+
+    return schemas.shop.OrderSummary(
+        first_name=order.first_name,
+        last_name=order.last_name,
+        phone_number=order.phone_number,
+        order_number=order.order_number,
+        total_amount=sum
+    )
