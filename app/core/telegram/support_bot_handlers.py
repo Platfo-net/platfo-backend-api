@@ -231,7 +231,7 @@ async def send_order_detail(db: Session, update: telegram.Update, order_uuid: UU
         return
 
     order = services.shop.order.get_by_uuid(
-        db, id=order_uuid)
+        db, uuid=order_uuid)
 
     if not order:
         return
