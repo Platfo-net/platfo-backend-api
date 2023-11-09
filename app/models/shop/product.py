@@ -5,6 +5,7 @@ from sqlalchemy import (BigInteger, Boolean, Column, DateTime, Float,
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
+from sqlalchemy.sql import expression
 
 
 class ShopProduct(Base):
@@ -37,7 +38,7 @@ class ShopProduct(Base):
     is_active = Column(Boolean(), default=True, nullable=False)
     is_available = Column(Boolean(), default=True, nullable=False)
 
-    is_deleted = Column(Boolean, default=False, nullable=False)
+    is_deleted = Column(Boolean, default=False, nullable=False, server_default=expression.false())
 
     category = relationship('ShopCategory', back_populates='products')
     order_items = relationship('ShopOrderItem', back_populates="product")
