@@ -39,4 +39,4 @@ class ProductListAPI(BaseModel):
 
 
 class ProductGetApi(Product):
-    image_id: Optional[UUID4] = None
+    image_id: Optional[str] = None
