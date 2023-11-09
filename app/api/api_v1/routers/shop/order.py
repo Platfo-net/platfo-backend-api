@@ -101,7 +101,7 @@ def get_orders_by_shop_id(
     if not shop:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
-    if not shop.user_id != current_user.id:
+    if not shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
     orders, pagination = services.shop.order.get_multi_by_shop_id(

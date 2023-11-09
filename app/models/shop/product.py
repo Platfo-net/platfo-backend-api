@@ -3,9 +3,9 @@ import datetime
 from sqlalchemy import (BigInteger, Boolean, Column, DateTime, Float,
                         ForeignKey, String)
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from app.db.base_class import Base
-from sqlalchemy.sql import expression
 
 
 class ShopProduct(Base):

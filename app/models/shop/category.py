@@ -1,8 +1,8 @@
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from app.db.base_class import Base
-from sqlalchemy.sql import expression
 
 
 class ShopCategory(Base):
