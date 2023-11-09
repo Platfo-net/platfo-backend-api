@@ -14,10 +14,10 @@ from app.core.exception import raise_http_exception
 from app.core.telegram import tasks as telegram_tasks
 from app.core.unit_of_work import UnitOfWork
 
-router = APIRouter(prefix='/orders/telegram')
+router = APIRouter(prefix='/orders')
 
 
-@router.post("/{shop_id}/{lead_id}", response_model=schemas.shop.OrderCreateResponse)
+@router.post("/telegram/{shop_id}/{lead_id}", response_model=schemas.shop.OrderCreateResponse)
 def create_telegram_shop_order(
     *,
     db: Session = Depends(deps.get_db),
@@ -154,7 +154,7 @@ def get_order(
     if not order:
         raise_http_exception(Error.SHOP_ORDER_NOT_FOUND)
 
-    if not order.shop.user_id != current_user.id:
+    if not order.shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_ORDER_NOT_FOUND_ACCESS_DENIED)
 
     sum = 0
