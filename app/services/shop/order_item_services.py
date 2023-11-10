@@ -34,7 +34,7 @@ class OrderItemServices:
         *,
         product_id: int
     ) -> bool:
-        return db.query(self.model).filter(self.model.product_id == product_id).exists()
+        return db.query(self.model).filter(self.model.product_id == product_id).first() is not None
 
 
 order_item = OrderItemServices(models.shop.ShopOrderItem)

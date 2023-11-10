@@ -107,7 +107,7 @@ class ProductServices:
         return items, pagination
     
     def has_with_category(self , db:Session , * , category_id:int):
-        return db.query(self.model).filter(self.model.category_id == category_id).exists()
+        return db.query(self.model).filter(self.model.category_id == category_id).first() is not None
 
     def soft_delete(self, uow: UnitOfWork, *, db_obj: models.shop.ShopProduct):
         db_obj.is_deleted = True
