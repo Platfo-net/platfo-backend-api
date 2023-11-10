@@ -30,7 +30,7 @@ class CategoryServices:
         uow: UnitOfWork,
         *,
         db_obj: models.shop.ShopCategory,
-        obj_in: schemas.shop.CategoryCreate,
+        obj_in: schemas.shop.CategoryUpdate,
     ) -> models.shop.ShopCategory:
         db_obj.title = obj_in.title
         uow.add(db_obj)
@@ -88,6 +88,14 @@ class CategoryServices:
     ):
         db_obj.is_deleted = True
         uow.add(db_obj)
+
+    def hard_delete(
+        self,
+        uow: UnitOfWork,
+        *,
+        db_obj: models.shop.ShopCategory
+    ):
+        uow.delete(db_obj)
 
 
 category = CategoryServices(models.shop.ShopCategory)

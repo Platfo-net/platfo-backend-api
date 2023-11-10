@@ -68,7 +68,7 @@ def update_category(
     if not category:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
-    if category.user_id != current_user.id:
+    if not category.shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     with UnitOfWork(db) as uow:
@@ -131,10 +131,15 @@ def delete_category(
     if not category:
         raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
-    if category.shop.user_id != current_user.id:
+    if not category.shop.user_id == current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
-    with UnitOfWork(db) as uow:
-        services.shop.category.soft_delete(uow, db_obj=category)
+    has_with_category = services.shop.product.has_with_category(db, category_id=category.id)
+    if has_with_category:
+        with UnitOfWork(db) as uow:
+            services.shop.category.soft_delete(uow, db_obj=category)
+    else:
+        with UnitOfWork(db) as uow:
+            services.shop.category.hard_delete(uow, db_obj=category)
 
     return

@@ -105,6 +105,9 @@ class ProductServices:
         pagination = paginate(total_count, page, page_size)
 
         return items, pagination
+    
+    def has_with_category(self , db:Session , * , category_id:int):
+        return db.query(self.model).filter(self.model.category_id == category_id).exists()
 
     def soft_delete(self, uow: UnitOfWork, *, db_obj: models.shop.ShopProduct):
         db_obj.is_deleted = True
