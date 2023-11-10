@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -94,7 +94,7 @@ class ShopTelegramBotServices:
         db: Session,
         *,
         shop_id: int
-    ) -> models.shop.ShopShopTelegramBot:
+    ) -> Optional[models.shop.ShopShopTelegramBot]:
         return (
             db.query(self.model)
             .join(self.model.shop)

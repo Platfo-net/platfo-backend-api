@@ -26,3 +26,9 @@ class Shop(ShopBase):
 class ShopConnectSupport(BaseModel):
     token: str
     shop_id: UUID4
+
+
+class ShopState(BaseModel):
+    is_connected_to_support_bot: bool
+    is_connected_to_bot: bool
+    is_connected_to_bot_verified: bool

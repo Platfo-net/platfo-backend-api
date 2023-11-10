@@ -8,7 +8,7 @@ from .product import (Product, ProductCreate, ProductGetApi, ProductListAPI,
                       ProductUpdate)
 from .shipment_methods import (ShipmentMethod, ShipmentMethodCreate,
                                ShipmentMethodUpdate)
-from .shop import Shop, ShopConnectSupport, ShopCreate, ShopUpdate
+from .shop import Shop, ShopConnectSupport, ShopCreate, ShopState, ShopUpdate
 from .shop_payment_method import (ChangePaymentIsActive,
                                   EditPaymentInformation, ShopPaymentMethod,
                                   ShopPaymentMethodCreate)

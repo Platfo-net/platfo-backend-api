@@ -9,6 +9,8 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
+from app.core.unit_of_work import UnitOfWork
+from app.core.utils import generate_random_support_token
 
 router = APIRouter(prefix='/shop')
 
@@ -95,4 +97,64 @@ def update_shop(
         title=new_shop.title,
         category=new_shop.category,
         description=new_shop.description
+    )
+
+
+@router.get('/{id}/state', response_model=schemas.shop.ShopState)
+def get_shop_telegram_state(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+    shop = services.shop.shop.get_by_uuid(db, uuid=id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=shop.id)
+
+    if not shop_telegram_bot:
+        support_token = generate_random_support_token(length=7)
+
+        while services.shop.shop_telegram_bot.get_by_support_token(
+            db, support_token=support_token
+        ):
+            support_token = generate_random_support_token(length=7)
+
+        support_bot_token = generate_random_support_token(length=7)
+
+        while services.shop.shop_telegram_bot.get_by_support_bot_token(
+            db, support_bot_token=support_bot_token
+        ):
+            support_bot_token = generate_random_support_token(length=7)
+        with UnitOfWork(db) as uow:
+            shop_telegram_bot = services.shop.shop_telegram_bot.create(
+                uow,
+                obj_in=schemas.shop.shop_telegram_bot.ShopTelegramBotCreate(
+                    support_token=support_token,
+                    support_bot_token=support_bot_token,
+                    shop_id=shop.id,
+                )
+            )
+
+    shop_credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop.id)
+
+    if not shop_credit:
+        with UnitOfWork(db) as uow:
+            services.credit.shop_credit.create(uow, shop_id=shop.id, free_days=7)
+
+    return schemas.shop.ShopState(
+        is_connected_to_support_bot=True if shop_telegram_bot.support_account_chat_id else False,
+        is_connected_to_bot=True if shop_telegram_bot.telegram_bot else False,
+        is_connected_to_bot_verified=shop_telegram_bot.is_support_verified,
     )
