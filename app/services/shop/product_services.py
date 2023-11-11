@@ -85,7 +85,7 @@ class ProductServices:
         is_active: Optional[bool] = None
     ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
         items = (db.query(self.model)
-                 .filter(self.model.shop_id == shop_id, self.model.is_deleted == False)) # noqa
+                 .filter(self.model.shop_id == shop_id, self.model.is_deleted == False))  # noqa
 
         if is_active is not None:
             items = items.filter(self.model.is_active == is_active)
@@ -105,9 +105,10 @@ class ProductServices:
         pagination = paginate(total_count, page, page_size)
 
         return items, pagination
-    
-    def has_with_category(self , db:Session , * , category_id:int):
-        return db.query(self.model).filter(self.model.category_id == category_id).first() is not None
+
+    def has_with_category(self, db: Session, *, category_id: int):
+        return db.query(self.model).filter(
+            self.model.category_id == category_id).first() is not None
 
     def soft_delete(self, uow: UnitOfWork, *, db_obj: models.shop.ShopProduct):
         db_obj.is_deleted = True

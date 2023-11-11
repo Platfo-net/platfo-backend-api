@@ -59,7 +59,7 @@ def send_lead_order_to_bot_and_support_bot_task(
         db, telegram_bot_id, lead_id, order_id, lang))
 
     support_bot_message_id = asyncio.run(
-        support_bot_handlers.send_lead_order_to_shop_support_handler(
+        support_bot_handlers.send_lead_order_to_shop_support_bot(
             db, telegram_bot_id, lead_id, order_id, lang,
         )
     )

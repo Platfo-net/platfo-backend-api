@@ -41,7 +41,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 db, update, arg, lang,
                 OrderStatus.ACCEPTED,
                 SupportBotMessage.ACCEPT_ORDER,
-                support_bot_handlers.get_accepted_order_reply_markup,
+                helpers.get_accepted_order_reply_markup,
             )
             return
 
@@ -56,7 +56,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 db, update, arg, lang,
                 OrderStatus.DECLINED,
                 SupportBotMessage.DECLINE_ORDER,
-                support_bot_handlers.get_declined_order_reply_markup,
+                helpers.get_declined_order_reply_markup,
             )
             return
 
@@ -65,7 +65,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 db, update, arg, lang,
                 OrderStatus.PAYMENT_DECLINED,
                 SupportBotMessage.DECLINE_PAYMENT_ORDER,
-                support_bot_handlers.get_empty_reply_markup,
+                helpers.get_empty_reply_markup,
             )
             return
 
@@ -74,7 +74,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 db, update, arg, lang,
                 OrderStatus.PREPARATION,
                 SupportBotMessage.PREPARE_ORDER,
-                support_bot_handlers.get_prepare_order_reply_markup,
+                helpers.get_prepare_order_reply_markup,
             )
             return
 
@@ -83,7 +83,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 db, update, arg, lang,
                 OrderStatus.SENT,
                 SupportBotMessage.SEND_ORDER,
-                support_bot_handlers.get_empty_reply_markup,
+                helpers.get_empty_reply_markup,
             )
             return
 
@@ -115,7 +115,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
                 db, chat_id=update.message.chat_id)
             if not shop_telegram_bot:
                 text = support_bot_handlers.get_start_support_bot_message(lang)
-                reply_markup = support_bot_handlers.get_start_support_bot_reply_markup(lang)
+                reply_markup = helpers.get_start_support_bot_reply_markup(lang)
                 await update.message.reply_text(
                     text=text, reply_markup=reply_markup, parse_mode="HTML")
                 return
@@ -154,15 +154,15 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             await support_bot_handlers.send_all_order_by_status(
                 db, update, OrderStatus.PAYMENT_CHECK,
                 support_bot_handlers.get_order_message,
-                support_bot_handlers.get_payment_check_order_reply_markup,
+                helpers.get_payment_check_order_reply_markup,
                 lang,
             )
             return
         elif update.message.text == TelegramSupportBotCommand.ACCEPTED_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
                 db, update, OrderStatus.ACCEPTED,
-                support_bot_handlers.get_order_message,
-                support_bot_handlers.get_accepted_order_reply_markup,
+                helpers.get_order_message,
+                helpers.get_accepted_order_reply_markup,
                 lang,
             )
             return
@@ -170,8 +170,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.UNPAID_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
                 db, update, OrderStatus.UNPAID,
-                support_bot_handlers.get_order_message,
-                support_bot_handlers.get_unpaid_order_reply_markup,
+                helpers.get_order_message,
+                helpers.get_unpaid_order_reply_markup,
                 lang,
             )
             return

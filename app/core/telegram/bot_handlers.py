@@ -1,7 +1,6 @@
 import os
 
 import telegram
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 from telegram import Bot
 
@@ -12,28 +11,9 @@ from app.constants.payment_method import PaymentMethod
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core import security
 from app.core.config import settings
-from app.core.telegram import helpers, support_bot_handlers
+from app.core.telegram import support_bot_handlers
+from app.core.telegram.helpers import helpers
 from app.core.telegram.messages import SupportBotMessage
-
-VITRIN = {
-    "fa": "ویترین",
-}
-
-
-def get_shop_menu(shop_id: UUID4, lead_id: UUID4, lang: str):
-    keyboard = [
-        [
-            telegram.MenuButtonWebApp(
-                text=VITRIN[lang],
-                web_app=telegram.WebAppInfo(
-                    f"{settings.PLATFO_SHOPS_BASE_URL}/{shop_id}/{lead_id}")
-            )
-        ],
-    ]
-
-    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-
-    return reply_markup
 
 
 async def send_lead_order_to_bot_handler(

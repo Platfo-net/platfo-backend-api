@@ -9,7 +9,7 @@ from app.constants.role import Role
 from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception
-from app.core.telegram.helpers import has_credit_by_shop_id
+from app.core.telegram.helpers.helpers import has_credit_by_shop_id
 from app.core.unit_of_work import UnitOfWork
 
 router = APIRouter(prefix='/products')
