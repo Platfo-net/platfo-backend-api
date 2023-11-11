@@ -1,0 +1,17 @@
+line-length = 99
+
+exclude = [
+    ".git",
+    "__pycache__",
+    "__init__.py",
+    ".mypy_cache",
+    ".pytest_cache",
+    "venv",
+    "alembic",
+    "tests",
+    "webhook.py",
+    "stress.py",
+    "app/db/base.py",
+    "migrations",
+    "settings.py",
+]

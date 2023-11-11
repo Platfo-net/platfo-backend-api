@@ -14,7 +14,7 @@ from app.core.instagram.instagram import InstagramData, SavedMessage, UserData
 
 
 def convert_message(content):
-    if type(content) == str:
+    if isinstance(content, str):
         return content
     if message := content.get("message"):
         return message
@@ -62,7 +62,8 @@ class BaseHandler:
                 user_page_id=to_page_id,
                 user_id=user_id,
                 first_impression=Impression.COMMENT,
-                last_interaction_at=datetime.fromtimestamp(float(self.instagram_data.entry_time))
+                last_interaction_at=datetime.fromtimestamp(
+                    float(self.instagram_data.entry_time))
             )
             services.live_chat.lead.create(self.db, obj_in=lead_in)
 
@@ -84,7 +85,8 @@ class BaseHandler:
             services.live_chat.lead.update_interactions(
                 self.db,
                 lead_igs_id=lead.lead_igs_id,
-                last_interaction_at=datetime.fromtimestamp(float(self.instagram_data.entry_time))
+                last_interaction_at=datetime.fromtimestamp(
+                    float(self.instagram_data.entry_time))
             )
         return 0
 
@@ -96,9 +98,11 @@ class BaseHandler:
         is_new = False
         # set and convert message time
         if self.instagram_data.timestamp:
-            time = datetime.fromtimestamp(self.instagram_data.timestamp / 1000.0)
+            time = datetime.fromtimestamp(
+                self.instagram_data.timestamp / 1000.0)
         elif self.instagram_data.entry_time:
-            time = datetime.fromtimestamp(self.instagram_data.entry_time / 1000.0)
+            time = datetime.fromtimestamp(
+                self.instagram_data.entry_time / 1000.0)
         else:
             time = datetime.now()
 
@@ -116,7 +120,8 @@ class BaseHandler:
                     last_message_at=time,
                     last_interaction_at=time,
                 )
-                new_lead = services.live_chat.lead.create(self.db, obj_in=lead_in)
+                new_lead = services.live_chat.lead.create(
+                    self.db, obj_in=lead_in)
 
                 information = graph_api.get_lead_information_from_facebook(
                     lead_igs_id=new_lead.lead_igs_id,
@@ -132,7 +137,8 @@ class BaseHandler:
                 services.live_chat.lead.update_interactions(
                     self.db,
                     lead_igs_id=message.from_page_id,
-                    last_message=convert_message(message.content),  # TODO Handle this to be as str
+                    # TODO Handle this to be as str
+                    last_message=convert_message(message.content),
                     last_message_at=time,
                     last_interaction_at=time,
 
@@ -200,11 +206,13 @@ class BotBaseHandler(BaseHandler):
             quick_replies = node.quick_replies
 
         if widget["widget_type"] == WidgetType.MENU:
-            mid = self.handle_menu(widget, chatflow_id, quick_replies, lead_igs_id)
+            mid = self.handle_menu(widget, chatflow_id,
+                                   quick_replies, lead_igs_id)
             self.pack_our_message(lead_igs_id, widget, mid)
             saved_message = self.save_message(saved_message)
         if widget["widget_type"] == WidgetType.SLIDER:
-            mid = self.handle_slider(widget, chatflow_id, quick_replies, lead_igs_id)
+            mid = self.handle_slider(
+                widget, chatflow_id, quick_replies, lead_igs_id)
         return widget
 
     def handle_media(self, widget, lead_igs_id: int) -> str:
