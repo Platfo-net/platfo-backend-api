@@ -113,7 +113,7 @@ def get_categories(
     ]
 
 
-@router.get('/{id}', status_code=schemas.shop.Category)
+@router.get('/{id}', response_model=schemas.shop.Category)
 def get_category(
     *,
     db: Session = Depends(deps.get_db),
