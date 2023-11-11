@@ -72,7 +72,8 @@ def update_category(
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     with UnitOfWork(db) as uow:
-        category = services.shop.category.update(uow, db_obj=category, obj_in=obj_in)
+        category = services.shop.category.update(
+            uow, db_obj=category, obj_in=obj_in)
 
     return schemas.shop.Category(
         title=category.title,
@@ -112,6 +113,34 @@ def get_categories(
     ]
 
 
+@router.get('/{id}', status_code=schemas.shop.Category)
+def get_category(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+
+    category = services.shop.category.get_by_uuid(db, uuid=id)
+    if not category:
+        raise_http_exception(Error.CATEGORY_NOT_FOUND)
+
+    if not category.shop.user_id == current_user.id:
+        raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
+
+    return schemas.shop.Category(
+        title=category.title,
+        id=category.uuid,
+    )
+
+
 @router.delete('/{id}', status_code=status.HTTP_200_OK)
 def delete_category(
     *,
@@ -134,7 +163,8 @@ def delete_category(
     if not category.shop.user_id == current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
-    has_with_category = services.shop.product.has_with_category(db, category_id=category.id)
+    has_with_category = services.shop.product.has_with_category(
+        db, category_id=category.id)
     if has_with_category:
         with UnitOfWork(db) as uow:
             services.shop.category.soft_delete(uow, db_obj=category)
