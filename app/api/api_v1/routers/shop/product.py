@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -36,7 +37,8 @@ def create_product(
         raise_http_exception(Error.SHOP_CATEGORY_OR_SHOP_NOT_PROVIDED)
 
     elif not obj_in.shop_id and obj_in.category_id:
-        category = services.shop.category.get_by_uuid(db, uuid=obj_in.category_id)
+        category = services.shop.category.get_by_uuid(
+            db, uuid=obj_in.category_id)
         if not category:
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
@@ -51,7 +53,8 @@ def create_product(
         if shop.user_id != current_user.id:
             raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
     else:
-        category = services.shop.category.get_by_uuid(db, uuid=obj_in.category_id)
+        category = services.shop.category.get_by_uuid(
+            db, uuid=obj_in.category_id)
         shop = services.shop.shop.get_by_uuid(db, uuid=obj_in.shop_id)
 
         if not shop:
@@ -64,7 +67,8 @@ def create_product(
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
         if category.shop.user_id != current_user.id:
-            raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
+            raise_http_exception(
+                Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
         if category.shop_id != shop.id:
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_IN_THIS_SHOP)
@@ -77,7 +81,8 @@ def create_product(
             category_id=category.id if category else None
         )
 
-    image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+    image_url = storage.get_object_url(
+        product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
     cat = None
     if category:
@@ -122,11 +127,13 @@ def update_product(
         raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED)
     category = None
     if obj_in.category_id:
-        category = services.shop.category.get_by_uuid(db, uuid=obj_in.category_id)
+        category = services.shop.category.get_by_uuid(
+            db, uuid=obj_in.category_id)
         if not category:
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
         if category.shop.user_id != current_user.id:
-            raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
+            raise_http_exception(
+                Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
         if category.shop_id != product.shop_id:
             raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_IN_THIS_SHOP)
@@ -135,7 +142,8 @@ def update_product(
         product = services.shop.product.update(
             uow, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
 
-    image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+    image_url = storage.get_object_url(
+        product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
     cat = None
     if category:
@@ -186,7 +194,8 @@ def get_shop_products(
 
     products_list = []
     for product in items:
-        image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+        image_url = storage.get_object_url(
+            product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
         category = None
         if product.category_id:
             category = schemas.shop.Category(
@@ -233,7 +242,8 @@ def delete_product(
     if product.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    has_order_items = services.shop.order_item.has_item_with_product_id(db, product_id=product.id)
+    has_order_items = services.shop.order_item.has_item_with_product_id(
+        db, product_id=product.id)
     with UnitOfWork(db) as uow:
         if has_order_items:
             services.shop.product.soft_delete(uow, db_obj=product)
@@ -250,6 +260,8 @@ def get_shop_products_for_telegram_shop(
     page: int = 1,
     page_size: int = 20,
     shop_id: UUID4,
+    category_id: Optional[UUID4] = None,
+
 ):
 
     shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
@@ -259,13 +271,22 @@ def get_shop_products_for_telegram_shop(
 
     if not has_credit_by_shop_id(db, shop.id):
         raise_http_exception(Error.SHOP_SHOP_NOT_AVAILABLE)
+    category = services.shop.category.get_by_uuid(db, uuid=category_id)
+
+    if not category:
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
+
+    if not category.shop_id == shop.id:
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     items, pagination = services.shop.product.get_multi_by_shop_id(
-        db, shop_id=shop.id, page=page, page_size=page_size, is_active=True)
+        db, shop_id=shop.id, page=page, page_size=page_size,
+        category_id=category.id, is_active=True)
 
     products_list = []
     for product in items:
-        image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+        image_url = storage.get_object_url(
+            product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
         category = None
         if product.category_id:
             category = schemas.shop.Category(
@@ -316,7 +337,8 @@ def get_shop_product(
 
     product = services.shop.product.get_by_uuid(db, uuid=product_id)
 
-    image_url = storage.get_object_url(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+    image_url = storage.get_object_url(
+        product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
     category = None
     if product.category_id:
         category = schemas.shop.Category(
