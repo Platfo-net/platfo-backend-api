@@ -253,6 +253,53 @@ def delete_product(
     return
 
 
+@router.get('/{shop_id}/{product_id}', response_model=schemas.shop.ProductGetApi)
+def get_shop_product(
+    *,
+    db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
+    product_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    product = services.shop.product.get_by_uuid(db, uuid=product_id)
+
+    image_url = storage.get_object_url(
+        product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+    category = None
+    if product.category_id:
+        category = schemas.shop.Category(
+            id=product.category.uuid,
+            title=product.category.title,
+        )
+    return schemas.shop.ProductGetApi(
+        id=product.uuid,
+        title=product.title,
+        price=product.price,
+        image=image_url,
+        currency=product.currency,
+        created_at=product.created_at,
+        updated_at=product.updated_at,
+        category=category,
+        image_id=product.image,
+    )
+
+
 @router.get('/telegram/{shop_id}/all', response_model=schemas.shop.ProductListAPI)
 def get_shop_products_for_telegram_shop(
     *,
@@ -307,51 +354,4 @@ def get_shop_products_for_telegram_shop(
     return schemas.shop.ProductListAPI(
         items=products_list,
         pagination=pagination,
-    )
-
-
-@router.get('/{shop_id}/{product_id}', response_model=schemas.shop.ProductGetApi)
-def get_shop_product(
-    *,
-    db: Session = Depends(deps.get_db),
-    shop_id: UUID4,
-    product_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
-    ),
-):
-
-    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
-
-    if not shop:
-        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
-
-    if shop.user_id != current_user.id:
-        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
-
-    product = services.shop.product.get_by_uuid(db, uuid=product_id)
-
-    image_url = storage.get_object_url(
-        product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
-    category = None
-    if product.category_id:
-        category = schemas.shop.Category(
-            id=product.category.uuid,
-            title=product.category.title,
-        )
-    return schemas.shop.ProductGetApi(
-        id=product.uuid,
-        title=product.title,
-        price=product.price,
-        image=image_url,
-        currency=product.currency,
-        created_at=product.created_at,
-        updated_at=product.updated_at,
-        category=category,
-        image_id=product.image,
     )
