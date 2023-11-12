@@ -253,7 +253,7 @@ def delete_product(
     return
 
 
-@router.get('/{shop_id}/telegram-shop', response_model=schemas.shop.ProductListAPI)
+@router.get('/telegram/{shop_id}/all', response_model=schemas.shop.ProductListAPI)
 def get_shop_products_for_telegram_shop(
     *,
     db: Session = Depends(deps.get_db),
@@ -261,7 +261,6 @@ def get_shop_products_for_telegram_shop(
     page_size: int = 20,
     shop_id: UUID4,
     category_id: Optional[UUID4] = None,
-
 ):
 
     shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)

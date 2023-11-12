@@ -173,3 +173,51 @@ def delete_category(
             services.shop.category.hard_delete(uow, db_obj=category)
 
     return
+
+
+@router.get('/telegram/{shop_id}/all', response_model=List[schemas.shop.Category])
+def get_telegram_shop_categories(
+    *,
+    db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
+):
+
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    categories = services.shop.category.get_multi_by_shop(db, shop_id=shop.id)
+
+    return [
+        schemas.shop.Category(
+            title=category.title,
+            id=category.uuid
+        )for category in categories
+    ]
+
+
+@router.get('/telegram/{shop_id}/{category_id}', response_model=schemas.shop.Category)
+def get_telegram_shop_category(
+    *,
+    db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
+    category_id: UUID4,
+):
+
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    category = services.shop.category.get_by_uuid(db, uuid=category_id)
+
+    if not category:
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
+    if not shop.id == category.shop_id:
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
+
+    return schemas.shop.Category(
+        title=category.title,
+        id=category.uuid
+    )
