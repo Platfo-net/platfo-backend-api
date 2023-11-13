@@ -317,17 +317,23 @@ def get_shop_products_for_telegram_shop(
 
     if not has_credit_by_shop_id(db, shop.id):
         raise_http_exception(Error.SHOP_SHOP_NOT_AVAILABLE)
-    category = services.shop.category.get_by_uuid(db, uuid=category_id)
+    category = None
 
-    if not category:
-        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
+    if category_id is not None:
 
-    if not category.shop_id == shop.id:
-        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
+        category = services.shop.category.get_by_uuid(db, uuid=category_id)
+
+        if not category:
+            raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
+
+        if not category.shop_id == shop.id:
+            raise_http_exception(
+                Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     items, pagination = services.shop.product.get_multi_by_shop_id(
         db, shop_id=shop.id, page=page, page_size=page_size,
-        category_id=category.id, is_active=True)
+        category_id=category.id if category else None,
+        is_active=True)
 
     products_list = []
     for product in items:
