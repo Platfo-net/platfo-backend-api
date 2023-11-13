@@ -85,27 +85,25 @@ class ProductServices:
         category_id: Optional[int] = None,
         is_active: Optional[bool] = None
     ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
-        items = (db.query(self.model)
-                 .filter(self.model.shop_id == shop_id, self.model.is_deleted == False))  # noqa
-
+        conditions = [
+            self.model.shop_id == shop_id, self.model.is_deleted == False
+        ]
         if is_active is not None:
-            items = items.filter(self.model.is_active == is_active)
+            conditions.append(self.model.is_active == is_active)
         if category_id is not None:
-            items = items.filter(self.model.category_id == category_id)
+            conditions.append(self.model.category_id == category_id)
 
-        items = (items.join(self.model.category, isouter=True)
-                 .order_by(desc(self.model.created_at))
-                 .offset(page_size * (page - 1))
-                 .limit(page_size)
-                 .all())
+        items = (
+            db.query(self.model)
+            .filter(*conditions)
+            .join(self.model.category, isouter=True)
+            .order_by(desc(self.model.created_at))
+            .offset(page_size * (page - 1))
+            .limit(page_size)
+            .all()
+        )
 
-        total_count = db.query(self.model).filter(
-            self.model.shop_id == shop_id)
-        if is_active is not None:
-            total_count = total_count.filter(self.model.is_active == is_active)
-        if category_id is not None:
-            items = items.filter(self.model.category_id == category_id)
-        total_count = total_count.count()
+        total_count = db.query(self.model).filter(*conditions).count()
 
         pagination = paginate(total_count, page, page_size)
 
