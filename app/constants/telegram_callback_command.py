@@ -92,3 +92,12 @@ class TelegramCallbackCommand:
 
         "command": "DECLINE_CREDIT_EXTENDING"
     }
+
+    PAY_ORDER = {
+        "title":
+            {
+                "fa": "پرداخت سفارش",
+            },
+
+        "command": "PAY_ORDER"
+    }

@@ -86,7 +86,7 @@ class ProductServices:
         is_active: Optional[bool] = None
     ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
         conditions = [
-            self.model.shop_id == shop_id, self.model.is_deleted == False
+            self.model.shop_id == shop_id, self.model.is_deleted == False  # noqa
         ]
         if is_active is not None:
             conditions.append(self.model.is_active == is_active)

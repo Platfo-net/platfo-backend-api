@@ -132,3 +132,16 @@ def get_admin_credit_charge_reply_markup(
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
     return reply_markup
+
+
+def get_pay_order_reply_markup(order_id, lang: str):
+    keyboard = [
+        [
+            telegram.InlineKeyboardButton(
+                TelegramCallbackCommand.PAY_ORDER["title"][lang],
+                callback_data=f"{TelegramCallbackCommand.PAY_ORDER['command']}:{order_id}")  # noqa
+        ]
+    ]
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    return reply_markup

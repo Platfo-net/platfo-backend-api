@@ -55,7 +55,7 @@ def telegram_webhook_task(data: dict, bot_id: int, lang):
 def send_lead_order_to_bot_and_support_bot_task(
         telegram_bot_id: int, lead_id: int, order_id: int, telegram_order_id: int, lang):
     db = SessionLocal()
-    bot_message_id, reply_to_message_id = asyncio.run(bot_handlers.send_lead_order_to_bot_handler(
+    bot_message_id = asyncio.run(bot_handlers.send_lead_order_to_bot_handler(
         db, telegram_bot_id, lead_id, order_id, lang))
 
     support_bot_message_id = asyncio.run(
@@ -67,7 +67,6 @@ def send_lead_order_to_bot_and_support_bot_task(
         db,
         telegram_order_id=telegram_order_id,
         bot_message_id=bot_message_id,
-        message_reply_to_id=reply_to_message_id,
         support_bot_message_id=support_bot_message_id,
     )
 

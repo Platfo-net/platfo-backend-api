@@ -9,7 +9,7 @@ class MessageServices:
         self.model = model
 
     def create(self, db: Session, *, obj_in: schemas.live_chat.MessageCreate):
-        if isinstance(obj_in.content,  str):
+        if isinstance(obj_in.content, str):
             obj_in.content = {'text': obj_in.content}
 
         message = self.model(

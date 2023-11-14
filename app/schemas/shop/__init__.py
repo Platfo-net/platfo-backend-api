@@ -1,6 +1,6 @@
 from .category import Category, CategoryCreate, CategoryUpdate
-from .order import (Order, OrderCreate, OrderCreateResponse, OrderItem,
-                    OrderItemOrderCreate, OrderItemResponse,
+from .order import (Order, OrderChangeStatus, OrderCreate, OrderCreateResponse,
+                    OrderItem, OrderItemOrderCreate, OrderItemResponse,
                     OrderListApiResponse, OrderListItem)
 from .payment_methods import (PaymentMethod, PaymentMethodCreate,
                               PaymentMethodUpdate)

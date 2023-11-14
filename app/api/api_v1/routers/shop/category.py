@@ -166,8 +166,7 @@ def delete_category(
     has_with_category = services.shop.product.has_with_category(
         db, category_id=category.id)
     if has_with_category:
-        with UnitOfWork(db) as uow:
-            services.shop.category.soft_delete(uow, db_obj=category)
+        raise_http_exception(Error.SHOP_CATEGORY_HAS_PRODUCT_ERROR)
     else:
         with UnitOfWork(db) as uow:
             services.shop.category.hard_delete(uow, db_obj=category)

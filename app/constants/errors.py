@@ -397,6 +397,17 @@ class Error:
         "code": 180,
     }
 
+    SHOP_INVALID_ORDER_STATUS = {
+        "text": "Invalid order status.",
+        "status_code": 400,
+        "code": 181,
+    }
+    SHOP_CATEGORY_HAS_PRODUCT_ERROR = {
+        "text": "Category has products.",
+        "status_code": 400,
+        "code": 181,
+    }
+
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {
         "text": "Lead not found",

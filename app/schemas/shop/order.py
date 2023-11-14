@@ -63,3 +63,7 @@ class Order(OrderBase):
     total_amount: float
     currency: str
     items: List[OrderItemResponse]
+
+
+class OrderChangeStatus(BaseModel):
+    status: str

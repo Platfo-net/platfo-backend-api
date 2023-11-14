@@ -11,8 +11,7 @@ from app.constants.payment_method import PaymentMethod
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core import security
 from app.core.config import settings
-from app.core.telegram import support_bot_handlers
-from app.core.telegram.helpers import helpers
+from app.core.telegram import helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
 
 
@@ -61,12 +60,50 @@ async def send_lead_order_to_bot_handler(
         currency=currency,
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
+    reply_markup = helpers.get_pay_order_reply_markup(
+        order_id, lang)
     order_message: telegram.Message = await bot.send_message(
-        chat_id=lead.chat_id, text=text, parse_mode="HTML")
+        chat_id=lead.chat_id, text=text, reply_markup=reply_markup, parse_mode="HTML")
+
+    return order_message.message_id
+
+
+async def send_lead_pay_message(
+        db: Session, telegram_bot: models.TelegramBot,
+        lead: models.social.TelegramLead, order_id: int, lang):
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
+        db, telegram_bot_id=telegram_bot.id)
+
+    if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
+        return
+
+    order = services.shop.order.get(db, id=order_id)
+    if not order:
+        return
+
+    if lead.id != order.lead_id:
+        return
+
+    if lead.telegram_bot_id != telegram_bot.id:
+        return
+    items = []
+
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+        items.append({
+            "price": helpers.number_to_price(int(item.price)),
+            "title": item.product.title,
+            "count": item.count,
+        })
+    currency = Currency.IRT["name"]
 
     shop_payment_method = services.shop.shop_payment_method.get(
-        db, id=order.shop_payment_method_id)
-    # TODO handle other payment methods later
+        db, id=order.shop_payment_method_id
+    )
+    bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
+
     text = helpers.load_message(
         lang,
         "card_transfer_payment_notification",
@@ -76,11 +113,15 @@ async def send_lead_order_to_bot_handler(
         name=shop_payment_method.information["name"],
         bank=shop_payment_method.information.get("bank", "")
     )
+    telegram_order = services.shop.telegram_order.get_by_order_id(
+        db, order_id=order.id)
 
     payment_info_message: telegram.Message = await bot.send_message(
         chat_id=lead.chat_id, text=text, parse_mode="HTML")
-
-    return order_message.message_id, payment_info_message.message_id
+    services.shop.telegram_order.add_reply_to_message_info(
+        db, telegram_order_id=telegram_order.id,
+        message_reply_to_id=payment_info_message.message_id
+    )
 
 
 async def handle_order_payment(
@@ -104,7 +145,8 @@ async def handle_order_payment(
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(
             db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-        services.shop.order.add_payment_image(db, db_obj=order, image_name=file_name)
+        services.shop.order.add_payment_image(
+            db, db_obj=order, image_name=file_name)
 
         image_caption = helpers.load_message(
             lang,
@@ -124,7 +166,8 @@ async def handle_order_payment(
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(
             db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-        services.shop.order.add_payment_information(db, db_obj=order, information=update.text)
+        services.shop.order.add_payment_information(
+            db, db_obj=order, information=update.text)
 
         text = helpers.load_message(
             lang,
