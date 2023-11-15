@@ -23,9 +23,6 @@ pytest --disable-warnings tests
 TEST_RESULT=$?
 # --cov=app --cov-report=term-missing tests
 
-#Purge test DB
-python ./app/purge_test_db.py
-
 export ENVIRONMENT=$PREVIOUS_ENVIRONMENT
 
 echo Environment switch from test to $ENVIRONMENT
