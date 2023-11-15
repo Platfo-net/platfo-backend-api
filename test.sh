@@ -6,7 +6,7 @@ export ENVIRONMENT="test"
 
 echo Environment switch from $PREVIOUS_ENVIRONMENT to $ENVIRONMENT
 #Creating test DB
-python ./app/create_test_db.py
+# python ./app/create_test_db.py
 
 #Wait for db to start
 python ./app/tests_pre_start.py
