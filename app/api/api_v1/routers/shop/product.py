@@ -97,7 +97,8 @@ def create_product(
         title=product.title,
         price=product.price,
         currency=product.currency,
-        image=image_url,
+        image=product.image,
+        image_url=image_url,
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=cat
@@ -157,7 +158,8 @@ def update_product(
         title=product.title,
         price=product.price,
         currency=product.currency,
-        image=image_url,
+        image=product.image,
+        image_url=image_url,
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=cat
@@ -208,7 +210,8 @@ def get_shop_products(
                 id=product.uuid,
                 title=product.title,
                 price=product.price,
-                image=image_url,
+                image=product.image,
+                image_url=image_url,
                 currency=product.currency,
                 created_at=product.created_at,
                 updated_at=product.updated_at,
@@ -249,12 +252,13 @@ def delete_product(
         if has_order_items:
             services.shop.product.soft_delete(uow, db_obj=product)
         else:
+            storage.remove_file_from_s3(product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
             services.shop.product.hard_delete(uow, db_obj=product)
 
     return
 
 
-@router.get('/{shop_id}/{product_id}', response_model=schemas.shop.ProductGetApi)
+@router.get('/{shop_id}/{product_id}', response_model=schemas.shop.Product)
 def get_shop_product(
     *,
     db: Session = Depends(deps.get_db),
@@ -288,16 +292,16 @@ def get_shop_product(
             id=product.category.uuid,
             title=product.category.title,
         )
-    return schemas.shop.ProductGetApi(
+    return schemas.shop.Product(
         id=product.uuid,
         title=product.title,
         price=product.price,
-        image=image_url,
+        image=product.image,
+        image_url=image_url,
         currency=product.currency,
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=category,
-        image_id=product.image,
     )
 
 
@@ -351,7 +355,8 @@ def get_shop_products_for_telegram_shop(
                 id=product.uuid,
                 title=product.title,
                 price=product.price,
-                image=image_url,
+                image=product.image,
+                image_url=image_url,
                 currency=product.currency,
                 created_at=product.created_at,
                 updated_at=product.updated_at,

@@ -58,3 +58,12 @@ def get_file(filename, bucket):
         return None
     object_url = get_object_url(filename, bucket)
     return schemas.Image(filename=filename, url=object_url)
+
+
+def remove_file_from_s3(filename, bucket):
+    try:
+        client = create_client()
+        client.remove_object(bucket_name=bucket, object_name=filename)
+
+    except S3Error:
+        pass

@@ -31,12 +31,9 @@ class Product(ProductBase):
     category: Optional[Category]
     created_at: datetime
     updated_at: datetime
+    image_url: Optional[str] = None
 
 
 class ProductListAPI(BaseModel):
     items: List[Product]
     pagination: Pagination
-
-
-class ProductGetApi(Product):
-    image_id: Optional[str] = None
