@@ -114,7 +114,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
             if not shop_telegram_bot:
-                text = support_bot_handlers.get_start_support_bot_message(lang)
+                text = helpers.get_start_support_bot_message(lang)
                 reply_markup = helpers.get_start_support_bot_reply_markup(lang)
                 await update.message.reply_text(
                     text=text, reply_markup=reply_markup, parse_mode="HTML")
