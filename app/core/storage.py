@@ -61,6 +61,8 @@ def get_file(filename, bucket):
 
 
 def remove_file_from_s3(filename, bucket):
+    if not filename:
+        return None
     try:
         client = create_client()
         client.remove_object(bucket_name=bucket, object_name=filename)
