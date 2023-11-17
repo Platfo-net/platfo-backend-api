@@ -182,41 +182,43 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         else:
             await support_bot_handlers.plain_message_handler(db, update, lang)
             return
+        
+def get_or_create_lead(db:Session , telegram_bot_id , lead_data):
+    lead = services.social.telegram_lead.get_by_chat_id(
+    db, chat_id=lead_data.get("id"), telegram_bot_id=telegram_bot_id)
+    if not lead:
+        lead_number = services.social.telegram_lead.get_last_lead_number(
+            db, telegram_bot_id=telegram_bot_id)
+        lead = services.social.telegram_lead.create(
+            db,
+            obj_in=schemas.social.TelegramLeadCreate(
+                telegram_bot_id=telegram_bot_id,
+                chat_id=lead_data.get("id"),
+                first_name=lead_data.get("first_name"),
+                last_name=lead_data.get("last_name"),
+                username=lead_data.get("username"),
+                lead_number=lead_number + 1,
+            )
+        )
+    return lead
+    
 
-
+    
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lang):
     telegram_bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
     if not telegram_bot:
         return
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot.id)
-
     if not shop_telegram_bot:
         return
-
-    if not data.get("message"):
-        return
-    user = data["message"]["from"]
-    lead = services.social.telegram_lead.get_by_chat_id(
-        db, chat_id=user.get("id"), telegram_bot_id=telegram_bot.id)
-    if not lead:
-        lead_number = services.social.telegram_lead.get_last_lead_number(
-            db, telegram_bot_id=shop_telegram_bot.telegram_bot_id)
-        lead = services.social.telegram_lead.create(
-            db,
-            obj_in=schemas.social.TelegramLeadCreate(
-                telegram_bot_id=shop_telegram_bot.telegram_bot_id,
-                chat_id=user.get("id"),
-                first_name=user.get("first_name"),
-                last_name=user.get("last_name"),
-                username=user.get("username"),
-                lead_number=lead_number + 1,
-            )
-        )
+    
     bot = Bot(token=security.decrypt_telegram_token(
         telegram_bot.bot_token))
 
     if data.get("callback_query"):
+        lead_data = data["callback_query"]["from"]
+        lead = get_or_create_lead(db , telegram_bot.id , lead_data)
         update = telegram.Update.de_json(
             {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
@@ -226,7 +228,10 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         if command == TelegramCallbackCommand.PAY_ORDER.get("command"):
             await bot_handlers.send_lead_pay_message(db, telegram_bot, lead, arg, lang)
 
-    else:
+    elif data.get("message"):
+        lead_data = data["message"]["from"]
+        lead = get_or_create_lead(db , telegram_bot.id , lead_data)
+          
         reply_to_message = data["message"].get("reply_to_message")
         if reply_to_message:
             telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
