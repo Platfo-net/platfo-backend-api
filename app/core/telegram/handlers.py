@@ -182,10 +182,11 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         else:
             await support_bot_handlers.plain_message_handler(db, update, lang)
             return
-        
-def get_or_create_lead(db:Session , telegram_bot_id , lead_data):
+
+
+def get_or_create_lead(db: Session, telegram_bot_id, lead_data):
     lead = services.social.telegram_lead.get_by_chat_id(
-    db, chat_id=lead_data.get("id"), telegram_bot_id=telegram_bot_id)
+        db, chat_id=lead_data.get("id"), telegram_bot_id=telegram_bot_id)
     if not lead:
         lead_number = services.social.telegram_lead.get_last_lead_number(
             db, telegram_bot_id=telegram_bot_id)
@@ -201,9 +202,8 @@ def get_or_create_lead(db:Session , telegram_bot_id , lead_data):
             )
         )
     return lead
-    
 
-    
+
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lang):
     telegram_bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
     if not telegram_bot:
@@ -212,13 +212,13 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         db, telegram_bot_id=telegram_bot.id)
     if not shop_telegram_bot:
         return
-    
+
     bot = Bot(token=security.decrypt_telegram_token(
         telegram_bot.bot_token))
 
     if data.get("callback_query"):
         lead_data = data["callback_query"]["from"]
-        lead = get_or_create_lead(db , telegram_bot.id , lead_data)
+        lead = get_or_create_lead(db, telegram_bot.id, lead_data)
         update = telegram.Update.de_json(
             {"update_id": data["update_id"], **data["callback_query"]}, bot
         )
@@ -230,8 +230,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
 
     elif data.get("message"):
         lead_data = data["message"]["from"]
-        lead = get_or_create_lead(db , telegram_bot.id , lead_data)
-          
+        lead = get_or_create_lead(db, telegram_bot.id, lead_data)
+
         reply_to_message = data["message"].get("reply_to_message")
         if reply_to_message:
             telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
