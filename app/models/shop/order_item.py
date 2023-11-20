@@ -23,6 +23,5 @@ class ShopOrderItem(Base):
     price = Column(Float(), nullable=True)
     currency = Column(String(32), nullable=True)
 
-    product_title = Column(String(256), nullable=True)
     order = relationship('ShopOrder', back_populates='items')
     product = relationship('ShopProduct', back_populates='order_items')

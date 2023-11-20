@@ -158,7 +158,7 @@ def get_payment_method(
     )
 
 
-@router.get('/{shop_id}/telegram-shop/all', response_model=List[schemas.shop.PaymentMethod])
+@router.get('/telegram/{shop_id}/all', response_model=List[schemas.shop.PaymentMethod])
 def get_shop_payment_methods_for_telegram_shop(
     *,
     db: Session = Depends(deps.get_db),

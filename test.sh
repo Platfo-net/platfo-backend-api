@@ -6,7 +6,7 @@ export ENVIRONMENT="test"
 
 echo Environment switch from $PREVIOUS_ENVIRONMENT to $ENVIRONMENT
 #Creating test DB
-python ./app/create_test_db.py
+# python ./app/create_test_db.py
 
 #Wait for db to start
 python ./app/tests_pre_start.py
@@ -22,9 +22,6 @@ python ./app/initial_test_data.py
 pytest --disable-warnings tests
 TEST_RESULT=$?
 # --cov=app --cov-report=term-missing tests
-
-#Purge test DB
-python ./app/purge_test_db.py
 
 export ENVIRONMENT=$PREVIOUS_ENVIRONMENT
 

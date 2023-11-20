@@ -1,7 +1,6 @@
 import os
 
 import telegram
-from pydantic import UUID4
 from sqlalchemy.orm import Session
 from telegram import Bot
 
@@ -14,26 +13,6 @@ from app.core import security
 from app.core.config import settings
 from app.core.telegram import helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
-
-VITRIN = {
-    "fa": "ویترین",
-}
-
-
-def get_shop_menu(shop_id: UUID4, lead_id: UUID4, lang: str):
-    keyboard = [
-        [
-            telegram.MenuButtonWebApp(
-                text=VITRIN[lang],
-                web_app=telegram.WebAppInfo(
-                    f"{settings.PLATFO_SHOPS_BASE_URL}/{shop_id}/{lead_id}")
-            )
-        ],
-    ]
-
-    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-
-    return reply_markup
 
 
 async def send_lead_order_to_bot_handler(
@@ -81,12 +60,50 @@ async def send_lead_order_to_bot_handler(
         currency=currency,
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
+    reply_markup = helpers.get_pay_order_reply_markup(
+        order_id, lang)
     order_message: telegram.Message = await bot.send_message(
-        chat_id=lead.chat_id, text=text, parse_mode="HTML")
+        chat_id=lead.chat_id, text=text, reply_markup=reply_markup, parse_mode="HTML")
+
+    return order_message.message_id
+
+
+async def send_lead_pay_message(
+        db: Session, telegram_bot: models.TelegramBot,
+        lead: models.social.TelegramLead, order_id: int, lang):
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
+        db, telegram_bot_id=telegram_bot.id)
+
+    if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
+        return
+
+    order = services.shop.order.get(db, id=order_id)
+    if not order:
+        return
+
+    if lead.id != order.lead_id:
+        return
+
+    if lead.telegram_bot_id != telegram_bot.id:
+        return
+    items = []
+
+    amount = 0
+    for item in order.items:
+        amount += item.count * item.price
+        items.append({
+            "price": helpers.number_to_price(int(item.price)),
+            "title": item.product.title,
+            "count": item.count,
+        })
+    currency = Currency.IRT["name"]
 
     shop_payment_method = services.shop.shop_payment_method.get(
-        db, id=order.shop_payment_method_id)
-    # TODO handle other payment methods later
+        db, id=order.shop_payment_method_id
+    )
+    bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
+
     text = helpers.load_message(
         lang,
         "card_transfer_payment_notification",
@@ -96,11 +113,15 @@ async def send_lead_order_to_bot_handler(
         name=shop_payment_method.information["name"],
         bank=shop_payment_method.information.get("bank", "")
     )
+    telegram_order = services.shop.telegram_order.get_by_order_id(
+        db, order_id=order.id)
 
     payment_info_message: telegram.Message = await bot.send_message(
         chat_id=lead.chat_id, text=text, parse_mode="HTML")
-
-    return order_message.message_id, payment_info_message.message_id
+    services.shop.telegram_order.add_reply_to_message_info(
+        db, telegram_order_id=telegram_order.id,
+        message_reply_to_id=payment_info_message.message_id
+    )
 
 
 async def handle_order_payment(
@@ -124,7 +145,8 @@ async def handle_order_payment(
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(
             db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-        services.shop.order.add_payment_image(db, db_obj=order, image_name=file_name)
+        services.shop.order.add_payment_image(
+            db, db_obj=order, image_name=file_name)
 
         image_caption = helpers.load_message(
             lang,
@@ -144,7 +166,8 @@ async def handle_order_payment(
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(
             db, order=order, status=OrderStatus.PAYMENT_CHECK["value"])
-        services.shop.order.add_payment_information(db, db_obj=order, information=update.text)
+        services.shop.order.add_payment_information(
+            db, db_obj=order, information=update.text)
 
         text = helpers.load_message(
             lang,
@@ -171,10 +194,10 @@ async def handle_order_payment(
     for item in order.items:
         amount += item.count * item.price
     await support_bot.edit_message_text(
-        text=support_bot_handlers.get_order_message(order, lang, amount),
+        text=helpers.get_order_message(order, lang, amount),
         chat_id=shop_telegram_bot.support_account_chat_id,
         message_id=telegram_order.support_bot_message_id,
-        reply_markup=support_bot_handlers.get_payment_check_order_reply_markup(
+        reply_markup=helpers.get_payment_check_order_reply_markup(
             order, lang),
         parse_mode="HTML"
     )

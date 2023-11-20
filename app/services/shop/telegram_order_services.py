@@ -29,13 +29,23 @@ class TelegramOrderServices:
         *,
         telegram_order_id: int,
         bot_message_id: int,
-        message_reply_to_id: int,
         support_bot_message_id: int,
     ) -> None:
         db.query(self.model).filter(self.model.id == telegram_order_id).update({
             "bot_message_id": bot_message_id,
-            "message_reply_to_id": message_reply_to_id,
             "support_bot_message_id": support_bot_message_id,
+        })
+        db.commit()
+
+    def add_reply_to_message_info(
+        self,
+        db: Session,
+        *,
+        telegram_order_id: int,
+        message_reply_to_id: int,
+    ) -> None:
+        db.query(self.model).filter(self.model.id == telegram_order_id).update({
+            "message_reply_to_id": message_reply_to_id,
         })
         db.commit()
 
@@ -81,6 +91,20 @@ class TelegramOrderServices:
             .filter(self.model.message_reply_to_id == reply_to_id,
                     models.shop.ShopOrder.lead_id == lead_id)
             .options(contains_eager(self.model.order))
+            .first()
+        )
+
+    def get_by_order_id(
+        self,
+        db: Session,
+        *,
+        order_id: int
+    ) -> Optional[models.shop.ShopTelegramOrder]:
+
+        return (
+            db.query(self.model)
+            .join(self.model.order)
+            .filter(self.model.order_id == order_id)
             .first()
         )
 

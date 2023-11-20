@@ -12,7 +12,7 @@ class CategoryCreate(CategoryBase):
 
 
 class CategoryUpdate(CategoryBase):
-    shop_id: UUID4
+    pass
 
 
 class Category(CategoryBase):

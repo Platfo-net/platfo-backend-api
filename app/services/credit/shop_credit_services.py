@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4
 from sqlalchemy import and_
@@ -16,7 +16,7 @@ class ShopCreditServices:
     def get_by_uuid(self, db: Session, *, uuid: UUID4) -> models.credit.ShopCredit:
         return db.query(self.model).filter(self.model.uuid == uuid).all()
 
-    def get_by_shop_id(self, db: Session, *, shop_id: int) -> models.credit.ShopCredit:
+    def get_by_shop_id(self, db: Session, *, shop_id: int) -> Optional[models.credit.ShopCredit]:
         return db.query(self.model).filter(self.model.shop_id == shop_id).first()
 
     def add_shop_credit(
