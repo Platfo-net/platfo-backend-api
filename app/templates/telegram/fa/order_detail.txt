@@ -9,5 +9,4 @@
 شهر : {{ order.city or "" }}
 آدرس : {{ order.address or "" }}
 کد پستی : {{ order.postal_code or "" }}
-{% endif %}
 ----------
