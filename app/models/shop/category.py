@@ -16,6 +16,8 @@ class ShopCategory(Base):
         nullable=True,
     )
 
+    image = Column(String(255), nullable=True)
+
     is_active = Column(Boolean(), default=True)
 
     is_deleted = Column(Boolean(), nullable=False, default=False,

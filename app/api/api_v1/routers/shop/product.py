@@ -288,9 +288,12 @@ def get_shop_product(
         product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
     category = None
     if product.category_id:
+        image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
         category = schemas.shop.Category(
-            id=product.category.uuid,
-            title=product.category.title,
+            title=category.title,
+            id=category.uuid,
+            image=category.image,
+            image_url=image_url,
         )
     return schemas.shop.Product(
         id=product.uuid,
@@ -344,11 +347,16 @@ def get_shop_products_for_telegram_shop(
     for product in items:
         image_url = storage.get_object_url(
             product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+
         category = None
         if product.category_id:
+            image_url = storage.get_object_url(
+                category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
             category = schemas.shop.Category(
-                id=product.category.uuid,
-                title=product.category.title,
+                title=category.title,
+                id=category.uuid,
+                image=category.image,
+                image_url=image_url,
             )
         products_list.append(
             schemas.shop.Product(

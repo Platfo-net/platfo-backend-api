@@ -11,7 +11,7 @@ from app.constants.payment_method import PaymentMethod
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core import security
 from app.core.config import settings
-from app.core.telegram import helpers, support_bot_handlers
+from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
 
 
