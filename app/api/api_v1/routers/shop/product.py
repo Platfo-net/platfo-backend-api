@@ -284,23 +284,24 @@ def get_shop_product(
 
     product = services.shop.product.get_by_uuid(db, uuid=product_id)
 
-    image_url = storage.get_object_url(
+    product_image_url = storage.get_object_url(
         product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
     category = None
     if product.category_id:
-        image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+        category_image_url = storage.get_object_url(product.category.image,
+                                                    settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
         category = schemas.shop.Category(
-            title=category.title,
-            id=category.uuid,
-            image=category.image,
-            image_url=image_url,
+            title=product.category.title,
+            id=product.category.uuid,
+            image=product.category.image,
+            image_url=category_image_url,
         )
     return schemas.shop.Product(
         id=product.uuid,
         title=product.title,
         price=product.price,
         image=product.image,
-        image_url=image_url,
+        image_url=product_image_url,
         currency=product.currency,
         created_at=product.created_at,
         updated_at=product.updated_at,
@@ -345,18 +346,18 @@ def get_shop_products_for_telegram_shop(
 
     products_list = []
     for product in items:
-        image_url = storage.get_object_url(
+        product_image_url = storage.get_object_url(
             product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
         category = None
         if product.category_id:
-            image_url = storage.get_object_url(
-                category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+            category_image_url = storage.get_object_url(
+                product.category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
             category = schemas.shop.Category(
-                title=category.title,
-                id=category.uuid,
-                image=category.image,
-                image_url=image_url,
+                title=product.category.title,
+                id=product.category.uuid,
+                image=product.category.image,
+                image_url=category_image_url,
             )
         products_list.append(
             schemas.shop.Product(
@@ -364,7 +365,7 @@ def get_shop_products_for_telegram_shop(
                 title=product.title,
                 price=product.price,
                 image=product.image,
-                image_url=image_url,
+                image_url=product_image_url,
                 currency=product.currency,
                 created_at=product.created_at,
                 updated_at=product.updated_at,
