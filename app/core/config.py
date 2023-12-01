@@ -72,6 +72,7 @@ class Settings(BaseSettings):
     S3_CAMPAIGN_BUCKET: str = "notifier-campaign-bucket"
     S3_USER_PROFILE_BUCKET: str = 'user-profile-bucket'
     S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop-product-image-bucket'
+    S3_SHOP_CATEGORY_IMAGE_BUCKET: str = 'shop-category-image-bucket'
     S3_TELEGRAM_BOT_IMAGES_BUCKET: str = 'telegram-bot-image-bucket'
     S3_PAYMENT_RECEIPT_IMAGE: str = 'payment-receipt-image-bucket'
     S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop-telegram-credit-extending'

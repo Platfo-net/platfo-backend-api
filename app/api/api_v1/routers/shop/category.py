@@ -10,6 +10,8 @@ from app import models, schemas, services
 from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.core import storage
+from app.core.config import settings
 from app.core.exception import raise_http_exception
 from app.core.unit_of_work import UnitOfWork
 
@@ -43,9 +45,12 @@ def create_category(
             obj_in=obj_in,
             shop_id=shop.id,
         )
+    image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,
+        image=category.image,
+        image_url=image_url
     )
 
 
@@ -75,9 +80,13 @@ def update_category(
         category = services.shop.category.update(
             uow, db_obj=category, obj_in=obj_in)
 
+    image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,
+        image=category.image,
+        image_url=image_url,
     )
 
 
@@ -108,6 +117,9 @@ def get_categories(
         schemas.shop.Category(
             id=category.uuid,
             title=category.title,
+            image=category.image,
+            image_url=storage.get_object_url(
+                category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
         )
         for category in categories
     ]
@@ -135,9 +147,13 @@ def get_category(
     if not category.shop.user_id == current_user.id:
         raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
 
+    image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,
+        image=category.image,
+        image_url=image_url,
     )
 
 
@@ -168,6 +184,7 @@ def delete_category(
     if has_with_category:
         raise_http_exception(Error.SHOP_CATEGORY_HAS_PRODUCT_ERROR)
     else:
+        storage.remove_file_from_s3(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
         with UnitOfWork(db) as uow:
             services.shop.category.hard_delete(uow, db_obj=category)
 
@@ -191,7 +208,10 @@ def get_telegram_shop_categories(
     return [
         schemas.shop.Category(
             title=category.title,
-            id=category.uuid
+            id=category.uuid,
+            image=category.image,
+            image_url=storage.get_object_url(
+                category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
         )for category in categories
     ]
 
@@ -216,7 +236,11 @@ def get_telegram_shop_category(
     if not shop.id == category.shop_id:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
+    image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+
     return schemas.shop.Category(
         title=category.title,
-        id=category.uuid
+        id=category.uuid,
+        image=category.image,
+        image_url=image_url,
     )

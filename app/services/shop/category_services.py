@@ -21,6 +21,7 @@ class CategoryServices:
         db_obj = self.model(
             title=obj_in.title,
             shop_id=shop_id,
+            image=obj_in.image,
         )
         uow.add(db_obj)
         return db_obj
@@ -33,6 +34,7 @@ class CategoryServices:
         obj_in: schemas.shop.CategoryUpdate,
     ) -> models.shop.ShopCategory:
         db_obj.title = obj_in.title
+        db_obj.image = obj_in.image
         uow.add(db_obj)
         return db_obj
 
