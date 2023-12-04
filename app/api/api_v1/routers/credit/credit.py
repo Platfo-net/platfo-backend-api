@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from app.core.telegram import tasks
 from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -14,6 +13,7 @@ from app.constants.shop_telegram_payment_status import \
     ShopTelegramPaymentRecordStatus
 from app.core.config import settings
 from app.core.exception import raise_http_exception
+from app.core.telegram import tasks
 from app.core.unit_of_work import UnitOfWork
 
 router = APIRouter(prefix='/credit')
