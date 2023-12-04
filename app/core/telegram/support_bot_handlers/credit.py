@@ -6,6 +6,7 @@ import pytz
 import telegram
 from pydantic import UUID4
 from sqlalchemy.orm import Session
+from suds.client import Client
 from telegram import Bot
 
 from app import models, services
@@ -56,13 +57,38 @@ async def handle_credit_plan(
         amount=helpers.number_to_price(int(plan.discounted_price)),
         currency=Currency.IRT["name"]
     )
-    reply_to_message = await update.message.reply_text(text=text)
-    services.credit.shop_telegram_payment_record.create(
+    zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
+    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.create(
         db,
         shop_id=shop_id,
         plan_id=plan.id,
-        reply_to_message_id=reply_to_message.message_id,
     )
+    result = zarrin_client.service.PaymentRequest(
+        settings.ZARINPAL_MERCHANT_ID,
+        plan.discounted_price * 10,
+        "افزایش اعتبار فروشگاه",
+        "",
+        "",
+        f"{settings.SERVER_ADDRESS_NAME}/{settings.API_V1_STR}/credit/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
+    )
+    # TODO handle status of zarrin
+    services.credit.shop_telegram_payment_record.add_authority(
+        db, db_obj=shop_telegram_payment_record, authority=result.Authority)
+
+    keyboard = [
+        [
+            telegram.MenuButtonWebApp(
+                text="پرداخت",
+                web_app=telegram.WebAppInfo(
+                    f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"
+                )
+            )
+        ],
+    ]
+
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(text=text, reply_markup=reply_markup)
 
 
 async def handle_shop_credit_extending(

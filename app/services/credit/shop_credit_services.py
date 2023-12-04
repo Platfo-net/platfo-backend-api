@@ -21,7 +21,7 @@ class ShopCreditServices:
 
     def add_shop_credit(
             self,
-            db: Session,
+            uow: UnitOfWork,
             *,
             db_obj: models.credit.ShopCredit,
             days: int
@@ -29,9 +29,7 @@ class ShopCreditServices:
         if db_obj.expires_at < datetime.now():
             db_obj.expires_at = datetime.now()
         db_obj.expires_at = db_obj.expires_at + timedelta(days=days)
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        uow.add(db_obj)
         return db_obj
 
     def create(

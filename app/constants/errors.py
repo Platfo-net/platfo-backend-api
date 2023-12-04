@@ -408,6 +408,22 @@ class Error:
         "code": 181,
     }
 
+    SHOP_TELEGRAM_PAYMENT_RECORD_NOT_FOUND = {
+        "text": "Shop telegram payment record not found",
+        "status_code": 400,
+        "code": 182,
+    }
+    SHOP_TELEGRAM_PAYMENT_HAS_BEEN_ALREADY_APPLIED = {
+        "text": "Shop telegram payment record has been already increase credit.",
+        "status_code": 400,
+        "code": 183,
+    }
+    SHOP_TELEGRAM_PAYMENT_FAILED = {
+        "text": "Shop telegram payment failed.",
+        "status_code": 400,
+        "code": 184,
+    }
+
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {
         "text": "Lead not found",
