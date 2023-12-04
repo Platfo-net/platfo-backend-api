@@ -57,9 +57,8 @@ class ShopCreditServices:
         self, db: Session, *, id: int
     ) -> Optional[models.credit.ShopCredit]:
         return (
-            db.query(self.model, models.shop.ShopShopTelegramBot)
+            db.query(self.model)
             .filter(self.model.id == id)
-            .join(self.model.shop)
             .first()
         )
 

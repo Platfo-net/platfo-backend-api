@@ -74,7 +74,6 @@ async def send_credit_extending_successful_notification_handler(
     shop_credit = services.credit.shop_credit.get(db, id=shop_credit_id)
     if not shop_credit:
         return
-
     shop_telegram_payment_record = services.credit.shop_telegram_payment_record.get(
         db, id=shop_telegram_payment_record_id)
     if not shop_telegram_payment_record:

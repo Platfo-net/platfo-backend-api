@@ -56,7 +56,7 @@ async def handle_credit_plan(
         plan_id=plan.id,
         amount=plan.discounted_price
     )
-    callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/credit/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
+    callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/credit/credit/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
     result = zarrin_client.service.PaymentRequest(
         settings.ZARINPAL_MERCHANT_ID,
         plan.discounted_price,

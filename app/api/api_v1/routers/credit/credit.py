@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from core.telegram import tasks
+from app.core.telegram import tasks
 from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
