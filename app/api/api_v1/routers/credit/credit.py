@@ -96,7 +96,7 @@ def verify_telegram_shop_payment_record(
             uow, db_obj=shop_telegram_payment_record, ref_id=result.RefID
         )
 
-    tasks.send_credit_extending_successful_notification_task(
+    tasks.send_credit_extending_successful_notification_task.delay(
         shop_credit_id=shop_credit.id,
         shop_telegram_payment_record_id=shop_telegram_payment_record.id)
 
