@@ -1,5 +1,4 @@
 from .credit import (handle_credit_extending, handle_credit_plan,
-                     handle_shop_credit_extending,
                      send_user_credit_information)
 from .notification import (send_expiration_soon_notification,
                            send_lead_pay_notification_to_support_bot_handler,

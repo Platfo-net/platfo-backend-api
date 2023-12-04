@@ -10,11 +10,11 @@ class ShopTelegramPaymentRecordServices:
     def __init__(self, model):
         self.model: models.credit.CreditShopTelegramPaymentRecord = model
 
-    def create(self, db: Session, *, shop_id: int, plan_id: int, payment_authority: str):
+    def create(self, db: Session, *, shop_id: int, plan_id: int , amount : int):
         db_obj = self.model(
             shop_id=shop_id,
             plan_id=plan_id,
-            payment_authority=payment_authority
+            amount = amount,
         )
         db.add(db_obj)
         db.commit()

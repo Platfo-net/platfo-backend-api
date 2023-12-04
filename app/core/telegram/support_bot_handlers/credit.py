@@ -62,14 +62,16 @@ async def handle_credit_plan(
         db,
         shop_id=shop_id,
         plan_id=plan.id,
+        amount = plan.discounted_price
     )
+    callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/credit/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
     result = zarrin_client.service.PaymentRequest(
         settings.ZARINPAL_MERCHANT_ID,
-        plan.discounted_price * 10,
+        plan.discounted_price,
         "افزایش اعتبار فروشگاه",
         "",
         "",
-        f"{settings.SERVER_ADDRESS_NAME}/{settings.API_V1_STR}/credit/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
+        callback,
     )
     # TODO handle status of zarrin
     services.credit.shop_telegram_payment_record.add_authority(
@@ -90,52 +92,6 @@ async def handle_credit_plan(
 
     await update.message.reply_text(text=text, reply_markup=reply_markup)
 
-
-async def handle_shop_credit_extending(
-    db: Session,
-    message: telegram.Message,
-    bucket,
-    shop_id: int,
-    lang: str,
-):
-    bot = Bot(settings.SUPPORT_BOT_TOKEN)
-    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.\
-        get_by_shop_and_reply_to_message_id(
-            db, shop_id=shop_id, reply_to_message_id=message.reply_to_message.message_id
-        )
-    if not shop_telegram_payment_record:
-        return
-    photo_unique_id = message.photo[-1].file_id
-    url, file_name = await helpers.download_and_upload_telegram_image(
-        bot, photo_unique_id, bucket)
-    if not url:
-        await message.reply_text(text="Error in processing image")
-    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.add_payment_image(
-        db, db_obj=shop_telegram_payment_record, image_name=file_name,
-        message_id=message.message_id)
-
-    services.credit.shop_telegram_payment_record.change_status(
-        db, db_obj=shop_telegram_payment_record,
-        status=ShopTelegramPaymentRecordStatus.PAID
-    )
-
-    await message.reply_text(SupportBotMessage.CREDIT_EXTENDING_ADMIN_CHECK[lang])
-    admin_user = services.user.get_telegram_payment_admin(db)
-    admin_bot = telegram.Bot(settings.TELEGRAM_ADMIN_BOT_TOKEN)
-    text = helpers.load_message(
-        lang,
-        "admin_bot_credit_approve",
-        plan_title=shop_telegram_payment_record.plan.title
-    )
-
-    await admin_bot.send_photo(
-        chat_id=admin_user.telegram_admin_bot_chat_id,
-        caption=text,
-        photo=url,
-        reply_markup=helpers.get_admin_credit_charge_reply_markup(shop_telegram_payment_record)
-    )
-    os.remove(file_name)
-    return
 
 
 async def send_user_credit_information(

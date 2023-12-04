@@ -67,3 +67,5 @@ async def send_expiration_soon_notification(db: Session, lang):
         text = SupportBotMessage.EXPIRATION_NOTIFICATION[lang].format(days=days)
         await bot.send_message(chat_id=shop["chat_id"], text=text)
     return
+
+

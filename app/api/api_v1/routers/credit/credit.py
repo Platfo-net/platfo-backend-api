@@ -54,7 +54,7 @@ def get_shop_credit(
 def verify_telegram_shop_payment_record(
     *,
     db: Session = Depends(deps.get_db),
-    telegram_shop_payment_record_id: id,
+    telegram_shop_payment_record_id: int,
 ):
     shop_telegram_payment_record = services.credit.shop_telegram_payment_record.get(
         db, id=telegram_shop_payment_record_id)
@@ -65,9 +65,11 @@ def verify_telegram_shop_payment_record(
         raise_http_exception(Error.SHOP_TELEGRAM_PAYMENT_HAS_BEEN_ALREADY_APPLIED)
 
     zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
-    result = zarrin_client.PaymentVerification(
+    result = zarrin_client.service.PaymentVerification(
         settings.ZARINPAL_MERCHANT_ID,
-        shop_telegram_payment_record.payment_authority)
+        shop_telegram_payment_record.payment_authority,
+        shop_telegram_payment_record.amount,
+        )
 
     if result.Status not in [100, 101]:
         raise_http_exception(Error.SHOP_TELEGRAM_PAYMENT_FAILED)
@@ -92,5 +94,7 @@ def verify_telegram_shop_payment_record(
         services.credit.shop_telegram_payment_record.add_ref_id(
             uow, db_obj=shop_telegram_payment_record, ref_id=result.RefID
         )
+        
+    
 
-    return
+    return "پرداخت با موفقیت انجام شد."

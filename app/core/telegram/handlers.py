@@ -97,17 +97,6 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
     else:
 
         message = telegram.Message.de_json(data["message"], bot)
-        if message.photo:
-            shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
-                db, chat_id=message.chat_id)
-            await support_bot_handlers.handle_shop_credit_extending(
-                db, message,
-                settings.S3_SHOP_TELEGRAM_CREDIT_EXTENDING,
-                shop_telegram_bot.shop_id,
-                lang
-            )
-            return
-
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
 
         if update.message.text == TelegramSupportBotCommand.START["command"]:
@@ -289,21 +278,3 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             services.social.telegram_lead_message.create(db, obj_in=obj_in)
             return
 
-
-async def telegram_admin_bot_handler(db: Session, data: dict, lang: str):
-    bot = telegram.Bot(settings.TELEGRAM_ADMIN_BOT_TOKEN)
-    if data.get("callback_query"):
-        update = telegram.Update.de_json(
-            {"update_id": data["update_id"], **data["callback_query"]}, bot
-        )
-
-        callback = data.get("callback_query").get("data")
-        command, arg = callback.split(":")
-
-        if command == TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING.get("command"):
-            await admin_bot_handlers.accept_credit_extending(db, update, int(arg), lang)
-            return
-
-        if command == TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING.get("command"):
-            await admin_bot_handlers.decline_credit_extending(db, update, int(arg), lang)
-            return
