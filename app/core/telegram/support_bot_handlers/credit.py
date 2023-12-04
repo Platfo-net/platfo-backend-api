@@ -43,6 +43,12 @@ async def handle_credit_plan(
     lang: str,
     shop_id: int,
 ):
+    shop = services.shop.shop.get(db , id = shop_id)
+    if not shop:
+        return
+    email = shop.user.email
+    phone_number = "0f{shop.user.phone_number}"
+    
     plan = services.credit.plan.get(db, plan_id)
     text = helpers.load_message(
         lang, "credit_shop_plan",
@@ -61,8 +67,8 @@ async def handle_credit_plan(
         settings.ZARINPAL_MERCHANT_ID,
         plan.discounted_price,
         "افزایش اعتبار فروشگاه",
-        "",
-        "",
+        email,
+        phone_number,
         callback,
     )
     # TODO handle status of zarrin
