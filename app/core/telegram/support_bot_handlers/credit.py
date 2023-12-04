@@ -1,23 +1,15 @@
 
-import os
-
-import jdatetime
-import pytz
 import telegram
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 from suds.client import Client
-from telegram import Bot
 
 from app import models, services
 from app.constants.currency import Currency
 from app.constants.module import Module
-from app.constants.shop_telegram_payment_status import \
-    ShopTelegramPaymentRecordStatus
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.core.config import settings
 from app.core.telegram import helpers
-from app.core.telegram.messages import SupportBotMessage
 
 
 async def handle_credit_extending(db: Session, update: telegram.Update, lang: str):
@@ -62,7 +54,7 @@ async def handle_credit_plan(
         db,
         shop_id=shop_id,
         plan_id=plan.id,
-        amount = plan.discounted_price
+        amount=plan.discounted_price
     )
     callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/credit/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
     result = zarrin_client.service.PaymentRequest(
@@ -93,7 +85,6 @@ async def handle_credit_plan(
     await update.message.reply_text(text=text, reply_markup=reply_markup)
 
 
-
 async def send_user_credit_information(
     db: Session,
     update: telegram.Update,
@@ -103,12 +94,7 @@ async def send_user_credit_information(
     shop_credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop_telegram_bot.shop_id)
     if not shop_credit:
         return
-    iran_tz = pytz.timezone("Asia/Tehran")
-    expires_at_datetime = shop_credit.expires_at.astimezone(iran_tz)
-    jalali_date = jdatetime.GregorianToJalali(
-        expires_at_datetime.year, expires_at_datetime.month, expires_at_datetime.day)
-    date_str = f"{jalali_date.jyear}/{jalali_date.jmonth}/{jalali_date.jday}"
-    time_str = f"{expires_at_datetime.hour}:{expires_at_datetime.minute}"
+    date_str, time_str = helpers.get_credit_str(shop_credit.expires_at)
 
     text = helpers.load_message(lang, "shop_credit_view", date_str=date_str, time_str=time_str)
     await update.message.reply_text(text=text)

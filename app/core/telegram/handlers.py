@@ -10,8 +10,7 @@ from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
 from app.core import security
 from app.core.config import settings
-from app.core.telegram import (admin_bot_handlers, bot_handlers, helpers,
-                               support_bot_handlers)
+from app.core.telegram import bot_handlers, helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
 
 
@@ -277,4 +276,3 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             )
             services.social.telegram_lead_message.create(db, obj_in=obj_in)
             return
-

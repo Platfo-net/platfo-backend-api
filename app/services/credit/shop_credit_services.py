@@ -53,5 +53,15 @@ class ShopCreditServices:
             .all()
         )
 
+    def get(
+        self, db: Session, *, id: int
+    ) -> Optional[models.credit.ShopCredit]:
+        return (
+            db.query(self.model, models.shop.ShopShopTelegramBot)
+            .filter(self.model.id == id)
+            .join(self.model.shop)
+            .first()
+        )
+
 
 shop_credit = ShopCreditServices(models.credit.ShopCredit)

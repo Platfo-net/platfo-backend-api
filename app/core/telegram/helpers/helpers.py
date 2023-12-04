@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 from typing import Union
 from uuid import uuid4
 
+import jdatetime
+import pytz
 import requests
 import telegram
 from jinja2 import Environment, FileSystemLoader
@@ -91,3 +93,14 @@ async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
     url = storage.get_object_url(file_name, bucket)
     print(url)
     return url, file_name
+
+
+def get_credit_str(expires_at):
+    iran_tz = pytz.timezone("Asia/Tehran")
+    expires_at_datetime = expires_at.astimezone(iran_tz)
+    jalali_date = jdatetime.GregorianToJalali(
+        expires_at_datetime.year, expires_at_datetime.month, expires_at_datetime.day)
+    date_str = f"{jalali_date.jyear}/{jalali_date.jmonth}/{jalali_date.jday}"
+    time_str = f"{expires_at_datetime.hour}:{expires_at_datetime.minute}"
+
+    return date_str, time_str

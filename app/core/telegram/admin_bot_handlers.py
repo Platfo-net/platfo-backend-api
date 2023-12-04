@@ -2,8 +2,6 @@ import telegram
 from sqlalchemy.orm import Session
 
 from app import services
-from app.constants.shop_telegram_payment_status import \
-    ShopTelegramPaymentRecordStatus
 from app.core.config import settings
 
 

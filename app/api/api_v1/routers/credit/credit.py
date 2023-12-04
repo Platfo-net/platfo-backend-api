@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from core.telegram import tasks
 from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -69,7 +70,7 @@ def verify_telegram_shop_payment_record(
         settings.ZARINPAL_MERCHANT_ID,
         shop_telegram_payment_record.payment_authority,
         shop_telegram_payment_record.amount,
-        )
+    )
 
     if result.Status not in [100, 101]:
         raise_http_exception(Error.SHOP_TELEGRAM_PAYMENT_FAILED)
@@ -94,7 +95,9 @@ def verify_telegram_shop_payment_record(
         services.credit.shop_telegram_payment_record.add_ref_id(
             uow, db_obj=shop_telegram_payment_record, ref_id=result.RefID
         )
-        
-    
+
+    tasks.send_credit_extending_successful_notification_task(
+        shop_credit_id=shop_credit.id,
+        shop_telegram_payment_record_id=shop_telegram_payment_record.id)
 
     return "پرداخت با موفقیت انجام شد."
