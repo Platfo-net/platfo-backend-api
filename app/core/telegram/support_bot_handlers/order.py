@@ -45,6 +45,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             "count": item.count,
         })
 
+    payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
     shipment_method = order.shipment_method
     reply_markup = telegram.InlineKeyboardMarkup([])
     order_status = ""
@@ -81,6 +82,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         items=items,
         shipment_method_title=shipment_method.title,
         shipment_method_price=helpers.number_to_price(int(shipment_method.price)),
+        payment_method=payment_method,
     )
 
     await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
