@@ -99,6 +99,7 @@ class Settings(BaseSettings):
     SUPPORT_BOT_TOKEN: Optional[str] = None
     TELEGRAM_ADMIN_BOT_TOKEN: Optional[str] = None
     PLATFO_SHOPS_BASE_URL: Optional[str] = None
+    PLATFO_LANDING: Optional[str] = None
 
     TELEGRAM_TOKEN_ENCRYPTION_KEY: Optional[str] = None
 

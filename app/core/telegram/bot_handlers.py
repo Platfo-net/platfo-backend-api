@@ -125,12 +125,12 @@ async def send_lead_pay_message(
 
 
 async def handle_order_payment(
-    db: Session,
-    data: dict,
-    telegram_order: models.shop.ShopTelegramOrder,
-    shop_telegram_bot: models.shop.ShopShopTelegramBot,
-    bot: telegram.Bot,
-    lang: str
+        db: Session,
+        data: dict,
+        telegram_order: models.shop.ShopTelegramOrder,
+        shop_telegram_bot: models.shop.ShopShopTelegramBot,
+        bot: telegram.Bot,
+        lang: str
 ):
     support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
 
@@ -215,3 +215,12 @@ async def set_all_bot_commands_task_handler(db: Session, lang):
                 ) for command in TelegramBotCommand.commands
             ]
         )
+
+
+async def set_menu_button_for_all_bots_task_handler(db: Session, lang):
+    telegram_bots = services.telegram_bot.all(db)
+    web_app_info = telegram.WebAppInfo(f"{settings.PLATFO_LANDING}")
+    menu_button = telegram.MenuButtonWebApp(text="سایت", web_app=web_app_info)
+    for telegram_bot in telegram_bots:
+        bot = Bot(security.decrypt_telegram_token(telegram_bot.bot_token))
+        await bot.set_chat_menu_button(menu_button=menu_button)

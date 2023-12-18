@@ -126,3 +126,14 @@ def set_support_bot_commands_task():
         support_bot_handlers.set_support_bot_commands_task_handler()
     )
     db.close()
+
+
+@celery.task
+def set_menu_button_for_all_bots():
+    db = SessionLocal()
+    asyncio.run(
+        bot_handlers.set_menu_button_for_all_bots_task_handler(
+            db, "fa"
+        )
+    )
+    db.close()
