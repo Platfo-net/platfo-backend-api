@@ -126,3 +126,15 @@ def set_support_bot_commands_task():
         support_bot_handlers.set_support_bot_commands_task_handler()
     )
     db.close()
+
+
+@celery.task
+def send_credit_extending_successful_notification_task(
+        shop_credit_id, shop_telegram_payment_record_id):
+    db = SessionLocal()
+
+    asyncio.run(support_bot_handlers.send_credit_extending_successful_notification_handler(
+        db, shop_credit_id, shop_telegram_payment_record_id, "fa"
+    ))
+
+    db.close()
