@@ -215,12 +215,15 @@ async def set_all_bot_commands_task_handler(db: Session, lang):
                 ) for command in TelegramBotCommand.commands
             ]
         )
+WEBSITE = {
+    "fa": "سایت"
+}
 
 
 async def set_menu_button_for_all_bots_task_handler(db: Session, lang):
     telegram_bots = services.telegram_bot.all(db)
     web_app_info = telegram.WebAppInfo(f"{settings.PLATFO_LANDING}")
-    menu_button = telegram.MenuButtonWebApp(text="سایت", web_app=web_app_info)
+    menu_button = telegram.MenuButtonWebApp(text=WEBSITE[lang], web_app=web_app_info)
     for telegram_bot in telegram_bots:
         bot = Bot(security.decrypt_telegram_token(telegram_bot.bot_token))
         await bot.set_chat_menu_button(menu_button=menu_button)
