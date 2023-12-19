@@ -25,6 +25,7 @@ class OrderBase(BaseModel):
 class OrderCreate(OrderBase):
     items: List[OrderItemOrderCreate]
     payment_method_id: UUID4
+    shipment_method_id: UUID4
 
 
 class OrderCreateResponse(BaseModel):

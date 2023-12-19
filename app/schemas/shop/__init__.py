@@ -6,7 +6,7 @@ from .payment_methods import (PaymentMethod, PaymentMethodCreate,
                               PaymentMethodUpdate)
 from .product import Product, ProductCreate, ProductListAPI, ProductUpdate
 from .shipment_methods import (ShipmentMethod, ShipmentMethodCreate,
-                               ShipmentMethodUpdate)
+                               ShipmentMethodUpdate, ChangeShipmentIsActive)
 from .shop import Shop, ShopConnectSupport, ShopCreate, ShopState, ShopUpdate
 from .shop_payment_method import (ChangePaymentIsActive,
                                   EditPaymentInformation, ShopPaymentMethod,
