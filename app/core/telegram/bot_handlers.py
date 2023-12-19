@@ -217,6 +217,11 @@ async def set_all_bot_commands_task_handler(db: Session, lang):
         )
 
 
+WEBSITE = {
+    "fa": "فروشگاه"
+}
+
+
 async def set_menu_button_for_all_bots_task_handler(db: Session, lang):
     telegram_bots = services.telegram_bot.all(db)
     for telegram_bot in telegram_bots:
@@ -226,5 +231,5 @@ async def set_menu_button_for_all_bots_task_handler(db: Session, lang):
         )
         if shop_telegram_bot:
             web_app_info = telegram.WebAppInfo(f"{settings.PLATFO_SHOPS_BASE_URL}/{shop_telegram_bot.shop.uuid}")
-            menu_button = telegram.MenuButtonWebApp(text="فروشگاه", web_app=web_app_info)
+            menu_button = telegram.MenuButtonWebApp(text=WEBSITE[lang], web_app=web_app_info)
             await bot.set_chat_menu_button(menu_button=menu_button)
