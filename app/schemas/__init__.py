@@ -1,5 +1,5 @@
 from app.schemas import (academy, bot_builder, credit, databoard, live_chat,
-                         notifier, shop, social)
+                         notifier, shop, social, monitoring)
 
 from .account import Account, AccountDetail
 from .connection import Connection, ConnectionCreate, ConnectionUpdate
