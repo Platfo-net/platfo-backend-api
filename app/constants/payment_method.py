@@ -8,10 +8,18 @@ class CardTransferValidationSchema(BaseModel):
     bank: str
 
 
+class OnSpotValidationSchema(BaseModel):
+    pass
+
+
+class ZarrinPalValidationSchema(BaseModel):
+    merchant_id: str
+
+
 class PaymentMethod:
     CARD_TRANSFER = {
         "title": "Card Transfer",
-        "fa" : "کارت به کارت",
+        "fa": "کارت به کارت",
         "description": "",
         "information_fields": {
             "Card Number": True,
@@ -26,6 +34,31 @@ class PaymentMethod:
         "validation_schema": CardTransferValidationSchema
     }
 
+    ON_SPOT = {
+        "title": "On Spot",
+        "fa": "پرداخت در محل",
+        "description": "",
+        "information_fields": {
+        },
+        "payment_fields": {
+        },
+        "validation_schema": OnSpotValidationSchema
+    }
+
+    ZARRIN_PAL = {
+        "title": "Zarrin Pal",
+        "fa": "پرداخت از طریق درگاه زرین پال",
+        "description": "",
+        "information_fields": {
+            "merchant_id": True,
+        },
+        "payment_fields": {
+            "ref_id": True,
+        },
+        "validation_schema": None
+    }
+
     items = {
-        "Card Transfer": CARD_TRANSFER
+        "Card Transfer": CARD_TRANSFER,
+        "On Spot": ON_SPOT,
     }

@@ -79,6 +79,7 @@ class ShopPaymentMethodServices:
             .join(self.model.payment_method)
             .first()
         )
+        
 
 
 shop_payment_method = ShopPaymentMethodServices(
