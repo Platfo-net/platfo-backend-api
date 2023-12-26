@@ -29,11 +29,17 @@ def get_order_payment_link(
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
     if not order:
         return "order not found"
+    
+    if order.shop_payment_method.payment_method.title not in [PaymentMethod.ZARRIN_PAL["title"]]:
+        return "Payment is not online"
+    
     order_total_amount = 0
 
     for item in order.items:
         order_total_amount += item.price * item.count
-
+    if order.shipment_method:
+        order_total_amount += order.shipment_method.price
+        
     shop_zarin_info = services.shop.shop_payment_method.get(
         db, id=order.shop_payment_method_id).information["merchant_id"]
 
