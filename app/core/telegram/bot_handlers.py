@@ -104,24 +104,40 @@ async def send_lead_pay_message(
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
 
-    text = helpers.load_message(
-        lang,
-        "card_transfer_payment_notification",
-        amount=helpers.number_to_price(int(amount)),
-        currency=currency,
-        card_number=shop_payment_method.information["card_number"],
-        name=shop_payment_method.information["name"],
-        bank=shop_payment_method.information.get("bank", "")
-    )
-    telegram_order = services.shop.telegram_order.get_by_order_id(
-        db, order_id=order.id)
+    if order.shop_payment_method.payment_method.title == PaymentMethod.CARD_TRANSFER["title"]:
 
-    payment_info_message: telegram.Message = await bot.send_message(
-        chat_id=lead.chat_id, text=text, parse_mode="HTML")
-    services.shop.telegram_order.add_reply_to_message_info(
-        db, telegram_order_id=telegram_order.id,
-        message_reply_to_id=payment_info_message.message_id
-    )
+        text = helpers.load_message(
+            lang,
+            "card_transfer_payment_notification",
+            amount=helpers.number_to_price(int(amount)),
+            currency=currency,
+            card_number=shop_payment_method.information["card_number"],
+            name=shop_payment_method.information["name"],
+            bank=shop_payment_method.information.get("bank", "")
+        )
+        telegram_order = services.shop.telegram_order.get_by_order_id(
+            db, order_id=order.id)
+
+        payment_info_message: telegram.Message = await bot.send_message(
+            chat_id=lead.chat_id, text=text, parse_mode="HTML")
+        services.shop.telegram_order.add_reply_to_message_info(
+            db, telegram_order_id=telegram_order.id,
+            message_reply_to_id=payment_info_message.message_id
+        )
+        return
+    if order.shop_payment_method.payment_method.title == PaymentMethod.ZARRIN_PAL["title"]:
+        keyboard = [
+            [
+                telegram.InlineKeyboardButton(
+                    text="پرداخت",
+                    url=f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/{order.uuid}"
+                ),
+            ]
+        ]
+        reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+        await bot.send_message(
+            chat_id=lead.chat_id, text="پرداخت", reply_markup=reply_markup
+        )
 
 
 async def handle_order_payment(

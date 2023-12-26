@@ -29,32 +29,37 @@ def get_order_payment_link(
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
     if not order:
         return "order not found"
-    
+
     if order.shop_payment_method.payment_method.title not in [PaymentMethod.ZARRIN_PAL["title"]]:
         return "Payment is not online"
-    
+
     order_total_amount = 0
 
     for item in order.items:
         order_total_amount += item.price * item.count
     if order.shipment_method:
         order_total_amount += order.shipment_method.price
-        
-    shop_zarin_info = services.shop.shop_payment_method.get(
-        db, id=order.shop_payment_method_id).information["merchant_id"]
 
-    zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
-    callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/zarin-pal/{order.uuid}/verify"  # noqa
-    result = zarrin_client.service.PaymentRequest(
-        shop_zarin_info,
-        order_total_amount,
-        f"پرداخت بابت سفارش شماره {order.order_number}",
-        "",
-        "",
-        callback,
-    )
+    payment_method_info = services.shop.shop_payment_method.get(
+        db, id=order.shop_payment_method_id).information
 
-    return f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"
+    if order.shop_payment_method.payment_method.title == PaymentMethod.ZARRIN_PAL["title"]:
+        zarrin_pal_merchant_id = payment_method_info.get("merchant_id")
+        if not zarrin_pal_merchant_id:
+            return "Invalid payment info"
+
+        zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
+        callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/zarin-pal/{order.uuid}/verify"  # noqa
+        result = zarrin_client.service.PaymentRequest(
+            zarrin_pal_merchant_id,
+            order_total_amount,
+            f"پرداخت بابت سفارش شماره {order.order_number}",
+            "",
+            "",
+            callback,
+        )
+
+        return f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"
 
 
 @router.get("/zarin-pal/{order_id}/verify", status_code=status.HTTP_200_OK)
