@@ -90,7 +90,7 @@ def init_payment_methods(db: Session):
             information_fields=PaymentMethod.ON_SPOT["information_fields"],
             payment_fields=PaymentMethod.ON_SPOT["payment_fields"],
         ))
-        
+
     zarrin_pal = services.shop.payment_method.get_by_title(
         db, title=PaymentMethod.ZARRIN_PAL["title"])
     if not zarrin_pal:

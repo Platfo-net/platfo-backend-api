@@ -1,21 +1,12 @@
-from fastapi import status
-from app.constants.payment_method import PaymentMethod
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
-
-from app import models, schemas, services
-from app.api import deps
-from app.constants.currency import Currency
-from app.constants.errors import Error
-from app.constants.order_status import OrderStatus
-from app.constants.role import Role
-from app.core import storage
-from app.core.config import settings
-from app.core.exception import raise_http_exception
-from app.core.telegram import tasks as telegram_tasks
-from app.core.unit_of_work import UnitOfWork
 from suds.client import Client
+
+from app import services
+from app.api import deps
+from app.constants.payment_method import PaymentMethod
+from app.core.config import settings
 
 router = APIRouter(prefix='/payment')
 
