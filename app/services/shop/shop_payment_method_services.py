@@ -79,7 +79,22 @@ class ShopPaymentMethodServices:
             .join(self.model.payment_method)
             .first()
         )
-        
+
+    def get_by_payment_method_and_shop_id(
+            self,
+            db: Session,
+            *,
+            shop_id: int,
+            payment_method_id: int
+    ) -> Optional[models.shop.ShopShopPaymentMethod]:
+        return (
+            db.query(self.model)
+            .filter(self.model.id == id)
+            .filter(self.model.payment_method_id == payment_method_id)
+            .join(self.model.payment_method)
+            .join(self.model.shop)
+            .first()
+        )
 
 
 shop_payment_method = ShopPaymentMethodServices(
