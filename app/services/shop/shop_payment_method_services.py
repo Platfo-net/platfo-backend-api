@@ -15,7 +15,8 @@ class ShopPaymentMethodServices:
         db_obj = self.model(
             shop_id=shop_id,
             payment_method_id=payment_method_id,
-            is_active=True
+            is_active=True,
+            information={},
         )
         uow.add(db_obj)
         return db_obj
@@ -89,7 +90,7 @@ class ShopPaymentMethodServices:
     ) -> Optional[models.shop.ShopShopPaymentMethod]:
         return (
             db.query(self.model)
-            .filter(self.model.id == id)
+            .filter(self.model.id == shop_id)
             .filter(self.model.payment_method_id == payment_method_id)
             .join(self.model.payment_method)
             .join(self.model.shop)
