@@ -20,14 +20,16 @@ from suds.client import Client
 router = APIRouter(prefix='/payment')
 
 
-@router.post("/order/{order_id}")
+@router.get("/order/{order_id}")
 def get_order_payment_link(
     *,
     db: Session = Depends(deps.get_db),
     order_id: UUID4,
 ):
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
-    order_total_amount = order.shipment_method.price
+    if not order:
+        return "order not found"
+    order_total_amount = 0
 
     for item in order.items:
         order_total_amount += item.price * item.count
@@ -49,11 +51,11 @@ def get_order_payment_link(
     return f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"
 
 
-@router.post("/zarin-pal/{order_id}//verify", status_code=status.HTTP_200_OK)
+@router.get("/zarin-pal/{order_id}/verify", status_code=status.HTTP_200_OK)
 def verify_order_payment(
     *,
     db: Session = Depends(deps.get_db),
     order_id: UUID4,
 ):
     print(order_id)
-    return
+    return "OOOK"
