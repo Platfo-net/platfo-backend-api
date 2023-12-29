@@ -35,9 +35,8 @@ def create_shipment_method(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
-    with UnitOfWork(db) as uow:
-        shop_shipment_method = services.shop.shipment_method.create(
-            uow,
+    shop_shipment_method = services.shop.shipment_method.create(
+            db,
             obj_in=obj_in,
             shop_id=shop.id
         )
@@ -137,9 +136,8 @@ def update_shipment_method(
     if shop_shipment_method.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    with UnitOfWork(db) as uow:
-        shop_shipment_method = services.shop.shipment_method.update(
-            uow, db_obj=shop_shipment_method, obj_in=obj_in)
+    shop_shipment_method = services.shop.shipment_method.update(
+            db, db_obj=shop_shipment_method, obj_in=obj_in)
 
     schemas.shop.ShipmentMethod(
         id=shop_shipment_method.uuid,
