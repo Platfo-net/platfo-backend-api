@@ -140,7 +140,7 @@ def update_shipment_method(
     shop_shipment_method = services.shop.shipment_method.update(
         db, db_obj=shop_shipment_method, obj_in=obj_in)
 
-    schemas.shop.ShipmentMethod(
+    return schemas.shop.ShipmentMethod(
         id=shop_shipment_method.uuid,
         title=shop_shipment_method.title,
         price=shop_shipment_method.price,
@@ -204,8 +204,7 @@ def delete_shipment_method(
     if shop_shipment_method.shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    with UnitOfWork(db) as uow:
-        services.shop.shipment_method.delete(uow, db_obj=shop_shipment_method)
+    services.shop.shipment_method.delete(db, db_obj=shop_shipment_method)
 
     return
 
