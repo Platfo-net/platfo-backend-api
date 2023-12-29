@@ -1,11 +1,10 @@
-from typing import Optional
 from pydantic import UUID4, BaseModel
 
 
 class ShipmentMethodBase(BaseModel):
-    title: Optional[str] = None
-    price: Optional[str] = None
-    currency: Optional[str] = None
+    title: str
+    price: float
+    currency: str
 
 
 class ShipmentMethodCreate(ShipmentMethodBase):

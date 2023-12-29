@@ -40,7 +40,7 @@ def create_shipment_method(
         obj_in=obj_in,
         shop_id=shop.id
     )
-    
+
     return schemas.shop.ShipmentMethod(
         id=shop_shipment_method.uuid,
         title=shop_shipment_method.title,
