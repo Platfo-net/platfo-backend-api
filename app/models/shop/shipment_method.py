@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String , Float
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -8,7 +8,7 @@ class ShopShipmentMethod(Base):
     __tablename__ = 'shop_shipment_methods'
 
     title = Column(String(255), nullable=True)
-    price = Column(String(255), nullable=True)
+    price = Column(Float(), nullable=True)
     currency = Column(String(255), nullable=True)
 
     is_active = Column(Boolean(), default=True)
