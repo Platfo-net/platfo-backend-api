@@ -130,7 +130,7 @@ async def send_lead_pay_message(
             [
                 telegram.InlineKeyboardButton(
                     text="پرداخت",
-                    url=f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/{order.uuid}" # noqa
+                    url=f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/order/{order.uuid}" # noqa
                 ),
             ]
         ]
