@@ -61,4 +61,5 @@ class PaymentMethod:
     items = {
         "Card Transfer": CARD_TRANSFER,
         "On Spot": ON_SPOT,
+        "Zarrin Pal": ZARRIN_PAL
     }
