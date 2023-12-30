@@ -7,11 +7,11 @@ from app import services
 from app.api import deps
 from app.constants.payment_method import PaymentMethod
 from app.core.config import settings
-
+from fastapi.responses import RedirectResponse
 router = APIRouter(prefix='/payment')
 
 
-@router.get("/order/{order_id}")
+@router.get("/order/{order_id}", response_class=RedirectResponse)
 def get_order_payment_link(
     *,
     db: Session = Depends(deps.get_db),
