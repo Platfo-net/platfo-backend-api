@@ -24,6 +24,10 @@ class ShopOrder(Base):
     order_number = Column(Integer, nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+    is_paid = Column(DateTime, default=False, server_default=False)
+    paid_at = Column(DateTime, nullable=True)
+    payment_information = Column(JSON, nullable=True)
+
     lead_id = Column(
         BigInteger,
         ForeignKey('social_telegram_leads.id'),
