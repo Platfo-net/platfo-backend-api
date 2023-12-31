@@ -138,3 +138,16 @@ def send_credit_extending_successful_notification_task(
     ))
 
     db.close()
+
+
+@celery.task
+def send_lead_pay_notification_to_bot_task(
+    order_id: int, lang: str
+):
+    db = SessionLocal()
+
+    asyncio.run(bot_handlers.send_lead_pay_notification_to_bot_handler(
+        db, order_id, lang
+    )
+    )
+    db.close()

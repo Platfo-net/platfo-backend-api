@@ -130,7 +130,7 @@ async def send_lead_pay_message(
             [
                 telegram.InlineKeyboardButton(
                     text="پرداخت",
-                    url=f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/order/{order.uuid}" # noqa
+                    url=f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/order/{order.uuid}"  # noqa
                 ),
             ]
         ]
@@ -216,6 +216,20 @@ async def handle_order_payment(
         reply_markup=helpers.get_payment_check_order_reply_markup(
             order, lang),
         parse_mode="HTML"
+    )
+
+
+async def send_lead_pay_notification_to_bot_handler(db: Session, order_id: int, lang: str):
+    order = services.shop.order.get(db, id=order_id)
+    if not order:
+        return
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    if not shop_telegram_bot:
+        return
+    bot = telegram.Bot(security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
+    await bot.send_message(
+        text=f"پرداخت سفارش شما با موفقیت انجام شد {order.payment_information.get('ref_id')}",
+        chat_id=order.lead.chat_id
     )
 
 
