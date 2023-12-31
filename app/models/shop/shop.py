@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, String, Text
+from sqlalchemy import BigInteger, Column, ForeignKey, String, Text, Boolean
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -16,6 +16,7 @@ class ShopShop(Base):
         ForeignKey('users.id'),
         nullable=True,
     )
+    is_info_required = Column(Boolean(), default=False)
 
     user = relationship('User', back_populates='shops')
 

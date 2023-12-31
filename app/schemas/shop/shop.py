@@ -9,6 +9,7 @@ class ShopBase(BaseModel):
     title: str
     description: Optional[str] = None
     category: Optional[str] = None
+    is_info_required: Optional[bool] = True
 
 
 class ShopCreate(ShopBase):

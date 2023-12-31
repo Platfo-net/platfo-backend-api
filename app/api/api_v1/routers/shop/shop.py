@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.api import deps
+from app.constants.category import CategoryTitles
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
@@ -36,6 +37,7 @@ def get_shop_multi(
             title=shop.title,
             category=shop.category,
             description=shop.description,
+            is_info_required=shop.is_info_required
         ) for shop in shops]
 
 
@@ -64,7 +66,8 @@ def get_shop(
         id=shop.uuid,
         title=shop.title,
         category=shop.category,
-        description=shop.description
+        description=shop.description,
+        is_info_required=shop.is_info_required
     )
 
 
@@ -73,7 +76,7 @@ def update_shop(
     *,
     db: Session = Depends(deps.get_db),
     id: UUID4,
-    obj_in: schemas.shop.ShopCreate,
+    obj_in: schemas.shop.ShopUpdate,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -90,13 +93,17 @@ def update_shop(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
+    if obj_in.category not in CategoryTitles.titles:
+        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
+
     new_shop = services.shop.shop.update(db, db_obj=shop, obj_in=obj_in)
 
     return schemas.shop.Shop(
         id=new_shop.uuid,
         title=new_shop.title,
         category=new_shop.category,
-        description=new_shop.description
+        description=new_shop.description,
+        is_info_required=new_shop.is_info_required
     )
 
 

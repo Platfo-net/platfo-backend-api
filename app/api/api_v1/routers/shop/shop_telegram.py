@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas, services
 from app.api import deps
 from app.api.api_v1.routers.telegram_bot import get_me, set_webhook
+from app.constants.category import CategoryTitles
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core import security
@@ -33,11 +34,13 @@ def create_shop_for_telegram_bot(
         ],
     ),
 ):
-
     shop = services.shop.shop.get_by_title(db, title=obj_in.title.lstrip().rstrip())
 
     if shop and shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_SHOP_IS_EXIST)
+
+    if obj_in.category not in CategoryTitles.titles:
+        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
     support_token = generate_random_support_token(length=7)
 
