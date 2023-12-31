@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import (JSON, BigInteger, Column, DateTime, ForeignKey,
+from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime, ForeignKey,
                         Integer, String)
 from sqlalchemy.orm import relationship
 
@@ -23,6 +23,10 @@ class ShopOrder(Base):
 
     order_number = Column(Integer, nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    is_paid = Column(Boolean, default=False)
+    paid_at = Column(DateTime, nullable=True)
+    payment_information = Column(JSON, nullable=True)
 
     lead_id = Column(
         BigInteger,

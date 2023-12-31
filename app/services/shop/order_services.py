@@ -8,6 +8,7 @@ from app import models, schemas
 from app.core.unit_of_work import UnitOfWork
 from app.core.utils import paginate
 from app.schemas.pagination import Pagination
+import datetime
 
 
 class OrderServices:
@@ -22,6 +23,7 @@ class OrderServices:
         shop_id: int,
         lead_id: int,
         shop_payment_method_id: int,
+        shipment_method_id: int,
         order_number: int,
         status: str
 
@@ -40,6 +42,7 @@ class OrderServices:
             shop_id=shop_id,
             lead_id=lead_id,
             shop_payment_method_id=shop_payment_method_id,
+            shipment_method_id=shipment_method_id,
         )
 
         uow.add(db_obj)
@@ -108,10 +111,11 @@ class OrderServices:
         return db_obj
 
     def add_payment_information(
-        self, db: Session, *, db_obj: models.shop.ShopOrder, information: str
+        self, db: Session, *, db_obj: models.shop.ShopOrder, information: dict
     ) -> models.shop.ShopOrder:
-
         db_obj.payment_information = information
+        db_obj.paid_at = datetime.datetime.utcnow()
+        db_obj.is_paid = True
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

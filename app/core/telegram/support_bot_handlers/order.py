@@ -1,4 +1,3 @@
-
 from typing import Callable
 
 import telegram
@@ -46,85 +45,45 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
             "count": item.count,
         })
 
+    payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
+    shipment_method = order.shipment_method
     reply_markup = telegram.InlineKeyboardMarkup([])
-    text = ""
+    order_status = ""
+    amount += shipment_method.price
 
     if order.status == OrderStatus.PAYMENT_CHECK["value"]:
         reply_markup = helpers.get_payment_check_order_reply_markup(order, lang)
-        text = helpers.load_message(
-            lang, "order",
-            amount=helpers.number_to_price(int(amount)),
-            order=order,
-            order_status=OrderStatus.PAYMENT_CHECK["title"][lang],
-            currency=Currency.IRT["name"],
-            items=items,
-        )
-
+        order_status = OrderStatus.PAYMENT_CHECK["title"][lang]
     elif order.status == OrderStatus.ACCEPTED["value"]:
         reply_markup = helpers.get_accepted_order_reply_markup(order, lang)
-        text = helpers.load_message(
-            lang, "order",
-            amount=helpers.number_to_price(int(amount)),
-            order=order,
-            order_status=OrderStatus.ACCEPTED["title"][lang],
-            currency=Currency.IRT["name"],
-            items=items,
-        )
-
+        order_status = OrderStatus.ACCEPTED["title"][lang]
     elif order.status == OrderStatus.PREPARATION["value"]:
         reply_markup = helpers.get_prepare_order_reply_markup(order, lang)
-        text = helpers.load_message(
-            lang, "order",
-            amount=helpers.number_to_price(int(amount)),
-            order=order,
-            order_status=OrderStatus.PREPARATION["title"][lang],
-            currency=Currency.IRT["name"],
-            items=items,
-        )
-
+        order_status = OrderStatus.PREPARATION["title"][lang]
     elif order.status == OrderStatus.UNPAID["value"]:
         reply_markup = helpers.get_unpaid_order_reply_markup(order, lang)
-        text = helpers.load_message(
-            lang, "order",
-            amount=helpers.number_to_price(int(amount)),
-            order=order,
-            order_status=OrderStatus.UNPAID["title"][lang],
-            currency=Currency.IRT["name"],
-            items=items,
-        )
-
+        order_status = OrderStatus.UNPAID["title"][lang]
     elif order.status == OrderStatus.DECLINED["value"]:
         reply_markup = helpers.get_declined_order_reply_markup(order, lang)
-        text = helpers.load_message(
-            lang, "order",
-            amount=helpers.number_to_price(int(amount)),
-            order=order,
-            order_status=OrderStatus.DECLINED["title"][lang],
-            currency=Currency.IRT["name"],
-            items=items,
-        )
-
+        order_status = OrderStatus.DECLINED["title"][lang]
     elif order.status == OrderStatus.SENT["value"]:
         reply_markup = helpers.get_empty_reply_markup(order, lang)
-        text = helpers.load_message(
-            lang, "order",
-            amount=helpers.number_to_price(int(amount)),
-            order=order,
-            order_status=OrderStatus.SENT["title"][lang],
-            currency=Currency.IRT["name"],
-            items=items,
-        )
-
+        order_status = OrderStatus.SENT["title"][lang]
     elif order.status == OrderStatus.PAYMENT_DECLINED["value"]:
         reply_markup = helpers.get_empty_reply_markup(order, lang)
-        text = helpers.load_message(
-            lang, "order",
-            amount=helpers.number_to_price(int(amount)),
-            order=order,
-            order_status=OrderStatus.PAYMENT_DECLINED["title"][lang],
-            currency=Currency.IRT["name"],
-            items=items,
-        )
+        order_status = OrderStatus.PAYMENT_DECLINED["title"][lang]
+
+    text = helpers.load_message(
+        lang, "order",
+        amount=helpers.number_to_price(int(amount)),
+        order=order,
+        order_status=order_status,
+        currency=Currency.IRT["name"],
+        items=items,
+        shipment_method_title=shipment_method.title,
+        shipment_method_price=helpers.number_to_price(int(shipment_method.price)),
+        payment_method=payment_method,
+    )
 
     await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
 
@@ -154,13 +113,13 @@ async def send_order_detail(db: Session, update: telegram.Update, order_uuid: UU
 
 
 async def order_change_status_handler(
-    db: Session,
-    update: telegram.Update,
-    order_id,
-    lang,
-    status,
-    action_message,
-    get_reply_markup
+        db: Session,
+        update: telegram.Update,
+        order_id,
+        lang,
+        status,
+        action_message,
+        get_reply_markup
 ):
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
     if not order:
@@ -216,7 +175,6 @@ async def order_change_status_handler(
 
 async def send_lead_order_to_shop_support_bot(
         db: Session, telegram_bot_id: int, lead_id: int, order_id: int, lang):
-
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot_id)
     if not shop_telegram_bot:
@@ -282,7 +240,8 @@ async def send_all_order_by_status(
         )
         return
 
-    orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id, status=[status["value"]])  # noqa
+    orders = services.shop.order.get_shop_orders(db, shop_id=shop_telegram_bot.shop_id,
+                                                 status=[status["value"]])  # noqa
 
     for order in orders:
         amount = 0
