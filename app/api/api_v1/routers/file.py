@@ -71,7 +71,7 @@ async def upload_shop_product_image(
     return storage.get_file(uploaded_file_name, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
 
-@router.post("/upload/shop/product", response_model=schemas.Image)
+@router.post("/upload/shop/category", response_model=schemas.Image)
 async def upload_shop_category_image(
     file: UploadFile = File(...),
     _: models.User = Security(
