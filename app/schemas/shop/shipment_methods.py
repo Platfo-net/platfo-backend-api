@@ -1,9 +1,11 @@
+
+
 from pydantic import UUID4, BaseModel
 
 
 class ShipmentMethodBase(BaseModel):
     title: str
-    price: float
+    price: str
     currency: str
 
 
@@ -17,8 +19,3 @@ class ShipmentMethodUpdate(ShipmentMethodBase):
 
 class ShipmentMethod(ShipmentMethodBase):
     id: UUID4
-    is_active: bool
-
-
-class ChangeShipmentIsActive(BaseModel):
-    is_active: bool

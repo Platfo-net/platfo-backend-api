@@ -1,3 +1,4 @@
+شماره مشتری: {{ lead_number }}
 شماره سفارش: {{ order.order_number }}
 وضعیت: {{ order_status }}
 نوع پرداخت: {{ payment_method }}
@@ -6,9 +7,6 @@
 {% for item in items -%}
     {{ item["title"] }} : ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] }}{{ currency }}  )
 {% endfor %}
-
-شیوه ارسال: {{ shipment_method_title }}
-مبلغ: {{ shipment_method_price }}{{ currency }}
 
 ——————————-
 💵 مبلغ نهایی سفارش: {{ amount }}{{ currency }}

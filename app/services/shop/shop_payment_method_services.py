@@ -15,8 +15,7 @@ class ShopPaymentMethodServices:
         db_obj = self.model(
             shop_id=shop_id,
             payment_method_id=payment_method_id,
-            is_active=True,
-            information={},
+            is_active=True
         )
         uow.add(db_obj)
         return db_obj
@@ -78,22 +77,6 @@ class ShopPaymentMethodServices:
             db.query(self.model)
             .filter(self.model.id == id)
             .join(self.model.payment_method)
-            .first()
-        )
-
-    def get_by_payment_method_and_shop_id(
-            self,
-            db: Session,
-            *,
-            shop_id: int,
-            payment_method_id: int
-    ) -> Optional[models.shop.ShopShopPaymentMethod]:
-        return (
-            db.query(self.model)
-            .filter(self.model.id == shop_id)
-            .filter(self.model.payment_method_id == payment_method_id)
-            .join(self.model.payment_method)
-            .join(self.model.shop)
             .first()
         )
 

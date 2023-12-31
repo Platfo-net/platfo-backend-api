@@ -126,28 +126,3 @@ def set_support_bot_commands_task():
         support_bot_handlers.set_support_bot_commands_task_handler()
     )
     db.close()
-
-
-@celery.task
-def send_credit_extending_successful_notification_task(
-        shop_credit_id, shop_telegram_payment_record_id):
-    db = SessionLocal()
-
-    asyncio.run(support_bot_handlers.send_credit_extending_successful_notification_handler(
-        db, shop_credit_id, shop_telegram_payment_record_id, "fa"
-    ))
-
-    db.close()
-
-
-@celery.task
-def send_lead_pay_notification_to_bot_task(
-    order_id: int, lang: str
-):
-    db = SessionLocal()
-
-    asyncio.run(bot_handlers.send_lead_pay_notification_to_bot_handler(
-        db, order_id, lang
-    )
-    )
-    db.close()

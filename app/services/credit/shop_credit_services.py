@@ -21,7 +21,7 @@ class ShopCreditServices:
 
     def add_shop_credit(
             self,
-            uow: UnitOfWork,
+            db: Session,
             *,
             db_obj: models.credit.ShopCredit,
             days: int
@@ -29,7 +29,9 @@ class ShopCreditServices:
         if db_obj.expires_at < datetime.now():
             db_obj.expires_at = datetime.now()
         db_obj.expires_at = db_obj.expires_at + timedelta(days=days)
-        uow.add(db_obj)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
         return db_obj
 
     def create(
@@ -51,15 +53,6 @@ class ShopCreditServices:
                 and_(self.model.expires_at <= upper, self.model.expires_at >= lower))
             .join(self.model.shop)
             .all()
-        )
-
-    def get(
-        self, db: Session, *, id: int
-    ) -> Optional[models.credit.ShopCredit]:
-        return (
-            db.query(self.model)
-            .filter(self.model.id == id)
-            .first()
         )
 
 

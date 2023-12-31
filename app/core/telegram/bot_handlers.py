@@ -104,40 +104,24 @@ async def send_lead_pay_message(
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
 
-    if order.shop_payment_method.payment_method.title == PaymentMethod.CARD_TRANSFER["title"]:
+    text = helpers.load_message(
+        lang,
+        "card_transfer_payment_notification",
+        amount=helpers.number_to_price(int(amount)),
+        currency=currency,
+        card_number=shop_payment_method.information["card_number"],
+        name=shop_payment_method.information["name"],
+        bank=shop_payment_method.information.get("bank", "")
+    )
+    telegram_order = services.shop.telegram_order.get_by_order_id(
+        db, order_id=order.id)
 
-        text = helpers.load_message(
-            lang,
-            "card_transfer_payment_notification",
-            amount=helpers.number_to_price(int(amount)),
-            currency=currency,
-            card_number=shop_payment_method.information["card_number"],
-            name=shop_payment_method.information["name"],
-            bank=shop_payment_method.information.get("bank", "")
-        )
-        telegram_order = services.shop.telegram_order.get_by_order_id(
-            db, order_id=order.id)
-
-        payment_info_message: telegram.Message = await bot.send_message(
-            chat_id=lead.chat_id, text=text, parse_mode="HTML")
-        services.shop.telegram_order.add_reply_to_message_info(
-            db, telegram_order_id=telegram_order.id,
-            message_reply_to_id=payment_info_message.message_id
-        )
-        return
-    if order.shop_payment_method.payment_method.title == PaymentMethod.ZARRIN_PAL["title"]:
-        keyboard = [
-            [
-                telegram.InlineKeyboardButton(
-                    text="پرداخت",
-                    url=f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/order/{order.uuid}"  # noqa
-                ),
-            ]
-        ]
-        reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-        await bot.send_message(
-            chat_id=lead.chat_id, text="پرداخت", reply_markup=reply_markup
-        )
+    payment_info_message: telegram.Message = await bot.send_message(
+        chat_id=lead.chat_id, text=text, parse_mode="HTML")
+    services.shop.telegram_order.add_reply_to_message_info(
+        db, telegram_order_id=telegram_order.id,
+        message_reply_to_id=payment_info_message.message_id
+    )
 
 
 async def handle_order_payment(
@@ -216,20 +200,6 @@ async def handle_order_payment(
         reply_markup=helpers.get_payment_check_order_reply_markup(
             order, lang),
         parse_mode="HTML"
-    )
-
-
-async def send_lead_pay_notification_to_bot_handler(db: Session, order_id: int, lang: str):
-    order = services.shop.order.get(db, id=order_id)
-    if not order:
-        return
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
-    if not shop_telegram_bot:
-        return
-    bot = telegram.Bot(security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
-    await bot.send_message(
-        text=f"پرداخت سفارش شما با موفقیت انجام شد {order.payment_information.get('ref_id')}",
-        chat_id=order.lead.chat_id
     )
 
 

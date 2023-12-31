@@ -89,10 +89,6 @@ class Settings(BaseSettings):
     SMS_IR_API_KEY: Optional[str] = None
     SMS_IR_LINE_NUMBER: Optional[str] = None
 
-    ZARINPAL_WEBSERVICE: str
-    ZARINPAL_MERCHANT_ID: str
-    ZARINPAL_BASE_URL: str
-
     LOKI_LOG_PUSH_URL: Optional[str] = None
 
     OTEL_EXPORTER_OTLP_ENDPOINT: Optional[str] = None
