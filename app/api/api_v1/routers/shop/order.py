@@ -29,30 +29,43 @@ def create_telegram_shop_order(
 
     if not shop:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+    print(1)
 
     lead = services.social.telegram_lead.get_by_uuid(db, uuid=lead_id)
     if not lead:
         raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND)
+    print(2)
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
         db, shop_id=shop.id)
     if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
         raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND_ACCESS_DENIED)
+    print(3)
 
     shop_payment_method = services.shop.shop_payment_method.get_by_uuid(
         db, uuid=obj_in.payment_method_id)
+    print(obj_in.payment_method_id)
     if not shop_payment_method:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
+    print(4)
+    
     if shop_payment_method.shop_id != shop.id:
         raise_http_exception(
             Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
+    print(5)
+    
     shipment_method = services.shop.shipment_method.get_by_uuid(
         db, uuid=obj_in.shipment_method_id)
     if not shipment_method:
         raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR)
+    print(6)
+    
     if shipment_method.shop_id != shop.id:
         raise_http_exception(
             Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
+        
+    print(7)
+    
 
     with UnitOfWork(db)as uow:
         order_items = []

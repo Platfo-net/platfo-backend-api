@@ -100,7 +100,7 @@ def verify_order_payment(
                 db, db_obj=order, information={"ref_id": result.RefID})
 
             telegram_tasks.send_lead_pay_notification_to_support_bot_task.delay(order.id, "fa")
-            telegram_tasks.send_lead_pay_notification_to_bot_handler.delay(order.id, "fa")
+            telegram_tasks.send_lead_pay_notification_to_bot_task.delay(order.id, "fa")
 
             return "پرداخت شما با موفقیت انجام شد"
         elif result.Status == 101:
