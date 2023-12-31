@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 
@@ -31,18 +30,16 @@ class PaymentMethod:
             "Payment Datetime": False,
             "Receipt Image": False,
         },
-        "validation_schema": CardTransferValidationSchema
+        "validation_schema": CardTransferValidationSchema,
     }
 
     ON_SPOT = {
         "title": "On Spot",
         "fa": "پرداخت در محل",
         "description": "",
-        "information_fields": {
-        },
-        "payment_fields": {
-        },
-        "validation_schema": OnSpotValidationSchema
+        "information_fields": {},
+        "payment_fields": {},
+        "validation_schema": OnSpotValidationSchema,
     }
 
     ZARRIN_PAL = {
@@ -55,11 +52,13 @@ class PaymentMethod:
         "payment_fields": {
             "ref_id": True,
         },
-        "validation_schema": None
+        "validation_schema": None,
     }
 
     items = {
         "Card Transfer": CARD_TRANSFER,
         "On Spot": ON_SPOT,
-        "Zarrin Pal": ZARRIN_PAL
+        "Zarrin Pal": ZARRIN_PAL,
     }
+
+    payment_gateway_items = [ZARRIN_PAL["title"]]

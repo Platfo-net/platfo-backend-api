@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import RedirectResponse
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 from suds.client import Client
@@ -7,7 +8,7 @@ from app import services
 from app.api import deps
 from app.constants.payment_method import PaymentMethod
 from app.core.config import settings
-from fastapi.responses import RedirectResponse
+
 router = APIRouter(prefix='/payment')
 
 
