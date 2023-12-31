@@ -31,7 +31,6 @@ app.add_middleware(
 app.add_middleware(SessionMiddleware, secret_key="some-random-string", max_age=None)
 
 
-
 @app.get('/health', tags=['health-check'])
 async def health():
     return {'message': 'ok!'}

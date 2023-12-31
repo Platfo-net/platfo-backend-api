@@ -1,5 +1,3 @@
-from app.constants.errors import Error
-from app.core.exception import raise_http_exception
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import RedirectResponse
 from pydantic import UUID4

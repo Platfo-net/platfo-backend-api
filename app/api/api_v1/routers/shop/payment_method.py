@@ -41,13 +41,13 @@ def get_shop_payment_methods(
     )
     return [
         schemas.shop.PaymentMethod(
-                    title=payment.payment_method.title,
-                    description=payment.payment_method.description,
-                    is_active=payment.is_active,
-                    information_fields=payment.payment_method.information_fields,
-                    id=payment.uuid,
-                    information=payment.information,
-                )
+            title=payment.payment_method.title,
+            description=payment.payment_method.description,
+            is_active=payment.is_active,
+            information_fields=payment.payment_method.information_fields,
+            id=payment.uuid,
+            information=payment.information,
+        )
         for payment in shop_payment_methods
     ]
     items = []
@@ -212,13 +212,13 @@ def get_shop_payment_methods_for_telegram_shop(
     )
     return [
         schemas.shop.PaymentMethod(
-                    title=payment.payment_method.title,
-                    description=payment.payment_method.description,
-                    is_active=payment.is_active,
-                    information_fields=payment.payment_method.information_fields,
-                    id=payment.uuid,
-                    information=payment.information,
-                )
+            title=payment.payment_method.title,
+            description=payment.payment_method.description,
+            is_active=payment.is_active,
+            information_fields=payment.payment_method.information_fields,
+            id=payment.uuid,
+            information=payment.information,
+        )
         for payment in shop_payment_methods
     ]
     items = []
