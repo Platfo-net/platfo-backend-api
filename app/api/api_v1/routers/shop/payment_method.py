@@ -39,17 +39,7 @@ def get_shop_payment_methods(
     shop_payment_methods = services.shop.shop_payment_method.get_multi_by_shop(
         db, shop_id=shop.id
     )
-    return [
-        schemas.shop.PaymentMethod(
-            title=payment.payment_method.title,
-            description=payment.payment_method.description,
-            is_active=payment.is_active,
-            information_fields=payment.payment_method.information_fields,
-            id=payment.uuid,
-            information=payment.information,
-        )
-        for payment in shop_payment_methods
-    ]
+
     items = []
     pg_items = []
     for payment in shop_payment_methods:
@@ -210,17 +200,7 @@ def get_shop_payment_methods_for_telegram_shop(
     shop_payment_methods = services.shop.shop_payment_method.get_multi_by_shop(
         db, shop_id=shop.id, is_active=True
     )
-    return [
-        schemas.shop.PaymentMethod(
-            title=payment.payment_method.title,
-            description=payment.payment_method.description,
-            is_active=payment.is_active,
-            information_fields=payment.payment_method.information_fields,
-            id=payment.uuid,
-            information=payment.information,
-        )
-        for payment in shop_payment_methods
-    ]
+
     items = []
     pg_items = []
     for payment in shop_payment_methods:
