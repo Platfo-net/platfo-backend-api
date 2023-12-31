@@ -43,13 +43,16 @@ def create_telegram_shop_order(
         db, uuid=obj_in.payment_method_id)
     if not shop_payment_method:
         raise_http_exception(Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR)
+
     if shop_payment_method.shop_id != shop.id:
         raise_http_exception(
             Error.SHOP_PAYMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
+
     shipment_method = services.shop.shipment_method.get_by_uuid(
         db, uuid=obj_in.shipment_method_id)
     if not shipment_method:
         raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR)
+
     if shipment_method.shop_id != shop.id:
         raise_http_exception(
             Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)

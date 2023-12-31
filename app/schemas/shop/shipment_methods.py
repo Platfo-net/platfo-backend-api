@@ -3,7 +3,7 @@ from pydantic import UUID4, BaseModel
 
 class ShipmentMethodBase(BaseModel):
     title: str
-    price: str
+    price: float
     currency: str
 
 

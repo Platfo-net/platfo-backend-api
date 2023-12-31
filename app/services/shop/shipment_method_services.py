@@ -68,9 +68,9 @@ class ShipmentMethodServices:
     ) -> List[models.shop.ShopShipmentMethod]:
         return (
             db.query(self.model)
-                .join(self.model.shop)
-                .filter(self.model.shop.user_id == user_id)
-                .all()
+            .join(self.model.shop)
+            .filter(self.model.shop.user_id == user_id)
+            .all()
         )
 
     def get_multi_by_shop_id(
@@ -81,8 +81,8 @@ class ShipmentMethodServices:
     ) -> List[models.shop.ShopShipmentMethod]:
         return (
             db.query(self.model)
-                .filter(self.model.shop_id == shop_id)
-                .all()
+            .filter(self.model.shop_id == shop_id)
+            .all()
         )
 
     def delete(
