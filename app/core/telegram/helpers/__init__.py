@@ -1,4 +1,4 @@
-from .helpers import (download_and_upload_telegram_image, get_credit_str,
+from .helpers import (download_and_upload_telegram_image,
                       get_expires_close_shops, has_credit_by_shop_id,
                       has_credit_telegram_bot, load_message, number_to_price)
 from .messages import (get_order_message, get_shop_menu,

@@ -81,26 +81,6 @@ def init_payment_methods(db: Session):
             payment_fields=PaymentMethod.CARD_TRANSFER["payment_fields"],
         ))
 
-    on_spot = services.shop.payment_method.get_by_title(
-        db, title=PaymentMethod.ON_SPOT["title"])
-    if not on_spot:
-        services.shop.payment_method.create(db, obj_in=schemas.shop.PaymentMethodCreate(
-            title=PaymentMethod.ON_SPOT["title"],
-            description=PaymentMethod.ON_SPOT["description"],
-            information_fields=PaymentMethod.ON_SPOT["information_fields"],
-            payment_fields=PaymentMethod.ON_SPOT["payment_fields"],
-        ))
-
-    zarrin_pal = services.shop.payment_method.get_by_title(
-        db, title=PaymentMethod.ZARRIN_PAL["title"])
-    if not zarrin_pal:
-        services.shop.payment_method.create(db, obj_in=schemas.shop.PaymentMethodCreate(
-            title=PaymentMethod.ZARRIN_PAL["title"],
-            description=PaymentMethod.ZARRIN_PAL["description"],
-            information_fields=PaymentMethod.ZARRIN_PAL["information_fields"],
-            payment_fields=PaymentMethod.ZARRIN_PAL["payment_fields"],
-        ))
-
 
 def init_db(db: Session) -> None:
     init_roles(db)

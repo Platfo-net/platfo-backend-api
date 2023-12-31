@@ -70,12 +70,7 @@ class ShopServices:
         *,
         id: int
     ) -> models.shop.ShopShop:
-        return (
-            db.query(self.model)
-            .join(self.model.user)
-            .filter(self.model.id == id)
-            .first()
-        )
+        return db.query(self.model).filter(self.model.id == id).first()
 
     def get_multi_by_user(
         self,
