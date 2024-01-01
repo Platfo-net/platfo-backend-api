@@ -8,3 +8,4 @@ from .shop_payment_method_services import shop_payment_method
 from .shop_services import shop
 from .shop_telegram_bot_services import shop_telegram_bot
 from .telegram_order_services import telegram_order
+from .attribute_services import attribute

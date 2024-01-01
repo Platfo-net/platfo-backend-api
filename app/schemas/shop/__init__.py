@@ -13,3 +13,4 @@ from .shop_payment_method import (ChangePaymentIsActive,
                                   ShopPaymentMethodCreate)
 from .shop_telegram_bot import (ShopConnectTelegramBot, ShopTelegramBotCreate,
                                 ShopTelegramBotRegister)
+from .attribute import AttributeBase, AttributeCreate, AttributeUpdate, Attribute

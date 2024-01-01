@@ -82,6 +82,17 @@ def create_product(
             category_id=category.id if category else None
         )
 
+    attribute_items = [
+        schemas.shop.AttributeCreate(key=item.key, value=item.value)
+        for item in obj_in.attributes
+    ]
+
+    product_attributes = services.shop.attribute.create_bulk(
+        db, objs_in=attribute_items, product_id=product.id)
+
+    attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
+                  for item in product_attributes]
+
     image_url = storage.get_object_url(
         product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
@@ -101,7 +112,8 @@ def create_product(
         image_url=image_url,
         created_at=product.created_at,
         updated_at=product.updated_at,
-        category=cat
+        category=cat,
+        attributes=attributes
     )
 
 
@@ -144,6 +156,22 @@ def update_product(
         product = services.shop.product.update(
             uow, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
 
+    product_attributes = services.shop.attribute.get_product_attributes(db, product_id=product.id)
+    for obj in product_attributes:
+        services.shop.attribute.delete(db, db_obj=obj)
+
+    attribute_items = []
+    for item in obj_in.attributes:
+        attribute_items.append(schemas.shop.AttributeUpdate(
+            key=item.key,
+            value=item.value,
+        ))
+
+    product_attributes = services.shop.attribute.create_bulk(
+        db, objs_in=attribute_items, product_id=product.id)
+    attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
+                  for item in product_attributes]
+
     image_url = storage.get_object_url(
         product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
@@ -162,8 +190,8 @@ def update_product(
         image_url=image_url,
         created_at=product.created_at,
         updated_at=product.updated_at,
-        category=cat
-
+        category=cat,
+        attributes=attributes
     )
 
 
@@ -205,6 +233,8 @@ def get_shop_products(
                 id=product.category.uuid,
                 title=product.category.title,
             )
+        attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
+                      for item in product.attributes]
         products_list.append(
             schemas.shop.Product(
                 id=product.uuid,
@@ -215,7 +245,8 @@ def get_shop_products(
                 currency=product.currency,
                 created_at=product.created_at,
                 updated_at=product.updated_at,
-                category=category
+                category=category,
+                attributes=attributes
             ))
 
     return schemas.shop.ProductListAPI(
@@ -296,6 +327,8 @@ def get_shop_product(
             image=product.category.image,
             image_url=category_image_url,
         )
+    attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
+                  for item in product.attributes]
     return schemas.shop.Product(
         id=product.uuid,
         title=product.title,
@@ -306,6 +339,7 @@ def get_shop_product(
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=category,
+        attributes=attributes
     )
 
 
@@ -359,6 +393,8 @@ def get_shop_products_for_telegram_shop(
                 image=product.category.image,
                 image_url=category_image_url,
             )
+        attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
+                      for item in product.attributes]
         products_list.append(
             schemas.shop.Product(
                 id=product.uuid,
@@ -369,7 +405,8 @@ def get_shop_products_for_telegram_shop(
                 currency=product.currency,
                 created_at=product.created_at,
                 updated_at=product.updated_at,
-                category=category
+                category=category,
+                attributes=attributes
             ))
 
     return schemas.shop.ProductListAPI(
