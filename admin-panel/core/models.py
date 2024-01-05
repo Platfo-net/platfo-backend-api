@@ -1,4 +1,5 @@
 from uuid import uuid4
+
 from django.db import models
 
 
@@ -540,17 +541,13 @@ class ShopOrders(models.Model):
         'ShopShops', models.DO_NOTHING, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True, default=uuid4)
-    payment_reference_number = models.CharField(
-        max_length=255, blank=True, null=True)
-    payment_card_last_four_number = models.CharField(
-        max_length=16, blank=True, null=True)
-    payment_datetime = models.DateTimeField(blank=True, null=True)
-    payment_receipt_image = models.CharField(
-        max_length=255, blank=True, null=True)
     shipment_method = models.ForeignKey(
         'ShopShipmentMethods', models.DO_NOTHING, blank=True, null=True)
-    payment_method = models.ForeignKey(
-        'ShopPaymentMethods', models.DO_NOTHING, blank=True, null=True)
+    shop_payment_method = models.ForeignKey(
+        'ShopShopPaymentMethods', models.DO_NOTHING, blank=True, null=True)
+    is_paid = models.BooleanField(default=False)
+    paid_at = models.DateTimeField(null=True)
+    payment_information = models.TextField(null=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -573,8 +570,8 @@ class ShopPaymentMethods(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
-    information_fields = models.JSONField(blank=True, null=True)  # This field type is a guess.
-    payment_fields = models.JSONField(blank=True, null=True)  # This field type is a guess.
+    information_fields = models.TextField(blank=True, null=True)  # This field type is a guess.
+    payment_fields = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
         managed = False
@@ -632,11 +629,11 @@ class ShopProducts(models.Model):
 
 class ShopShipmentMethods(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
-    price = models.CharField(max_length=255, blank=True, null=True)
+    price = models.FloatField(blank=True, null=True)
     currency = models.CharField(max_length=255, blank=True, null=True)
     shop = models.ForeignKey(
         'ShopShops', models.DO_NOTHING, blank=True, null=True)
-    is_active = models.BooleanField(max_length=255, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
 
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
@@ -676,6 +673,7 @@ class ShopShops(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(blank=True, null=True)
+    is_info_required = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.title

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from core import models
+
+from . import models
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -14,7 +15,7 @@ class UserAdmin(admin.ModelAdmin):
 class ShopAdmin(admin.ModelAdmin):
     model = models.ShopShops
     list_display = (
-        "user", "title", "description", "category"
+        "user", "title", "description", "category", "is_info_required"
     )
 
 
@@ -108,6 +109,13 @@ class CreditPlansAdmin(admin.ModelAdmin):
     )
 
 
+class ShopShipmentMethodsAdmin(admin.ModelAdmin):
+    model = models.ShopShipmentMethods
+    list_display = (
+        "title", "price", "is_active", "shop"
+    )
+
+
 admin.site.register(models.Users, UserAdmin)
 admin.site.register(models.ShopShops, ShopAdmin)
 admin.site.register(models.CreditShopCredits, CreditShopAdmin)
@@ -121,3 +129,4 @@ admin.site.register(models.SocialTelegramLeadMessages, SocialTelegramLeadMessage
 admin.site.register(models.ShopPaymentMethods, ShopPaymentMethodAdmin)
 admin.site.register(models.ShopShopPaymentMethods, ShopShopPaymentMethodAdmin)
 admin.site.register(models.CreditPlans, CreditPlansAdmin)
+admin.site.register(models.ShopShipmentMethods, ShopShipmentMethodsAdmin)
