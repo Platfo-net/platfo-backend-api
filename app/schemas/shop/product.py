@@ -21,12 +21,12 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     category_id: Optional[UUID4] = None
     shop_id: Optional[UUID4] = None
-    attributes: Optional[List[AttributeCreate]] = None
+    attributes: List[AttributeCreate] = []
 
 
 class ProductUpdate(ProductBase):
     category_id: Optional[UUID4] = None
-    attributes: Optional[List[AttributeUpdate]] = None
+    attributes: List[AttributeUpdate] = []
 
 
 class Product(ProductBase):
