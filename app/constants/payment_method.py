@@ -21,14 +21,14 @@ class PaymentMethod:
         "fa": "کارت به کارت",
         "description": "",
         "information_fields": {
-            "Card Number": True,
-            "Name": True,
-            "Bank": False,
+            "card_number": True,
+            "name": True,
+            "bank": False,
         },
         "payment_fields": {
-            "Payment Tracking Number": True,
-            "Payment Datetime": False,
-            "Receipt Image": False,
+            "payment_tracking_number": True,
+            "payment_datetime": False,
+            "receipt_image": False,
         },
         "validation_schema": CardTransferValidationSchema,
     }
