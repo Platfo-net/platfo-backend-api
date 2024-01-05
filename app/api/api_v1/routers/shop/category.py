@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.api import deps
-from app.constants.category import CategoryTitles
+from app.constants.shop_category import ShopCategory
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core import storage
@@ -38,7 +38,7 @@ def create_category(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
-    if obj_in.title not in CategoryTitles.titles:
+    if obj_in.title not in ShopCategory.items:
         raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
     with UnitOfWork(db) as uow:
@@ -78,7 +78,7 @@ def update_category(
     if not category.shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
-    if obj_in.title not in CategoryTitles.titles:
+    if obj_in.title not in ShopCategory.items:
         raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
     with UnitOfWork(db) as uow:

@@ -1,4 +1,4 @@
-class CategoryTitles:
+class ShopCategory:
     DIGITAL_PRODUCTS = "کالای دیجیتال"
     CLOTHING = "پوشاک"
     BAGS_AND_SHOES = "کیف و کفش"
@@ -17,7 +17,7 @@ class CategoryTitles:
     HOME_APPLIANCES = "لوازم خانه و آشپزخانه"
     TOOLS_AND_EQUIPMENT = "ابزارآلات و تجهیزات"
 
-    titles = [
+    items = [
         DIGITAL_PRODUCTS, CLOTHING, BAGS_AND_SHOES,
         ACCESSORY, COSMETICS, RESTAURANT, COFFEE_SHOP,
         EATING_AND_DRINKING, NATIVE_PRODUCTS, ARTWORK,
