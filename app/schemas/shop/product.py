@@ -6,6 +6,7 @@ from typing import List, Optional
 from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
+from .attribute import Attribute, AttributeCreate, AttributeUpdate
 
 from .category import Category
 
@@ -20,10 +21,12 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     category_id: Optional[UUID4] = None
     shop_id: Optional[UUID4] = None
+    attributes: List[AttributeCreate] = []
 
 
 class ProductUpdate(ProductBase):
     category_id: Optional[UUID4] = None
+    attributes: List[AttributeUpdate] = []
 
 
 class Product(ProductBase):
@@ -32,6 +35,7 @@ class Product(ProductBase):
     created_at: datetime
     updated_at: datetime
     image_url: Optional[str] = None
+    attributes: Optional[List[Attribute]] = None
 
 
 class ProductListAPI(BaseModel):
