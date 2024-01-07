@@ -20,7 +20,7 @@ class PlanServices:
     def get_by_uuid(self, db: Session, uuid: UUID4) -> Optional[models.credit.Plan]:
         return (
             db.query(self.model)
-            .join(self.model.features)
+            .join(self.model.features , isouter=True)
             .filter(self.model.uuid == uuid)
             .first()
         )
