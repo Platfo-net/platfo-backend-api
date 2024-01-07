@@ -77,7 +77,7 @@ def extend_shop_credit(
         raise_http_exception(Error.PLAN_NOT_FOUND)
 
     shop_telegram_payment_record = services.credit.shop_telegram_payment_record.create(
-        db, shop_id=shop.id, plan_id=plan.id , amount = plan.discounted_price)
+        db, shop_id=shop.id, plan_id=plan.id, amount=plan.discounted_price)
 
     zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
     callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/credit/credit/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
@@ -89,7 +89,8 @@ def extend_shop_credit(
         "",
         callback,
     )
-    services.credit.shop_telegram_payment_record.add_authority(db , db_obj=shop_telegram_payment_record , authority=result.Authority)
+    services.credit.shop_telegram_payment_record.add_authority(
+        db, db_obj=shop_telegram_payment_record, authority=result.Authority)
     return schemas.credit.PaymentUrl(
         payment_url=f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"
     )
@@ -125,10 +126,9 @@ def verify_telegram_shop_payment_record(
 
     if not shop_credit:
         raise_http_exception(Error.SHOP_CREDIT_NOT_FOUND)
-        
+
     if result.Status == 101:
         return
-        
 
     with UnitOfWork(db) as uow:
         services.credit.shop_credit.add_shop_credit(

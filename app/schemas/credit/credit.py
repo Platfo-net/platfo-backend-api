@@ -19,6 +19,5 @@ class CreditExtend(BaseModel):
     plan_id: UUID4
 
 
-
 class PaymentUrl(BaseModel):
     payment_url: str

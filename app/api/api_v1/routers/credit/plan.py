@@ -47,7 +47,8 @@ def get_plans(
                 original_price=plan.original_price,
                 discounted_price=plan.discounted_price,
                 currency=plan.currency,
-                discount_percentage=int((plan.original_price - plan.discounted_price)/plan.original_price),
+                discount_percentage=int(
+                    (plan.original_price - plan.discounted_price) / plan.original_price),
                 module=plan.module,
             )
         )
