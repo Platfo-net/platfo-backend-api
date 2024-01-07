@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.api import deps
-from app.constants.shop_category import ShopCategory
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.constants.shop_category import ShopCategory
 from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception

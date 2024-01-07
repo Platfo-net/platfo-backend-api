@@ -27,13 +27,13 @@ async def send_lead_order_to_bot_handler(
     if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
         return
     lead = services.social.telegram_lead.get(db, id=lead_id)
-    if not lead:
-        return
+    # if not lead:
+    #     return
     order = services.shop.order.get(db, id=order_id)
     if not order:
         return
 
-    if lead.id != order.lead_id:
+    if lead and lead.id != order.lead_id:
         return
 
     if lead.telegram_bot_id != telegram_bot.id:
@@ -60,8 +60,10 @@ async def send_lead_order_to_bot_handler(
         currency=currency,
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
-    reply_markup = helpers.get_pay_order_reply_markup(
-        order_id, lang)
+    if order.shop_payment_method.payment_method.title == PaymentMethod.CARD_TRANSFER["title"]:
+        reply_markup = helpers.get_pay_order_reply_markup(
+            order_id, lang)
+
     order_message: telegram.Message = await bot.send_message(
         chat_id=lead.chat_id, text=text, reply_markup=reply_markup, parse_mode="HTML")
 
@@ -125,19 +127,6 @@ async def send_lead_pay_message(
             message_reply_to_id=payment_info_message.message_id
         )
         return
-    if order.shop_payment_method.payment_method.title == PaymentMethod.ZARRIN_PAL["title"]:
-        keyboard = [
-            [
-                telegram.InlineKeyboardButton(
-                    text="پرداخت",
-                    url=f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/payment/order/{order.uuid}"  # noqa
-                ),
-            ]
-        ]
-        reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-        await bot.send_message(
-            chat_id=lead.chat_id, text="پرداخت", reply_markup=reply_markup
-        )
 
 
 async def handle_order_payment(

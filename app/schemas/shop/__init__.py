@@ -1,3 +1,5 @@
+from .attribute import (Attribute, AttributeBase, AttributeCreate,
+                        AttributeUpdate)
 from .category import Category, CategoryCreate, CategoryUpdate
 from .order import (Order, OrderChangeStatus, OrderCreate, OrderCreateResponse,
                     OrderItem, OrderItemOrderCreate, OrderItemResponse,
@@ -13,4 +15,3 @@ from .shop_payment_method import (ChangePaymentIsActive,
                                   ShopPaymentMethodCreate)
 from .shop_telegram_bot import (ShopConnectTelegramBot, ShopTelegramBotCreate,
                                 ShopTelegramBotRegister)
-from .attribute import AttributeBase, AttributeCreate, AttributeUpdate, Attribute

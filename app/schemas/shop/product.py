@@ -6,8 +6,8 @@ from typing import List, Optional
 from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
-from .attribute import Attribute, AttributeCreate, AttributeUpdate
 
+from .attribute import Attribute, AttributeCreate, AttributeUpdate
 from .category import Category
 
 

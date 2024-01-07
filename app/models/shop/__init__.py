@@ -1,3 +1,4 @@
+from .attribute import ShopAttribute
 from .category import ShopCategory
 from .order import ShopOrder
 from .order_item import ShopOrderItem
@@ -8,4 +9,3 @@ from .shop import ShopShop
 from .shop_payment_method import ShopShopPaymentMethod
 from .shop_telegram_bot import ShopShopTelegramBot
 from .shop_telegram_order import ShopTelegramOrder
-from .attribute import ShopAttribute

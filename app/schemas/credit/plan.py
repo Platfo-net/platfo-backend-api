@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
 
@@ -11,17 +11,16 @@ class Feature(BaseModel):
 
 class Plan(BaseModel):
     id: UUID4
-    title: str = None
-    description: str = None
+    title: Optional[str] = None
+    description: Optional[str] = None
     is_active: bool = True
-    extend_days: int = None
-    extend_count: int = None
+    extend_days: Optional[int] = None
+    extend_count: Optional[int] = None
 
-    original_price: float = None
-    discounted_price: float = None
-    currency: str = None
-    discount_percentage: float = None
-    is_discounted: bool = False
+    original_price: Optional[float] = None
+    discounted_price: Optional[float] = None
+    currency: Optional[str] = None
+    discount_percentage: Optional[float] = None
 
     module: str = None
 
