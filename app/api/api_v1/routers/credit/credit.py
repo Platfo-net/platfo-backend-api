@@ -19,7 +19,7 @@ from app.core.unit_of_work import UnitOfWork
 router = APIRouter(prefix='/credit')
 
 
-@router.get('/shop/{shop_id}', response_model=schemas.credit.Invoice)
+@router.get('/shop/{shop_id}', response_model=schemas.credit.ShopCredit)
 def get_shop_credit(
     *,
     db: Session = Depends(deps.get_db),
@@ -47,6 +47,51 @@ def get_shop_credit(
     return schemas.credit.ShopCredit(
         expires_at=credit.expires_at,
         is_expired=credit.expires_at < datetime.now()
+    )
+
+
+@router.post('/shop/{shop_id}/extend', response_model=schemas.credit.PaymentUrl)
+def extend_shop_credit(
+    *,
+    db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
+    obj_in: schemas.credit.CreditExtend,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    plan = services.credit.plan.get_by_uuid(db, uuid=obj_in.plan_id)
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.PLAN_NOT_FOUND)
+
+    shop_telegram_payment_record = services.credit.shop_telegram_payment_record.create(
+        db, shop_id=shop.id, plan_id=plan.id)
+
+    zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
+    callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/shop/telegram/{shop_telegram_payment_record.id}/verify"  # noqa
+    result = zarrin_client.service.PaymentRequest(
+        settings.ZARINPAL_MERCHANT_ID,
+        shop_telegram_payment_record.amount,
+        ""
+        "",
+        "",
+        callback,
+    )
+
+    return schemas.credit.PaymentUrl(
+        payment_url=f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"
     )
 
 

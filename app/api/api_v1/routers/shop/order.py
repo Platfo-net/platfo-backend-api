@@ -31,8 +31,8 @@ def create_telegram_shop_order(
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
     lead = services.social.telegram_lead.get_by_uuid(db, uuid=lead_id)
-    if not lead:
-        raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND)
+    # if not lead:
+    #     raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND)
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
         db, shop_id=shop.id)
@@ -66,7 +66,7 @@ def create_telegram_shop_order(
             uow,
             obj_in=obj_in,
             shop_id=shop.id,
-            lead_id=lead.id,
+            lead_id=lead.id if lead else None,
             shop_payment_method_id=shop_payment_method.id,
             shipment_method_id=shipment_method.id,
             order_number=last_order_number + 1,
@@ -91,7 +91,12 @@ def create_telegram_shop_order(
             uow, order_id=order.id)
 
     telegram_tasks.send_lead_order_to_bot_and_support_bot_task.delay(
-        shop_telegram_bot.telegram_bot.id, lead.id, order.id, telegram_order.id, "fa")
+        shop_telegram_bot.telegram_bot.id,
+        lead.id if lead else None,
+        order.id,
+        telegram_order.id,
+        "fa"
+    )
 
     return schemas.shop.order.OrderCreateResponse(
         order_number=str(order.order_number)
