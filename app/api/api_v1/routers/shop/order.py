@@ -137,6 +137,7 @@ def get_orders_by_shop_id(
 
         orders_list.append(schemas.shop.OrderListItem(
             id=order.uuid,
+            order_number=order.order_number,
             first_name=order.first_name,
             last_name=order.last_name,
             phone_number=order.phone_number,
@@ -144,6 +145,8 @@ def get_orders_by_shop_id(
             total_amount=sum,
             currency=Currency.IRT["name"],
             created_at=order.created_at,
+            payment_method = order.shop_payment_method.payment_method.title if order.shop_payment_method else None,
+            shipment_method = order.shipment_method.title,
         )
         )
 
@@ -204,6 +207,8 @@ def get_order(
         state=order.state,
         city=order.city,
         items=items,
+        payment_method = order.shop_payment_method.payment_method.title if order.shop_payment_method else None,
+        shipment_method = order.shipment_method.title,
     )
 
 
@@ -267,4 +272,6 @@ def change_order_status(
         state=order.state,
         city=order.city,
         items=items,
+        payment_method = order.shop_payment_method.payment_method.title if order.shop_payment_method else None,
+        shipment_method = order.shipment_method.title,
     )
