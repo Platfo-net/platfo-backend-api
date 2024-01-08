@@ -273,5 +273,5 @@ def change_order_status(
         city=order.city,
         items=items,
         payment_method = order.shop_payment_method.payment_method.title if order.shop_payment_method else None,
-        shipment_method = order.shipment_method.title,
+        shipment_method = order.shipment_method.title if order.shipment_method else None,
     )
