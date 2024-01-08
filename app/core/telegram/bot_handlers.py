@@ -243,16 +243,12 @@ async def order_change_status_from_dashboard_handler(
     lang: str,
     status,
 ):
-    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    order = services.shop.order.get(db, id=order_id)
     if not order:
         return
 
     if not helpers.has_credit_by_shop_id(db, order.shop_id):
         return
-
-    order = services.shop.order.change_status(
-        db, order=order, status=status["value"])
-
 
     amount = 0
     items = []

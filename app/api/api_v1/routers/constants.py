@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas, services
 from app.api import deps
 from app.constants.application import Application
+from app.constants.order_status import OrderStatus
 from app.constants.platform import Platform
 from app.constants.role import Role
 
@@ -37,3 +38,12 @@ def get_platforms(db: Session = Depends(deps.get_db)) -> Any:
 @router.get('/applications')
 def get_applications(db: Session = Depends(deps.get_db)) -> Any:
     return [{'name': Application.BOT_BUILDER}]
+
+
+
+@router.get('/order-status')
+def get_all_order_status() -> Any:
+    return [
+        item for _ , item in
+        OrderStatus.items.items()
+    ]

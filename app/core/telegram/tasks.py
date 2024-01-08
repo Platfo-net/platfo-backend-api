@@ -158,7 +158,6 @@ def send_lead_pay_notification_to_bot_task(
 @celery.task
 def order_change_status_from_dashboard_task(order_id, status, lang):
     db = SessionLocal()
-
     asyncio.run(
         bot_handlers.order_change_status_from_dashboard_handler(db, order_id, lang, status)
     )
