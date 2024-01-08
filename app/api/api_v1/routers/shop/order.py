@@ -7,6 +7,7 @@ from app.api import deps
 from app.constants.currency import Currency
 from app.constants.errors import Error
 from app.constants.order_status import OrderStatus
+from app.constants.payment_method import PaymentMethod
 from app.constants.role import Role
 from app.core import storage
 from app.core.config import settings
@@ -136,18 +137,17 @@ def get_orders_by_shop_id(
             sum += item.price * item.count
 
         orders_list.append(schemas.shop.OrderListItem(
+            id=order.uuid,
+            order_number=order.order_number,
             first_name=order.first_name,
             last_name=order.last_name,
             phone_number=order.phone_number,
-            email=order.email,
-            state=order.state,
             city=order.city,
-            address=order.address,
-            postal_code=order.postal_code,
-            id=order.uuid,
             total_amount=sum,
             currency=Currency.IRT["name"],
             created_at=order.created_at,
+            payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,  # noqa
+            shipment_method=order.shipment_method.title if order.shipment_method else None,
         )
         )
 
@@ -208,6 +208,8 @@ def get_order(
         state=order.state,
         city=order.city,
         items=items,
+        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,  # noqa
+        shipment_method=order.shipment_method.title,
     )
 
 
@@ -226,7 +228,6 @@ def change_order_status(
         ],
     ),
 ):
-    return
 
     order = services.shop.order.get_by_uuid(db, uuid=order_id)
     if not order:
@@ -257,6 +258,8 @@ def change_order_status(
             )
         )
 
+    telegram_tasks.order_change_status_from_dashboard_task.delay(order.id, "fa")
+
     return schemas.shop.Order(
         id=order.uuid,
         first_name=order.first_name,
@@ -270,4 +273,6 @@ def change_order_status(
         state=order.state,
         city=order.city,
         items=items,
+        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,  # noqa
+        shipment_method=order.shipment_method.title if order.shipment_method else None,
     )

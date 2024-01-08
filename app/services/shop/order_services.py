@@ -127,6 +127,8 @@ class OrderServices:
         items = (db.query(self.model)
                  .filter(self.model.shop_id == shop_id)
                  .join(self.model.items, isouter=True)
+                 .join(self.model.shop_payment_method, isouter=True)
+                 .join(self.model.shipment_method, isouter=True)
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)

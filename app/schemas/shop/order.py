@@ -39,11 +39,18 @@ class OrderItem(BaseModel):
     currency: str
 
 
-class OrderListItem(OrderBase):
+class OrderListItem(BaseModel):
     id: UUID4
+    order_number: int
     total_amount: float
     currency: str
     created_at: Optional[datetime] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    city: Optional[str] = None
+    payment_method: Optional[str] = None
+    shipment_method: Optional[str] = None
 
 
 class OrderListApiResponse(BaseModel):
@@ -64,6 +71,8 @@ class Order(OrderBase):
     total_amount: float
     currency: str
     items: List[OrderItemResponse]
+    payment_method: Optional[str] = None
+    shipment_method: Optional[str] = None
 
 
 class OrderChangeStatus(BaseModel):

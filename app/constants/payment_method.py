@@ -21,9 +21,24 @@ class PaymentMethod:
         "fa": "کارت به کارت",
         "description": "",
         "information_fields": {
-            "card_number": True,
-            "name": True,
-            "bank": False,
+            "card_number": {
+                "name": "card_number",
+                "title": "شماره کارت",
+                "is_required": True,
+                "type": "string"
+            },
+            "name": {
+                "name": "name",
+                "title": "نام صاحب حساب",
+                "is_required": True,
+                "type": "string"
+            },
+            "bank": {
+                "name": "bank",
+                "title": "بانک",
+                "is_required": True,
+                "type": "string"
+            },
         },
         "payment_fields": {
             "payment_tracking_number": True,
@@ -47,7 +62,12 @@ class PaymentMethod:
         "fa": "پرداخت از طریق درگاه زرین پال",
         "description": "",
         "information_fields": {
-            "merchant_id": True,
+            "merchant_id": {
+                "name": "merchant_id",
+                "title": "شناسه کسب و کار",
+                "is_required": True,
+                "type": "string"
+            },
         },
         "payment_fields": {
             "ref_id": True,
