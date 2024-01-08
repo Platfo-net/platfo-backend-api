@@ -234,3 +234,47 @@ async def set_all_bot_commands_task_handler(db: Session, lang):
                 ) for command in TelegramBotCommand.commands
             ]
         )
+
+
+
+async def order_change_status_from_dashboard_handler(
+    db: Session,
+    order_id:int,
+    lang: str,
+    status,
+):
+    order = services.shop.order.get_by_uuid(db, uuid=order_id)
+    if not order:
+        return
+
+    if not helpers.has_credit_by_shop_id(db, order.shop_id):
+        return
+
+    order = services.shop.order.change_status(
+        db, order=order, status=status["value"])
+
+
+    amount = 0
+    items = []
+
+    for item in order.items:
+        amount += item.count * item.price
+        items.append({
+            "price": helpers.number_to_price(int(item.price)),
+            "title": item.product.title,
+            "count": item.count,
+        })
+        
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+
+    bot = Bot(token=security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
+    text = helpers.load_message(
+        lang, "order_change_status_notification",
+        order_status=OrderStatus.items[order.status]["title"][lang],
+        order_number=order.order_number
+    )
+    try:
+        await bot.send_message(chat_id=order.lead.chat_id, text=text)
+    except telegram.error.Forbidden:
+        pass

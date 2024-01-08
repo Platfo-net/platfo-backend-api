@@ -39,11 +39,15 @@ class OrderItem(BaseModel):
     currency: str
 
 
-class OrderListItem(OrderBase):
+class OrderListItem(BaseModel):
     id: UUID4
     total_amount: float
     currency: str
     created_at: Optional[datetime] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    city: Optional[str] = None
 
 
 class OrderListApiResponse(BaseModel):
