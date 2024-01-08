@@ -40,10 +40,9 @@ def get_applications(db: Session = Depends(deps.get_db)) -> Any:
     return [{'name': Application.BOT_BUILDER}]
 
 
-
 @router.get('/order-status')
 def get_all_order_status() -> Any:
     return [
-        item for _ , item in
+        item for _, item in
         OrderStatus.items.items()
     ]

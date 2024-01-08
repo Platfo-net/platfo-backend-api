@@ -253,4 +253,3 @@ async def send_all_order_by_status(
         await update.message.reply_text(
             text, reply_markup=reply_markup, parse_mode="HTML",
         )
-

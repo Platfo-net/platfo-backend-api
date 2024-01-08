@@ -22,22 +22,22 @@ class PaymentMethod:
         "description": "",
         "information_fields": {
             "card_number": {
-                "name" : "card_number",
-                "title" : "شماره کارت",
-                "is_required" : True,
-                "type" : "string"
-                },
+                "name": "card_number",
+                "title": "شماره کارت",
+                "is_required": True,
+                "type": "string"
+            },
             "name": {
-                "name" : "name",
-                "title" : "نام صاحب حساب",
-                "is_required" : True,
-                "type" : "string"
+                "name": "name",
+                "title": "نام صاحب حساب",
+                "is_required": True,
+                "type": "string"
             },
             "bank": {
-                "name" : "bank",
-                "title" : "بانک",
-                "is_required" : True,
-                "type" : "string"
+                "name": "bank",
+                "title": "بانک",
+                "is_required": True,
+                "type": "string"
             },
         },
         "payment_fields": {
@@ -63,10 +63,10 @@ class PaymentMethod:
         "description": "",
         "information_fields": {
             "merchant_id": {
-                "name" : "merchant_id",
-                "title" : "شناسه کسب و کار",
-                "is_required" : True,
-                "type" : "string"
+                "name": "merchant_id",
+                "title": "شناسه کسب و کار",
+                "is_required": True,
+                "type": "string"
             },
         },
         "payment_fields": {

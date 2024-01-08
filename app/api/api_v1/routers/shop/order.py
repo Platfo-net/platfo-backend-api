@@ -6,8 +6,8 @@ from app import models, schemas, services
 from app.api import deps
 from app.constants.currency import Currency
 from app.constants.errors import Error
-from app.constants.payment_method import PaymentMethod
 from app.constants.order_status import OrderStatus
+from app.constants.payment_method import PaymentMethod
 from app.constants.role import Role
 from app.core import storage
 from app.core.config import settings
@@ -146,8 +146,8 @@ def get_orders_by_shop_id(
             total_amount=sum,
             currency=Currency.IRT["name"],
             created_at=order.created_at,
-            payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,
-            shipment_method = order.shipment_method.title if order.shipment_method else None,
+            payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,  # noqa
+            shipment_method=order.shipment_method.title if order.shipment_method else None,
         )
         )
 
@@ -208,8 +208,8 @@ def get_order(
         state=order.state,
         city=order.city,
         items=items,
-        payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,
-        shipment_method = order.shipment_method.title,
+        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,  # noqa
+        shipment_method=order.shipment_method.title,
     )
 
 
@@ -258,7 +258,7 @@ def change_order_status(
             )
         )
 
-    telegram_tasks.order_change_status_from_dashboard_task.delay(order.id , order.status , "fa")
+    telegram_tasks.order_change_status_from_dashboard_task.delay(order.id, "fa")
 
     return schemas.shop.Order(
         id=order.uuid,
@@ -273,6 +273,6 @@ def change_order_status(
         state=order.state,
         city=order.city,
         items=items,
-        payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,        
-        shipment_method = order.shipment_method.title if order.shipment_method else None,
+        payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title]["fa"] if order.shop_payment_method else None,  # noqa
+        shipment_method=order.shipment_method.title if order.shipment_method else None,
     )

@@ -236,12 +236,10 @@ async def set_all_bot_commands_task_handler(db: Session, lang):
         )
 
 
-
 async def order_change_status_from_dashboard_handler(
     db: Session,
-    order_id:int,
+    order_id: int,
     lang: str,
-    status,
 ):
     order = services.shop.order.get(db, id=order_id)
     if not order:
@@ -260,7 +258,6 @@ async def order_change_status_from_dashboard_handler(
             "title": item.product.title,
             "count": item.count,
         })
-        
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
 

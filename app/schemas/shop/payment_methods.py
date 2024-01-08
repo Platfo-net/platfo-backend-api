@@ -23,5 +23,3 @@ class PaymentMethod(PaymentMethodBase):
     information: Optional[dict] = None
     is_active: bool
     items: list = []
-
-
