@@ -51,6 +51,7 @@ class OrderListItem(BaseModel):
     city: Optional[str] = None
     payment_method: Optional[str] = None
     shipment_method: Optional[str] = None
+    status: Optional[str] = None
 
 
 class OrderListApiResponse(BaseModel):
@@ -73,6 +74,8 @@ class Order(OrderBase):
     items: List[OrderItemResponse]
     payment_method: Optional[str] = None
     shipment_method: Optional[str] = None
+    status: Optional[str] = None
+    payment_information: Optional[dict] = None
 
 
 class OrderChangeStatus(BaseModel):
