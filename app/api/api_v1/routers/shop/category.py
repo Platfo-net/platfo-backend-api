@@ -8,7 +8,6 @@ from app import models, schemas, services
 from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
-from app.constants.shop_category import ShopCategory
 from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception
@@ -35,11 +34,8 @@ def create_category(
     if not shop:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
-    if shop.user_id != current_user.id:
+    if not shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
-
-    if obj_in.title not in ShopCategory.items:
-        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
     with UnitOfWork(db) as uow:
         category = services.shop.category.create(
@@ -48,6 +44,7 @@ def create_category(
             shop_id=shop.id,
         )
     image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+    
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,
@@ -77,9 +74,6 @@ def update_category(
 
     if not category.shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
-
-    if obj_in.title not in ShopCategory.items:
-        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
     with UnitOfWork(db) as uow:
         category = services.shop.category.update(
