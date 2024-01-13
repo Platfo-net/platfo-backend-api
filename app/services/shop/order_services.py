@@ -124,14 +124,15 @@ class OrderServices:
     def get_multi_by_shop_id(
         self, db: Session, *, shop_id: int, page: int, page_size: int
     ) -> Tuple[List[models.shop.ShopOrder], Pagination]:
+        from sqlalchemy.orm import joinedload
         items = (db.query(self.model)
                  .filter(self.model.shop_id == shop_id)
-                 .join(self.model.items, isouter=True)
                  .join(self.model.shop_payment_method, isouter=True)
                  .join(self.model.shipment_method, isouter=True)
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)
+                 .options(joinedload(self.model.items)) 
                  .all())
 
         total_count = db.query(self.model).filter(

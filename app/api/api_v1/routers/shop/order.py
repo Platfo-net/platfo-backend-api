@@ -133,7 +133,6 @@ def get_orders_by_shop_id(
     orders, pagination = services.shop.order.get_multi_by_shop_id(
         db, shop_id=shop.id, page=page, page_size=page_size
     )
-
     orders_list = []
     for order in orders:
         sum = 0
@@ -299,3 +298,7 @@ def change_order_status(
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
     )
+
+
+
+
