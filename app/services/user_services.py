@@ -24,6 +24,8 @@ class UserServices(BaseServices[models.User, schemas.UserCreate, schemas.UserUpd
             email=obj_in.email,
             is_email_verified=False,
             is_active=False,
+            first_name=obj_in.first_name,
+            last_name=obj_in.last_name,
         )
         db.add(db_obj)
         db.commit()
