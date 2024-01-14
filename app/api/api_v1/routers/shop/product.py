@@ -14,7 +14,7 @@ from app.core.exception import raise_http_exception
 from app.core.telegram.helpers.helpers import has_credit_by_shop_id
 from app.core.unit_of_work import UnitOfWork
 
-router = APIRouter(prefix='/products')
+router = APIRouter(prefix='/products', tags=["Shop Product"])
 
 
 @router.post('', response_model=schemas.shop.Product)

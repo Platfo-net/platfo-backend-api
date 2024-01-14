@@ -4,7 +4,7 @@ from app.api.api_v1.routers.shop import (category, order, payment,
                                          payment_method, product,
                                          shipment_method, shop, shop_telegram)
 
-router = APIRouter(prefix='/shop', tags=['Shop'])
+router = APIRouter(prefix='/shop', tags=[])
 
 router.include_router(shop.router)
 router.include_router(product.router)

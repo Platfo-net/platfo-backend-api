@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.core.exception import raise_http_exception
 from app.core.unit_of_work import UnitOfWork
 
-router = APIRouter(prefix='/categories')
+router = APIRouter(prefix='/categories', tags=["Shop Category"])
 
 
 @router.post('', response_model=schemas.shop.Category)
@@ -44,7 +44,7 @@ def create_category(
             shop_id=shop.id,
         )
     image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
-    
+
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,

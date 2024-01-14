@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import desc
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models, schemas
 from app.core.unit_of_work import UnitOfWork
@@ -124,7 +124,6 @@ class OrderServices:
     def get_multi_by_shop_id(
         self, db: Session, *, shop_id: int, page: int, page_size: int
     ) -> Tuple[List[models.shop.ShopOrder], Pagination]:
-        from sqlalchemy.orm import joinedload
         items = (db.query(self.model)
                  .filter(self.model.shop_id == shop_id)
                  .join(self.model.shop_payment_method, isouter=True)
@@ -132,7 +131,7 @@ class OrderServices:
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)
-                 .options(joinedload(self.model.items)) 
+                 .options(joinedload(self.model.items))
                  .all())
 
         total_count = db.query(self.model).filter(

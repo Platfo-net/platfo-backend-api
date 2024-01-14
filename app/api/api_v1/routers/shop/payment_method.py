@@ -12,7 +12,7 @@ from app.constants.payment_method import PaymentMethod
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/payment-methods")
+router = APIRouter(prefix="/payment-methods" , tags=["Shop Payment Method"])
 
 
 @router.get("/{shop_id}/all", response_model=List[schemas.shop.PaymentMethod])

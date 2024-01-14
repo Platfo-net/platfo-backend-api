@@ -10,7 +10,7 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/shipment-methods")
+router = APIRouter(prefix="/shipment-methods", tags=["Shop Shipment Method"])
 
 
 @router.post("", response_model=schemas.shop.ShipmentMethod)

@@ -13,7 +13,7 @@ from app.core.exception import raise_http_exception
 from app.core.unit_of_work import UnitOfWork
 from app.core.utils import generate_random_support_token
 
-router = APIRouter(prefix='/shop')
+router = APIRouter(prefix='/shop', tags=["Shop Shop"])
 
 
 @router.get('/all', response_model=List[schemas.shop.Shop])

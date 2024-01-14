@@ -15,7 +15,7 @@ from app.core.exception import raise_http_exception
 from app.core.telegram import tasks as telegram_tasks
 from app.core.unit_of_work import UnitOfWork
 
-router = APIRouter(prefix="/orders")
+router = APIRouter(prefix="/orders", tags=["Shop Order"])
 
 
 @router.post(
@@ -298,7 +298,3 @@ def change_order_status(
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
     )
-
-
-
-

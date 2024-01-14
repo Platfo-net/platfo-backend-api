@@ -17,7 +17,7 @@ from app.core.telegram import tasks as telegram_tasks
 from app.core.unit_of_work import UnitOfWork
 from app.core.utils import generate_random_support_token
 
-router = APIRouter(prefix='/telegram')
+router = APIRouter(prefix='/telegram', tags=["Shop Telegram"])
 
 
 @router.post('/create-shop', response_model=schemas.shop.ShopTelegramBotRegister)

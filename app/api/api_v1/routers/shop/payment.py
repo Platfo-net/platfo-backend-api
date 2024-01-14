@@ -10,7 +10,7 @@ from app.constants.payment_method import PaymentMethod
 from app.core.config import settings
 from app.core.telegram import tasks as telegram_tasks
 
-router = APIRouter(prefix='/payment')
+router = APIRouter(prefix='/payment', tags=["Shop Payment"])
 
 
 @router.get("/order/{order_id}", response_class=RedirectResponse)
@@ -55,7 +55,8 @@ def get_order_payment_link(
         return f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"
 
 
-@router.get("/zarin-pal/{order_id}/verify", status_code=status.HTTP_200_OK)
+@router.get("/zarin-pal/{order_id}/verify", status_code=status.HTTP_200_OK,
+            include_in_schema=False)
 def verify_order_payment(
     *,
     db: Session = Depends(deps.get_db),
