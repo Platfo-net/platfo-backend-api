@@ -12,10 +12,10 @@ from app.constants.payment_method import PaymentMethod
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 
-router = APIRouter(prefix="/payment-methods" , tags=["Shop Payment Method"])
+router = APIRouter(prefix="/payment-methods", tags=["Shop Payment Method"])
 
 
-@router.get("/{shop_id}/all", response_model=List[schemas.shop.PaymentMethod])
+@router.get("/{shop_id}/all", response_model=List[schemas.shop.PaymentMethodGroup])
 def get_shop_payment_methods(
     *,
     db: Session = Depends(deps.get_db),
@@ -40,43 +40,66 @@ def get_shop_payment_methods(
         db, shop_id=shop.id
     )
 
-    items = []
     pg_items = []
+    cash = []
     for payment in shop_payment_methods:
         if payment.payment_method.title in PaymentMethod.payment_gateway_items:
             pg_items.append(
-                schemas.shop.PaymentMethod(
-                    title=payment.payment_method.title,
+                schemas.shop.PaymentMethodGroupView(
+                    title=PaymentMethod.items[payment.payment_method.title]["fa"],
                     description=payment.payment_method.description,
-                    is_active=payment.is_active,
-                    information_fields=payment.payment_method.information_fields,
                     id=payment.uuid,
-                    information=payment.information,
+                    is_active=payment.is_active,
                 )
             )
         else:
-            items.append(
-                schemas.shop.PaymentMethod(
-                    title=payment.payment_method.title,
+            cash.append(
+                schemas.shop.PaymentMethodGroupView(
+                    title=PaymentMethod.items[payment.payment_method.title]["fa"],
                     description=payment.payment_method.description,
                     is_active=payment.is_active,
-                    information_fields=payment.payment_method.information_fields,
                     id=payment.uuid,
-                    information=payment.information,
                 )
             )
-    items.append(
-        schemas.shop.PaymentMethod(
-            title="Payment Gateway",
-            description="",
-            is_active=True,
-            information_fields={},
-            id=uuid4(),
-            information={},
-            items=pg_items,
+
+    return [
+        schemas.shop.PaymentMethodGroup(
+            title="آنلاین",
+            items=pg_items
+        ),
+        schemas.shop.PaymentMethodGroup(
+            title="نقدی",
+            items=cash
         )
+    ]
+
+
+@router.get("/{payment_method_id}", response_model=schemas.shop.PaymentMethod)
+def get_shop_payment_method(
+    *,
+    db: Session = Depends(deps.get_db),
+    payment_method_id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER["name"],
+            Role.ADMIN["name"],
+            Role.DEVELOPER["name"],
+        ],
+    ),
+):
+    shop_payment_method = services.shop.shop_payment_method.get_by_uuid(
+        db, uuid=payment_method_id
     )
-    return items
+
+    return schemas.shop.PaymentMethod(
+        title=shop_payment_method.payment_method.title,
+        description=shop_payment_method.payment_method.description,
+        is_active=shop_payment_method.is_active,
+        information_fields=shop_payment_method.payment_method.information_fields,
+        id=shop_payment_method.uuid,
+        information=shop_payment_method.information,
+    )
 
 
 @router.put("/{id}/change-is-active", status_code=status.HTTP_200_OK)

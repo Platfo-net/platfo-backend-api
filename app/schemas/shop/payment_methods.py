@@ -22,4 +22,18 @@ class PaymentMethod(PaymentMethodBase):
     information_fields: dict
     information: Optional[dict] = None
     is_active: bool
-    items: list = []
+
+
+class PaymentMethodGroupView(PaymentMethodBase):
+    id: UUID4
+    is_active: bool
+
+
+class PaymentMethodGroup(BaseModel):
+    title: str
+    items: list[PaymentMethodGroupView] = []
+
+
+class PaymentMethodGroupList(BaseModel):
+    payment_gateway: PaymentMethodGroup
+    cash: PaymentMethodGroup
