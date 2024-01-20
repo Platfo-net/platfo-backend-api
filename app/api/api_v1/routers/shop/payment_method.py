@@ -15,7 +15,7 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix="/payment-methods", tags=["Shop Payment Method"])
 
 
-@router.get("/{shop_id}/all", response_model=List[schemas.shop.PaymentMethodView])
+@router.get("/{shop_id}/all", response_model=List[schemas.shop.PaymentMethodGroup])
 def get_shop_payment_methods(
     *,
     db: Session = Depends(deps.get_db),
@@ -40,14 +40,13 @@ def get_shop_payment_methods(
         db, shop_id=shop.id
     )
 
-    items = []
     pg_items = []
     cash = []
     for payment in shop_payment_methods:
         if payment.payment_method.title in PaymentMethod.payment_gateway_items:
             pg_items.append(
                 schemas.shop.PaymentMethodGroupView(
-                    title=payment.payment_method.title,
+                    title=PaymentMethod.items[payment.payment_method.title]["fa"],
                     description=payment.payment_method.description,
                     id=payment.uuid,
                     is_active=payment.is_active,
@@ -56,26 +55,26 @@ def get_shop_payment_methods(
         else:
             cash.append(
                 schemas.shop.PaymentMethodGroupView(
-                    title=payment.payment_method.title,
+                    title=PaymentMethod.items[payment.payment_method.title]["fa"],
                     description=payment.payment_method.description,
                     is_active=payment.is_active,
                     id=payment.uuid,
                 )
             )
 
-    return schemas.shop.PaymentMethodGroupList(
-        payment_gateway=schemas.shop.PaymentMethodGroup(
+    return [
+        schemas.shop.PaymentMethodGroup(
             title="آنلاین",
             items=pg_items
         ),
-        cash=schemas.shop.PaymentMethodGroup(
+        schemas.shop.PaymentMethodGroup(
             title="نقدی",
             items=cash
         )
-    )
+    ]
 
 
-@router.get("/{shop_id}", response_model=schemas.shop.PaymentMethod)
+@router.get("/{payment_method_id}", response_model=schemas.shop.PaymentMethod)
 def get_shop_payment_method(
     *,
     db: Session = Depends(deps.get_db),
