@@ -7,6 +7,7 @@ from app import models, schemas, services
 from app.api import deps
 from app.constants.application import Application
 from app.constants.order_status import OrderStatus
+from app.constants.shop_category import ShopCategory
 from app.constants.platform import Platform
 from app.constants.role import Role
 
@@ -45,4 +46,15 @@ def get_all_order_status() -> Any:
     return [
         item for _, item in
         OrderStatus.items.items()
+    ]
+
+
+@router.get('/shop-categories')
+def get_shop_categories() -> Any:
+    return [
+        {
+            "value": key,
+            "title": value,
+        } for key, value in
+        ShopCategory.items.items()
     ]
