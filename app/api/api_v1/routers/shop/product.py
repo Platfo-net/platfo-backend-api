@@ -93,7 +93,7 @@ def create_product(
     attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
                   for item in product_attributes]
 
-    product_variants = services.shop.variant.create_bulk(
+    product_variants = services.shop.product_variant.create_bulk(
         db, variants=obj_in.variants, product_id=product.id)
 
     variants = [
@@ -171,7 +171,7 @@ def update_product(
             uow, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
 
     services.shop.attribute.delete_by_product_id(db, product_id=product.id)
-    services.shop.variant.delete_by_product_id(db, product_id=product.id)
+    services.shop.product_variant.delete_by_product_id(db, product_id=product.id)
 
     attribute_items = []
     for item in obj_in.attributes:
@@ -185,7 +185,7 @@ def update_product(
     attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
                   for item in product_attributes]
 
-    product_variants = services.shop.variant.create_bulk(
+    product_variants = services.shop.product_variant.create_bulk(
         db, variants=obj_in.variants, product_id=product.id)
 
     variants = [
@@ -320,7 +320,7 @@ def delete_product(
     has_order_items = services.shop.order_item.has_item_with_product_id(
         db, product_id=product.id)
     services.shop.attribute.delete_by_product_id(db, product_id=product.id)
-    services.shop.variant.delete_by_product_id(db, product_id=product.id)
+    services.shop.product_variant.delete_by_product_id(db, product_id=product.id)
 
     with UnitOfWork(db) as uow:
         if has_order_items:

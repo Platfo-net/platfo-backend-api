@@ -50,4 +50,4 @@ class VariantServices:
         return db.query(self.model).filter(self.model.uuid == uuid).first()
 
 
-variant = VariantServices(models.shop.ShopProductVariant)
+product_variant = VariantServices(models.shop.ShopProductVariant)
