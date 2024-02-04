@@ -9,6 +9,7 @@ from app.schemas.pagination import Pagination
 class OrderItemOrderCreate(BaseModel):
     product_id: UUID4
     count: int
+    variant_id: Optional[UUID4] = None
 
 
 class OrderBase(BaseModel):
@@ -37,6 +38,8 @@ class OrderItem(BaseModel):
     count: int
     price: float
     currency: str
+    variant_title: Optional[str] = None
+    product_title: str
 
 
 class OrderListItem(BaseModel):

@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from sqlalchemy import delete
 
 
 class AttributeServices:
@@ -26,11 +27,11 @@ class AttributeServices:
         db.commit()
         return db_objs
 
-    def get_product_attributes(
+    def delete_by_product_id(
         self, db: Session, *, product_id: int
     ):
-        query = db.query(self.model).filter(self.model.product_id == product_id)
-        return query.all()
+        q = delete(self.model).where(self.model.product_id == product_id)
+        db.execute(q)
 
     def delete(
             self,

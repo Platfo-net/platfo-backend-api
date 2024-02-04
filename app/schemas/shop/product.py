@@ -8,6 +8,7 @@ from pydantic import UUID4, BaseModel
 from app.schemas.pagination import Pagination
 
 from .attribute import Attribute, AttributeCreate, AttributeUpdate
+from .product_variant import VariantCreate, Variant
 from .category import Category
 
 
@@ -22,6 +23,7 @@ class ProductCreate(ProductBase):
     category_id: Optional[UUID4] = None
     shop_id: Optional[UUID4] = None
     attributes: List[AttributeCreate] = []
+    variants: List[VariantCreate]
 
 
 class ProductUpdate(ProductBase):
@@ -36,6 +38,7 @@ class Product(ProductBase):
     updated_at: datetime
     image_url: Optional[str] = None
     attributes: Optional[List[Attribute]] = None
+    variants: Optional[List[Variant]] = None
 
 
 class ProductListAPI(BaseModel):

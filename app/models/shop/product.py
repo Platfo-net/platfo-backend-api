@@ -45,3 +45,4 @@ class ShopProduct(Base):
     attributes = relationship('ShopAttribute', back_populates="product")
 
     shop = relationship('ShopShop', back_populates="products")
+    variants = relationship('ShopProductVariant', back_populates="product")

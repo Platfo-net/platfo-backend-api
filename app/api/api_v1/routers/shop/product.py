@@ -93,6 +93,19 @@ def create_product(
     attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
                   for item in product_attributes]
 
+    product_variants = services.shop.variant.create_bulk(
+        db, variants=obj_in.variants, product_id=product.id)
+
+    variants = [
+        schemas.shop.Variant(
+            id=variant.uuid,
+            title=variant.title,
+            price=variant.price,
+            currency=variant.currency,
+            is_available=variant.is_available,
+        )
+        for variant in product_variants
+    ]
     image_url = storage.get_object_url(
         product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
@@ -113,7 +126,8 @@ def create_product(
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=cat,
-        attributes=attributes
+        attributes=attributes,
+        variants=variants
     )
 
 
@@ -156,9 +170,8 @@ def update_product(
         product = services.shop.product.update(
             uow, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
 
-    product_attributes = services.shop.attribute.get_product_attributes(db, product_id=product.id)
-    for obj in product_attributes:
-        services.shop.attribute.delete(db, db_obj=obj)
+    services.shop.attribute.delete_by_product_id(db, product_id=product.id)
+    services.shop.variant.delete_by_product_id(db, product_id=product.id)
 
     attribute_items = []
     for item in obj_in.attributes:
@@ -171,6 +184,20 @@ def update_product(
         db, objs_in=attribute_items, product_id=product.id)
     attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
                   for item in product_attributes]
+
+    product_variants = services.shop.variant.create_bulk(
+        db, variants=obj_in.variants, product_id=product.id)
+
+    variants = [
+        schemas.shop.Variant(
+            id=variant.uuid,
+            title=variant.title,
+            price=variant.price,
+            currency=variant.currency,
+            is_available=variant.is_available,
+        )
+        for variant in product_variants
+    ]
 
     image_url = storage.get_object_url(
         product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
@@ -191,7 +218,8 @@ def update_product(
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=cat,
-        attributes=attributes
+        attributes=attributes,
+        variants=variants,
     )
 
 
@@ -235,6 +263,17 @@ def get_shop_products(
             )
         attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
                       for item in product.attributes]
+
+        variants = [
+            schemas.shop.Variant(
+                id=variant.uuid,
+                title=variant.title,
+                price=variant.price,
+                currency=variant.currency,
+                is_available=variant.is_available,
+            )
+            for variant in product.variants
+        ]
         products_list.append(
             schemas.shop.Product(
                 id=product.uuid,
@@ -246,7 +285,8 @@ def get_shop_products(
                 created_at=product.created_at,
                 updated_at=product.updated_at,
                 category=category,
-                attributes=attributes
+                attributes=attributes,
+                variants=variants,
             ))
 
     return schemas.shop.ProductListAPI(
@@ -279,6 +319,9 @@ def delete_product(
 
     has_order_items = services.shop.order_item.has_item_with_product_id(
         db, product_id=product.id)
+    services.shop.attribute.delete_by_product_id(db, product_id=product.id)
+    services.shop.variant.delete_by_product_id(db, product_id=product.id)
+
     with UnitOfWork(db) as uow:
         if has_order_items:
             services.shop.product.soft_delete(uow, db_obj=product)
@@ -329,6 +372,17 @@ def get_shop_product(
         )
     attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
                   for item in product.attributes]
+
+    variants = [
+        schemas.shop.Variant(
+            id=variant.uuid,
+            title=variant.title,
+            price=variant.price,
+            currency=variant.currency,
+            is_available=variant.is_available,
+        )
+        for variant in product.variants
+    ]
     return schemas.shop.Product(
         id=product.uuid,
         title=product.title,
@@ -339,7 +393,8 @@ def get_shop_product(
         created_at=product.created_at,
         updated_at=product.updated_at,
         category=category,
-        attributes=attributes
+        attributes=attributes,
+        variants=variants
     )
 
 
@@ -395,6 +450,17 @@ def get_shop_products_for_telegram_shop(
             )
         attributes = [schemas.shop.Attribute(key=item.key, value=item.value)
                       for item in product.attributes]
+
+        variants = [
+            schemas.shop.Variant(
+                id=variant.uuid,
+                title=variant.title,
+                price=variant.price,
+                currency=variant.currency,
+                is_available=variant.is_available,
+            )
+            for variant in product.variants
+        ]
         products_list.append(
             schemas.shop.Product(
                 id=product.uuid,
@@ -406,7 +472,8 @@ def get_shop_products_for_telegram_shop(
                 created_at=product.created_at,
                 updated_at=product.updated_at,
                 category=category,
-                attributes=attributes
+                attributes=attributes,
+                variants=variants
             ))
 
     return schemas.shop.ProductListAPI(

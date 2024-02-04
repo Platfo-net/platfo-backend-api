@@ -441,3 +441,9 @@ class Error:
         "status_code": 400,
         "code": 192,
     }
+
+    SHOP_PRODUCT_VARIANT_NOT_FOUND_ERROR = {
+        "text": "Product variant not found.",
+        "status_code": 404,
+        "code": 200,
+    }

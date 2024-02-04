@@ -98,6 +98,7 @@ class ProductServices:
             .filter(*conditions)
             .join(self.model.category, isouter=True)
             .join(self.model.attributes, isouter=True)
+            .join(self.model.variants, isouter=True)
             .order_by(desc(self.model.created_at))
             .offset(page_size * (page - 1))
             .limit(page_size)
