@@ -66,7 +66,8 @@ class OrderItemResponse(BaseModel):
     count: int
     price: float
     currency: str
-    title: str
+    variant_title: Optional[str] = None
+    product_title: str
     image: Optional[str]
 
 

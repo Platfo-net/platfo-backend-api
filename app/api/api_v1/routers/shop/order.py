@@ -218,7 +218,8 @@ def get_order(
                 count=item.count,
                 price=item.price,
                 currency=item.currency,
-                title=item.product.title,
+                product_title=item.product_title,
+                variant_title=item.variant_title,
                 image=image_url,
             )
         )
@@ -286,7 +287,8 @@ def change_order_status(
                 count=item.count,
                 price=item.price,
                 currency=item.currency,
-                title=item.product.title,
+                product_title=item.product_title,
+                variant_title=item.variant_title,
                 image=image_url,
             )
         )
