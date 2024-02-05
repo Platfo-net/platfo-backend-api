@@ -160,3 +160,54 @@ def connect_bot_to_shop(
         first_name=bot.first_name,
         username=bot.username,
     )
+
+
+@router.get('/{shop_id}/all', response_model=schemas.social.TelegramLeadListItem)
+def get_telegram_bot_leads(
+        *,
+        db: Session = Depends(deps.get_db),
+        shop_id: UUID4,
+        page: int = 1,
+        page_size: int = 20,
+        current_user: models.User = Security(
+            deps.get_current_active_user,
+            scopes=[
+                Role.USER['name'],
+                Role.ADMIN['name'],
+                Role.DEVELOPER['name'],
+            ],
+        ),
+) -> Any:
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    if shop.user_id != current_user.id:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
+        db, shop_id=shop.id
+    )
+    leads, pagination = services.social.telegram_lead. \
+        get_multi_by_telegram_bot_id(db,
+                                     telegram_bot_id=shop_telegram_bot.telegram_bot_id,
+                                     page=page,
+                                     page_size=page_size
+                                     )
+
+    lead_items = [
+        schemas.social.TelegramLead(
+            chat_id=lead.chat_id,
+            telegram_bot_id=lead.telegram_bot_id,
+            first_name=lead.first_name,
+            last_name=lead.last_name,
+            username=leads.username,
+            lead_number=lead.lead_number,
+        )
+        for lead in leads
+    ]
+
+    return schemas.social.TelegramLeadListItem(
+        items=lead_items,
+        pagination=pagination
+    )
