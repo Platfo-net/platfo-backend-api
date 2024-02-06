@@ -41,6 +41,19 @@ class TelegramBotServices:
         db.refresh(db_obj)
         return db_obj
 
+    def update(
+        self,
+        db: Session,
+        *,
+        db_obj: models.TelegramBot,
+        obj_in: schemas.TelegramBotUpdate,
+    ) -> models.TelegramBot:
+        db_obj.welcome_message = obj_in.welcome_message
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
     def get(
             self,
             db: Session,

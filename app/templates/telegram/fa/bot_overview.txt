@@ -1,0 +1,6 @@
+{{ welcome_message }}
+
+———
+<a href="https://t.me/platfo_net">
+<strong>قدرت گرفته از پلتفو</strong>
+</a>
