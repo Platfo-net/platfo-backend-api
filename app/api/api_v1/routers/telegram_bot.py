@@ -86,7 +86,7 @@ def add_telegram_bot(
     )
 
 
-@router.put('/update-bot', response_model=schemas.TelegramBot)
+@router.put('', response_model=schemas.TelegramBot)
 def update_bot(
     *,
     db: Session = Depends(deps.get_db),
@@ -137,7 +137,6 @@ def get_telegram_bots_list(
         id=bot.uuid,
         first_name=bot.first_name,
         username=bot.username,
-        welcome_message=bot.welcome_message
     ) for bot in bots]
 
 

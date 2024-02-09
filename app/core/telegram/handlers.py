@@ -233,20 +233,23 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
 
         update = telegram.Update.de_json(data, bot)
         if update.message.text == TelegramBotCommand.START["command"]:
-            if shop_telegram_bot:
+            if telegram_bot.welcome_message:
+                text = helpers.load_message(
+                    lang, "bot_overview", welcome_message=telegram_bot.welcome_message)
+                await update.message.reply_text(
+                    text=text,
+                    parse_mode="HTML"
+                )
+            else:
+                if not shop_telegram_bot:
+                    return
+
                 text = helpers.load_message(
                     lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)
                 await update.message.reply_text(
                     text=text,
                     reply_markup=helpers.get_shop_menu(
                         shop_telegram_bot.shop.uuid, lead.uuid, lang),
-                    parse_mode="HTML"
-                )
-            else:
-                text = helpers.load_message(
-                    lang, "bot_overview", welcome_message=telegram_bot.welcome_message)
-                await update.message.reply_text(
-                    text=text,
                     parse_mode="HTML"
                 )
 
