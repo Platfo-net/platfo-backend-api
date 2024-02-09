@@ -7,7 +7,7 @@ from app.schemas.pagination import Pagination
 
 class TelegramLeadBase(BaseModel):
     chat_id: int
-    telegram_bot_id: int
+    telegram_bot_id: Optional[int] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     username: Optional[str] = None

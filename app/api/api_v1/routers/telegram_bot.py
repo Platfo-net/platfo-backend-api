@@ -198,7 +198,6 @@ def get_telegram_bot_leads(
     lead_items = [
         schemas.social.TelegramLead(
             chat_id=lead.chat_id,
-            telegram_bot_id=lead.telegram_bot_id,
             first_name=lead.first_name,
             last_name=lead.last_name,
             username=leads.username,
