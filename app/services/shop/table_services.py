@@ -27,6 +27,7 @@ class TableServices:
         db.commit()
         db.refresh(db_obj)
         return db_obj
+    
 
     def update(
         self,
@@ -45,8 +46,15 @@ class TableServices:
     def get(self, db: Session, *, id: int) -> models.shop.ShopTable:
         return (
             db.query(self.model)
-            .join(self.model.items, isouter=True)
             .filter(self.model.id == id)
+            .first()
+        )
+        
+    def get_by_shop_and_title(self, db: Session, *, shop_id: int , title: str) -> models.shop.ShopTable:
+        return (
+            db.query(self.model)
+            .filter(self.model.title == title)
+            .filter(self.model.shop_id == shop_id)
             .first()
         )
 
@@ -61,6 +69,12 @@ class TableServices:
         self, db: Session, *, shop_id: int
     ) -> List[models.shop.ShopTable]:
         return db.query(self.model).filter(self.model.shop_id == shop_id).all()
+
+    def delete(
+        self, db: Session, *, db_obj: models.shop.ShopTable
+    ) -> List[models.shop.ShopTable]:
+        db.delete(db_obj)
+        db.commit()
 
 
 table = TableServices(models.shop.ShopTable)

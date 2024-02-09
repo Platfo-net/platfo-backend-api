@@ -458,6 +458,11 @@ class Error:
         "status_code": 400,
         "code": 195,
     }
+    SHOP_DUPLICATE_TABLE_ERROR = {
+        "text": "There is another table with this name",
+        "status_code": 400,
+        "code": 195,
+    }
 
     SHOP_PRODUCT_VARIANT_NOT_FOUND_ERROR = {
         "text": "Product variant not found.",

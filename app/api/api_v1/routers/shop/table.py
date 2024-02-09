@@ -35,15 +35,19 @@ def create_table(
     if not shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
+    if services.shop.table.get_by_shop_and_title(db, shop_id=shop.id, title=obj_in.title.strip()):
+        raise_http_exception(Error.SHOP_DUPLICATE_TABLE_ERROR)
+
     table = services.shop.table.create(
         db,
         obj_in=obj_in,
         shop_id=shop.id,
     )
 
-    return schemas.shop.Table(
+    return schemas.shop.TableItem(
         id=table.uuid,
-        title=table.title
+        title=table.title,
+        url=f"{settings.PLATFO_SHOPS_BASE_URL}/{table.shop.uuid}?table={table.uuid}",
     )
 
 
@@ -102,7 +106,7 @@ def get_tables(
     tables = services.shop.table.get_multi_by_shop_id(db, shop_id=shop.id)
 
     return [
-        schemas.shop.Table(
+        schemas.shop.TableItem(
             id=table.uuid,
             title=table.title,
             url=f"{settings.PLATFO_SHOPS_BASE_URL}/{shop_id}?table={table.uuid}"
@@ -154,14 +158,16 @@ def delete_table(
     ),
 ):
 
-    table = services.shop.category.get_by_uuid(db, uuid=id)
+    table = services.shop.table.get_by_uuid(db, uuid=id)
     if not table:
         raise_http_exception(Error.SHOP_TABLE_NOT_FOUND_ERROR)
 
     if not table.shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_TABLE_NOT_FOUND_ACCESS_DENIED_ERROR)
 
-    if services.shop.order.has_order_with_table(db, table.id):
+    if services.shop.order.has_order_with_table(db, table_id=table.id):
         raise_http_exception(Error.SHOP_TABLE_NOT_FOUND_ACCESS_DENIED_ERROR)
+
+    services.shop.table.delete(db, db_obj=table)
 
     return
