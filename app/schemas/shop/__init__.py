@@ -8,6 +8,7 @@ from .payment_methods import (PaymentMethod, PaymentMethodCreate,
                               PaymentMethodGroup, PaymentMethodGroupList,
                               PaymentMethodGroupView, PaymentMethodUpdate)
 from .product import Product, ProductCreate, ProductListAPI, ProductUpdate
+from .product_variant import Variant, VariantCreate
 from .shipment_methods import (ChangeShipmentIsActive, ShipmentMethod,
                                ShipmentMethodCreate, ShipmentMethodUpdate)
 from .shop import Shop, ShopConnectSupport, ShopCreate, ShopState, ShopUpdate
@@ -16,4 +17,4 @@ from .shop_payment_method import (ChangePaymentIsActive,
                                   ShopPaymentMethodCreate)
 from .shop_telegram_bot import (ShopConnectTelegramBot, ShopTelegramBotCreate,
                                 ShopTelegramBotRegister)
-from .product_variant import VariantCreate, Variant
+from .table import Table, TableCreate, TableItem, TableUpdate

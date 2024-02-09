@@ -13,9 +13,11 @@ from app.models.notifier import Campaign, CampaignLead
 from app.models.notifier.campaign import Campaign
 from app.models.notifier.campaign_lead import CampaignLead
 from app.models.role import Role
-from app.models.shop import (ShopCategory, ShopOrder, ShopOrderItem,
-                             ShopPaymentMethod, ShopProduct,
-                             ShopShipmentMethod, ShopShop, ShopProductVariant)
+from app.models.shop import (ShopAttribute, ShopCategory, ShopOrder,
+                             ShopOrderItem, ShopPaymentMethod, ShopProduct,
+                             ShopProductVariant, ShopShipmentMethod, ShopShop,
+                             ShopShopPaymentMethod, ShopShopTelegramBot,
+                             ShopTable, ShopTelegramOrder)
 from app.models.social import TelegramLead, TelegramLeadMessage
 from app.models.telegram_bot import TelegramBot
 from app.models.user import User

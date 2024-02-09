@@ -30,3 +30,4 @@ class ShopShop(Base):
     credit = relationship("ShopCredit", back_populates="shop")
     payment_methods = relationship("ShopShopPaymentMethod", back_populates="shop")
     payment_records = relationship("CreditShopTelegramPaymentRecord", back_populates="shop")
+    tables = relationship("ShopTable", back_populates="shop")

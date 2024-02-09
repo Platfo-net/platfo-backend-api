@@ -5,6 +5,8 @@ from pydantic import UUID4, BaseModel
 
 from app.schemas.pagination import Pagination
 
+from .table import Table
+
 
 class OrderItemOrderCreate(BaseModel):
     product_id: UUID4
@@ -27,6 +29,7 @@ class OrderCreate(OrderBase):
     items: List[OrderItemOrderCreate]
     payment_method_id: UUID4
     shipment_method_id: UUID4
+    table_id: Optional[UUID4] = None
 
 
 class OrderCreateResponse(BaseModel):
@@ -55,6 +58,7 @@ class OrderListItem(BaseModel):
     payment_method: Optional[str] = None
     shipment_method: Optional[str] = None
     status: Optional[str] = None
+    table: Optional[Table] = None
 
 
 class OrderListApiResponse(BaseModel):
@@ -80,6 +84,7 @@ class Order(OrderBase):
     shipment_method: Optional[str] = None
     status: Optional[str] = None
     payment_information: Optional[dict] = None
+    table: Optional[Table] = None
 
 
 class OrderChangeStatus(BaseModel):

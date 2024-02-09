@@ -7,6 +7,9 @@
     {{ item["title"] }} : ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] }}{{ currency }}  )
 {% endfor %}
 
+{% if table_title %}
+میز: {{ table_title }}
+{% endif %}
 شیوه ارسال: {{ shipment_method_title }}
 مبلغ: {{ shipment_method_price }}{{ currency }}
 

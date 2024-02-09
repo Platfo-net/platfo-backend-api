@@ -7,9 +7,9 @@ from app import models, schemas, services
 from app.api import deps
 from app.constants.application import Application
 from app.constants.order_status import OrderStatus
-from app.constants.shop_category import ShopCategory
 from app.constants.platform import Platform
 from app.constants.role import Role
+from app.constants.shop_category import ShopCategory
 
 router = APIRouter(prefix='/constants', tags=['Constant'])
 
