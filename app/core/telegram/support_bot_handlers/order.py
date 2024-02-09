@@ -83,6 +83,7 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         shipment_method_title=shipment_method.title,
         shipment_method_price=helpers.number_to_price(int(shipment_method.price)),
         payment_method=payment_method,
+        table_title=None if not order.table_id else order.table.title
     )
 
     await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
@@ -104,7 +105,11 @@ async def send_order_detail(db: Session, update: telegram.Update, order_uuid: UU
     if not order:
         return
 
-    text = helpers.load_message(lang, "order_detail", order=order)
+    text = helpers.load_message(
+        lang, "order_detail",
+        order=order,
+        table_title=None if not order.table_id else order.table.title
+    )
     await update.message.reply_text(
         text=text,
         reply_to_message_id=update.message.message_id,
@@ -161,7 +166,7 @@ async def order_change_status_handler(
     text = helpers.load_message(
         lang, "order_change_status_notification",
         order_status=OrderStatus.items[order.status]["title"][lang],
-        order_number=order.order_number
+        order_number=order.order_number,
     )
     try:
         await bot.send_message(chat_id=order.lead.chat_id, text=text)
@@ -184,17 +189,15 @@ async def send_lead_order_to_shop_support_bot(
         return
 
     lead = services.social.telegram_lead.get(db, id=lead_id)
-    if not lead:
-        return
 
-    if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
+    if lead and lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
         return
 
     order = services.shop.order.get(db, id=order_id)
     if not order:
         return
 
-    if lead.id != order.lead_id:
+    if lead and lead.id != order.lead_id:
         return
 
     amount = 0
@@ -213,11 +216,12 @@ async def send_lead_order_to_shop_support_bot(
         lang, "support_new_order",
         amount=helpers.number_to_price(int(amount)),
         order=order,
-        lead_number=lead.lead_number,
+        lead_number=lead.lead_number if lead else "",
         order_status=OrderStatus.items[order.status]["title"][lang],
         currency=Currency.IRT["name"],
         payment_method=payment_method,
         items=items,
+        table_title=None if not order.table_id else order.table.title
     )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
     message: telegram.Message = await bot.send_message(

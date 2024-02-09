@@ -61,6 +61,10 @@ def create_telegram_shop_order(
     if shipment_method.shop_id != shop.id:
         raise_http_exception(Error.SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR_ACCESS_DENIED)
 
+    table = None
+    if obj_in.table_id:
+        table = services.shop.table.get_by_uuid(db, uuid=obj_in.table_id)
+
     with UnitOfWork(db) as uow:
         order_items = []
         last_order_number = services.shop.order.get_last_order_number(
@@ -76,6 +80,7 @@ def create_telegram_shop_order(
             shipment_method_id=shipment_method.id,
             order_number=last_order_number + 1,
             status=OrderStatus.UNPAID["value"],
+            table_id=table if not table else table.id,
         )
 
     with UnitOfWork(db) as uow:
@@ -156,6 +161,13 @@ def get_orders_by_shop_id(
         for item in order.items:
             sum += item.price * item.count
 
+        table = None
+        if order.table_id:
+            table = schemas.shop.Table(
+                id=order.table.uuid,
+                title=order.table.title,
+            )
+
         orders_list.append(
             schemas.shop.OrderListItem(
                 id=order.uuid,
@@ -176,6 +188,7 @@ def get_orders_by_shop_id(
                 if order.shipment_method
                 else None,
                 status=OrderStatus.items[order.status]["title"]["fa"],
+                table=table
             )
         )
 
@@ -208,6 +221,13 @@ def get_order(
 
     sum = 0
     items = []
+
+    table = None
+    if order.table_id:
+        table = schemas.shop.Table(
+            id=order.table.uuid,
+            title=order.table.title,
+        )
     for item in order.items:
         sum += item.price * item.count
         image_url = storage.get_object_url(
@@ -245,6 +265,7 @@ def get_order(
         shipment_method=order.shipment_method.title,
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
+        table=table
     )
 
 
@@ -277,6 +298,13 @@ def change_order_status(
 
     sum = 0
     items = []
+
+    table = None
+    if order.table_id:
+        table = schemas.shop.Table(
+            id=order.table.uuid,
+            title=order.table.title,
+        )
     for item in order.items:
         sum += item.price * item.count
         image_url = storage.get_object_url(
@@ -316,4 +344,6 @@ def change_order_status(
         shipment_method=order.shipment_method.title if order.shipment_method else None,
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
+        table=table,
+
     )

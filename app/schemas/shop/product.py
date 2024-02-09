@@ -8,8 +8,8 @@ from pydantic import UUID4, BaseModel
 from app.schemas.pagination import Pagination
 
 from .attribute import Attribute, AttributeCreate, AttributeUpdate
-from .product_variant import VariantCreate, Variant
 from .category import Category
+from .product_variant import Variant, VariantCreate
 
 
 class ProductBase(BaseModel):

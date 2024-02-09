@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from pydantic import UUID4
 from sqlalchemy import desc
@@ -25,7 +25,8 @@ class OrderServices:
         shop_payment_method_id: int,
         shipment_method_id: int,
         order_number: int,
-        status: str
+        status: str,
+        table_id: Optional[int] = None
 
     ) -> models.shop.ShopOrder:
         db_obj = self.model(
@@ -43,6 +44,7 @@ class OrderServices:
             lead_id=lead_id,
             shop_payment_method_id=shop_payment_method_id,
             shipment_method_id=shipment_method_id,
+            table_id=table_id,
         )
 
         uow.add(db_obj)
@@ -67,6 +69,7 @@ class OrderServices:
         return (
             db.query(self.model)
             .join(self.model.items)
+            .join(self.model.table, isouter=True)
             .join(models.shop.ShopProduct)
             .filter(self.model.uuid == uuid)
             .first()
@@ -75,7 +78,8 @@ class OrderServices:
     def get_shop_orders(
         self, db: Session, *, shop_id: int, status: List[str] = []
     ):
-        query = db.query(self.model).filter(self.model.shop_id == shop_id)
+        query = db.query(self.model).join(self.model.table,
+                                          isouter=True).filter(self.model.shop_id == shop_id)
         if status:
             query = query.filter(self.model.status.in_(status))
         return query.all()
@@ -128,6 +132,7 @@ class OrderServices:
                  .filter(self.model.shop_id == shop_id)
                  .join(self.model.shop_payment_method, isouter=True)
                  .join(self.model.shipment_method, isouter=True)
+                 .join(self.model.table, isouter=True)
                  .order_by(desc(self.model.created_at))
                  .offset(page_size * (page - 1))
                  .limit(page_size)
@@ -140,6 +145,14 @@ class OrderServices:
         pagination = paginate(total_count, page, page_size)
 
         return items, pagination
+
+    def has_order_with_table(
+        self, db: Session, *, table_id: int
+    ) -> bool:
+        total_count = db.query(self.model).filter(
+            self.model.table_id == table_id).count()
+
+        return bool(total_count)
 
 
 order = OrderServices(models.shop.ShopOrder)

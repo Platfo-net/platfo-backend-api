@@ -1,9 +1,9 @@
 from typing import List
 
+from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from app import models, schemas
-from sqlalchemy import delete
 
 
 class AttributeServices:

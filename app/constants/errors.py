@@ -442,6 +442,23 @@ class Error:
         "code": 192,
     }
 
+    SHOP_TABLE_NOT_FOUND_ERROR = {
+        "text": "Table not found",
+        "status_code": 404,
+        "code": 193,
+    }
+
+    SHOP_TABLE_NOT_FOUND_ACCESS_DENIED_ERROR = {
+        "text": "Table not found",
+        "status_code": 404,
+        "code": 194,
+    }
+    SHOP_THERE_IS_ORDER_WITH_TABLE_ERROR = {
+        "text": "There is orders with this table. so it cannot be deleted.",
+        "status_code": 400,
+        "code": 195,
+    }
+
     SHOP_PRODUCT_VARIANT_NOT_FOUND_ERROR = {
         "text": "Product variant not found.",
         "status_code": 404,
