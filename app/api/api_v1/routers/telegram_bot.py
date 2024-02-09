@@ -86,6 +86,38 @@ def add_telegram_bot(
     )
 
 
+@router.put('', response_model=schemas.TelegramBot)
+def update_bot(
+    *,
+    db: Session = Depends(deps.get_db),
+    obj_in: schemas.TelegramBotUpdate,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.USER['name'],
+            Role.ADMIN['name'],
+            Role.DEVELOPER['name'],
+        ],
+    ),
+):
+    bot = services.telegram_bot.get_by_bot_token(db, token=obj_in.bot_token)
+
+    if not bot:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND)
+
+    if bot.user_id != current_user.id:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED)
+
+    new_bot = services.telegram_bot.update(db, db_obj=bot, obj_in=obj_in)
+
+    return schemas.TelegramBot(
+        id=new_bot.uuid,
+        first_name=new_bot.first_name,
+        username=new_bot.username,
+        welcome_message=new_bot.welcome_message
+    )
+
+
 @router.get('/all', response_model=List[schemas.TelegramBot])
 def get_telegram_bots_list(
     *,
@@ -108,7 +140,7 @@ def get_telegram_bots_list(
     ) for bot in bots]
 
 
-@router.post('/{id}', response_model=schemas.TelegramBot)
+@router.get('/{id}', response_model=schemas.TelegramBot)
 def get_telegram_bot(
     *,
     db: Session = Depends(deps.get_db),
@@ -124,41 +156,15 @@ def get_telegram_bot(
 ) -> Any:
     bot = services.telegram_bot.get_by_uuid(db, uuid=id)
     if not bot:
-        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT)
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND)
     if bot.user_id != current_user.id:
-        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT_ACCESS_DENIED)
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED)
 
     return schemas.TelegramBot(
         id=bot.uuid,
         first_name=bot.first_name,
         username=bot.username,
-    )
-
-
-@router.post('/{id}', response_model=schemas.TelegramBot)
-def connect_bot_to_shop(
-    *,
-    db: Session = Depends(deps.get_db),
-    id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
-    ),
-) -> Any:
-    bot = services.telegram_bot.get_by_uuid(db, uuid=id)
-    if not bot:
-        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT)
-    if bot.user_id != current_user.id:
-        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUNT_ACCESS_DENIED)
-
-    return schemas.TelegramBot(
-        id=bot.uuid,
-        first_name=bot.first_name,
-        username=bot.username,
+        welcome_message=bot.welcome_message
     )
 
 

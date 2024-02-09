@@ -261,12 +261,12 @@ class Error:
         "status_code": 400,
         "code": 152,
     }
-    TELEGRAM_BOT_NOT_FOUNT = {
+    TELEGRAM_BOT_NOT_FOUND = {
         "text": "Bot not found.",
         "status_code": 404,
         "code": 153,
     }
-    TELEGRAM_BOT_NOT_FOUNT_ACCESS_DENIED = {
+    TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED = {
         "text": "Bot not found.",
         "status_code": 404,
         "code": 154,

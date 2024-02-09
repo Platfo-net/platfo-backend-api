@@ -19,7 +19,12 @@ class TelegramBotCreate(TelegramBotBase):
     username: Optional[str] = None
 
 
+class TelegramBotUpdate(TelegramBotBase):
+    welcome_message: Optional[str] = None
+
+
 class TelegramBot(BaseModel):
     id: UUID4
     first_name: Optional[str] = None
     username: Optional[str] = None
+    welcome_message: Optional[str] = None
