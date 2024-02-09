@@ -20,6 +20,7 @@ class VariantServices:
         items = [
             self.model(
                 title=variant.title,
+                price=variant.price,
                 currency=variant.currency,
                 product_id=product_id,
                 is_available=variant.is_available,
@@ -28,7 +29,6 @@ class VariantServices:
         ]
         db.add_all(items)
         db.commit()
-        db.refresh()
         return items
 
     def delete_by_product_id(

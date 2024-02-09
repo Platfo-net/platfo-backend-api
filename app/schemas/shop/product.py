@@ -28,7 +28,8 @@ class ProductCreate(ProductBase):
 
 class ProductUpdate(ProductBase):
     category_id: Optional[UUID4] = None
-    attributes: List[AttributeUpdate] = []
+    attributes: List[AttributeUpdate]
+    variants: List[VariantCreate]
 
 
 class Product(ProductBase):
