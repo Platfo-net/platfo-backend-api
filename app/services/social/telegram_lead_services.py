@@ -6,6 +6,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app import models, schemas
+from app.core.utils import paginate
 
 
 class TelegramLeadServices:
@@ -64,12 +65,26 @@ class TelegramLeadServices:
     ) -> Optional[models.social.TelegramLead]:
         return (
             db.query(self.model)
-            .filter(
+                .filter(
                 self.model.telegram_bot_id == telegram_bot_id,
                 self.model.lead_number == lead_number
             )
-            .first()
+                .first()
         )
+
+    def get_multi_by_telegram_bot_id(self,
+                                     db: Session, *,
+                                     telegram_bot_id: int,
+                                     page: int = 1,
+                                     page_size: int = 20,
+                                     ):
+        leads = db.query(self.model).join(self.model.telegram_bot). \
+            filter(self.model.telegram_bot_id == telegram_bot_id). \
+            offset(page_size * (page - 1)).limit(page_size).all()
+        total_count = db.query(self.model).filter(
+            self.model.telegram_bot_id == telegram_bot_id).count()
+        pagination = paginate(total_count, page, page_size)
+        return leads, pagination
 
 
 telegram_lead = TelegramLeadServices(models.social.TelegramLead)

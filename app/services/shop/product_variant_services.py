@@ -22,7 +22,6 @@ class VariantServices:
                 title=variant.title,
                 currency=variant.currency,
                 product_id=product_id,
-                title=variant.title,
                 is_available=variant.is_available,
             )
             for variant in variants
