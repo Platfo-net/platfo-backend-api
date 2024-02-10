@@ -206,7 +206,7 @@ def get_telegram_bot_leads(
             chat_id=lead.chat_id,
             first_name=lead.first_name,
             last_name=lead.last_name,
-            username=leads.username,
+            username=lead.username,
             lead_number=lead.lead_number,
         )
         for lead in leads
