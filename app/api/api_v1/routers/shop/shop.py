@@ -37,7 +37,8 @@ def get_shop_multi(
             title=shop.title,
             category=shop.category,
             description=shop.description,
-            is_info_required=shop.is_info_required
+            is_info_required=shop.is_info_required,
+            color_code=shop.theme[0].color_code if shop.theme else None,
         ) for shop in shops]
 
 
@@ -67,7 +68,8 @@ def get_shop(
         title=shop.title,
         category=shop.category,
         description=shop.description,
-        is_info_required=shop.is_info_required
+        is_info_required=shop.is_info_required,
+        color_code=shop.theme[0].color_code if shop.theme else None
     )
 
 
@@ -96,14 +98,30 @@ def update_shop(
     if obj_in.category not in ShopCategory.items:
         raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
+    def _handle_shop_theme_logic(db, obj_in, shop):
+        if obj_in.color_code:
+            shop_theme = services.shop.shop_theme.get_by_shop_id(db, shop_id=shop.id)
+            if shop_theme:
+                new_shop_theme = services.shop.shop_theme.update(db, db_obj=shop_theme, obj_in=obj_in)
+                return new_shop_theme.color_code
+            else:
+                new_shop_theme = services.shop.shop_theme.create(
+                    db, obj_in=obj_in, shop_id=shop.id
+                )
+                return new_shop_theme.color_code
+        return None
+
     new_shop = services.shop.shop.update(db, db_obj=shop, obj_in=obj_in)
+
+    color_code = _handle_shop_theme_logic(db, obj_in=obj_in, shop=shop)
 
     return schemas.shop.Shop(
         id=new_shop.uuid,
         title=new_shop.title,
         category=new_shop.category,
         description=new_shop.description,
-        is_info_required=new_shop.is_info_required
+        is_info_required=new_shop.is_info_required,
+        color_code=color_code
     )
 
 
