@@ -10,6 +10,7 @@ class ShopBase(BaseModel):
     description: Optional[str] = None
     category: Optional[str] = None
     is_info_required: Optional[bool] = True
+    color_code: Optional[str] = None
 
 
 class ShopCreate(ShopBase):
