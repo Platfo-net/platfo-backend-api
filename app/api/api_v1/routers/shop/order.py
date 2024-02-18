@@ -182,10 +182,10 @@ def get_orders_by_shop_id(
                     order.shop_payment_method.payment_method.title
                 ]["fa"]
                 if order.shop_payment_method
-                else None,  # noqa
+                else "",  # noqa
                 shipment_method=order.shipment_method.title
                 if order.shipment_method
-                else None,
+                else "",
                 status=OrderStatus.items[order.status]["title"]["fa"],
                 table=table
             )
@@ -261,8 +261,8 @@ def get_order(
             order.shop_payment_method.payment_method.title
         ]["fa"]
         if order.shop_payment_method
-        else None,  # noqa
-        shipment_method=order.shipment_method.title,
+        else "",  # noqa
+        shipment_method=order.shipment_method.title if order.shipment_method else "",
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
         table=table
@@ -340,8 +340,8 @@ def change_order_status(
             order.shop_payment_method.payment_method.title
         ]["fa"]
         if order.shop_payment_method
-        else None,  # noqa
-        shipment_method=order.shipment_method.title if order.shipment_method else None,
+        else "",  # noqa
+        shipment_method=order.shipment_method.title if order.shipment_method else "",
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
         table=table,
