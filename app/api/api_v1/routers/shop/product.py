@@ -173,6 +173,12 @@ def update_product(
         product = services.shop.product.update(
             uow, db_obj=product, obj_in=obj_in, category_id=category.id if category else None)
 
+    if obj_in.attributes is None:
+        obj_in.attributes = []
+
+    if obj_in.variants is None:
+        obj_in.variants = []
+
     services.shop.attribute.delete_by_product_id(db, product_id=product.id)
     services.shop.product_variant.delete_by_product_id(db, product_id=product.id)
 
