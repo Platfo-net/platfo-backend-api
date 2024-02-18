@@ -22,14 +22,14 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     category_id: Optional[UUID4] = None
     shop_id: Optional[UUID4] = None
-    attributes: List[AttributeCreate] = []
-    variants: List[VariantCreate]
+    attributes: Optional[List[AttributeCreate]] = None
+    variants: Optional[List[VariantCreate]] = None
 
 
 class ProductUpdate(ProductBase):
     category_id: Optional[UUID4] = None
-    attributes: List[AttributeUpdate]
-    variants: List[VariantCreate]
+    attributes: Optional[List[AttributeUpdate]] = None
+    variants: Optional[List[VariantCreate]] = None
 
 
 class Product(ProductBase):

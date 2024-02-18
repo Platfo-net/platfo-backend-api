@@ -238,7 +238,7 @@ def get_order(
                 count=item.count,
                 price=item.price,
                 currency=item.currency,
-                product_title=item.product_title,
+                product_title=item.product_title or item.product.title,
                 variant_title=item.variant_title,
                 image=image_url,
             )

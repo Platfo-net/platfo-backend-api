@@ -16,6 +16,8 @@ class AttributeServices:
             objs_in: List[schemas.shop.AttributeCreate],
             product_id: int,
     ) -> List[models.shop.ShopAttribute]:
+        if not objs_in:
+            return []
         db_objs = []
         for obj in objs_in:
             db_objs.append(self.model(
