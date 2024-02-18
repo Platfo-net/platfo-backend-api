@@ -81,7 +81,10 @@ def create_product(
             shop_id=shop.id,
             category_id=category.id if category else None
         )
-
+    if obj_in.attributes == None:
+        obj_in.attributes = []
+    if obj_in.variants == None:
+        obj_in.variants = []
     attribute_items = [
         schemas.shop.AttributeCreate(key=item.key, value=item.value)
         for item in obj_in.attributes
