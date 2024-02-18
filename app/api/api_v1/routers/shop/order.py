@@ -110,7 +110,6 @@ def create_telegram_shop_order(
                     currency=currency,
                     product_title=product.title,
                     variant_title=variant_title,
-
                 )
             )
         services.shop.order_item.create_bulk(
@@ -233,12 +232,13 @@ def get_order(
         image_url = storage.get_object_url(
             item.product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET
         )
+        product_title = item.product_title if item.product_title else item.product.title
         items.append(
             schemas.shop.OrderItemResponse(
                 count=item.count,
                 price=item.price,
                 currency=item.currency,
-                product_title=item.product_title or item.product.title,
+                product_title=product_title,
                 variant_title=item.variant_title,
                 image=image_url,
             )
