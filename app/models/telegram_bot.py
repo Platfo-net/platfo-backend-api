@@ -20,6 +20,9 @@ class TelegramBot(Base):
     first_name = Column(String(255), nullable=True)
     bot_id = Column(BigInteger, nullable=True, index=True)
     welcome_message = Column(Text(), nullable=True)
+    button_name = Column(String(255), nullable=True)
+    app_link = Column(String(255), nullable=True)
+    image = Column(String(255), nullable=True)
 
     user = relationship('User', back_populates='telegram_bots')
 

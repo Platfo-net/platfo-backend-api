@@ -21,6 +21,9 @@ class TelegramBotCreate(TelegramBotBase):
 
 class TelegramBotUpdate(TelegramBotBase):
     welcome_message: Optional[str] = None
+    button_name: Optional[str] = None
+    app_link: Optional[str] = None
+    image: Optional[str] = None
 
 
 class TelegramBot(BaseModel):
@@ -28,3 +31,7 @@ class TelegramBot(BaseModel):
     first_name: Optional[str] = None
     username: Optional[str] = None
     welcome_message: Optional[str] = None
+    button_name: Optional[str] = None
+    app_link: Optional[str] = None
+    image: Optional[str] = None
+    image_url: Optional[str] = None

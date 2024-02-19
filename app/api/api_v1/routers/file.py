@@ -111,6 +111,27 @@ async def upload_payment_receipt_image(
     return storage.get_file(uploaded_file_name, settings.S3_PAYMENT_RECEIPT_IMAGE)
 
 
+@router.post("/upload/telegram/menu-image", response_model=schemas.Image)
+async def upload_telegram_menu_image(
+    file: UploadFile = File(...),
+    _: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[
+            Role.ADMIN["name"],
+            Role.USER["name"],
+            Role.DEVELOPER["name"],
+        ],
+    ),
+):
+    filename = f"{uuid.uuid4()}-{file.filename}"
+    uploaded_file_name = storage.add_file_to_s3(
+        filename, file.file.fileno(), settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET
+
+    )
+
+    return storage.get_file(uploaded_file_name, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+
+
 # @router.get('/download', status_code=status.HTTP_200_OK)
 # async def upload_payment_receipt_image(
 # ):
