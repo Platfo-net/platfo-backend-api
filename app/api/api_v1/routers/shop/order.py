@@ -306,10 +306,8 @@ def change_order_status(
             title=order.table.title,
         )
     for item in order.items:
-        if item.product_title:
-            product_title = item.product_title
-        else:
-            product_title = item.product_title
+        product_title = item.product_title if item.product_title else item.product.title
+
         sum += item.price * item.count
         image_url = storage.get_object_url(
             item.product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET
