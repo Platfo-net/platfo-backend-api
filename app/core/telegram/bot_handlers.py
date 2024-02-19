@@ -60,6 +60,7 @@ async def send_lead_order_to_bot_handler(
         currency=currency,
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
+    reply_markup = None
     if order.shop_payment_method.payment_method.title == PaymentMethod.CARD_TRANSFER["title"]:
         reply_markup = helpers.get_pay_order_reply_markup(
             order_id, lang)
