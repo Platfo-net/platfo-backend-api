@@ -11,7 +11,8 @@ from .product import Product, ProductCreate, ProductListAPI, ProductUpdate
 from .product_variant import Variant, VariantCreate
 from .shipment_methods import (ChangeShipmentIsActive, ShipmentMethod,
                                ShipmentMethodCreate, ShipmentMethodUpdate)
-from .shop import Shop, ShopConnectSupport, ShopCreate, ShopState, ShopUpdate
+from .shop import (Shop, ShopConnectSupport, ShopCreate, ShopState, ShopUpdate,
+                   ShopView)
 from .shop_payment_method import (ChangePaymentIsActive,
                                   EditPaymentInformation, ShopPaymentMethod,
                                   ShopPaymentMethodCreate)

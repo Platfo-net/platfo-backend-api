@@ -185,3 +185,20 @@ def get_shop_telegram_state(
         is_connected_to_bot=True if shop_telegram_bot.telegram_bot else False,
         is_connected_to_bot_verified=shop_telegram_bot.is_support_verified,
     )
+
+
+@router.get('/telegram/info/{id}', response_model=schemas.shop.ShopView)
+def get_shop_for_telegram_shop(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+):
+    shop = services.shop.shop.get_by_uuid(db, uuid=id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    return schemas.shop.ShopView(
+        id=shop.uuid,
+        title=shop.title,
+        color_code=shop.theme[0].color_code if shop.theme else None
+    )

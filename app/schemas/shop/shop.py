@@ -34,3 +34,9 @@ class ShopState(BaseModel):
     is_connected_to_support_bot: bool
     is_connected_to_bot: bool
     is_connected_to_bot_verified: bool
+
+
+class ShopView(BaseModel):
+    id: UUID4
+    title: str
+    color_code: Optional[str] = None
