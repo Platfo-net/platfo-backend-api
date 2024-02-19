@@ -19,7 +19,7 @@ class TelegramBotCreate(TelegramBotBase):
     username: Optional[str] = None
 
 
-class TelegramBotUpdate(TelegramBotBase):
+class TelegramBotUpdate(BaseModel):
     welcome_message: Optional[str] = None
     button_name: Optional[str] = None
     app_link: Optional[str] = None

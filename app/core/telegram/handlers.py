@@ -234,18 +234,13 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         update = telegram.Update.de_json(data, bot)
         if update.message.text == TelegramBotCommand.START["command"]:
             if telegram_bot.welcome_message:
-                print('33333333')
                 text = helpers.load_message(
                     lang, "bot_overview", welcome_message=telegram_bot.welcome_message)
                 button_name = telegram_bot.button_name
                 app_link = telegram_bot.app_link
                 image_url = storage.get_object_url(
                     telegram_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
-                print('444444', image_url)
                 if telegram_bot.image:
-                    print('1111111')
-                    print(update.message.chat_id)
-                    print(update.message.chat.id)
                     await bot.send_photo(
                         caption=telegram_bot.welcome_message,
                         chat_id=update.message.chat_id,
@@ -254,7 +249,6 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                             button_name, app_link),
                     )
                 else:
-                    print('22222222')
                     await update.message.reply_text(
                         text=text,
                         reply_markup=helpers.get_bot_menu(
