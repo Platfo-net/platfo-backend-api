@@ -65,11 +65,11 @@ class TelegramLeadServices:
     ) -> Optional[models.social.TelegramLead]:
         return (
             db.query(self.model)
-                .filter(
+            .filter(
                 self.model.telegram_bot_id == telegram_bot_id,
                 self.model.lead_number == lead_number
             )
-                .first()
+            .first()
         )
 
     def get_multi_by_telegram_bot_id(self,

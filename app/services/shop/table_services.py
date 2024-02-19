@@ -27,7 +27,6 @@ class TableServices:
         db.commit()
         db.refresh(db_obj)
         return db_obj
-    
 
     def update(
         self,
@@ -49,8 +48,10 @@ class TableServices:
             .filter(self.model.id == id)
             .first()
         )
-        
-    def get_by_shop_and_title(self, db: Session, *, shop_id: int , title: str) -> models.shop.ShopTable:
+
+    def get_by_shop_and_title(
+        self, db: Session, *, shop_id: int, title: str
+    ) -> models.shop.ShopTable:
         return (
             db.query(self.model)
             .filter(self.model.title == title)

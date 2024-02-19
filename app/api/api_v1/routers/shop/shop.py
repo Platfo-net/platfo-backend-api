@@ -102,7 +102,9 @@ def update_shop(
         if obj_in.color_code:
             shop_theme = services.shop.shop_theme.get_by_shop_id(db, shop_id=shop.id)
             if shop_theme:
-                new_shop_theme = services.shop.shop_theme.update(db, db_obj=shop_theme, obj_in=obj_in)
+                new_shop_theme = services.shop.shop_theme.update(
+                    db,
+                    db_obj=shop_theme, obj_in=obj_in)
                 return new_shop_theme.color_code
             else:
                 new_shop_theme = services.shop.shop_theme.create(
