@@ -8,7 +8,7 @@ from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
-from app.core import security
+from app.core import security, storage
 from app.core.config import settings
 from app.core.telegram import bot_handlers, helpers, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
@@ -236,10 +236,25 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             if telegram_bot.welcome_message:
                 text = helpers.load_message(
                     lang, "bot_overview", welcome_message=telegram_bot.welcome_message)
-                await update.message.reply_text(
-                    text=text,
-                    parse_mode="HTML"
-                )
+                button_name = telegram_bot.button_name
+                app_link = telegram_bot.app_link
+                image_url = storage.get_object_url(
+                    telegram_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+                if telegram_bot.image:
+                    await bot.send_photo(
+                        caption=telegram_bot.welcome_message,
+                        chat_id=update.message.chat_id,
+                        photo=image_url,
+                        reply_markup=helpers.get_bot_menu(
+                            button_name, app_link),
+                    )
+                else:
+                    await update.message.reply_text(
+                        text=text,
+                        reply_markup=helpers.get_bot_menu(
+                            button_name, app_link),
+                        parse_mode="HTML"
+                    )
             else:
                 if not shop_telegram_bot:
                     return

@@ -49,6 +49,9 @@ class TelegramBotServices:
         obj_in: schemas.TelegramBotUpdate,
     ) -> models.TelegramBot:
         db_obj.welcome_message = obj_in.welcome_message
+        db_obj.button_name = obj_in.button_name
+        db_obj.app_link = obj_in.app_link
+        db_obj.image = obj_in.image
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)

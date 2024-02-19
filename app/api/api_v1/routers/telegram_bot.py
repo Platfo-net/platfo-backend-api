@@ -5,6 +5,7 @@ import telegram
 from fastapi import APIRouter, Depends, Security
 from pydantic import UUID4
 from sqlalchemy.orm import Session
+from app.core import storage
 
 from app import models, schemas, services
 from app.api import deps
@@ -86,11 +87,12 @@ def add_telegram_bot(
     )
 
 
-@router.put('', response_model=schemas.TelegramBot)
+@router.put('/{id}', response_model=schemas.TelegramBot)
 def update_bot(
     *,
     db: Session = Depends(deps.get_db),
     obj_in: schemas.TelegramBotUpdate,
+    id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -100,7 +102,7 @@ def update_bot(
         ],
     ),
 ):
-    bot = services.telegram_bot.get_by_bot_token(db, token=obj_in.bot_token)
+    bot = services.telegram_bot.get_by_uuid(db, uuid=id)
 
     if not bot:
         raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND)
@@ -110,11 +112,18 @@ def update_bot(
 
     new_bot = services.telegram_bot.update(db, db_obj=bot, obj_in=obj_in)
 
+    image_url = storage.get_object_url(
+        new_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+
     return schemas.TelegramBot(
         id=new_bot.uuid,
         first_name=new_bot.first_name,
         username=new_bot.username,
-        welcome_message=new_bot.welcome_message
+        welcome_message=new_bot.welcome_message,
+        button_name=new_bot.button_name,
+        app_link=new_bot.app_link,
+        image=new_bot.image,
+        image_url=image_url,
     )
 
 
@@ -160,11 +169,17 @@ def get_telegram_bot(
     if bot.user_id != current_user.id:
         raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED)
 
+    image_url = storage.get_object_url(
+        bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+
     return schemas.TelegramBot(
         id=bot.uuid,
         first_name=bot.first_name,
         username=bot.username,
-        welcome_message=bot.welcome_message
+        button_name=bot.button_name,
+        app_link=bot.app_link,
+        image=bot.image,
+        image_url=image_url,
     )
 
 
