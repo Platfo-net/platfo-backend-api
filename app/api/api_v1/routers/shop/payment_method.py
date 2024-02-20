@@ -230,7 +230,7 @@ def get_shop_payment_methods_for_telegram_shop(
         if payment.payment_method.title in PaymentMethod.payment_gateway_items:
             pg_items.append(
                 schemas.shop.PaymentMethod(
-                    title=payment.payment_method.title,
+                    title=PaymentMethod.items[payment.payment_method.title]["fa"],
                     description=payment.payment_method.description,
                     is_active=payment.is_active,
                     information_fields=payment.payment_method.information_fields,
@@ -241,7 +241,7 @@ def get_shop_payment_methods_for_telegram_shop(
         else:
             items.append(
                 schemas.shop.PaymentMethod(
-                    title=payment.payment_method.title,
+                    title=PaymentMethod.items[payment.payment_method.title]["fa"],
                     description=payment.payment_method.description,
                     is_active=payment.is_active,
                     information_fields=payment.payment_method.information_fields,
@@ -249,15 +249,13 @@ def get_shop_payment_methods_for_telegram_shop(
                     information=payment.information,
                 )
             )
-    items.append(
-        schemas.shop.PaymentMethod(
-            title="Payment Gateway",
-            description="",
-            is_active=True,
-            information_fields={},
-            id=uuid4(),
-            information={},
-            items=pg_items,
-        )
-    )
-    return items
+    return [
+        schemas.shop.PaymentMethodPanelGroup(
+            title="آنلاین",
+            items=pg_items
+        ),
+        schemas.shop.PaymentMethodPanelGroup(
+            title="نقدی",
+            items=items
+        ),
+    ]

@@ -5,7 +5,7 @@ from .order import (Order, OrderChangeStatus, OrderCreate, OrderCreateResponse,
                     OrderItem, OrderItemOrderCreate, OrderItemResponse,
                     OrderListApiResponse, OrderListItem)
 from .payment_methods import (PaymentMethod, PaymentMethodCreate,
-                              PaymentMethodGroup, PaymentMethodGroupList,
+                              PaymentMethodGroup, PaymentMethodGroupList, PaymentMethodPanelGroup,
                               PaymentMethodGroupView, PaymentMethodUpdate)
 from .product import Product, ProductCreate, ProductListAPI, ProductUpdate
 from .product_variant import Variant, VariantCreate

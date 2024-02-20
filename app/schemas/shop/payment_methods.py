@@ -37,3 +37,8 @@ class PaymentMethodGroup(BaseModel):
 class PaymentMethodGroupList(BaseModel):
     payment_gateway: PaymentMethodGroup
     cash: PaymentMethodGroup
+
+
+class PaymentMethodPanelGroup(BaseModel):
+    title: str
+    items: list[PaymentMethod] = []
