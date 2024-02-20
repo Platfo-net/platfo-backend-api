@@ -40,8 +40,8 @@ def create_telegram_shop_order(
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
         db, shop_id=shop.id
     )
-    if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
-        raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND_ACCESS_DENIED)
+    # if lead.telegram_bot_id != shop_telegram_bot.telegram_bot_id:
+    #     raise_http_exception(Error.LEAD_TELEGRAM_LEAD_NOT_FOUND_ACCESS_DENIED)
 
     shop_payment_method = services.shop.shop_payment_method.get_by_uuid(
         db, uuid=obj_in.payment_method_id
