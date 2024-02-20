@@ -1,9 +1,8 @@
-
-
 import telegram
 from pydantic import UUID4
+from sqlalchemy.orm import Session
 
-from app import models
+from app import models, services
 from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
 from app.constants.payment_method import PaymentMethod
@@ -54,6 +53,21 @@ def get_shop_menu(shop_id: UUID4, lead_id: UUID4, lang: str):
                 text=VITRIN[lang],
                 web_app=telegram.WebAppInfo(
                     f"{settings.PLATFO_SHOPS_BASE_URL}/{shop_id}/{lead_id}")
+            )
+        ],
+    ]
+
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+
+    return reply_markup
+
+
+def get_bot_menu(button_name: str, app_link: str):
+    keyboard = [
+        [
+            telegram.MenuButtonWebApp(
+                text=button_name,
+                web_app=telegram.WebAppInfo(app_link)
             )
         ],
     ]

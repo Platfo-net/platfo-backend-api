@@ -19,6 +19,9 @@ class ShopOrderItem(Base):
         nullable=True,
     )
 
+    variant_title = Column(String(255), nullable=True)
+    product_title = Column(String(255), nullable=True)
+
     count = Column(Integer, default=1)
     price = Column(Float(), nullable=True)
     currency = Column(String(32), nullable=True)

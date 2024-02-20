@@ -42,5 +42,7 @@ class ShopProduct(Base):
 
     category = relationship('ShopCategory', back_populates='products')
     order_items = relationship('ShopOrderItem', back_populates="product")
+    attributes = relationship('ShopAttribute', back_populates="product")
 
     shop = relationship('ShopShop', back_populates="products")
+    variants = relationship('ShopProductVariant', back_populates="product")

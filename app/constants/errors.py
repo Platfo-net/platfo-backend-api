@@ -261,12 +261,12 @@ class Error:
         "status_code": 400,
         "code": 152,
     }
-    TELEGRAM_BOT_NOT_FOUNT = {
+    TELEGRAM_BOT_NOT_FOUND = {
         "text": "Bot not found.",
         "status_code": 404,
         "code": 153,
     }
-    TELEGRAM_BOT_NOT_FOUNT_ACCESS_DENIED = {
+    TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED = {
         "text": "Bot not found.",
         "status_code": 404,
         "code": 154,
@@ -408,6 +408,22 @@ class Error:
         "code": 181,
     }
 
+    SHOP_TELEGRAM_PAYMENT_RECORD_NOT_FOUND = {
+        "text": "Shop telegram payment record not found",
+        "status_code": 400,
+        "code": 182,
+    }
+    SHOP_TELEGRAM_PAYMENT_HAS_BEEN_ALREADY_APPLIED = {
+        "text": "Shop telegram payment record has been already increase credit.",
+        "status_code": 400,
+        "code": 183,
+    }
+    SHOP_TELEGRAM_PAYMENT_FAILED = {
+        "text": "Shop telegram payment failed.",
+        "status_code": 400,
+        "code": 184,
+    }
+
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {
         "text": "Lead not found",
@@ -424,4 +440,32 @@ class Error:
         "text": "Payment method data is invalid.",
         "status_code": 400,
         "code": 192,
+    }
+
+    SHOP_TABLE_NOT_FOUND_ERROR = {
+        "text": "Table not found",
+        "status_code": 404,
+        "code": 193,
+    }
+
+    SHOP_TABLE_NOT_FOUND_ACCESS_DENIED_ERROR = {
+        "text": "Table not found",
+        "status_code": 404,
+        "code": 194,
+    }
+    SHOP_THERE_IS_ORDER_WITH_TABLE_ERROR = {
+        "text": "There is orders with this table. so it cannot be deleted.",
+        "status_code": 400,
+        "code": 195,
+    }
+    SHOP_DUPLICATE_TABLE_ERROR = {
+        "text": "There is another table with this name",
+        "status_code": 400,
+        "code": 195,
+    }
+
+    SHOP_PRODUCT_VARIANT_NOT_FOUND_ERROR = {
+        "text": "Product variant not found.",
+        "status_code": 404,
+        "code": 200,
     }

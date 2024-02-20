@@ -74,6 +74,7 @@ class Settings(BaseSettings):
     S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop-product-image-bucket'
     S3_SHOP_CATEGORY_IMAGE_BUCKET: str = 'shop-category-image-bucket'
     S3_TELEGRAM_BOT_IMAGES_BUCKET: str = 'telegram-bot-image-bucket'
+    S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET: str = 'telegram-bot-menu-image-bucket'
     S3_PAYMENT_RECEIPT_IMAGE: str = 'payment-receipt-image-bucket'
     S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop-telegram-credit-extending'
 
@@ -88,6 +89,10 @@ class Settings(BaseSettings):
 
     SMS_IR_API_KEY: Optional[str] = None
     SMS_IR_LINE_NUMBER: Optional[str] = None
+
+    ZARINPAL_WEBSERVICE: str
+    ZARINPAL_MERCHANT_ID: str
+    ZARINPAL_BASE_URL: str
 
     LOKI_LOG_PUSH_URL: Optional[str] = None
 

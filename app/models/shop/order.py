@@ -1,7 +1,7 @@
 import datetime
 
-from sqlalchemy import (JSON, BigInteger, Column, DateTime, ForeignKey,
-                        Integer, String)
+from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime,
+                        ForeignKey, Integer, String)
 from sqlalchemy.orm import relationship
 
 from app.constants.order_status import OrderStatus
@@ -24,6 +24,10 @@ class ShopOrder(Base):
     order_number = Column(Integer, nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+    is_paid = Column(Boolean, default=False)
+    paid_at = Column(DateTime, nullable=True)
+    payment_information = Column(JSON, nullable=True)
+
     lead_id = Column(
         BigInteger,
         ForeignKey('social_telegram_leads.id'),
@@ -39,6 +43,12 @@ class ShopOrder(Base):
     shipment_method_id = Column(
         BigInteger,
         ForeignKey('shop_shipment_methods.id'),
+        nullable=True,
+    )
+
+    table_id = Column(
+        BigInteger,
+        ForeignKey('shop_tables.id'),
         nullable=True,
     )
 
@@ -59,3 +69,4 @@ class ShopOrder(Base):
     shop_payment_method = relationship("ShopShopPaymentMethod", back_populates="orders")
     shipment_method = relationship("ShopShipmentMethod", back_populates="orders")
     telegram_order = relationship("ShopTelegramOrder", back_populates="order")
+    table = relationship("ShopTable", back_populates="orders")

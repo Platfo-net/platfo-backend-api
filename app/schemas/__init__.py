@@ -12,7 +12,8 @@ from .notification import (Notification, NotificationCreate,
                            NotificationUpdate)
 from .pagination import Pagination
 from .role import Role, RoleCreate, RoleInDB, RoleUpdate
-from .telegram_bot import ConnectTelegramBot, TelegramBot, TelegramBotCreate
+from .telegram_bot import (ConnectTelegramBot, TelegramBot, TelegramBotCreate,
+                           TelegramBotUpdate)
 from .token import (Login, LoginFormByEmail, LoginFormByPhoneNumber, Token,
                     TokenPayload)
 from .user import (ActivationDataByEmail, ActivationDataByPhoneNumber,

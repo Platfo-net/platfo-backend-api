@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, String, Text
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -16,6 +16,7 @@ class ShopShop(Base):
         ForeignKey('users.id'),
         nullable=True,
     )
+    is_info_required = Column(Boolean(), default=False)
 
     user = relationship('User', back_populates='shops')
 
@@ -29,3 +30,5 @@ class ShopShop(Base):
     credit = relationship("ShopCredit", back_populates="shop")
     payment_methods = relationship("ShopShopPaymentMethod", back_populates="shop")
     payment_records = relationship("CreditShopTelegramPaymentRecord", back_populates="shop")
+    tables = relationship("ShopTable", back_populates="shop")
+    theme = relationship('ShopTheme', back_populates='shop')

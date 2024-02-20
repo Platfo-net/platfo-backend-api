@@ -8,11 +8,12 @@ from app import models, schemas, services
 from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.constants.shop_category import ShopCategory
 from app.core.exception import raise_http_exception
 from app.core.unit_of_work import UnitOfWork
 from app.core.utils import generate_random_support_token
 
-router = APIRouter(prefix='/shop')
+router = APIRouter(prefix='/shop', tags=["Shop Shop"])
 
 
 @router.get('/all', response_model=List[schemas.shop.Shop])
@@ -36,6 +37,8 @@ def get_shop_multi(
             title=shop.title,
             category=shop.category,
             description=shop.description,
+            is_info_required=shop.is_info_required,
+            color_code=shop.theme[0].color_code if shop.theme else None,
         ) for shop in shops]
 
 
@@ -64,7 +67,9 @@ def get_shop(
         id=shop.uuid,
         title=shop.title,
         category=shop.category,
-        description=shop.description
+        description=shop.description,
+        is_info_required=shop.is_info_required,
+        color_code=shop.theme[0].color_code if shop.theme else None
     )
 
 
@@ -73,7 +78,7 @@ def update_shop(
     *,
     db: Session = Depends(deps.get_db),
     id: UUID4,
-    obj_in: schemas.shop.ShopCreate,
+    obj_in: schemas.shop.ShopUpdate,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -90,13 +95,35 @@ def update_shop(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
+    if obj_in.category not in ShopCategory.items:
+        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
+
+    def _handle_shop_theme_logic(db, obj_in, shop):
+        if obj_in.color_code:
+            shop_theme = services.shop.shop_theme.get_by_shop_id(db, shop_id=shop.id)
+            if shop_theme:
+                new_shop_theme = services.shop.shop_theme.update(
+                    db,
+                    db_obj=shop_theme, obj_in=obj_in)
+                return new_shop_theme.color_code
+            else:
+                new_shop_theme = services.shop.shop_theme.create(
+                    db, obj_in=obj_in, shop_id=shop.id
+                )
+                return new_shop_theme.color_code
+        return None
+
     new_shop = services.shop.shop.update(db, db_obj=shop, obj_in=obj_in)
+
+    color_code = _handle_shop_theme_logic(db, obj_in=obj_in, shop=shop)
 
     return schemas.shop.Shop(
         id=new_shop.uuid,
         title=new_shop.title,
         category=new_shop.category,
-        description=new_shop.description
+        description=new_shop.description,
+        is_info_required=new_shop.is_info_required,
+        color_code=color_code
     )
 
 
@@ -157,4 +184,21 @@ def get_shop_telegram_state(
         is_connected_to_support_bot=True if shop_telegram_bot.support_account_chat_id else False,
         is_connected_to_bot=True if shop_telegram_bot.telegram_bot else False,
         is_connected_to_bot_verified=shop_telegram_bot.is_support_verified,
+    )
+
+
+@router.get('/telegram/info/{id}', response_model=schemas.shop.ShopView)
+def get_shop_for_telegram_shop(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+):
+    shop = services.shop.shop.get_by_uuid(db, uuid=id)
+    if not shop:
+        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
+
+    return schemas.shop.ShopView(
+        id=shop.uuid,
+        title=shop.title,
+        color_code=shop.theme[0].color_code if shop.theme else None
     )

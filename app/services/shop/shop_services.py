@@ -22,6 +22,7 @@ class ShopServices:
             title=obj_in.title.lstrip().rstrip(),
             description=obj_in.description,
             category=obj_in.category,
+            is_info_required=obj_in.is_info_required,
             user_id=user_id,
         )
 
@@ -38,6 +39,7 @@ class ShopServices:
         db_obj.title = obj_in.title
         db_obj.description = obj_in.description
         db_obj.category = obj_in.category
+        db_obj.is_info_required = obj_in.is_info_required
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -70,7 +72,12 @@ class ShopServices:
         *,
         id: int
     ) -> models.shop.ShopShop:
-        return db.query(self.model).filter(self.model.id == id).first()
+        return (
+            db.query(self.model)
+            .join(self.model.user)
+            .filter(self.model.id == id)
+            .first()
+        )
 
     def get_multi_by_user(
         self,

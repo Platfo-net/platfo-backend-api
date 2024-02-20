@@ -10,13 +10,14 @@ from app.api import deps
 from app.api.api_v1.routers.telegram_bot import get_me, set_webhook
 from app.constants.errors import Error
 from app.constants.role import Role
+from app.constants.shop_category import ShopCategory
 from app.core import security
 from app.core.exception import raise_http_exception
 from app.core.telegram import tasks as telegram_tasks
 from app.core.unit_of_work import UnitOfWork
 from app.core.utils import generate_random_support_token
 
-router = APIRouter(prefix='/telegram')
+router = APIRouter(prefix='/telegram', tags=["Shop Telegram"])
 
 
 @router.post('/create-shop', response_model=schemas.shop.ShopTelegramBotRegister)
@@ -33,11 +34,13 @@ def create_shop_for_telegram_bot(
         ],
     ),
 ):
-
     shop = services.shop.shop.get_by_title(db, title=obj_in.title.lstrip().rstrip())
 
     if shop and shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_SHOP_IS_EXIST)
+
+    if obj_in.category not in ShopCategory.items:
+        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
 
     support_token = generate_random_support_token(length=7)
 

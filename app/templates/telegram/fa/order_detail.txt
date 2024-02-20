@@ -9,4 +9,7 @@
 شهر : {{ order.city or "" }}
 آدرس : {{ order.address or "" }}
 کد پستی : {{ order.postal_code or "" }}
+{% if table_title %}
+میز: {{ table_title }}
+{% endif %}
 ----------

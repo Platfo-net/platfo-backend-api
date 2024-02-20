@@ -1,8 +1,9 @@
 import datetime
 
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
+from sqlalchemy import BigInteger, Column, DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import relationship
 
+from app.constants.currency import Currency
 from app.constants.shop_telegram_payment_status import \
     ShopTelegramPaymentRecordStatus
 from app.db.base_class import Base
@@ -25,11 +26,13 @@ class CreditShopTelegramPaymentRecord(Base):
         nullable=True,
     )
 
-    reply_to_message_id = Column(BigInteger, nullable=True)
-    image = Column(String(255), nullable=True)
-    payment_message_id = Column(BigInteger, nullable=True)
-
+    # zarrinpal payment requirements
+    payment_authority = Column(String(128), nullable=True)
     status = Column(String(32), default=ShopTelegramPaymentRecordStatus.CREATED)
+    ref_id = Column(BigInteger, nullable=True)
+
+    amount = Column(Float, nullable=True)
+    currency = Column(String(10), nullable=False, default=Currency.IRT["value"])
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(

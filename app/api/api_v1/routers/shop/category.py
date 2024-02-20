@@ -1,5 +1,3 @@
-
-
 from typing import List
 
 from fastapi import APIRouter, Depends, Security, status
@@ -15,7 +13,7 @@ from app.core.config import settings
 from app.core.exception import raise_http_exception
 from app.core.unit_of_work import UnitOfWork
 
-router = APIRouter(prefix='/categories')
+router = APIRouter(prefix='/categories', tags=["Shop Category"])
 
 
 @router.post('', response_model=schemas.shop.Category)
@@ -36,7 +34,7 @@ def create_category(
     if not shop:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
-    if shop.user_id != current_user.id:
+    if not shop.user_id == current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
     with UnitOfWork(db) as uow:
@@ -46,6 +44,7 @@ def create_category(
             shop_id=shop.id,
         )
     image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+
     return schemas.shop.Category(
         title=category.title,
         id=category.uuid,

@@ -1,6 +1,7 @@
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
@@ -28,8 +29,22 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+app.add_middleware(SessionMiddleware, secret_key="some-random-string", max_age=None)
 
 
 @app.get('/health', tags=['health-check'])
 async def health():
     return {'message': 'ok!'}
+
+
+# from pydantic import UUID4
+# from fastapi import Request
+# @app.get('/shop/{sample_id}/{sample_id_2}')
+# async def health(
+#     *,
+#     sample_id: UUID4,
+#     sample_id_2: UUID4,
+#     req : Request,
+# ):
+#     print(dict(req.state))
+#     return {'message': 'ok!'}

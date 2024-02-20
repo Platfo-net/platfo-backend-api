@@ -27,13 +27,13 @@ async def send_lead_order_to_bot_handler(
     if not helpers.has_credit_by_shop_id(db, shop_id=shop_telegram_bot.shop_id):
         return
     lead = services.social.telegram_lead.get(db, id=lead_id)
-    if not lead:
-        return
+    # if not lead:
+    #     return
     order = services.shop.order.get(db, id=order_id)
     if not order:
         return
 
-    if lead.id != order.lead_id:
+    if lead and lead.id != order.lead_id:
         return
 
     if lead.telegram_bot_id != telegram_bot.id:
@@ -60,8 +60,11 @@ async def send_lead_order_to_bot_handler(
         currency=currency,
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
-    reply_markup = helpers.get_pay_order_reply_markup(
-        order_id, lang)
+    reply_markup = None
+    if order.shop_payment_method.payment_method.title == PaymentMethod.CARD_TRANSFER["title"]:
+        reply_markup = helpers.get_pay_order_reply_markup(
+            order_id, lang)
+
     order_message: telegram.Message = await bot.send_message(
         chat_id=lead.chat_id, text=text, reply_markup=reply_markup, parse_mode="HTML")
 
@@ -104,24 +107,27 @@ async def send_lead_pay_message(
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
 
-    text = helpers.load_message(
-        lang,
-        "card_transfer_payment_notification",
-        amount=helpers.number_to_price(int(amount)),
-        currency=currency,
-        card_number=shop_payment_method.information["card_number"],
-        name=shop_payment_method.information["name"],
-        bank=shop_payment_method.information.get("bank", "")
-    )
-    telegram_order = services.shop.telegram_order.get_by_order_id(
-        db, order_id=order.id)
+    if order.shop_payment_method.payment_method.title == PaymentMethod.CARD_TRANSFER["title"]:
 
-    payment_info_message: telegram.Message = await bot.send_message(
-        chat_id=lead.chat_id, text=text, parse_mode="HTML")
-    services.shop.telegram_order.add_reply_to_message_info(
-        db, telegram_order_id=telegram_order.id,
-        message_reply_to_id=payment_info_message.message_id
-    )
+        text = helpers.load_message(
+            lang,
+            "card_transfer_payment_notification",
+            amount=helpers.number_to_price(int(amount)),
+            currency=currency,
+            card_number=shop_payment_method.information["card_number"],
+            name=shop_payment_method.information["name"],
+            bank=shop_payment_method.information.get("bank", "")
+        )
+        telegram_order = services.shop.telegram_order.get_by_order_id(
+            db, order_id=order.id)
+
+        payment_info_message: telegram.Message = await bot.send_message(
+            chat_id=lead.chat_id, text=text, parse_mode="HTML")
+        services.shop.telegram_order.add_reply_to_message_info(
+            db, telegram_order_id=telegram_order.id,
+            message_reply_to_id=payment_info_message.message_id
+        )
+        return
 
 
 async def handle_order_payment(
@@ -203,6 +209,20 @@ async def handle_order_payment(
     )
 
 
+async def send_lead_pay_notification_to_bot_handler(db: Session, order_id: int, lang: str):
+    order = services.shop.order.get(db, id=order_id)
+    if not order:
+        return
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+    if not shop_telegram_bot:
+        return
+    bot = telegram.Bot(security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
+    await bot.send_message(
+        text=f"پرداخت سفارش شما با موفقیت انجام شد {order.payment_information.get('ref_id')}",
+        chat_id=order.lead.chat_id
+    )
+
+
 async def set_all_bot_commands_task_handler(db: Session, lang):
     telegram_bots = services.telegram_bot.all(db)
     for telegram_bot in telegram_bots:
@@ -215,3 +235,40 @@ async def set_all_bot_commands_task_handler(db: Session, lang):
                 ) for command in TelegramBotCommand.commands
             ]
         )
+
+
+async def order_change_status_from_dashboard_handler(
+    db: Session,
+    order_id: int,
+    lang: str,
+):
+    order = services.shop.order.get(db, id=order_id)
+    if not order:
+        return
+
+    if not helpers.has_credit_by_shop_id(db, order.shop_id):
+        return
+
+    amount = 0
+    items = []
+
+    for item in order.items:
+        amount += item.count * item.price
+        items.append({
+            "price": helpers.number_to_price(int(item.price)),
+            "title": item.product.title,
+            "count": item.count,
+        })
+
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
+
+    bot = Bot(token=security.decrypt_telegram_token(shop_telegram_bot.telegram_bot.bot_token))
+    text = helpers.load_message(
+        lang, "order_change_status_notification",
+        order_status=OrderStatus.items[order.status]["title"][lang],
+        order_number=order.order_number
+    )
+    try:
+        await bot.send_message(chat_id=order.lead.chat_id, text=text)
+    except telegram.error.Forbidden:
+        pass
