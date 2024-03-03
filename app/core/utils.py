@@ -137,6 +137,8 @@ def generate_random_code(length: int) -> int:
 
 
 def paginate(total_count, page, page_size) -> schemas.Pagination:
+    if page_size <= 0:
+        page_size = 1
     return schemas.Pagination(
         page=page,
         page_size=page_size,
