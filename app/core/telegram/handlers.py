@@ -98,6 +98,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         message = telegram.Message.de_json(data["message"], bot)
         update: telegram.Update = telegram.Update.de_json(data, bot=bot)
 
+        if not update.message.text:
+            return
+
         if update.message.text == TelegramSupportBotCommand.START["command"]:
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
@@ -141,7 +144,7 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif update.message.text == TelegramSupportBotCommand.PAYMENT_CHECK_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
                 db, update, OrderStatus.PAYMENT_CHECK,
-                support_bot_handlers.get_order_message,
+                helpers.get_order_message,
                 helpers.get_payment_check_order_reply_markup,
                 lang,
             )

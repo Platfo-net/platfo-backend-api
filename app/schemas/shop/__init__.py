@@ -5,8 +5,9 @@ from .order import (Order, OrderChangeStatus, OrderCreate, OrderCreateResponse,
                     OrderItem, OrderItemOrderCreate, OrderItemResponse,
                     OrderListApiResponse, OrderListItem)
 from .payment_methods import (PaymentMethod, PaymentMethodCreate,
-                              PaymentMethodGroup, PaymentMethodGroupList, PaymentMethodPanelGroup,
-                              PaymentMethodGroupView, PaymentMethodUpdate)
+                              PaymentMethodGroup, PaymentMethodGroupList,
+                              PaymentMethodGroupView, PaymentMethodPanelGroup,
+                              PaymentMethodUpdate)
 from .product import Product, ProductCreate, ProductListAPI, ProductUpdate
 from .product_variant import Variant, VariantCreate
 from .shipment_methods import (ChangeShipmentIsActive, ShipmentMethod,

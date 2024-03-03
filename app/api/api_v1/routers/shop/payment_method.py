@@ -1,5 +1,4 @@
 from typing import List
-from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Security, status
 from pydantic import UUID4, ValidationError

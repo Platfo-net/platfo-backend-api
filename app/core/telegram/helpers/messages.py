@@ -1,8 +1,7 @@
 import telegram
 from pydantic import UUID4
-from sqlalchemy.orm import Session
 
-from app import models, services
+from app import models
 from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
 from app.constants.payment_method import PaymentMethod
