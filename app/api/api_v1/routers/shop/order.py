@@ -77,10 +77,10 @@ def create_telegram_shop_order(
             shop_id=shop.id,
             lead_id=lead.id if lead else None,
             shop_payment_method_id=shop_payment_method.id,
-            shipment_method_id=shipment_method.id,
+            shipment_method=shipment_method,
             order_number=last_order_number + 1,
             status=OrderStatus.UNPAID["value"],
-            table_id=table if not table else table.id,
+            table_id=None if not table else table.id,
         )
 
     with UnitOfWork(db) as uow:
@@ -92,15 +92,21 @@ def create_telegram_shop_order(
             variant = services.shop.product_variant.get_by_uuid(db, uuid=item.variant_id)
             if variant:
                 if not variant.is_available:
+                    services.shop.order.delete(db, db_obj=order)
                     raise_http_exception(Error.SHOP_PRODUCT_VARIANT_NOT_FOUND_ERROR)
+                if variant.price:
+                    price = variant.price
+                else:
+                    price = product.price
 
-                price = variant.price
                 currency = variant.currency
                 variant_title = variant.title
+                variant_id = variant.id
             else:
                 price = product.price
                 currency = product.currency
                 variant_title = None
+                variant_id = None
 
             order_items.append(
                 schemas.shop.OrderItem(
@@ -110,6 +116,7 @@ def create_telegram_shop_order(
                     currency=currency,
                     product_title=product.title,
                     variant_title=variant_title,
+                    variant_id=variant_id,
                 )
             )
         services.shop.order_item.create_bulk(
@@ -265,7 +272,9 @@ def get_order(
         shipment_method=order.shipment_method.title if order.shipment_method else "",
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
-        table=table
+        table=table,
+        shipment_cost_amount=order.shipment_cost_amount,
+        shipment_cost_currency=order.shipment_cost_currency,
     )
 
 
@@ -347,5 +356,6 @@ def change_order_status(
         status=OrderStatus.items[order.status]["title"]["fa"],
         payment_information=order.payment_information,
         table=table,
-
+        shipment_cost_amount=order.shipment_cost_amount,
+        shipment_cost_currency=order.shipment_cost_currency,
     )

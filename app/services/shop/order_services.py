@@ -22,8 +22,8 @@ class OrderServices:
         obj_in: schemas.shop.OrderCreate,
         shop_id: int,
         lead_id: int,
+        shipment_method: models.shop.ShopShipmentMethod,
         shop_payment_method_id: int,
-        shipment_method_id: int,
         order_number: int,
         status: str,
         table_id: Optional[int] = None
@@ -43,8 +43,10 @@ class OrderServices:
             shop_id=shop_id,
             lead_id=lead_id,
             shop_payment_method_id=shop_payment_method_id,
-            shipment_method_id=shipment_method_id,
+            shipment_method_id=shipment_method.id,
             table_id=table_id,
+            shipment_cost_amount=None if not shipment_method else shipment_method.price,
+            shipment_cost_currency=None if not shipment_method else shipment_method.currency,
         )
 
         uow.add(db_obj)
@@ -153,6 +155,12 @@ class OrderServices:
             self.model.table_id == table_id).count()
 
         return bool(total_count)
+
+    def delete(
+        self, db: Session, *, db_obj: models.shop.ShopOrder
+    ):
+        db.delete(db_obj)
+        db.commit()
 
 
 order = OrderServices(models.shop.ShopOrder)

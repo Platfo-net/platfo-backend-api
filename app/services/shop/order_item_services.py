@@ -24,6 +24,7 @@ class OrderItemServices:
                 order_id=order_id,
                 price=obj.price,
                 currency=obj.currency,
+                variant_id=obj.variant_id,
             ))
         uow.add_all(db_objs)
         return db_objs

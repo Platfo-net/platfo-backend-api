@@ -23,8 +23,6 @@ def load_message(lang: str, template_name: str, **kwargs) -> str:
 
 
 def has_credit_by_shop_id(db: Session, shop_id: int) -> bool:
-    if settings.ENVIRONMENT != "prod":
-        return True
 
     credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop_id)
     if not credit:

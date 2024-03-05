@@ -43,6 +43,7 @@ class OrderItem(BaseModel):
     currency: str
     variant_title: Optional[str] = None
     product_title: str
+    variant_id: Optional[int] = None
 
 
 class OrderListItem(BaseModel):
@@ -85,6 +86,8 @@ class Order(OrderBase):
     status: Optional[str] = None
     payment_information: Optional[dict] = None
     table: Optional[Table] = None
+    shipment_cost_amount : Optional[float] = None
+    shipment_cost_currency : Optional[str] = None
 
 
 class OrderChangeStatus(BaseModel):

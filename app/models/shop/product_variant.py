@@ -19,3 +19,4 @@ class ShopProductVariant(Base):
     is_available = Column(Boolean(256), nullable=True, default=True)
 
     product = relationship('ShopProduct', back_populates='variants')
+    order_items = relationship('ShopOrderItem', back_populates='variant')
