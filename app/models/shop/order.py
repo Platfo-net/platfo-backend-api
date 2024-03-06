@@ -2,6 +2,7 @@ import datetime
 
 from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime, Float,
                         ForeignKey, Integer, String)
+
 from sqlalchemy.orm import relationship
 
 from app.constants.order_status import OrderStatus
@@ -22,6 +23,7 @@ class ShopOrder(Base):
     status = Column(String(255), default=OrderStatus.UNPAID["value"])
 
     order_number = Column(Integer, nullable=True, index=True)
+    total_amount = Column(Float, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     is_paid = Column(Boolean, default=False)
