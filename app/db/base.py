@@ -17,7 +17,7 @@ from app.models.shop import (ShopAttribute, ShopCategory, ShopOrder,
                              ShopOrderItem, ShopPaymentMethod, ShopProduct,
                              ShopProductVariant, ShopShipmentMethod, ShopShop,
                              ShopShopPaymentMethod, ShopShopTelegramBot,
-                             ShopTable, ShopTelegramOrder)
+                             ShopTable, ShopTelegramOrder, ShopDailyReport, ShopTheme)
 from app.models.social import TelegramLead, TelegramLeadMessage
 from app.models.telegram_bot import TelegramBot
 from app.models.user import User
