@@ -1,5 +1,6 @@
 
 
+from sqlalchemy import func
 from app.db.session import SessionLocal
 from app import models, services
 import pytz
@@ -18,13 +19,14 @@ def calculate_shops_daily_report_task():
         pass
 
 
-def calculate_shop_daily_report(db: Session, shop_id, from_datetime, to_datetime):
-    orders = db.query(models.shop.ShopOrder).filter(
-        models.shop.ShopOrder.shop_id == shop_id,
+def calculate_shop_daily_report(db: Session, from_datetime, to_datetime):
+    orders = db.query(
+        models.shop.ShopOrder.shop_id,
+        func.sum(models.shop.ShopOrder.total_amount),
+        func.count(models.shop.ShopOrder.id),
+    ).filter(
         models.shop.ShopOrder.created_at >= from_datetime,
         models.shop.ShopOrder.created_at < to_datetime,
-    ).all()
+    ).group_by(models.shop.ShopOrder.shop_id).all()
     for order in orders:
-        
-
-    return q.count() , 
+        pass
