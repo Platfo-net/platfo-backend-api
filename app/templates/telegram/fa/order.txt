@@ -13,9 +13,9 @@
 شیوه ارسال: {{ shipment_method_title }}
 مبلغ: {{ shipment_method_price }}{{ currency }}
 
-{% if item["shipment_cost_amount"] %}
+{% if order.shipment_cost_amount %}
 * هزینه ی ارسال:
-    {{ item["shipment_cost_amount"] }} {{ item["shipment_cost_currency"] }}
+    {{ order.shipment_cost_amount }} {{ order.shipment_cost_currency }}
 {% endif %}
 ——————————-
 💵 مبلغ نهایی سفارش: {{ amount }}{{ currency }}
