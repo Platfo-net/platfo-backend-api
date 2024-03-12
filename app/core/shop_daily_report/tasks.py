@@ -2,7 +2,7 @@
 
 from sqlalchemy import func
 from app.db.session import SessionLocal
-from app import models, services
+from app import models
 import pytz
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
@@ -31,7 +31,7 @@ def calculate_shops_daily_report_task():
 
 
 def calculate_shop_daily_report(db: Session, from_datetime, to_datetime):
-    report = db.query(
+    return db.query(
         models.shop.ShopOrder.shop_id,
         func.sum(models.shop.ShopOrder.total_amount),
         func.count(models.shop.ShopOrder.id),
