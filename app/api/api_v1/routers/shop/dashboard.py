@@ -30,7 +30,7 @@ def get_daily_report(
     ),
 ):
 
-    shop = services.shop.shop.get_by_uuid(db, uuid=id)
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
     if not shop:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
@@ -73,7 +73,7 @@ def get_last_month_report(
     ),
 ):
 
-    shop = services.shop.shop.get_by_uuid(db, uuid=id)
+    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
     if not shop:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
 
