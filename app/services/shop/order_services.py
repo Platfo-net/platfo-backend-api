@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import List, Optional, Tuple
 
 from pydantic import UUID4
@@ -120,7 +120,7 @@ class OrderServices:
         self, db: Session, *, db_obj: models.shop.ShopOrder, information: dict
     ) -> models.shop.ShopOrder:
         db_obj.payment_information = information
-        db_obj.paid_at = datetime.datetime.utcnow()
+        db_obj.paid_at = datetime.utcnow()
         db_obj.is_paid = True
         db.add(db_obj)
         db.commit()
@@ -161,6 +161,15 @@ class OrderServices:
     ):
         db.delete(db_obj)
         db.commit()
+
+    def get_orders_by_datetime(
+        self, db: Session, *, shop_id: int, from_datetime: datetime, to_datetime: datetime
+    ) -> List[models.shop.ShopOrder]:
+        db.query(self.model).filter(
+            self.model.shop_id == shop_id,
+            self.model.created_at >= from_datetime,
+            self.model.created_at < to_datetime,
+        ).all()
 
 
 order = OrderServices(models.shop.ShopOrder)

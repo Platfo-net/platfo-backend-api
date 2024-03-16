@@ -1,11 +1,13 @@
 
 
-from sqlalchemy import func
-from app.db.session import SessionLocal
-from app import models
-import pytz
 from datetime import datetime, timedelta
+
+import pytz
+from sqlalchemy import func
 from sqlalchemy.orm import Session
+
+from app import models
+from app.db.session import SessionLocal
 
 
 def calculate_shops_daily_report_task(from_datetime=None):

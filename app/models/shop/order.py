@@ -2,7 +2,6 @@ import datetime
 
 from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime, Float,
                         ForeignKey, Integer, String)
-
 from sqlalchemy.orm import relationship
 
 from app.constants.order_status import OrderStatus

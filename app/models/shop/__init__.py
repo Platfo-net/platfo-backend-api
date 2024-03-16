@@ -1,5 +1,6 @@
 from .attribute import ShopAttribute
 from .category import ShopCategory
+from .daily_report import ShopDailyReport
 from .order import ShopOrder
 from .order_item import ShopOrderItem
 from .payment_method import ShopPaymentMethod
@@ -12,4 +13,3 @@ from .shop_telegram_bot import ShopShopTelegramBot
 from .shop_telegram_order import ShopTelegramOrder
 from .shop_theme import ShopTheme
 from .table import ShopTable
-from .daily_report import ShopDailyReport

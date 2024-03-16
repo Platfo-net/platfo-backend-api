@@ -2,7 +2,10 @@ import math
 import random
 import re
 import string
+from datetime import datetime, timedelta
+from typing import Tuple
 
+import pytz
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -152,3 +155,12 @@ def generate_random_support_token(length: int) -> str:
         random.choice(string.digits) for _ in range(length)
     )
     return "P" + token
+
+
+def get_today_datetime_range() -> Tuple[datetime, datetime]:
+    from_datetime = datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+
+    to_datetime = from_datetime + timedelta(days=1)
+    return from_datetime, to_datetime

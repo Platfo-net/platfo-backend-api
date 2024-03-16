@@ -1,5 +1,6 @@
 from .attribute_services import attribute
 from .category_services import category
+from .daily_report_services import daily_report
 from .order_item_services import order_item
 from .order_services import order
 from .payment_method_services import payment_method
