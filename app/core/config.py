@@ -67,8 +67,6 @@ class Settings(BaseSettings):
     S3_ROOT_PASSWORD: Optional[str] = None
     S3_HOST: Optional[str] = None
 
-    S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow-media-bucket"
-    S3_CAMPAIGN_BUCKET: str = "notifier-campaign-bucket"
     S3_USER_PROFILE_BUCKET: str = 'user-profile-bucket'
     S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop-product-image-bucket'
     S3_SHOP_CATEGORY_IMAGE_BUCKET: str = 'shop-category-image-bucket'
@@ -76,9 +74,6 @@ class Settings(BaseSettings):
     S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET: str = 'telegram-bot-menu-image-bucket'
     S3_PAYMENT_RECEIPT_IMAGE: str = 'payment-receipt-image-bucket'
     S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop-telegram-credit-extending'
-
-    CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: Optional[int] = None
-    CAMPAIGN_PERIOD_INTERVAL_MINUTES: Optional[int] = None
 
     SAMPLE_FACEBOOK_PAGE_ID: Optional[int] = None
     SAMPLE_LEAD_IGS_ID: Optional[int] = None
@@ -94,11 +89,6 @@ class Settings(BaseSettings):
     ZARINPAL_BASE_URL: str
 
     LOKI_LOG_PUSH_URL: Optional[str] = None
-
-    OTEL_EXPORTER_OTLP_ENDPOINT: Optional[str] = None
-
-    OTEL_SERVICE_NAME: Optional[str] = None
-    OTEL_EXPORTER_OTLP_INSECURE: Optional[str] = None
 
     SUPPORT_BOT_TOKEN: Optional[str] = None
     TELEGRAM_ADMIN_BOT_TOKEN: Optional[str] = None

@@ -40,7 +40,7 @@ def create_shop_for_telegram_bot(
         raise_http_exception(Error.SHOP_SHOP_IS_EXIST)
 
     if obj_in.category not in ShopCategory.items:
-        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
+        raise raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
     support_token = generate_random_support_token(length=7)
 

@@ -96,7 +96,7 @@ def update_shop(
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
     if obj_in.category not in ShopCategory.items:
-        raise raise_http_exception(Error.CATEGORY_NOT_FOUND)
+        raise raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
     def _handle_shop_theme_logic(db, obj_in, shop):
         if obj_in.color_code:

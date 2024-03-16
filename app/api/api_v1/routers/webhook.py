@@ -11,7 +11,6 @@ from app.api.api_v1.routers.telegram_bot import set_webhook
 from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
-from app.core.instagram import tasks
 from app.core.telegram import tasks as telegram_tasks
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
@@ -35,7 +34,7 @@ def instagram_subscription_webhook(request: Request):
 
 @router.post('/instagram', status_code=status.HTTP_200_OK)
 def instagram_webhook_listener(*, facebook_webhook_body: dict):
-    tasks.webhook_processor.delay(facebook_webhook_body)
+    # tasks.webhook_processor.delay(facebook_webhook_body)
     return
 
 

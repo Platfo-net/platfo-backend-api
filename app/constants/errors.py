@@ -47,21 +47,6 @@ class Error:
         'code': 6,
     }
     INACTIVE_USER = {'text': 'Inactive user', 'status_code': 400, 'code': 7}
-    CONNECTION_NOT_FOUND = {
-        'text': 'Connection not found.',
-        'status_code': 404,
-        'code': 8,
-    }
-    INVALID_CONNECTION_ID = {
-        'text': 'Invalid Connection Id.',
-        'status_code': 404,
-        'code': 9,
-    }
-    PROBLEM_WITH_INSTAGRAM_CONNECTION = {
-        'text': 'problem with instagram connection.',
-        'status_code': 400,
-        'code': 10,
-    }
     INVALID_TRANSACTION_STATUS = {
         'text': 'invalid transaction status.',
         'status_code': 400,
@@ -109,22 +94,6 @@ class Error:
         'code': 19,
     }
 
-    NO_CHATFLOW_WITH_THE_GIVEN_ID = {
-        'text': 'There is no chatflow with the given id.',
-        'status_code': 404,
-        'code': 31,
-    }
-    NO_NODE_WITH_THE_GIVEN_ID = {
-        'text': 'There is no node with the given id.',
-        'status_code': 404,
-        'code': 32,
-    }
-    NO_CHATFLOW_RELATED_TO_THIS_NODE = {
-        'text': 'There is no chatflow related to this node.',
-        'status_code': 404,
-        'code': 33,
-    }
-    NO_NEXT_MOVE = {'text': 'There is no next move.', 'status_code': 404, 'code': 34}
     NOT_AUTHENTICATED = {'text': 'not authenticated.', 'status_code': 401, 'code': 35}
     NOT_AUTHORIZED = {'text': 'not authorized.', 'status_code': 401, 'code': 36}
     ACCOUNT_NOT_FOUND_PERMISSION_DENIED = {
@@ -146,59 +115,10 @@ class Error:
         'code': 51,
     }
 
-    # Category errors
-
-    CATEGORY_NOT_FOUND = {'text': 'Category not found', 'status_code': 404, 'code': 60}
-
-    # Content errors
-
-    CONTENT_NOT_FOUND = {'text': 'Content not found', 'status_code': 404, 'code': 70}
-
-    CONNECTION_EXIST = {
-        'text': 'Connection already exist.',
-        'status_code': 400,
-        'code': 80,
-    }
-    INVALID_DETAILS = {'text': 'Invalid Detail', 'status_code': 400, 'code': 81}
     INVALID_FIELDS_OPERATORS = {
         'text': 'Invalid fields or operators',
         'status_code': 400,
         'code': 90,
-    }
-
-    LEAD_NOT_FOUND = {
-        'text': 'Lead not found!',
-        'status_code': 404,
-        'code': 91,
-    }
-
-    CAMPAIGN_NOT_FOUND = {
-        'text': 'Campaign not found!',
-        'status_code': 404,
-        'code': 92,
-    }
-
-    CAMPAIGN_NOT_FOUND_ACCESS_DENIED = {
-        'text': 'Campaign not found!',
-        'status_code': 404,
-        'code': 93,
-    }
-
-    CAMPAIGN_ALREADY_ACTIVE = {
-        'text': 'Campaign already activated!',
-        'status_code': 400,
-        'code': 93,
-    }
-    DRAFT_CAMPAIGN_DOESNT_HAVE_CONTACT = {
-        'text': 'Draft campaign doesnt have contacts.',
-        'status_code': 400,
-        'code': 94,
-    }
-
-    LEADS_DO_NOT_BELONGS_TO_THIS_PAGE = {
-        'text': 'Leads do not belong to this page',
-        'status_code': 400,
-        'code': 104,
     }
 
     PLAN_NOT_FOUND = {
