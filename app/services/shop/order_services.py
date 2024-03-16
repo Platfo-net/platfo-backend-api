@@ -165,7 +165,7 @@ class OrderServices:
     def get_orders_by_datetime(
         self, db: Session, *, shop_id: int, from_datetime: datetime, to_datetime: datetime
     ) -> List[models.shop.ShopOrder]:
-        db.query(self.model).filter(
+        return db.query(self.model).filter(
             self.model.shop_id == shop_id,
             self.model.created_at >= from_datetime,
             self.model.created_at < to_datetime,
