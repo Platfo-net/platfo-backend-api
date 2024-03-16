@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from pydantic import UUID4
+
 from app.core.utils import get_today_datetime_range
 from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
@@ -17,7 +19,7 @@ router = APIRouter(prefix='/dashboard', tags=["Shop Dashboard"])
 def get_daily_report(
     *,
     db: Session = Depends(deps.get_db),
-    shop_id: int,
+    shop_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
@@ -60,7 +62,7 @@ def get_daily_report(
 def get_last_month_report(
     *,
     db: Session = Depends(deps.get_db),
-    shop_id: int,
+    shop_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[
