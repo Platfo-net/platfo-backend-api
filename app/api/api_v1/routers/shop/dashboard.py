@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from core.utils import get_today_datetime_range
+from app.core.utils import get_today_datetime_range
 from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
