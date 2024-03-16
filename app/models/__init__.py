@@ -1,4 +1,4 @@
-from app.models import (academy, bot_builder, credit, databoard, live_chat,
+from app.models import (bot_builder, credit, databoard, live_chat,
                         notifier, shop, social)
 
 from .connection import Connection

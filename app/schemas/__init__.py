@@ -1,4 +1,4 @@
-from app.schemas import (academy, bot_builder, credit, databoard, live_chat,
+from app.schemas import (bot_builder, credit, databoard, live_chat,
                          notifier, shop, social)
 
 from .account import Account, AccountDetail

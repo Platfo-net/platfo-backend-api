@@ -3,75 +3,6 @@ from uuid import uuid4
 from django.db import models
 
 
-class AcademyCategories(models.Model):
-    id = models.UUIDField(primary_key=True)
-    title = models.CharField(max_length=255, blank=True, null=True)
-    parent = models.ForeignKey(
-        'self', models.DO_NOTHING, blank=True, null=True)
-    uuid = models.UUIDField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'academy_categories'
-
-
-class AcademyContentCategories(models.Model):
-    id = models.UUIDField(primary_key=True)
-    content = models.ForeignKey(
-        'AcademyContents', models.DO_NOTHING, blank=True, null=True)
-    category = models.ForeignKey(
-        AcademyCategories, models.DO_NOTHING, blank=True, null=True)
-    uuid = models.UUIDField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'academy_content_categories'
-
-
-class AcademyContentLabels(models.Model):
-    id = models.UUIDField(primary_key=True)
-    content = models.ForeignKey(
-        'AcademyContents', models.DO_NOTHING, blank=True, null=True)
-    label = models.ForeignKey(
-        'AcademyLabels', models.DO_NOTHING, blank=True, null=True)
-    uuid = models.UUIDField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'academy_content_labels'
-
-
-class AcademyContents(models.Model):
-    id = models.UUIDField(primary_key=True)
-    title = models.CharField(max_length=1024, blank=True, null=True)
-    caption = models.TextField(blank=True, null=True)
-    # This field type is a guess.
-    blocks = models.TextField(blank=True, null=True)
-    slug = models.CharField(max_length=300, blank=True, null=True)
-    is_published = models.BooleanField(blank=True, null=True)
-    cover_image = models.CharField(max_length=1024, blank=True, null=True)
-    time = models.CharField(max_length=200, blank=True, null=True)
-    version = models.CharField(max_length=200, blank=True, null=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    uuid = models.UUIDField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'academy_contents'
-
-
-class AcademyLabels(models.Model):
-    id = models.UUIDField(primary_key=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    uuid = models.UUIDField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'academy_labels'
-
-
 class AlembicVersion(models.Model):
     version_num = models.CharField(primary_key=True, max_length=32)
 
@@ -221,7 +152,7 @@ class CreditPlans(models.Model):
     module = models.CharField(max_length=255, choices=CREDIT_PLAN_MODULE_CHOICES)
     created_at = models.DateTimeField(blank=True, null=True)
     id = models.BigAutoField(primary_key=True)
-    uuid = models.UUIDField(blank=True, null=True , default=uuid4)
+    uuid = models.UUIDField(blank=True, null=True, default=uuid4)
 
     class Meta:
         managed = False

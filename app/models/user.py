@@ -50,8 +50,6 @@ class User(Base):
 
     user_notifications = relationship('NotificationUser', back_populates='user')
 
-    content = relationship('Content', back_populates='user')
-
     campaigns = relationship('Campaign', back_populates='user')
     invoices = relationship('Invoice', back_populates='user')
     messages = relationship('Message', back_populates='user')
