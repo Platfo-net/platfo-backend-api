@@ -1,4 +1,4 @@
-from app.schemas import (credit, shop, social)
+from app.schemas import credit, shop, social
 
 from .file import FileUpload
 from .instagram_page import (ConnectPage, InstagramPage, InstagramPageCreate,

@@ -1,8 +1,7 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.routers import (auth, constants, credit_api,
-                                    dev_utils, file, instagram,
-                                    notification, shop_api,
+from app.api.api_v1.routers import (auth, constants, credit_api, dev_utils,
+                                    file, instagram, notification, shop_api,
                                     telegram_bot, users, webhook)
 
 api_router = APIRouter()

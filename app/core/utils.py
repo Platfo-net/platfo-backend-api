@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from typing import Tuple
 
 import pytz
-from pydantic import UUID4
 
 from app import schemas
 

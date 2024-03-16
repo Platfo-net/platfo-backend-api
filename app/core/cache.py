@@ -2,9 +2,6 @@ import json
 from datetime import timedelta
 
 from redis.client import Redis
-from sqlalchemy.orm import Session
-
-from app import services
 
 
 def get_data_from_cache(client: Redis, key: str = None) -> str:

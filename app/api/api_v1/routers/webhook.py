@@ -17,7 +17,7 @@ router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
 
 
-@router.get('/instagram')
+@router.get('/instagram', include_in_schema=False)
 def instagram_subscription_webhook(request: Request):
     try:
         _ = request.query_params['hub.mode']
@@ -32,7 +32,7 @@ def instagram_subscription_webhook(request: Request):
     return int(challenge)
 
 
-@router.post('/instagram', status_code=status.HTTP_200_OK)
+@router.post('/instagram', status_code=status.HTTP_200_OK, include_in_schema=False)
 def instagram_webhook_listener(*, facebook_webhook_body: dict):
     # tasks.webhook_processor.delay(facebook_webhook_body)
     return
