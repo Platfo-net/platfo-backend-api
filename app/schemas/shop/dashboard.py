@@ -18,6 +18,6 @@ class ShopMonthlyDashboardItem(BaseModel):
 
 
 class ShopMonthlyDashboard(BaseModel):
-    orders_counts: List[ShopMonthlyDashboardItem]
+    orders_count: List[ShopMonthlyDashboardItem]
     orders_amount: List[ShopMonthlyDashboardItem]
     orders_average: List[ShopMonthlyDashboardItem]

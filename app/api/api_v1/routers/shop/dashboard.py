@@ -129,7 +129,7 @@ def get_last_month_report(
         )
 
     return schemas.shop.ShopMonthlyDashboard(
-        orders_amount=orders_amount,
         orders_count=orders_count,
+        orders_amount=orders_amount,
         orders_average=orders_average
     )
