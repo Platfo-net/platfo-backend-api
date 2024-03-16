@@ -1,7 +1,7 @@
 from .attribute import (Attribute, AttributeBase, AttributeCreate,
                         AttributeUpdate)
 from .category import Category, CategoryCreate, CategoryUpdate
-from .dashboard import GeneralShopDashboard
+from .dashboard import ShopDailyDashboard, ShopMonthlyDashboard, ShopMonthlyDashboardItem
 from .order import (Order, OrderChangeStatus, OrderCreate, OrderCreateResponse,
                     OrderItem, OrderItemOrderCreate, OrderItemResponse,
                     OrderListApiResponse, OrderListItem)
