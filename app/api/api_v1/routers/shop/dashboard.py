@@ -13,7 +13,7 @@ from app.core.exception import raise_http_exception
 router = APIRouter(prefix='/dashboard', tags=["Shop Dashboard"])
 
 
-@router.post('/{shop_id}/daily', response_model=schemas.shop.GeneralShopDashboard)
+@router.post('/{shop_id}/daily', response_model=schemas.shop.ShopDailyDashboard)
 def get_daily_report(
     *,
     db: Session = Depends(deps.get_db),
