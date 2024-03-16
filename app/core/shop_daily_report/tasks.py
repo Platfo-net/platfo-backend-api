@@ -8,9 +8,11 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
 
-def calculate_shops_daily_report_task():
+def calculate_shops_daily_report_task(from_datetime=None):
     db = SessionLocal()
-    from_datetime = datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
+    from_datetime = from_datetime.astimezone(pytz.timezone("Asia/Tehran")).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    ) or datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
         hour=0, minute=0, second=0, microsecond=0
     )
     to_datetime = from_datetime + timedelta(days=1)
@@ -24,8 +26,8 @@ def calculate_shops_daily_report_task():
             shop_id=analytic[0]
         )
         objs.append(obj)
-        db.add_all(objs)
-        db.commit()
+    db.add_all(objs)
+    db.commit()
 
     return len(objs)
 
