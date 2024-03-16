@@ -40,7 +40,7 @@ def get_daily_report(
     today_start, tomorrow_start = get_today_datetime_range()
 
     today_orders = services.shop.order.get_orders_by_datetime(
-        db, shop_id=shop_id, from_datetime=today_start, to_datetime=tomorrow_start)
+        db, shop_id=shop.id, from_datetime=today_start, to_datetime=tomorrow_start)
 
     today_orders_count = len(today_orders)
     today_orders_sum = 0
