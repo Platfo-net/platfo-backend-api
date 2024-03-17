@@ -24,7 +24,7 @@ celery.conf.update(
 )
 celery.conf.beat_schedule = {
     'shop-analytics-data-every-day': {
-        'task': 'app.core.',
+        'task': 'app.core.shop_daily_report.tasks.calculate_shops_daily_report_task',
         'schedule': crontab(hour=4, minute=30),
     },
 }
