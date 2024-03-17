@@ -1,3 +1,4 @@
+from celery.schedules import crontab
 import sentry_sdk
 from celery import Celery
 
@@ -21,10 +22,9 @@ celery.conf.update(
     result_serializer='json',
     accept_content=['json'],
 )
-
 celery.conf.beat_schedule = {
-    'campaign-terminal-every-1-hour': {
-        'task': 'app.core.notifier.tasks.campaign_terminal',
-        'schedule': 3600,
+    'shop-analytics-data-every-day': {
+        'task': 'app.core.',
+        'schedule': crontab(hour=4, minute=30),
     },
 }
