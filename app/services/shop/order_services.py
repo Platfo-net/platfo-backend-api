@@ -172,9 +172,13 @@ class OrderServices:
         ).all()
 
     def update_total_amount(
-        self, db: Session, *, db_obj: models.shop.ShopOrder, total_amount: float
+        self, db: Session, *,
+        db_obj: models.shop.ShopOrder,
+        total_amount: float,
+        currency: str,
     ) -> List[models.shop.ShopOrder]:
         db_obj.total_amount = total_amount
+        db_obj.currency = currency
         db.add(db_obj)
         db.commit()
 

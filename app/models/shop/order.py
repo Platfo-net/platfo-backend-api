@@ -23,6 +23,8 @@ class ShopOrder(Base):
 
     order_number = Column(Integer, nullable=True, index=True)
     total_amount = Column(Float, nullable=True)
+    currency = Column(String(32), nullable=True)
+
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     is_paid = Column(Boolean, default=False)

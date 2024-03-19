@@ -123,7 +123,12 @@ def create_telegram_shop_order(
             )
             total_amount += (item.count * price)
 
-        services.shop.order.update_total_amount(db, db_obj=order, total_amount=total_amount)
+        services.shop.order.update_total_amount(
+            db,
+            db_obj=order,
+            total_amount=total_amount,
+            currency=Currency.IRT["value"],
+        )
         services.shop.order_item.create_bulk(
             uow, objs_in=order_items, order_id=order.id
         )
