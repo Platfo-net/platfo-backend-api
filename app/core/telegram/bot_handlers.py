@@ -265,7 +265,6 @@ async def order_change_status_from_dashboard_handler(
             "count": item.count,
         })
     amount += order.shipment_cost_amount
-    
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
 

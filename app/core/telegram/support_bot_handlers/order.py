@@ -149,7 +149,6 @@ async def order_change_status_handler(
             "count": item.count,
         })
     amount += order.shipment_cost_amount
-    
 
     await update.message.reply_text(
         message,
@@ -212,7 +211,6 @@ async def send_lead_order_to_shop_support_bot(
             "count": item.count,
         })
     amount += order.shipment_cost_amount
-    
 
     payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
 
@@ -256,7 +254,7 @@ async def send_all_order_by_status(
         for item in order.items:
             amount += item.price * item.count
         amount += order.shipment_cost_amount
-        
+
         text = get_message(order, lang, amount)
         reply_markup = get_reply_markup(
             order, lang)

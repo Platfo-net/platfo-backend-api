@@ -1,9 +1,7 @@
 from datetime import timedelta
 
-from pydantic import UUID4
-
-from app.core.utils import get_today_datetime_range
 from fastapi import APIRouter, Depends, Security
+from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from app import models, schemas, services
@@ -11,6 +9,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
+from app.core.utils import get_today_datetime_range
 
 router = APIRouter(prefix='/dashboard', tags=["Shop Dashboard"])
 
@@ -98,11 +97,17 @@ def get_last_month_report(
             "avg": 0,
         }
 
+    total_orders_count = 0
+    total_orders_amount = 0
+
     for report in last_30_days_reports:
         last_30_days[report.date]["count"] = report.order_count
         last_30_days[report.date]["amount"] = report.order_amount
         if report.order_count:
             last_30_days[report.date]["avg"] = report.order_amount / report.order_count
+
+        total_orders_amount = report.order_amount
+        total_orders_count = report.order_count
 
     orders_amount = []
     orders_count = []
@@ -129,7 +134,11 @@ def get_last_month_report(
         )
 
     return schemas.shop.ShopMonthlyDashboard(
-        orders_count=reversed(orders_count),
-        orders_amount=reversed(orders_amount),
-        orders_average=reversed(orders_average)
+        orders_count_per_day=reversed(orders_count),
+        orders_amount_per_day=reversed(orders_amount),
+        orders_average_per_day=reversed(orders_average),
+        orders_total_amount=total_orders_amount,
+        orders_total_count=total_orders_count,
+        orders_total_average=0 if not total_orders_count
+        else total_orders_amount / total_orders_count
     )

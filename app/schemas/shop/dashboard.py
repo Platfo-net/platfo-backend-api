@@ -18,6 +18,10 @@ class ShopMonthlyDashboardItem(BaseModel):
 
 
 class ShopMonthlyDashboard(BaseModel):
-    orders_count: List[ShopMonthlyDashboardItem]
-    orders_amount: List[ShopMonthlyDashboardItem]
-    orders_average: List[ShopMonthlyDashboardItem]
+    orders_count_per_day: List[ShopMonthlyDashboardItem]
+    orders_amount_per_day: List[ShopMonthlyDashboardItem]
+    orders_average_per_day: List[ShopMonthlyDashboardItem]
+
+    orders_total_count: Optional[int] = 0
+    orders_total_amount: Optional[float] = 0.0
+    orders_total_average: Optional[float] = 0.0
