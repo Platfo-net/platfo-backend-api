@@ -171,5 +171,12 @@ class OrderServices:
             self.model.created_at < to_datetime,
         ).all()
 
+    def update_total_amount(
+        self, db: Session, *, db_obj: models.shop.ShopOrder, total_amount: float
+    ) -> List[models.shop.ShopOrder]:
+        db_obj.total_amount = total_amount
+        db.add(db_obj)
+        db.commit()
+
 
 order = OrderServices(models.shop.ShopOrder)

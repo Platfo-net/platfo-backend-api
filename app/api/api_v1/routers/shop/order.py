@@ -83,6 +83,8 @@ def create_telegram_shop_order(
             table_id=None if not table else table.id,
         )
 
+    total_amount = 0
+
     with UnitOfWork(db) as uow:
         for item in obj_in.items:
             product = services.shop.product.get_by_uuid(db, uuid=item.product_id)
@@ -119,6 +121,9 @@ def create_telegram_shop_order(
                     variant_id=variant_id,
                 )
             )
+            total_amount += (item.count * price)
+
+        services.shop.order.update_total_amount(db, db_obj=order, total_amount=total_amount)
         services.shop.order_item.create_bulk(
             uow, objs_in=order_items, order_id=order.id
         )
