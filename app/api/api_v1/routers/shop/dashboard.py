@@ -14,47 +14,16 @@ from app.core.utils import get_today_datetime_range
 router = APIRouter(prefix='/dashboard', tags=["Shop Dashboard"])
 
 
-@router.post('/{shop_id}/daily', response_model=schemas.shop.ShopDailyDashboard)
-def get_daily_report(
-    *,
-    db: Session = Depends(deps.get_db),
-    shop_id: UUID4,
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
-    ),
-):
-
-    shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
-    if not shop:
-        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ERROR)
-
-    if shop.user_id != current_user.id:
-        raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
-
-    today_start, tomorrow_start = get_today_datetime_range()
-
+def get_today_report(db: Session, shop_id, today_start, tomorrow_start):
     today_orders = services.shop.order.get_orders_by_datetime(
-        db, shop_id=shop.id, from_datetime=today_start, to_datetime=tomorrow_start)
+        db, shop_id=shop_id, from_datetime=today_start, to_datetime=tomorrow_start)
 
     today_orders_count = len(today_orders)
     today_orders_sum = 0
     for order in today_orders:
         today_orders_sum += order.total_amount
 
-    today_orders_average = 0
-    if today_orders_count:
-        today_orders_average = today_orders_sum / today_orders_count
-
-    return schemas.shop.ShopDailyDashboard(
-        today_orders_count=today_orders_count,
-        today_orders_sum=today_orders_sum,
-        today_orders_average=today_orders_average,
-    )
+    return today_orders_count, today_orders_sum
 
 
 @router.post('/{shop_id}/monthly', response_model=schemas.shop.ShopMonthlyDashboard)
@@ -79,7 +48,9 @@ def get_last_month_report(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
-    today_start, _ = get_today_datetime_range()
+    today_start, tomorrow_start = get_today_datetime_range()
+
+    today_count, today_amount = get_today_report(db, shop.id, today_start, tomorrow_start)
 
     last_30_days_reports = services.shop.daily_report.get_datetime_range_reports(
         db,
@@ -88,8 +59,14 @@ def get_last_month_report(
         to_date=today_start.date(),
     )
 
-    last_30_days = {}
-    for _ in range(30):
+    last_30_days = {
+        today_start.date(): {
+            "count": today_count,
+            "amount": today_amount,
+            "avg": 0 if not today_count else today_amount / today_count,
+        }
+    }
+    for _ in range(29):
         today_start -= timedelta(days=1)
         last_30_days[today_start.date()] = {
             "count": 0,
