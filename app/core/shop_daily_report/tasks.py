@@ -7,8 +7,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app import models
-from app.db.session import SessionLocal
 from app.core.celery import celery
+from app.db.session import SessionLocal
 
 
 @celery.task
