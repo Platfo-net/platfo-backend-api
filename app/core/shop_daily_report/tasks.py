@@ -8,8 +8,10 @@ from sqlalchemy.orm import Session
 
 from app import models
 from app.db.session import SessionLocal
+from app.core.celery import celery
 
 
+@celery.task
 def calculate_shops_daily_report_task(from_datetime=None):
     db = SessionLocal()
     from_datetime = from_datetime.astimezone(pytz.timezone("Asia/Tehran")).replace(

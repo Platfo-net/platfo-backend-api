@@ -106,8 +106,8 @@ def get_last_month_report(
         if report.order_count:
             last_30_days[report.date]["avg"] = report.order_amount / report.order_count
 
-        total_orders_amount = report.order_amount
-        total_orders_count = report.order_count
+        total_orders_amount += report.order_amount
+        total_orders_count += report.order_count
 
     orders_amount = []
     orders_count = []
