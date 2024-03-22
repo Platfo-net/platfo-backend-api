@@ -55,7 +55,7 @@ def get_last_month_report(
     last_30_days_reports = services.shop.daily_report.get_datetime_range_reports(
         db,
         shop_id=shop.id,
-        from_date=today_start.date() - timedelta(days=30),
+        from_date=today_start.date() - timedelta(days=29),
         to_date=today_start.date(),
     )
 
