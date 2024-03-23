@@ -7,7 +7,9 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app import models
+from app.constants.currency import Currency
 from app.core.celery import celery
+from app.core.telegram.tasks import send_shop_order_report_task
 from app.db.session import SessionLocal
 
 
@@ -30,9 +32,12 @@ def calculate_shops_daily_report_task(from_datetime: datetime = None):
             order_count=analytic[2],
             order_amount=analytic[1] if analytic[1] else 0,
             date=from_datetime.date(),
-            shop_id=analytic[0]
+            shop_id=analytic[0],
+            currency=Currency.IRT["value"],
         )
         objs.append(obj)
+        send_shop_order_report_task.delay(
+            "fa", obj.shop_id, obj.order_amount, obj.currency, obj.order_count, obj.date)
     db.add_all(objs)
     db.commit()
 

@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime, timedelta
 from typing import Union
 from uuid import uuid4
@@ -102,3 +103,9 @@ def get_credit_str(expires_at):
     time_str = f"{expires_at_datetime.hour}:{expires_at_datetime.minute}"
 
     return date_str, time_str
+
+
+def get_jalali_date_str(date: date):
+    jalali_date = jdatetime.GregorianToJalali(
+        date.year, date.month, date.day)
+    return f"{jalali_date.jyear}/{jalali_date.jmonth}/{jalali_date.jday}"

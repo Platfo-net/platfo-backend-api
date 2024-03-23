@@ -12,3 +12,4 @@ from .plain_message import (plain_message_handler, send_direct_message,
                             send_direct_message_helper,
                             verify_shop_support_account_message)
 from .verify import verify_support_account
+from .report import send_shop_order_report
