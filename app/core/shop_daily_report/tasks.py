@@ -12,13 +12,16 @@ from app.db.session import SessionLocal
 
 
 @celery.task
-def calculate_shops_daily_report_task(from_datetime=None):
+def calculate_shops_daily_report_task(from_datetime: datetime = None):
     db = SessionLocal()
-    from_datetime = from_datetime.astimezone(pytz.timezone("Asia/Tehran")).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    ) or datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    if from_datetime:
+        from_datetime = from_datetime.astimezone(pytz.timezone("Asia/Tehran")).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+    else:
+        from_datetime = datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
     to_datetime = from_datetime + timedelta(days=1)
     analytics = calculate_shop_daily_report(db, from_datetime, to_datetime)
     objs = []
