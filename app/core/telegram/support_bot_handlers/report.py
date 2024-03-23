@@ -1,15 +1,19 @@
 
-from sqlalchemy.orm import Session
-from app import services
-from app.core.telegram import helpers
-from telegram import Bot
-from app.core.config import settings
-import telegram
 from datetime import date
+
+import telegram
+from sqlalchemy.orm import Session
+from telegram import Bot
+
+from app import services
+from app.constants.currency import Currency
+from app.core.config import settings
+from app.core.telegram import helpers
 
 
 async def send_shop_order_report(
-        db: Session, lang: str, shop_id: int, amount: float, currency: str, count: int, date: date):
+        db: Session, lang: str, shop_id: int,
+        amount: float, currency: str, count: int, date: date):
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=shop_id)
 
     if not shop_telegram_bot:
@@ -21,8 +25,8 @@ async def send_shop_order_report(
     text = helpers.load_message(
         lang, "shop_daily_report",
         date=jdate,
-        amount=amount,
-        currency=currency,
+        amount=helpers.number_to_price(int(amount)),
+        currency=Currency.items[currency]["value"],
         count=count,
     )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)

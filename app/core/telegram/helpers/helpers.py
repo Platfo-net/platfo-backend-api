@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Union
 from uuid import uuid4
 

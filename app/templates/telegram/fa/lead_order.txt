@@ -10,7 +10,7 @@
 
 {% if order.shipment_cost_amount %}
 * هزینه ی ارسال:
-    {{ order.shipment_cost_amount }} {{ order.shipment_cost_currency }}
+    {{ order.shipment_cost_amount }} {{ currency }}
 {% endif %}
 ——————————
 💵 مبلغ نهایی سفارش: {{ amount }}{{ currency }}

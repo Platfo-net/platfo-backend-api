@@ -1,5 +1,6 @@
 from sqlalchemy import BigInteger, Column, Date, Float, ForeignKey, String
 from sqlalchemy.orm import relationship
+
 from app.constants.currency import Currency
 from app.db.base_class import Base
 
