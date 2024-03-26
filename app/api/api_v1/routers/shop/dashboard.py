@@ -9,6 +9,7 @@ from app.api import deps
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
+from app.core.telegram import helpers
 from app.core.utils import get_today_datetime_range
 
 router = APIRouter(prefix='/dashboard', tags=["Shop Dashboard"])
@@ -110,12 +111,14 @@ def get_last_month_report(
             )
         )
 
+    orders_total_average = 0
+    if total_orders_count:
+        orders_total_average = total_orders_amount / total_orders_count
     return schemas.shop.ShopMonthlyDashboard(
         orders_count_per_day=reversed(orders_count),
         orders_amount_per_day=reversed(orders_amount),
         orders_average_per_day=reversed(orders_average),
-        orders_total_amount=total_orders_amount,
+        orders_total_amount=helpers.number_to_price(int(total_orders_amount)),
         orders_total_count=total_orders_count,
-        orders_total_average=0 if not total_orders_count
-        else total_orders_amount / total_orders_count
+        orders_total_average=helpers.number_to_price(int(orders_total_average))
     )

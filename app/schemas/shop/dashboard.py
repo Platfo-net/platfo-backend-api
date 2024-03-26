@@ -23,5 +23,5 @@ class ShopMonthlyDashboard(BaseModel):
     orders_average_per_day: List[ShopMonthlyDashboardItem]
 
     orders_total_count: Optional[int] = 0
-    orders_total_amount: Optional[float] = 0.0
-    orders_total_average: Optional[float] = 0.0
+    orders_total_amount: Optional[str] = "0"
+    orders_total_average: Optional[str] = "0"
