@@ -23,7 +23,7 @@ def calculate_shops_daily_report_task(from_datetime: datetime = None):
     else:
         from_datetime = datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
             hour=0, minute=0, second=0, microsecond=0
-        )
+        ) - timedelta(days=1)
     to_datetime = from_datetime + timedelta(days=1)
     analytics = calculate_shop_daily_report(db, from_datetime, to_datetime)
     objs = []
