@@ -1,8 +1,10 @@
-from sqlalchemy import Column, ForeignKey, String, BigInteger, JSON, Enum
-from sqlalchemy.orm import relationship
 import enum
 
-from app.llms.models.base import Base
+from sqlalchemy import Column, ForeignKey, String, BigInteger, JSON, Enum
+from sqlalchemy.orm import relationship
+
+from app.db.base import Base
+from app.llms.models.base import WithDates
 
 
 class KnowledgeBaseType(enum.Enum):
@@ -10,7 +12,7 @@ class KnowledgeBaseType(enum.Enum):
     TXT = "txt"
 
 
-class KnowledgeBase(Base):
+class KnowledgeBase(Base, WithDates):
     __tablename__ = 'knowledgebase'
 
     name = Column(String(255), nullable=False)

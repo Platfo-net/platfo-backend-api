@@ -1,10 +1,11 @@
 from sqlalchemy import Column, String, Text, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.llms.models.base import Base
+from app.db.base import Base
+from app.llms.models.base import WithDates
 
 
-class ChatBot(Base):
+class ChatBot(Base, WithDates):
     __tablename__ = 'chatbots'
 
     name = Column(String(255))
@@ -15,5 +16,5 @@ class ChatBot(Base):
         ForeignKey('users.id'),
         nullable=True,
     )
-    user = relationship('User', back_populates='user_chatbots')
-    knowledge_bases = relationship("KnowledgeBase", backref="chatbot")
+    user = relationship('User', back_populates='chatbots')
+    knowledge_bases = relationship("KnowledgeBase", back_populates="chatbot")
