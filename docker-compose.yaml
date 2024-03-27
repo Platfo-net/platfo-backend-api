@@ -113,7 +113,26 @@ services:
       - api
       - redis
 
+  vectordb:
+    image: chromadb/chroma:0.4.25.dev85
+    volumes:
+      - chroma-data:/chroma/chroma
+    command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
+    environment:
+      - IS_PERSISTENT=TRUE
+
+    restart: unless-stopped
+    ports:
+      - "8005:8005"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://${CHROMADB_HOST}:${CHROMADB_PORT}/api/v1/heartbeat" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   postgres-data:
   redis-data:
   minio-data:
+  chroma-data:
+
