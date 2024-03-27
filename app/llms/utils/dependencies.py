@@ -9,7 +9,7 @@ from app.api.deps import get_db
 from app.llms.repository.base_repository import BaseRepository
 from app.llms.services.base_service import BaseService
 from app.llms.vectordb.chroma_client import ChromaClient
-from app.llms.vectordb.config import ChromaConfig
+from app.llms.utils.config import ChromaConfig
 
 
 def get_chroma_client():

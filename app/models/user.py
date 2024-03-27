@@ -51,6 +51,8 @@ class User(Base):
 
     shops = relationship('ShopShop', back_populates='user')
 
+    chatbots = relationship("ChatBot", back_populates="user")
+
     __table_args__ = (
         UniqueConstraint(
             'phone_country_code',

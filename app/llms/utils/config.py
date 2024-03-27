@@ -6,6 +6,8 @@ load_dotenv()
 
 MAX_SEARCH_RESULT_EMBEDDINGS = {"k": 4}
 
+OPEN_API_KEY = os.environ.get("OPEN_API_KEY", "")
+
 
 class ChromaConfig:
     HOST: str = os.getenv('CHROMADB_HOST', 'localhost')
