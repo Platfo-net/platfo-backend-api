@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.api_v1.api import api_router
+from app.llms.api.routes import routers
 from app.core.config import settings
 
 sentry_sdk.init(
@@ -22,6 +23,7 @@ app = FastAPI(
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(routers, prefix=settings.API_V1_STR)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],

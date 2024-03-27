@@ -74,6 +74,7 @@ class Settings(BaseSettings):
     S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET: str = 'telegram-bot-menu-image-bucket'
     S3_PAYMENT_RECEIPT_IMAGE: str = 'payment-receipt-image-bucket'
     S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop-telegram-credit-extending'
+    S3_KNOWLEDGE_BASE_BUCKET: str = 'knowledge-base-bucket'
 
     SAMPLE_FACEBOOK_PAGE_ID: Optional[int] = None
     SAMPLE_LEAD_IGS_ID: Optional[int] = None
