@@ -120,7 +120,10 @@ services:
     command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
     environment:
       - IS_PERSISTENT=TRUE
-
+      - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMADB_TOKEN}
+      - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
+      - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
+      - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-FALSE}
     restart: unless-stopped
     ports:
       - "8005:8005"

@@ -11,6 +11,7 @@ class ChromaClient:
 
     def __init__(self, chroma, persist_directory='.',
                  embedding_function=OpenAIEmbeddings(openai_api_key=config.OPEN_API_KEY)):
+        self._chroma = chroma
         self.client = Chroma(client=chroma,
                              persist_directory=persist_directory,
                              embedding_function=embedding_function
