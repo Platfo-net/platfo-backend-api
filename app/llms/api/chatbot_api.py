@@ -67,7 +67,7 @@ def create_chatbot(
 
 
 @router.put('/{id}', response_model=ChatBot)
-async def update_chatbot(
+def update_chatbot(
         id: UUID4,
         obj_in: ChatBotUpdate,
         chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),

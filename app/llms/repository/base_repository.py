@@ -29,6 +29,10 @@ class BaseRepository(ABC):
         ...
 
     @abstractmethod
+    def get_multi_by_user_id(self, user_id, skip=0, limit=100):
+        ...
+
+    @abstractmethod
     def create(self, obj_in):
         ...
 
@@ -52,6 +56,10 @@ class CRUDBRepository(BaseRepository):
 
     def get_multi(self, skip=0, limit=100):
         return self.session.query(self.model).offset(skip).limit(limit).all()
+
+    def get_multi_by_user_id(self, user_id, skip=0, limit=100):
+        return self.session.query(self.model). \
+            filter(self.model.user_id == user_id).offset(skip).limit(limit).all()
 
     def create(self, obj_in):
         obj_in_data = jsonable_encoder(obj_in)

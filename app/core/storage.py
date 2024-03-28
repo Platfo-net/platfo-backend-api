@@ -44,9 +44,10 @@ def get_object_url(object_name, bucket_name):
 def create_client():
     try:
         client = Minio(
-            settings.S3_HOST,
+            'minio:9000',
             settings.S3_ROOT_USER,
             settings.S3_ROOT_PASSWORD,
+            secure=False  # Todo
         )
         return client
     except S3Error as exc:
