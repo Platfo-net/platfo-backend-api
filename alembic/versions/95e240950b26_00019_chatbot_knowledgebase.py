@@ -1,8 +1,8 @@
 """00019_chatbot_knowledgebase
 
-Revision ID: f1bd9fee5bd4
+Revision ID: 95e240950b26
 Revises: 68dfcb63db3b
-Create Date: 2024-03-27 14:30:26.631763
+Create Date: 2024-03-28 00:08:28.323339
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f1bd9fee5bd4'
+revision = '95e240950b26'
 down_revision = '68dfcb63db3b'
 branch_labels = None
 depends_on = None
@@ -34,7 +34,7 @@ def upgrade():
     op.create_table('knowledgebase',
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('metadatas', sa.JSON(), nullable=True),
-    sa.Column('type', sa.Enum('PDF', 'TXT', name='knowledgebasetype'), nullable=True),
+    sa.Column('type', sa.String(length=40), nullable=True),
     sa.Column('file_path', sa.String(length=255), nullable=True),
     sa.Column('chatbot_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
