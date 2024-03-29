@@ -63,17 +63,17 @@ services:
     env_file:
       - .env
 
-  # minio:
-  #    restart: always
-  #    image: docker.io/bitnami/minio:2023
-  #    ports:
-  #      - '9000:9000'
-  #      - '9001:9001'
-  #    environment:
-  #      MINIO_ROOT_USER: "${S3_ROOT_USER}"
-  #      MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
-  #    volumes:
-  #      - 'minio-data:/bitnami/minio/data'
+  minio:
+     restart: always
+     image: docker.io/bitnami/minio:2023
+     ports:
+       - '9000:9000'
+       - '9001:9001'
+     environment:
+       MINIO_ROOT_USER: "${S3_ROOT_USER}"
+       MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
+     volumes:
+       - 'minio-data:/bitnami/minio/data'
 
   celery-worker:
     image: "platfo-backend-app"
@@ -117,7 +117,7 @@ services:
     image: chromadb/chroma:0.4.25.dev85
     volumes:
       - chroma-data:/chroma/chroma
-    command: "--workers 1 --host 0.0.0.0 --port 8005 --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
+    command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
     environment:
       - IS_PERSISTENT=TRUE
       - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMADB_TOKEN}
@@ -128,7 +128,7 @@ services:
     ports:
       - "8005:8005"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://0.0.0.0:8005/api/v1/heartbeat" ]
+      test: [ "CMD", "curl", "-f", "http://${CHROMADB_HOST}:${CHROMADB_PORT}/api/v1/heartbeat" ]
       interval: 30s
       timeout: 10s
       retries: 3
