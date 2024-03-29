@@ -16,7 +16,7 @@ class BaseKnowledgeBase(BaseModel):
     name: str
     metadatas: Optional[dict] = None
     type: Optional[KnowledgeBaseType] = KnowledgeBaseType.PDF
-    file_path: Optional[HttpUrl] = None
+    file_path: Optional[str] = None
     chatbot_id: Optional[UUID4] = None
 
     class Config:

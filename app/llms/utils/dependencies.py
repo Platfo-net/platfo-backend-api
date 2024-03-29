@@ -2,7 +2,7 @@ import inspect
 from typing import Type, List
 
 import chromadb
-from chromadb import Settings as S
+from chromadb import Settings
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
@@ -10,20 +10,19 @@ from app.api.deps import get_db
 from app.llms.repository.base_repository import BaseRepository
 from app.llms.services.base_service import BaseService
 from app.llms.utils.config import ChromaConfig
-from app.llms.vectordb.chroma_client import ChromaClient
 
 
 def get_chroma_client():
     chroma = chromadb.HttpClient(host=ChromaConfig.HOST,
                                  port=ChromaConfig.PORT,
-                                 settings=S(
-                                     chroma_client_auth_provider=str(ChromaConfig.CHROMA_CLIENT_AUTH_PROVIDER),
+                                 settings=Settings(
+                                     chroma_client_auth_provider=ChromaConfig.CHROMA_CLIENT_AUTH_PROVIDER,
                                      chroma_client_auth_credentials=ChromaConfig.CHROMADB_TOKEN,
                                      anonymized_telemetry=False,
                                      allow_reset=True,
                                      )
                                  )
-    return ChromaClient(chroma=chroma)
+    return chroma
 
 
 def get_repositories(*repositories):

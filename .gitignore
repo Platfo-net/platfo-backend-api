@@ -170,3 +170,5 @@ docker-test.yaml
 *.jpg
 *.jpeg
 *.png
+
+chroma.sqlite3
