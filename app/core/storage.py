@@ -1,3 +1,4 @@
+import tempfile
 from datetime import timedelta
 
 from minio import Minio
@@ -58,7 +59,10 @@ def get_file(filename, bucket):
     if not filename:
         return None
     object_url = get_object_url(filename, bucket)
-    return schemas.Image(filename=filename, url=object_url)
+    print(filename) # TODO
+    print(object_url)
+    return {"file_name": filename, "url": object_url}
+    # return schemas.Image(filename=filename, url=object_url)
 
 
 def remove_file_from_s3(filename, bucket):
@@ -70,3 +74,16 @@ def remove_file_from_s3(filename, bucket):
 
     except S3Error:
         pass
+
+
+def download_file_from_minio(bucket_name: str, object_name: str):
+    try:
+        client = create_client()
+        res = client.get_object(bucket_name, object_name)
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file.write(res.data)
+            temp_file.flush()
+            return temp_file.name
+
+    except Exception as exc:
+        raise Exception(f"Error downloading file from MinIO: {exc}")

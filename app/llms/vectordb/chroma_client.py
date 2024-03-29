@@ -1,26 +1,43 @@
-from uuid import uuid4
+from abc import ABC, abstractmethod
 
+from chromadb import ClientAPI
 from langchain.vectorstores.chroma import Chroma
-from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 
 from app.llms.utils import config
 
 
-class ChromaClient:
+class BaseClient(ABC):
+    """Abstract base class for client implementations."""
 
-    def __init__(self, chroma, persist_directory='.',
-                 embedding_function=OpenAIEmbeddings(openai_api_key=config.OPEN_API_KEY)):
-        self._chroma = chroma
-        self.client = Chroma(client=chroma,
-                             persist_directory=persist_directory,
-                             embedding_function=embedding_function
+    @abstractmethod
+    def store_embeddings(self, documents, ids=None):
+        """Abstract method for storing embeddings."""
+        ...
+
+    @abstractmethod
+    def search_embeddings(self, search_kwargs: dict):
+        """Abstract method for searching embeddings."""
+        ...
+
+
+class ChromaClient(BaseClient):
+
+    def __init__(self, client, collection_name):
+        self.collection_name = collection_name
+        self._chroma: ClientAPI = client
+        self.client = Chroma(client=self._chroma,
+                             embedding_function=self.embedding,
+                             collection_name=self.collection_name
                              )
 
+    @property
+    def embedding(self):
+        return OpenAIEmbeddings(openai_api_key=config.OPEN_API_KEY)
+
     def store_embeddings(self, documents, ids=None):
-        if ids is None:
-            ids = [str(uuid4()) for _ in documents]
-        return self.client.from_documents(documents, ids=ids)
+        return self.client.from_documents(documents, client=self._chroma, embedding=self.embedding,
+                                          collection_name=self.collection_name, ids=ids)
 
     def search_embeddings(self, search_kwargs: dict = config.MAX_SEARCH_RESULT_EMBEDDINGS):
         return self.client.as_retriever(search_kwargs=search_kwargs)
