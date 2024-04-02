@@ -1,6 +1,4 @@
-import enum
-
-from sqlalchemy import Column, ForeignKey, String, BigInteger, JSON, Enum
+from sqlalchemy import Column, ForeignKey, String, BigInteger, JSON
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base

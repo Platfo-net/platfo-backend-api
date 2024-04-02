@@ -24,20 +24,20 @@ class BaseClient(ABC):
 class ChromaClient(BaseClient):
 
     def __init__(self, client, collection_name):
-        self.collection_name = collection_name
+        self._collection_name = collection_name
         self._chroma: ClientAPI = client
         self.client = Chroma(client=self._chroma,
                              embedding_function=self.embedding,
-                             collection_name=self.collection_name
+                             collection_name=self._collection_name,
                              )
 
     @property
     def embedding(self):
-        return OpenAIEmbeddings(openai_api_key=config.OPEN_API_KEY)
+        return OpenAIEmbeddings(openai_api_key=config.OPEN_API_KEY) # type: ignore
 
     def store_embeddings(self, documents, ids=None):
         return self.client.from_documents(documents, client=self._chroma, embedding=self.embedding,
-                                          collection_name=self.collection_name, ids=ids)
+                                          collection_name=self._collection_name, ids=ids)
 
     def search_embeddings(self, search_kwargs: dict = config.MAX_SEARCH_RESULT_EMBEDDINGS):
-        return self.client.as_retriever(search_kwargs=search_kwargs)
+        return self.client.as_retriever(search_type='similarity', sesearch_kwargs=search_kwargs)
