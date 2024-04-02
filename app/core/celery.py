@@ -10,7 +10,7 @@ sentry_sdk.init(
 )
 celery = Celery(
     __name__,
-    include=['app.core.telegram.tasks', 'app.core.tasks', 'app.core.shop_daily_report.tasks'],
+    include=['app.core.telegram.tasks', 'app.core.tasks', 'app.core.shop_daily_report.tasks', 'app.llms.tasks'],
 )
 
 

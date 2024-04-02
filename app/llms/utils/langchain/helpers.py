@@ -1,19 +1,43 @@
+import os
+from abc import ABC, abstractmethod
+from enum import Enum
+
 import tiktoken
-from langchain_community.document_loaders.pdf import PyPDFLoader, OnlinePDFLoader
+from langchain_community.document_loaders.pdf import PyPDFLoader
 from langchain_community.document_loaders.text import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
+class DocumentFormat:
+    PDF = ".pdf"
+    TXT = ".txt"
+
+
 def load_pdf_document(file):
-    loader = PyPDFLoader(file)
-    data = loader.load()
-    return data
+    try:
+        loader = PyPDFLoader(file)
+        return loader.load()
+    except Exception as e:
+        raise e
 
 
 def load_text_document(file):
-    loader = TextLoader(file)
-    data = loader.load()
-    return data
+    try:
+        loader = TextLoader(file)
+        return loader.load()
+    except Exception as e:
+        raise e
+
+
+def get_document_loader_data(file_path, file):
+    _, extension = os.path.splitext(file_path)
+    extension = extension.lower()
+    loaders = {
+        DocumentFormat.PDF: load_pdf_document,
+        DocumentFormat.TXT: load_text_document,
+    }
+    loader_func = loaders.get(extension)
+    return loader_func(file)
 
 
 def chunk_data(data, chunk_size=256, chunk_overlap=100):
