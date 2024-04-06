@@ -127,11 +127,6 @@ services:
     restart: unless-stopped
     ports:
       - "8005:8005"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://${CHROMADB_HOST}:${CHROMADB_PORT}/api/v1/heartbeat" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   postgres-data:
