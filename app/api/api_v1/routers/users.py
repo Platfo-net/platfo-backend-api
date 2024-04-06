@@ -145,7 +145,7 @@ def get_user_me(
             id=role.uuid,
             persian_name=role.persian_name,
         ),
-        profile_image=storage.get_file(
+        profile_image=storage.get_image(
             user.profile_image, settings.S3_USER_PROFILE_BUCKET
         ),
     )

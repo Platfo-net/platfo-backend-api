@@ -6,6 +6,7 @@ from minio.error import S3Error
 
 from app import schemas
 from app.core.config import settings
+from app.schemas import FileUpload
 
 
 def add_file_to_s3(object_name, file_path, bucket_name):
@@ -55,14 +56,18 @@ def create_client():
         raise Exception(f'Error happen on connection: {exc}')
 
 
+def get_image(filename, bucket):
+    if not filename:
+        return None
+    object_url = get_object_url(filename, bucket)
+    return schemas.Image(filename=filename, url=object_url)
+
+
 def get_file(filename, bucket):
     if not filename:
         return None
     object_url = get_object_url(filename, bucket)
-    print(filename) # TODO
-    print(object_url)
-    return {"file_name": filename, "url": object_url}
-    # return schemas.Image(filename=filename, url=object_url)
+    return FileUpload(file_name=filename, url=object_url)
 
 
 def remove_file_from_s3(filename, bucket):
