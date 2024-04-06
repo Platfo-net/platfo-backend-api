@@ -63,18 +63,6 @@ services:
     env_file:
       - .env
 
-  minio:
-     restart: always
-     image: docker.io/bitnami/minio:2023
-     ports:
-       - '9000:9000'
-       - '9001:9001'
-     environment:
-       MINIO_ROOT_USER: "${S3_ROOT_USER}"
-       MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
-     volumes:
-       - 'minio-data:/bitnami/minio/data'
-
   celery-worker:
     image: "platfo-backend-app"
     build: .
@@ -113,24 +101,23 @@ services:
       - api
       - redis
 
-  vectordb:
-    image: chromadb/chroma:0.4.25.dev85
-    volumes:
-      - chroma-data:/chroma/chroma
-    command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
-    environment:
-      - IS_PERSISTENT=TRUE
-      - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMADB_TOKEN}
-      - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
-      - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
-      - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-FALSE}
-    restart: unless-stopped
-    ports:
-      - "8005:8005"
+  # vectordb:
+  #   image: chromadb/chroma:0.4.25.dev85
+  #   volumes:
+  #     - chroma-data:/chroma/chroma
+  #   command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
+  #   environment:
+  #     - IS_PERSISTENT=TRUE
+  #     - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMADB_TOKEN}
+  #     - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
+  #     - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
+  #     - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-FALSE}
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8005:8005"
+
 
 volumes:
   postgres-data:
   redis-data:
-  minio-data:
   chroma-data:
-
