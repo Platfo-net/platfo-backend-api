@@ -44,7 +44,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data/pgdata
     ports:
-      - 5432:5432
+    - 5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 10s
@@ -87,31 +87,31 @@ services:
       - api
       - redis
 
-  # celery-beat:
-  #   image: "platfo-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-beat"
-  #   command: celery -A app.core.celery.celery beat
-  #   volumes:
-  #     - .:/app
-  #   depends_on:
-  #     - db
-  #     - api
-  #     - redis
+  celery-beat:
+    image: "platfo-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-beat"
+    command: celery -A app.core.celery.celery beat
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - api
+      - redis
 
-  # celery-flower:
-  #   image: "platfo-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-flower"
-  #   command: celery -A app.core.celery.celery flower --port=5566
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "5566:5566"
-  #   depends_on:
-  #     - db
-  #     - api
-  #     - redis
+  celery-flower:
+    image: "platfo-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-flower"
+    command: celery -A app.core.celery.celery flower --port=5566
+    volumes:
+      - .:/app
+    ports:
+      - "5566:5566"
+    depends_on:
+      - db
+      - api
+      - redis
 
 volumes:
   postgres-data:

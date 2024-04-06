@@ -1,8 +1,5 @@
-from app.schemas import (academy, bot_builder, credit, databoard, live_chat,
-                         notifier, shop, social)
+from app.schemas import credit, shop, social
 
-from .account import Account, AccountDetail
-from .connection import Connection, ConnectionCreate, ConnectionUpdate
 from .file import FileUpload
 from .instagram_page import (ConnectPage, InstagramPage, InstagramPageCreate,
                              InstagramPageUpdate)

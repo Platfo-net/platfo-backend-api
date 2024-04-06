@@ -154,3 +154,13 @@ def order_change_status_from_dashboard_task(order_id, lang):
         bot_handlers.order_change_status_from_dashboard_handler(db, order_id, lang)
     )
     db.close()
+
+
+@celery.task
+def send_shop_order_report_task(lang, shop_id, amount, currency, count, date):
+    db = SessionLocal()
+    asyncio.run(
+        support_bot_handlers.send_shop_order_report(
+            db, lang, shop_id, amount, currency, count, date)
+    )
+    db.close()

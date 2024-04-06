@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import List, Optional, Tuple
 
 from pydantic import UUID4
@@ -22,8 +22,8 @@ class OrderServices:
         obj_in: schemas.shop.OrderCreate,
         shop_id: int,
         lead_id: int,
+        shipment_method: models.shop.ShopShipmentMethod,
         shop_payment_method_id: int,
-        shipment_method_id: int,
         order_number: int,
         status: str,
         table_id: Optional[int] = None
@@ -43,8 +43,10 @@ class OrderServices:
             shop_id=shop_id,
             lead_id=lead_id,
             shop_payment_method_id=shop_payment_method_id,
-            shipment_method_id=shipment_method_id,
+            shipment_method_id=shipment_method.id,
             table_id=table_id,
+            shipment_cost_amount=None if not shipment_method else shipment_method.price,
+            shipment_cost_currency=None if not shipment_method else shipment_method.currency,
         )
 
         uow.add(db_obj)
@@ -118,7 +120,7 @@ class OrderServices:
         self, db: Session, *, db_obj: models.shop.ShopOrder, information: dict
     ) -> models.shop.ShopOrder:
         db_obj.payment_information = information
-        db_obj.paid_at = datetime.datetime.utcnow()
+        db_obj.paid_at = datetime.utcnow()
         db_obj.is_paid = True
         db.add(db_obj)
         db.commit()
@@ -153,6 +155,32 @@ class OrderServices:
             self.model.table_id == table_id).count()
 
         return bool(total_count)
+
+    def delete(
+        self, db: Session, *, db_obj: models.shop.ShopOrder
+    ):
+        db.delete(db_obj)
+        db.commit()
+
+    def get_orders_by_datetime(
+        self, db: Session, *, shop_id: int, from_datetime: datetime, to_datetime: datetime
+    ) -> List[models.shop.ShopOrder]:
+        return db.query(self.model).filter(
+            self.model.shop_id == shop_id,
+            self.model.created_at >= from_datetime,
+            self.model.created_at < to_datetime,
+        ).all()
+
+    def update_total_amount(
+        self, db: Session, *,
+        db_obj: models.shop.ShopOrder,
+        total_amount: float,
+        currency: str,
+    ) -> List[models.shop.ShopOrder]:
+        db_obj.total_amount = total_amount
+        db_obj.currency = currency
+        db.add(db_obj)
+        db.commit()
 
 
 order = OrderServices(models.shop.ShopOrder)

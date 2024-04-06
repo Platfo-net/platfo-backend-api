@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Union
 from uuid import uuid4
 
@@ -23,8 +23,6 @@ def load_message(lang: str, template_name: str, **kwargs) -> str:
 
 
 def has_credit_by_shop_id(db: Session, shop_id: int) -> bool:
-    if settings.ENVIRONMENT != "prod":
-        return True
 
     credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop_id)
     if not credit:
@@ -104,3 +102,9 @@ def get_credit_str(expires_at):
     time_str = f"{expires_at_datetime.hour}:{expires_at_datetime.minute}"
 
     return date_str, time_str
+
+
+def get_jalali_date_str(date: date):
+    jalali_date = jdatetime.GregorianToJalali(
+        date.year, date.month, date.day)
+    return f"{jalali_date.jyear}/{jalali_date.jmonth}/{jalali_date.jday}"

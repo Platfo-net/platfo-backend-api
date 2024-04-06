@@ -141,10 +141,10 @@ def get_category(
 
     category = services.shop.category.get_by_uuid(db, uuid=id)
     if not category:
-        raise_http_exception(Error.CATEGORY_NOT_FOUND)
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
     if not category.shop.user_id == current_user.id:
-        raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     image_url = storage.get_object_url(category.image, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
 
@@ -173,10 +173,10 @@ def delete_category(
 
     category = services.shop.category.get_by_uuid(db, uuid=id)
     if not category:
-        raise_http_exception(Error.CATEGORY_NOT_FOUND)
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR)
 
     if not category.shop.user_id == current_user.id:
-        raise_http_exception(Error.CAMPAIGN_NOT_FOUND_ACCESS_DENIED)
+        raise_http_exception(Error.SHOP_CATEGORY_NOT_FOUND_ERROR_ACCESS_DENIED)
 
     has_with_category = services.shop.product.has_with_category(
         db, category_id=category.id)

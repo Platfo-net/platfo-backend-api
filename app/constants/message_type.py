@@ -1,2 +1,0 @@
-class MessageType:
-    TEXT = 'TEXT'

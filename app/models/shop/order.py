@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime,
+from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime, Float,
                         ForeignKey, Integer, String)
 from sqlalchemy.orm import relationship
 
@@ -22,6 +22,9 @@ class ShopOrder(Base):
     status = Column(String(255), default=OrderStatus.UNPAID["value"])
 
     order_number = Column(Integer, nullable=True, index=True)
+    total_amount = Column(Float, nullable=True)
+    currency = Column(String(32), nullable=True)
+
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     is_paid = Column(Boolean, default=False)
@@ -57,6 +60,9 @@ class ShopOrder(Base):
         ForeignKey('shop_shop_payment_methods.id'),
         nullable=True,
     )
+
+    shipment_cost_currency = Column(String(32), nullable=True)
+    shipment_cost_amount = Column(Float, nullable=True)
 
     payment_information = Column(JSON, nullable=True)
     payment_image = Column(String(255), nullable=True)

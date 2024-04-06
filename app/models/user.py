@@ -45,17 +45,9 @@ class User(Base):
     instagram_pages = relationship('InstagramPage', back_populates='user')
     telegram_bots = relationship('TelegramBot', back_populates='user')
 
-    connections = relationship('Connection', back_populates='user')
-    chatflows = relationship('Chatflow', back_populates='user')
-
     user_notifications = relationship('NotificationUser', back_populates='user')
 
-    content = relationship('Content', back_populates='user')
-
-    campaigns = relationship('Campaign', back_populates='user')
     invoices = relationship('Invoice', back_populates='user')
-    messages = relationship('Message', back_populates='user')
-    leads = relationship('Lead', back_populates='user')
 
     shops = relationship('ShopShop', back_populates='user')
 

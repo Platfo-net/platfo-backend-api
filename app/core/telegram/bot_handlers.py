@@ -48,6 +48,7 @@ async def send_lead_order_to_bot_handler(
             "title": item.product.title,
             "count": item.count,
         })
+    amount += order.shipment_cost_amount
     currency = Currency.IRT["name"]
 
     text = helpers.load_message(
@@ -100,6 +101,8 @@ async def send_lead_pay_message(
             "title": item.product.title,
             "count": item.count,
         })
+    amount += order.shipment_cost_amount
+
     currency = Currency.IRT["name"]
 
     shop_payment_method = services.shop.shop_payment_method.get(
@@ -199,6 +202,8 @@ async def handle_order_payment(
     amount = 0
     for item in order.items:
         amount += item.count * item.price
+    amount += order.shipment_cost_amount
+
     await support_bot.edit_message_text(
         text=helpers.get_order_message(order, lang, amount),
         chat_id=shop_telegram_bot.support_account_chat_id,
@@ -259,6 +264,7 @@ async def order_change_status_from_dashboard_handler(
             "title": item.product.title,
             "count": item.count,
         })
+    amount += order.shipment_cost_amount
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=order.shop_id)
 
