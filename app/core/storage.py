@@ -1,3 +1,4 @@
+import tempfile
 from datetime import timedelta
 
 from minio import Minio
@@ -5,6 +6,7 @@ from minio.error import S3Error
 
 from app import schemas
 from app.core.config import settings
+from app.schemas import FileUpload
 
 
 def add_file_to_s3(object_name, file_path, bucket_name):
@@ -44,20 +46,28 @@ def get_object_url(object_name, bucket_name):
 def create_client():
     try:
         client = Minio(
-            settings.S3_HOST,
+            'minio:9000',
             settings.S3_ROOT_USER,
             settings.S3_ROOT_PASSWORD,
+            secure=False  # Todo
         )
         return client
     except S3Error as exc:
         raise Exception(f'Error happen on connection: {exc}')
 
 
-def get_file(filename, bucket):
+def get_image(filename, bucket):
     if not filename:
         return None
     object_url = get_object_url(filename, bucket)
     return schemas.Image(filename=filename, url=object_url)
+
+
+def get_file(filename, bucket):
+    if not filename:
+        return None
+    object_url = get_object_url(filename, bucket)
+    return FileUpload(file_name=filename, url=object_url)
 
 
 def remove_file_from_s3(filename, bucket):
@@ -69,3 +79,16 @@ def remove_file_from_s3(filename, bucket):
 
     except S3Error:
         pass
+
+
+def download_file_from_minio(bucket_name: str, object_name: str):
+    try:
+        client = create_client()
+        res = client.get_object(bucket_name, object_name)
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file.write(res.data)
+            temp_file.flush()
+            return temp_file.name
+
+    except Exception as exc:
+        raise Exception(f"Error downloading file from MinIO: {exc}")

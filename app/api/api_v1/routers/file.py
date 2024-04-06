@@ -28,7 +28,7 @@ async def upload_user_profile_image(
         filename, file.file.fileno(), settings.S3_USER_PROFILE_BUCKET
     )
 
-    return storage.get_file(uploaded_file_name, settings.S3_CAMPAIGN_BUCKET)
+    return storage.get_image(uploaded_file_name, settings.S3_CAMPAIGN_BUCKET)
 
 
 @router.post("/upload/shop/product", response_model=schemas.Image)
@@ -48,7 +48,7 @@ async def upload_shop_product_image(
         filename, file.file.fileno(), settings.S3_SHOP_PRODUCT_IMAGE_BUCKET
     )
 
-    return storage.get_file(uploaded_file_name, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
+    return storage.get_image(uploaded_file_name, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)
 
 
 @router.post("/upload/shop/category", response_model=schemas.Image)
@@ -68,7 +68,7 @@ async def upload_shop_category_image(
         filename, file.file.fileno(), settings.S3_SHOP_CATEGORY_IMAGE_BUCKET
     )
 
-    return storage.get_file(uploaded_file_name, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
+    return storage.get_image(uploaded_file_name, settings.S3_SHOP_CATEGORY_IMAGE_BUCKET)
 
 
 @router.post("/upload/shop/order/payment-receipt", response_model=schemas.Image)
@@ -88,7 +88,7 @@ async def upload_payment_receipt_image(
         filename, file.file.fileno(), settings.S3_PAYMENT_RECEIPT_IMAGE
     )
 
-    return storage.get_file(uploaded_file_name, settings.S3_PAYMENT_RECEIPT_IMAGE)
+    return storage.get_image(uploaded_file_name, settings.S3_PAYMENT_RECEIPT_IMAGE)
 
 
 @router.post("/upload/telegram/menu-image", response_model=schemas.Image)
@@ -109,4 +109,4 @@ async def upload_telegram_menu_image(
 
     )
 
-    return storage.get_file(uploaded_file_name, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+    return storage.get_image(uploaded_file_name, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
