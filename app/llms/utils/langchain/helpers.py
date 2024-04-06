@@ -1,6 +1,5 @@
 import os
-from abc import ABC, abstractmethod
-from enum import Enum
+import re
 
 import tiktoken
 from langchain_community.document_loaders.pdf import PyPDFLoader
@@ -51,3 +50,16 @@ def print_embedding_cost(texts):
     total_tokens = sum([len(enc.encode(page.page_content)) for page in texts])
     print(f'Total Tokens: {total_tokens}')
     print(f'Embedding Cost in USD: {total_tokens / 1000 * 0.00002:.6f}')
+
+def clear_text(text):
+
+  # Remove newlines (\n)
+  text = text.replace("\n", " ")
+
+  # Remove extra spaces
+  text = re.sub("  +", " ", text)
+
+  # Remove unnecessary punctuation
+  text = re.sub("[^\w\s]", "", text)
+
+  return text

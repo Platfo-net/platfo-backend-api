@@ -15,6 +15,7 @@ from app.core.config import settings
 from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseCreate, KnowledgeBaseUpdate
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.dependencies import get_service, get_chroma_client
+from app.llms.utils.langchain.helpers import clear_text
 from app.llms.vectordb.chroma_client import ChromaClient
 from app.schemas import FileUpload
 from app.llms.tasks import embed_knowledge_base_document_task
@@ -107,7 +108,7 @@ def test(
     chain = RetrievalQA.from_chain_type(llm=llm, chain_type='stuff', retriever=re)
     r = chain.invoke('قوانین آی بولک چی هست؟ و شرایط مرجوعی به چه صورته؟')
     print('111111111111111111111111', r)
-    return r
+    return clear_text(r['result'])
 
 
 @router.post("/upload/", response_model=FileUpload)
