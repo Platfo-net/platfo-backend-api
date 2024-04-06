@@ -94,7 +94,9 @@ def test(
             ],
         ),
 ):
-    vector_db = ChromaClient(client=chroma, collection_name='439f6529-cc49-43fc-9194-f8324d442b76')
+    # vector_db = ChromaClient(client=chroma, collection_name='439f6529-cc49-43fc-9194-f8324d442b76')
+    vector_db = ChromaClient(client=chroma, collection_name='3d8bf47b-f98c-4965-85ad-97c6e9265ea9')
+    print('8888888888888888', vector_db._chroma.get_collection(name='3d8bf47b-f98c-4965-85ad-97c6e9265ea9').count())
     # print('6666', vector_db._chroma.list_collections())
     # print('8888', chroma.list_collections())
     # print(chroma.get_collection(name='439f6529-cc49-43fc-9194-f8324d442b76').count())
@@ -103,7 +105,7 @@ def test(
     re = vector_db.search_embeddings()
     llm = ChatOpenAI(openai_api_key="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", model='gpt-3.5-turbo')
     chain = RetrievalQA.from_chain_type(llm=llm, chain_type='stuff', retriever=re)
-    r = chain.invoke('aimedic چیه و مجموعه اضافه کار نباید از چقدر بیشتر شود؟')
+    r = chain.invoke('قوانین آی بولک چی هست؟ و شرایط مرجوعی به چه صورته؟')
     print('111111111111111111111111', r)
     return r
 
