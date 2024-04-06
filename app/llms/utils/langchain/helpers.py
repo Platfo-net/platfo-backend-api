@@ -56,9 +56,6 @@ def clear_text(text):
   # Remove newlines (\n)
   text = text.replace("\n", " ")
 
-  # Remove extra spaces
-  text = re.sub("  +", " ", text)
-
   # Remove unnecessary punctuation
   text = re.sub("[^\w\s]", "", text)
 
