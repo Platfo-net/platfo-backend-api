@@ -92,6 +92,7 @@ class Settings(BaseSettings):
     LOKI_LOG_PUSH_URL: Optional[str] = None
 
     SUPPORT_BOT_TOKEN: Optional[str] = None
+    CHAT_BOT_TOKEN: Optional[str] = None
     TELEGRAM_ADMIN_BOT_TOKEN: Optional[str] = None
     PLATFO_SHOPS_BASE_URL: Optional[str] = None
 

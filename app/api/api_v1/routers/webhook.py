@@ -12,6 +12,7 @@ from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
 from app.core.telegram import tasks as telegram_tasks
+from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
@@ -128,6 +129,34 @@ async def telegram_webhook_admin_listener(request: Request):
                 return
         data = await request.json()
         telegram_tasks.telegram_admin_bot_task.delay(data, "fa")
+        return
+    except Exception as e:
+        print(e)
+    return
+
+
+@router.post('/telegram/chat-bot', status_code=status.HTTP_200_OK)
+async def telegram_webhook_chatbot_listener(request: Request):
+    try:
+        data = await request.json()
+        bot = telegram.Bot(settings.CHAT_BOT_TOKEN)
+        update = telegram.Update.de_json(bot=bot, data=data)
+        answer = get_question_and_answer(update.message.text)
+        await update.message.reply_text(text=answer)
+
+        return
+    except Exception as e:
+        print(e)
+    return
+
+
+@router.post('/telegram/chat-bot/set-webhook', status_code=status.HTTP_200_OK)
+async def telegram_webhook_chatbot_listener(request: Request):
+    try:
+        bot = telegram.Bot(settings.CHAT_BOT_TOKEN)
+        url = "https://dev-api.platfo.net/api/v1/webhook/telegram/chat-bot"
+
+        await bot.set_webhook(url=url)
         return
     except Exception as e:
         print(e)
