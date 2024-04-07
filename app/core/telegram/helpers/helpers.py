@@ -89,7 +89,6 @@ async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
     storage.add_file_to_s3(
         file_name, file_name, bucket)
     url = storage.get_object_url(file_name, bucket)
-    print(url)
     return url, file_name
 
 

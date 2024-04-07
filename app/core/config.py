@@ -75,6 +75,7 @@ class Settings(BaseSettings):
     S3_PAYMENT_RECEIPT_IMAGE: str = 'payment-receipt-image-bucket'
     S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop-telegram-credit-extending'
     S3_KNOWLEDGE_BASE_BUCKET: str = 'knowledge-base-bucket'
+    S3_MESSAGE_BUILDER_IMAGE_BUCKET: str = 'message-builder-bucket'
 
     SAMPLE_FACEBOOK_PAGE_ID: Optional[int] = None
     SAMPLE_LEAD_IGS_ID: Optional[int] = None
@@ -99,6 +100,8 @@ class Settings(BaseSettings):
     TELEGRAM_TOKEN_ENCRYPTION_KEY: Optional[str] = None
 
     SENTRY_DSN: Optional[str] = None
+
+    MESSAGE_BUILDER_BOT_TOKEN: Optional[str] = None
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

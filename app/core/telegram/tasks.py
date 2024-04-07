@@ -29,6 +29,13 @@ def send_register_user_notification_to_all_admins_task(user_id, lang: str):
 
 
 @celery.task
+def telegram_message_builder_bot_task(data, lang: str):
+    db = SessionLocal()
+    asyncio.run(handlers.telegram_message_builder_bot_handler(db, data, lang))
+
+    db.close()
+
+@celery.task
 def telegram_admin_bot_task(data, lang: str):
     db = SessionLocal()
     asyncio.run(handlers.telegram_admin_bot_handler(db, data, lang))

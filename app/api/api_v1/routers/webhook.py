@@ -150,14 +150,25 @@ async def telegram_webhook_chatbot_listener(request: Request):
     return
 
 
-@router.post('/telegram/chat-bot/set-webhook', status_code=status.HTTP_200_OK)
-async def telegram_webhook_chatbot_listener(request: Request):
-    try:
-        bot = telegram.Bot(settings.CHAT_BOT_TOKEN)
-        url = "https://dev-api.platfo.net/api/v1/webhook/telegram/chat-bot"
 
-        await bot.set_webhook(url=url)
+
+
+@router.post('/telegram/message-builder-bot', status_code=status.HTTP_200_OK)
+async def telegram_webhook_message_builder_bot_listener(request: Request):
+    try:
+        if settings.ENVIRONMENT == "prod":
+
+            real_ip = request.headers.get("x-real-ip")
+            if not (
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                or
+                ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
+            ):
+                return
+        data = await request.json()
+        telegram_tasks.telegram_message_builder_bot_task.delay(data, "fa")
         return
     except Exception as e:
         print(e)
     return
+
