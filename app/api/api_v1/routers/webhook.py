@@ -172,3 +172,13 @@ async def telegram_webhook_message_builder_bot_listener(request: Request):
         print(e)
     return
 
+
+
+
+@router.post('/telegram/message-builder-bot/set-webhook', status_code=status.HTTP_200_OK)
+async def telegram_webhook_message_builder_bot_set_webhook(request: Request):
+    bot = telegram.Bot(token=settings.MESSAGE_BUILDER_BOT_TOKEN)
+
+    await bot.set_webhook(
+        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/message-builder-bot"
+    )
