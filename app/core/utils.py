@@ -56,7 +56,7 @@ def generate_random_short_url(length: int) -> str:
     token = ''.join(
         random.choice(string.ascii_lowercase) for _ in range(length)
     )
-    return "P" + token
+    return token
 
 
 def get_today_datetime_range() -> Tuple[datetime, datetime]:

@@ -12,6 +12,7 @@ from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
 from app.core.telegram import tasks as telegram_tasks
+from app.core.telegram.handlers import telegram_message_builder_bot_handler
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
@@ -150,7 +151,7 @@ async def telegram_webhook_chatbot_listener(request: Request):
     return
 
 
-
+from app.db.session import SessionLocal
 
 
 @router.post('/telegram/message-builder-bot', status_code=status.HTTP_200_OK)
@@ -166,8 +167,11 @@ async def telegram_webhook_message_builder_bot_listener(request: Request):
             ):
                 return
         data = await request.json()
-        telegram_tasks.telegram_message_builder_bot_task.delay(data, "fa")
-        return
+        # telegram_tasks.telegram_message_builder_bot_task.delay(data, "fa")
+        # return
+        db = SessionLocal()
+        await telegram_message_builder_bot_handler(db ,data , "fa" )
+        db.close()
     except Exception as e:
         print(e)
     return

@@ -1,7 +1,7 @@
 from sqlalchemy import desc
 from app.constants.message_builder_message_status import MessageStatus
 from app.core.telegram.helpers.helpers import download_and_upload_telegram_image
-from app.core.utils import generate_random_support_token
+from app.core.utils import generate_random_short_url, generate_random_support_token
 from app.models.message_builder import MessageBuilderMessage
 import telegram
 from sqlalchemy.orm import Session
@@ -326,7 +326,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
 
 async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
     bot = Bot(settings.MESSAGE_BUILDER_BOT_TOKEN)
-    update: telegram.Update = telegram.Update.message.de_json(data, bot)
+    update: telegram.Update = telegram.Update.de_json(data, bot)
 
     if update.message.text == MessageBuilderCommand.NEW_MESSAGE["command"]:
         message = MessageBuilderMessage(telegram_chat_id=update.message.chat_id)
@@ -356,12 +356,13 @@ async def message_builder(db: Session, update: telegram.Update):
             last_message.message_text = update.message.text
         elif not last_message.url:
             last_message.url = update.message.text
-            last_message.short_url = generate_random_support_token(6)
+            last_message.short_url = generate_random_short_url(6)
 
     elif update.message.photo:
+        image = update.message.photo[-1].file_id
         url, file_name = await download_and_upload_telegram_image(
             update.get_bot(),
-            update.message.photo.file_unique_id,
+            image,
             settings.S3_MESSAGE_BUILDER_IMAGE_BUCKET
         )
         last_message.image = file_name
