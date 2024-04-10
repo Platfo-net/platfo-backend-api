@@ -3,8 +3,6 @@ from typing import List
 
 from chromadb import ClientAPI
 from fastapi import Security, APIRouter, UploadFile, File, Depends, status
-from langchain.chains.retrieval_qa.base import RetrievalQA
-from langchain_openai.chat_models import ChatOpenAI
 from pydantic import UUID4
 
 from app import models
@@ -15,7 +13,7 @@ from app.core.config import settings
 from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseCreate, KnowledgeBaseUpdate
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.dependencies import get_service, get_chroma_client
-from app.llms.utils.langchain.helpers import clear_text
+from app.llms.utils.langchain.pipeline import create_chain
 from app.llms.vectordb.chroma_client import ChromaClient
 from app.schemas import FileUpload
 from app.llms.tasks import embed_knowledge_base_document_task
@@ -96,20 +94,22 @@ def ask_question(
             ],
         ),
 ):
-    # vector_db = ChromaClient(client=chroma, collection_name='439f6529-cc49-43fc-9194-f8324d442b76')
-    vector_db = ChromaClient(client=chroma, collection_name='3d8bf47b-f98c-4965-85ad-97c6e9265ea9')
-
+    from app.llms.utils.langchain.helpers import create_setup_retriever
+    from langchain_core.output_parsers import StrOutputParser
+    vector_db = ChromaClient(client=chroma, collection_name='439f6529-cc49-43fc-9194-f8324d442b76')
+    # vector_db = ChromaClient(client=chroma, collection_name='3d8bf47b-f98c-4965-85ad-97c6e9265ea9')
     # print('6666', vector_db._chroma.list_collections())
     # print('8888', chroma.list_collections())
     # print(chroma.get_collection(name='439f6529-cc49-43fc-9194-f8324d442b76').count())
     # print('333333', vector_db.client.get())
 
-    re = vector_db.search_embeddings()
-    llm = ChatOpenAI(
-        openai_api_key="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", model='gpt-3.5-turbo')
-    chain = RetrievalQA.from_chain_type(llm=llm, chain_type='stuff', retriever=re)
+    retriever = vector_db.search_embeddings()
+    output_parser = StrOutputParser()
+    setup_and_retrieval = create_setup_retriever(retriever,
+                                          lambda _: "Answer the question that you receive only in russian.")
+    chain = create_chain(setup_and_retrieval, output_parser)
     r = chain.invoke(question)
-    return {"answer": clear_text(r['result'])}
+    return {"answer": r}
 
 
 @router.post("/upload/", response_model=FileUpload)
@@ -172,3 +172,4 @@ def delete_knowledge_base(
     knowledge_base_service.validator.validate_user_ownership(obj=knowledge_base.chatbot,
                                                              current_user=current_user)
     return knowledge_base_service.remove(knowledge_base.id)
+

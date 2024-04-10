@@ -5,6 +5,11 @@ import tiktoken
 from langchain_community.document_loaders.pdf import PyPDFLoader
 from langchain_community.document_loaders.text import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
+from langchain_openai.chat_models import ChatOpenAI
+
+from app.llms.utils import config
 
 
 class DocumentFormat:
@@ -51,6 +56,7 @@ def print_embedding_cost(texts):
     print(f'Total Tokens: {total_tokens}')
     print(f'Embedding Cost in USD: {total_tokens / 1000 * 0.00002:.6f}')
 
+
 def clear_text(text):
 
   # Remove newlines (\n)
@@ -60,3 +66,23 @@ def clear_text(text):
   text = re.sub("[^\w\s]", "", text)
 
   return text
+
+
+def get_chat_prompt():
+    template = """
+    Context: {context}
+    {user_prompt}
+    Question: {query}
+    """
+
+    prompt = ChatPromptTemplate.from_template(template)
+    return prompt
+
+def create_setup_retriever(retriever, prompt_callable):
+    setup_and_retrieval = RunnableParallel(
+        {"context": retriever, "query": RunnablePassthrough(), "user_prompt": RunnableLambda(prompt_callable)}
+    )
+    return setup_and_retrieval
+
+def create_llm_model():
+    return ChatOpenAI(openai_api_key=config.OPEN_API_KEY, model=config.LLM_MODEL) # type: ignore
