@@ -342,11 +342,11 @@ async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
     if update.inline_query:
         if not update.inline_query.query:
             return
-        
+
         message = services.message_builder.message.get_by_chat_id_and_id(
-            db, id= int(update.inline_query.query) , chat_id = update.inline_query.from_user.id)
+            db, id=int(update.inline_query.query), chat_id=update.inline_query.from_user.id)
         if message:
-            await message_builder_bot.send_inline_query_answer(update , message)
+            await message_builder_bot.send_inline_query_answer(update, message)
         return
 
     if update.message.text == MessageBuilderCommand.START["command"]:

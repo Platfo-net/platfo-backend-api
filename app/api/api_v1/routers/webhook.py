@@ -164,11 +164,7 @@ async def telegram_webhook_message_builder_bot_listener(request: Request):
             ):
                 return
         data = await request.json()
-        db = SessionLocal()
-        await telegram_message_builder_bot_handler(db, data, "fa")
-
-        db.close()
-        # telegram_tasks.telegram_message_builder_bot_task.delay(data, "fa")
+        telegram_tasks.telegram_message_builder_bot_task.delay(data, "fa")
         return
     except Exception as e:
         print(e)
