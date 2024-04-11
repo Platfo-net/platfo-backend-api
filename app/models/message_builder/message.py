@@ -1,11 +1,11 @@
 
 
-from sqlalchemy import BigInteger, Column, Date, Float, ForeignKey, String, Text , DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import BigInteger, Column, String, Text, DateTime
 
-from app.constants.message_builder_message_status import MessageStatus
+from app.constants.message_builder import MessageStatus
 from app.db.base_class import Base
 import datetime
+
 
 class MessageBuilderMessage(Base):
     __tablename__ = 'message_builder_messages'

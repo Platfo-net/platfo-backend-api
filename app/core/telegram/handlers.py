@@ -1,14 +1,9 @@
-from sqlalchemy import desc
-from app.constants.message_builder_message_status import MessageStatus
-from app.core.telegram.helpers.helpers import download_and_upload_telegram_image
-from app.core.utils import generate_random_short_url, generate_random_support_token
-from app.models.message_builder import MessageBuilderMessage
 import telegram
 from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import schemas, services
-from app.constants.message_builder_command import MessageBuilderCommand
+from app.constants.message_builder import MessageBuilderButton, MessageBuilderCommand
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
@@ -16,7 +11,7 @@ from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
 from app.core import security, storage
 from app.core.config import settings
-from app.core.telegram import bot_handlers, helpers, support_bot_handlers
+from app.core.telegram import bot_handlers, helpers, message_builder_bot, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
 
 
@@ -326,47 +321,41 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
 
 async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
     bot = Bot(settings.MESSAGE_BUILDER_BOT_TOKEN)
-    update: telegram.Update = telegram.Update.de_json(data, bot)
 
-    if update.message.text == MessageBuilderCommand.NEW_MESSAGE["command"]:
-        message = MessageBuilderMessage(telegram_chat_id=update.message.chat_id)
-        db.add(message)
-        db.commit()
-        db.refresh(message)
+    if data.get("callback_query"):
+        update = telegram.Update.de_json(
+            {"update_id": data["update_id"], **data["callback_query"]}, bot
+        )
+
+        callback = data.get("callback_query").get("data")
+        command, arg = callback.split(":")
+        if command == MessageBuilderButton.CANCEL_MESSAGE.get("command"):
+            await message_builder_bot.cancel_message(db, lang, update, arg)
+        elif command == MessageBuilderButton.FINISH_MESSAGE.get("command"):
+            await message_builder_bot.finish_message(db, lang, update, arg)
+
+        return
+
+    update = telegram.Update.de_json(
+        data, bot
+    )
+    if update.inline_query:
+        if not update.inline_query.query:
+            return
+
+        message = services.message_builder.message.get_by_chat_id_and_id(
+            db, id=int(update.inline_query.query))
+        if message:
+            await message_builder_bot.send_inline_query_answer()
+        return
+
+    if update.message.text == MessageBuilderCommand.START["command"]:
+        message = helpers.load_message(lang, "message_builder_start")
+        update.message.reply_text(message)
+    elif update.message.text == MessageBuilderCommand.NEW_MESSAGE["command"]:
+        await message_builder_bot.create_new_message(db, update.message.chat_id)
 
     elif update.message.text == MessageBuilderCommand.CANCEL_MESSAGE["command"]:
-        pass
+        await message_builder_bot.cancel_message_check(db, update)
     else:
-        await message_builder(db, update)
-        # TODO handle if this is title of message of text of that or url
-
-
-async def message_builder(db: Session, update: telegram.Update):
-
-    last_message = db.query(MessageBuilderMessage).filter(
-        MessageBuilderMessage.telegram_chat_id == update.message.chat_id
-    ).order_by(desc(MessageBuilderMessage.created_at)).first()
-    if last_message.status == MessageStatus.FINISHED:
-        pass  # you are not building a message. for a new message first enter command
-
-    if update.message.text:
-        if not last_message.title:
-            last_message.title = update.message.text
-        elif not last_message.message_text:
-            last_message.message_text = update.message.text
-        elif not last_message.url:
-            last_message.url = update.message.text
-            last_message.short_url = generate_random_short_url(6)
-
-    elif update.message.photo:
-        image = update.message.photo[-1].file_id
-        url, file_name = await download_and_upload_telegram_image(
-            update.get_bot(),
-            image,
-            settings.S3_MESSAGE_BUILDER_IMAGE_BUCKET
-        )
-        last_message.image = file_name
-
-    db.add(last_message)
-    db.commit()
-    db.refresh(last_message)
+        await message_builder_bot.build(db, update)
