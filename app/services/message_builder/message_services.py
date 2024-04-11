@@ -15,7 +15,7 @@ class MessageServices:
         )
         db.add(db_obj)
         db.commit()
-        db.refresh()
+        db.refresh(db_obj)
         return db_obj
 
     def get_last_message(self, db: Session, *, chat_id: int, status: str = None):

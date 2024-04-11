@@ -342,20 +342,20 @@ async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
     if update.inline_query:
         if not update.inline_query.query:
             return
-
+        
         message = services.message_builder.message.get_by_chat_id_and_id(
-            db, id=int(update.inline_query.query))
+            db, id= int(update.inline_query.query) , chat_id = update.inline_query.from_user.id)
         if message:
-            await message_builder_bot.send_inline_query_answer()
+            await message_builder_bot.send_inline_query_answer(update , message)
         return
 
     if update.message.text == MessageBuilderCommand.START["command"]:
         message = helpers.load_message(lang, "message_builder_start")
-        update.message.reply_text(message)
+        await update.message.reply_text(message)
     elif update.message.text == MessageBuilderCommand.NEW_MESSAGE["command"]:
-        await message_builder_bot.create_new_message(db, update.message.chat_id)
+        await message_builder_bot.create_new_message(db, lang, update)
 
     elif update.message.text == MessageBuilderCommand.CANCEL_MESSAGE["command"]:
-        await message_builder_bot.cancel_message_check(db, update)
+        await message_builder_bot.cancel_message_check(db, lang, update)
     else:
         await message_builder_bot.build(db, update)

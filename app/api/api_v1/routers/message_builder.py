@@ -28,4 +28,4 @@ def redirect_url(
     if not message:
         return {"message": "Invalid url"}
 
-    return RedirectResponse(url=message.short_url)
+    return RedirectResponse(url=message.url)

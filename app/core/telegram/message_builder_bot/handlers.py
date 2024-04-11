@@ -91,7 +91,8 @@ async def finish_message(db: Session, lang, update: telegram.Update, message_id)
 
 async def build(db: Session, update: telegram.Update):
 
-    last_message = services.message_builder.message.get_last_message(db, update.message.chat_id)
+    last_message = services.message_builder.message.get_last_message(
+        db, chat_id=update.message.chat_id)
 
     if last_message.status == MessageStatus.FINISHED:
         await update.message.reply_text(
@@ -118,7 +119,7 @@ async def build(db: Session, update: telegram.Update):
             keyboard = [
                 [
                     telegram.InlineKeyboardButton(
-                        MessageBuilderButton.CANCEL_MESSAGE["title"],
+                        MessageBuilderButton.FINISH_MESSAGE["title"],
                         callback_data=f"{MessageBuilderButton.FINISH_MESSAGE['command']}:{last_message.id}"),  # noqa
                 ]
             ]
@@ -149,19 +150,38 @@ async def build(db: Session, update: telegram.Update):
 
 async def send_inline_query_answer(
         update: telegram.Update, message: models.message_builder.MessageBuilderMessage):
-    image_url = storage.get_object_url(
-        message.url, bucket_name=settings.S3_MESSAGE_BUILDER_IMAGE_BUCKET)
-    await update.inline_query.answer(
-        results=[telegram.InlineQueryResultArticle(
-            id=uuid4(),
-            title=message.title,
-            thumb_url=image_url,
-            input_message_content=telegram.InputTextMessageContent(message.message_text),
-            reply_markup=telegram.InlineKeyboardMarkup(
-                [[telegram.InlineKeyboardButton(
-                    text="web app", url=f"t.me/dev_message_builder_bot/main?startapp={message.short_url}",
-                )]]
-            )
-        )],
 
-    )
+    if message.image:
+
+        image_url = storage.get_object_url(
+            message.image, bucket_name=settings.S3_MESSAGE_BUILDER_IMAGE_BUCKET)
+        await update.inline_query.answer(
+            results=[telegram.InlineQueryResultPhoto(
+                id=uuid4(),
+                title=message.title,
+                photo_url=image_url,
+                thumbnail_url=image_url,
+                caption=message.message_text,
+                reply_markup=telegram.InlineKeyboardMarkup(
+                    [[telegram.InlineKeyboardButton(
+                        text="web app", url=f"t.me/dev_message_builder_bot/main?startapp={message.short_url}",
+                    )]]
+                )
+            )],
+
+        )
+    else:
+        
+        await update.inline_query.answer(
+            results=[telegram.InlineQueryResultArticle(
+                id=uuid4(),
+                title=message.title,
+                input_message_content=telegram.InputTextMessageContent(message.message_text),
+                reply_markup=telegram.InlineKeyboardMarkup(
+                    [[telegram.InlineKeyboardButton(
+                        text="web app", url=f"t.me/dev_message_builder_bot/main?startapp={message.short_url}",
+                    )]]
+                )
+            )],
+
+        )
