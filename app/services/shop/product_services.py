@@ -93,23 +93,21 @@ class ProductServices:
         if category_id is not None:
             conditions.append(self.model.category_id == category_id)
         
-        items = (
+        q = (
             db.query(self.model)
             .filter(*conditions)
             .join(self.model.category, isouter=True)
             .join(self.model.attributes, isouter=True)
             .join(self.model.variants, isouter=True)
             .order_by(desc(self.model.created_at))
-            .offset(page_size * (page - 1))
-            .limit(page_size)
-            .all()
+            
         )
 
-        total_count = db.query(self.model).filter(*conditions).count()
+        total_count = q.count()
 
         pagination = paginate(total_count, page, page_size)
 
-        return items, pagination
+        return q.offset(page_size * (page - 1)).limit(page_size).all(), pagination
 
     def has_with_category(self, db: Session, *, category_id: int):
         return db.query(self.model).filter(
