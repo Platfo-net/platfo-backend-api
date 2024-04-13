@@ -83,7 +83,8 @@ class ProductServices:
         page: int = 1,
         page_size: int = 20,
         category_id: Optional[int] = None,
-        is_active: Optional[bool] = None
+        is_active: Optional[bool] = None,
+        variant_is_available: Optional[bool] = None,
     ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
         conditions = [
             self.model.shop_id == shop_id, self.model.is_deleted == False  # noqa
@@ -92,6 +93,8 @@ class ProductServices:
             conditions.append(self.model.is_active == is_active)
         if category_id is not None:
             conditions.append(self.model.category_id == category_id)
+        if variant_is_available is not None:
+            conditions.append(models.shop.ShopProductVariant.is_available == variant_is_available)
 
         items = (
             db.query(self.model)

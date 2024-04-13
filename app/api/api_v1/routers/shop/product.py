@@ -440,7 +440,7 @@ def get_shop_products_for_telegram_shop(
     items, pagination = services.shop.product.get_multi_by_shop_id(
         db, shop_id=shop.id, page=page, page_size=page_size,
         category_id=category.id if category else None,
-        is_active=True)
+        is_active=True, variant_is_available=True)
 
     products_list = []
     for product in items:
