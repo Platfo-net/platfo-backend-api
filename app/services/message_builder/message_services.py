@@ -1,8 +1,8 @@
+from typing import Optional
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app import models
-from app.constants.message_builder import MessageStatus
 
 
 class MessageServices:
@@ -18,7 +18,9 @@ class MessageServices:
         db.refresh(db_obj)
         return db_obj
 
-    def get_last_message(self, db: Session, *, chat_id: int, status: str = None):
+    def get_last_message(
+        self, db: Session, *, chat_id: int, status: str = None
+    ) -> Optional[models.message_builder.MessageBuilderMessage]:
         q = db.query(self.model).filter(
             self.model.telegram_chat_id == chat_id
         )
@@ -35,7 +37,8 @@ class MessageServices:
         return db.query(self.model).filter(self.model.id == id).first()
 
     def get_by_chat_id_and_id(self, db: Session, *, id: int, chat_id: int):
-        return db.query(self.model).filter(self.model.id == id, self.model.telegram_chat_id == chat_id).first()
+        return db.query(self.model).filter(
+            self.model.id == id, self.model.telegram_chat_id == chat_id).first()
 
     def change_status(self, db: Session, *, db_obj, status):
         db_obj.status = status

@@ -44,6 +44,7 @@ class MessageBuilderTelegramMessage:
 
     ENTER_MESSAGE_TEXT = "لطفا متن پیام خود را وارد کنید."
     ENTER_URL = "لطفا آدرس url مورد نظر را وارد کنید."
+    ENTER_URL_BUTTON_TEXT = "متن دکمه ی url را وارد کنید."
     ENTER_IMAGE = "در صورت تمایل عکس مورد نظر را آپلود کنید. در غیر این صورت روی دکمه ی اتمام پیام کلیک کنید."  # noqa
 
     MESSAGE_CREATED_SUCCESSFULLY = "پیام شما با موفقیت ساخته شد."

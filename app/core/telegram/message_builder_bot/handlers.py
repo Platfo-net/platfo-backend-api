@@ -1,5 +1,3 @@
-
-
 from uuid import uuid4
 from app import models
 from app.core import storage
@@ -94,26 +92,27 @@ async def build(db: Session, update: telegram.Update):
     last_message = services.message_builder.message.get_last_message(
         db, chat_id=update.message.chat_id)
 
-    if last_message.status == MessageStatus.FINISHED:
+    if not last_message or last_message.status == MessageStatus.FINISHED:
         await update.message.reply_text(
             text=MessageBuilderTelegramMessage.ERROR_NOT_BUILDING_MESSAGE_EXIST
         )
         return
 
     if update.message.text:
-        if not last_message.title:
-            last_message.title = update.message.text
-            await update.message.reply_text(
-                text=MessageBuilderTelegramMessage.ENTER_MESSAGE_TEXT
-            )
-
-        elif not last_message.message_text:
+        if not last_message.message_text:
             last_message.message_text = update.message.text
             await update.message.reply_text(
                 text=MessageBuilderTelegramMessage.ENTER_URL
             )
 
         elif not last_message.url:
+            last_message.url = update.message.text
+            last_message.short_url = generate_random_short_url(6)
+            await update.message.reply_text(
+                text=MessageBuilderTelegramMessage.ENTER_URL_BUTTON_TEXT,
+            )
+
+        elif not last_message.button_title:
             last_message.url = update.message.text
             last_message.short_url = generate_random_short_url(6)
             keyboard = [
@@ -158,20 +157,21 @@ async def send_inline_query_answer(
         await update.inline_query.answer(
             results=[telegram.InlineQueryResultPhoto(
                 id=uuid4(),
-                title=message.title,
+                title=f"{message.message_text[:30]}...",
                 photo_url=image_url,
                 thumbnail_url=image_url,
                 caption=message.message_text,
                 reply_markup=telegram.InlineKeyboardMarkup(
                     [[telegram.InlineKeyboardButton(
-                        text="web app", url=f"t.me/dev_message_builder_bot/main?startapp={message.short_url}",
+                        text=message.button_title,
+                        url=f"{settings.MESSAGE_BUILDER_WEBAPP_BASE_URL}?startapp={message.short_url}",
                     )]]
                 )
             )],
 
         )
     else:
-        
+
         await update.inline_query.answer(
             results=[telegram.InlineQueryResultArticle(
                 id=uuid4(),
@@ -179,9 +179,8 @@ async def send_inline_query_answer(
                 input_message_content=telegram.InputTextMessageContent(message.message_text),
                 reply_markup=telegram.InlineKeyboardMarkup(
                     [[telegram.InlineKeyboardButton(
-                        text="web app", url=f"t.me/dev_message_builder_bot/main?startapp={message.short_url}",
+                        text="web app", url=f"{settings.MESSAGE_BUILDER_WEBAPP_BASE_URL}/main?startapp={message.short_url}",
                     )]]
                 )
-            )],
-
+            )]
         )
