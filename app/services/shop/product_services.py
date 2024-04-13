@@ -1,8 +1,8 @@
 from typing import List, Optional
 
 from pydantic import UUID4
-from sqlalchemy import desc
-from sqlalchemy.orm import Session
+from sqlalchemy import desc 
+from sqlalchemy.orm import Session , joinedload
 
 from app import models, schemas
 from app.core.unit_of_work import UnitOfWork
@@ -95,10 +95,12 @@ class ProductServices:
         
         items = (
             db.query(self.model)
+            .options(
+                joinedload(self.model.attributes),
+                joinedload(self.model.category),
+                joinedload(self.model.variants),
+            )
             .filter(*conditions)
-            .join(self.model.category, isouter=True)
-            .join(self.model.attributes, isouter=True)
-            .join(self.model.variants, isouter=True)
             .order_by(desc(self.model.created_at))
             .offset(page_size * (page - 1))
             .limit(page_size)
