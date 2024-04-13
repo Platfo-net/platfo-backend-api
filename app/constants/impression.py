@@ -1,4 +1,0 @@
-class Impression:
-    COMMENT = 'COMMENT'
-    LIVE_COMMENT = 'LIVE_COMMENT'
-    MESSAGE = 'MESSAGE'
