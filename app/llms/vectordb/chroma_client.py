@@ -40,4 +40,4 @@ class ChromaClient(BaseClient):
                                           collection_name=self._collection_name, ids=ids)
 
     def search_embeddings(self, search_kwargs: dict = config.MAX_SEARCH_RESULT_EMBEDDINGS):
-        return self.client.as_retriever(search_type='similarity', sesearch_kwargs=search_kwargs)
+        return self.client.as_retriever(search_type='similarity', search_kwargs=search_kwargs)

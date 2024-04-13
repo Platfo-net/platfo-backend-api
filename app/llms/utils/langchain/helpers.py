@@ -44,9 +44,11 @@ def get_document_loader_data(file_path, file):
     return loader_func(file)
 
 
-def chunk_data(data, chunk_size=256, chunk_overlap=100):
+def chunk_data(data, metadatas ,chunk_size=256, chunk_overlap=100):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    chunks = text_splitter.split_documents(data)
+    texts = [d.page_content for d in data]
+    metadatas = metadatas * len(texts)
+    chunks = text_splitter.create_documents(texts=texts, metadatas=metadatas)
     return chunks
 
 
@@ -58,10 +60,8 @@ def print_embedding_cost(texts):
 
 
 def clear_text(text):
-
   # Remove newlines (\n)
   text = text.replace("\n", " ")
-
   # Remove unnecessary punctuation
   text = re.sub("[^\w\s]", "", text)
 
@@ -78,11 +78,13 @@ def get_chat_prompt():
     prompt = ChatPromptTemplate.from_template(template)
     return prompt
 
+
 def create_setup_retriever(retriever, prompt_callable):
     setup_and_retrieval = RunnableParallel(
         {"context": retriever, "query": RunnablePassthrough(), "user_prompt": RunnableLambda(prompt_callable)}
     )
     return setup_and_retrieval
+
 
 def create_llm_model():
     return ChatOpenAI(openai_api_key=config.OPEN_API_KEY, model=config.LLM_MODEL) # type: ignore

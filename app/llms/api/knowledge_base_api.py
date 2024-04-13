@@ -13,8 +13,7 @@ from app.core.config import settings
 from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseCreate, KnowledgeBaseUpdate
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.dependencies import get_service, get_chroma_client
-from app.llms.utils.langchain.pipeline import create_chain
-from app.llms.vectordb.chroma_client import ChromaClient
+from app.llms.utils.langchain.pipeline import get_question_and_answer
 from app.schemas import FileUpload
 from app.llms.tasks import embed_knowledge_base_document_task
 
@@ -77,14 +76,14 @@ def create_knowledge_base(
 ):
     collection_name = str(obj_in.chatbot_id)
     new_knowledge_base = knowledge_base_service.add(obj_in)
-    embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name)
+    embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
+                                             new_knowledge_base.metadatas)
     return new_knowledge_base
 
 
 @router.get('/question/ask')
 def ask_question(
         question: str,
-        chroma: ClientAPI = Depends(get_chroma_client),
         _: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -94,21 +93,7 @@ def ask_question(
             ],
         ),
 ):
-    from app.llms.utils.langchain.helpers import create_setup_retriever
-    from langchain_core.output_parsers import StrOutputParser
-    vector_db = ChromaClient(client=chroma, collection_name='439f6529-cc49-43fc-9194-f8324d442b76')
-    # vector_db = ChromaClient(client=chroma, collection_name='3d8bf47b-f98c-4965-85ad-97c6e9265ea9')
-    # print('6666', vector_db._chroma.list_collections())
-    # print('8888', chroma.list_collections())
-    # print(chroma.get_collection(name='439f6529-cc49-43fc-9194-f8324d442b76').count())
-    # print('333333', vector_db.client.get())
-
-    retriever = vector_db.search_embeddings()
-    output_parser = StrOutputParser()
-    setup_and_retrieval = create_setup_retriever(retriever,
-                                          lambda _: "Answer the question that you receive only in russian.")
-    chain = create_chain(setup_and_retrieval, output_parser)
-    r = chain.invoke(question)
+    r = get_question_and_answer(question)
     return {"answer": r}
 
 
@@ -159,6 +144,7 @@ def update_knowledge_base(
 def delete_knowledge_base(
         id: UUID4,
         knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
+        chroma: ClientAPI = Depends(get_chroma_client),
         current_user: models.User = Security(
             deps.get_current_active_user,
             scopes=[
@@ -171,5 +157,4 @@ def delete_knowledge_base(
     knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id)
     knowledge_base_service.validator.validate_user_ownership(obj=knowledge_base.chatbot,
                                                              current_user=current_user)
-    return knowledge_base_service.remove(knowledge_base.id)
-
+    return knowledge_base_service.remove_with_embeddings(knowledge_base, chroma)

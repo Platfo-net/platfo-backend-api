@@ -1,3 +1,5 @@
+from chromadb import ClientAPI
+
 from app.core import storage
 from app.core.config import settings
 from app.llms.models import ChatBot
@@ -26,8 +28,14 @@ class KnowledgeBaseService(BaseService):
     def add(self, schema):
         chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id,
                                                          model=ChatBot)
+        if not schema.metadatas:
+            schema.metadatas = {"namespace": schema.name}
 
         schema.chatbot_id = chatbot.id
         new_knowledge_base = self.knowledge_base_repo.create(schema)
         new_knowledge_base.chatbot_id = chatbot.uuid
         return new_knowledge_base
+
+    def remove_with_embeddings(self, db_obj, chroma: ClientAPI):
+        chroma.get_collection(name=str(db_obj.chatbot.uuid)).delete(where=db_obj.metadatas)
+        return self.knowledge_base_repo.delete(db_obj.id)
