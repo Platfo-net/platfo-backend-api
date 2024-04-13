@@ -113,8 +113,7 @@ async def build(db: Session, update: telegram.Update):
             )
 
         elif not last_message.button_title:
-            last_message.url = update.message.text
-            last_message.short_url = generate_random_short_url(6)
+            last_message.button_title = update.message.text
             keyboard = [
                 [
                     telegram.InlineKeyboardButton(
