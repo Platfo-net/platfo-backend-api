@@ -162,7 +162,7 @@ async def send_inline_query_answer(
                 caption=message.message_text,
                 reply_markup=telegram.InlineKeyboardMarkup(
                     [[telegram.InlineKeyboardButton(
-                        text=message.button_title,
+                        text=message.button_title or "Page",
                         url=f"{settings.MESSAGE_BUILDER_WEBAPP_BASE_URL}?startapp={message.short_url}",
                     )]]
                 )

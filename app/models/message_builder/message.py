@@ -10,7 +10,7 @@ import datetime
 class MessageBuilderMessage(Base):
     __tablename__ = 'message_builder_messages'
 
-    button_title = Column(String(255), nullable=True, default="Web", server_default="Web")
+    button_title = Column(String(255), nullable=True)
     url = Column(String(512), nullable=True)
     short_url = Column(String(128), nullable=True, index=True)
 
