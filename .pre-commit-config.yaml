@@ -17,4 +17,4 @@ repos:
   rev: 5.13.2
   hooks:
     - id: isort
-      name: isort (python)
+      args: ["-config_root", "setup.cfg"]
