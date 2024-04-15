@@ -35,6 +35,7 @@ def telegram_message_builder_bot_task(data, lang: str):
 
     db.close()
 
+
 @celery.task
 def telegram_admin_bot_task(data, lang: str):
     db = SessionLocal()

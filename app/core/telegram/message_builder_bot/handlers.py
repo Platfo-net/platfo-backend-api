@@ -163,7 +163,7 @@ async def send_inline_query_answer(
                 reply_markup=telegram.InlineKeyboardMarkup(
                     [[telegram.InlineKeyboardButton(
                         text=message.button_title or "Page",
-                        url=f"{settings.MESSAGE_BUILDER_WEBAPP_BASE_URL}?startapp={message.short_url}",
+                        url=f"{settings.MESSAGE_BUILDER_WEBAPP_BASE_URL}?startapp={message.short_url}",  # noqa
                     )]]
                 )
             )],
@@ -178,7 +178,8 @@ async def send_inline_query_answer(
                 input_message_content=telegram.InputTextMessageContent(message.message_text),
                 reply_markup=telegram.InlineKeyboardMarkup(
                     [[telegram.InlineKeyboardButton(
-                        text="web app", url=f"{settings.MESSAGE_BUILDER_WEBAPP_BASE_URL}/main?startapp={message.short_url}",
+                        text="web app",
+                        url=f"{settings.MESSAGE_BUILDER_WEBAPP_BASE_URL}/main?startapp={message.short_url}",  # noqa
                     )]]
                 )
             )]

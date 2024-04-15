@@ -102,7 +102,7 @@ class Settings(BaseSettings):
     SENTRY_DSN: Optional[str] = None
 
     MESSAGE_BUILDER_BOT_TOKEN: Optional[str] = None
-    
+
     MESSAGE_BUILDER_WEBAPP_BASE_URL: str
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
