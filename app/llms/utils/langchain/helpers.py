@@ -5,6 +5,11 @@ import tiktoken
 from langchain_community.document_loaders.pdf import PyPDFLoader
 from langchain_community.document_loaders.text import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
+from langchain_openai.chat_models import ChatOpenAI
+
+from app.llms.utils import config
 
 
 class DocumentFormat:
@@ -39,9 +44,11 @@ def get_document_loader_data(file_path, file):
     return loader_func(file)
 
 
-def chunk_data(data, chunk_size=256, chunk_overlap=100):
+def chunk_data(data, metadatas ,chunk_size=256, chunk_overlap=100):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    chunks = text_splitter.split_documents(data)
+    texts = [d.page_content for d in data]
+    metadatas = metadatas * len(texts)
+    chunks = text_splitter.create_documents(texts=texts, metadatas=metadatas)
     return chunks
 
 
@@ -51,12 +58,33 @@ def print_embedding_cost(texts):
     print(f'Total Tokens: {total_tokens}')
     print(f'Embedding Cost in USD: {total_tokens / 1000 * 0.00002:.6f}')
 
-def clear_text(text):
 
+def clear_text(text):
   # Remove newlines (\n)
   text = text.replace("\n", " ")
-
   # Remove unnecessary punctuation
   text = re.sub("[^\w\s]", "", text)
 
   return text
+
+
+def get_chat_prompt():
+    template = """
+    Context: {context}
+    {user_prompt}
+    Question: {query}
+    """
+
+    prompt = ChatPromptTemplate.from_template(template)
+    return prompt
+
+
+def create_setup_retriever(retriever, prompt_callable):
+    setup_and_retrieval = RunnableParallel(
+        {"context": retriever, "query": RunnablePassthrough(), "user_prompt": RunnableLambda(prompt_callable)}
+    )
+    return setup_and_retrieval
+
+
+def create_llm_model():
+    return ChatOpenAI(openai_api_key=config.OPEN_API_KEY, model=config.LLM_MODEL) # type: ignore

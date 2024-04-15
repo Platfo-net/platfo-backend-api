@@ -4,6 +4,7 @@ from app.llms.utils.validators import ObjectValidator
 class BaseService:
     def __init__(self, repository) -> None:
         self._repository = repository
+        self.session = repository.session
         self.validator = ObjectValidator(self._repository)
 
     def get(self, pk):
@@ -20,6 +21,9 @@ class BaseService:
 
     def add(self, schema):
         return self._repository.create(schema)
+
+    def add_atomic(self, schema):
+        return self._repository.create_atomic(schema)
 
     def update(self, db_obj, schema):
         return self._repository.update(db_obj, schema)

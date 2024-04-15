@@ -37,6 +37,10 @@ class BaseRepository(ABC):
         ...
 
     @abstractmethod
+    def create_atomic(self, obj_in):
+        ...
+
+    @abstractmethod
     def update(self, db_obj, obj_in):
         ...
 
@@ -67,6 +71,12 @@ class CRUDBRepository(BaseRepository):
         self.session.add(db_obj)
         self.session.commit()
         self.session.refresh(db_obj)
+        return db_obj
+
+    def create_atomic(self, obj_in):
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data)
+        self.session.add(db_obj)
         return db_obj
 
     def update(self, db_obj, obj_in):
