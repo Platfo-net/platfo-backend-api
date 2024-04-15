@@ -244,7 +244,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 app_link = telegram_bot.app_link
                 image_url = storage.get_object_url(
                     telegram_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
-                if telegram_bot.image:
+                if image_url:
                     await bot.send_photo(
                         caption=text,
                         chat_id=update.message.chat_id,

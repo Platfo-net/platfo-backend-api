@@ -343,6 +343,12 @@ class Error:
         "status_code": 400,
         "code": 184,
     }
+    
+    SHOP_PRODUCT_NOT_AVAILABLE_ERROR = {
+        "text": "Product not available.",
+        "status_code": 400,
+        "code": 184,
+    }
 
     # lead
     LEAD_TELEGRAM_LEAD_NOT_FOUND = {

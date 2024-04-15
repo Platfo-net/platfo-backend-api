@@ -1,8 +1,8 @@
 from typing import List, Optional
 
 from pydantic import UUID4
-from sqlalchemy import desc 
-from sqlalchemy.orm import Session , joinedload
+from sqlalchemy import desc
+from sqlalchemy.orm import Session, joinedload
 
 from app import models, schemas
 from app.core.unit_of_work import UnitOfWork
@@ -28,6 +28,7 @@ class ProductServices:
             currency=obj_in.currency,
             category_id=category_id,
             shop_id=shop_id,
+            is_available=obj_in.is_available
         )
         uow.add(db_obj)
         return db_obj
@@ -42,9 +43,10 @@ class ProductServices:
     ) -> models.shop.ShopProduct:
         db_obj.title = obj_in.title
         db_obj.image = obj_in.image
-        db_obj.price = obj_in.price,
-        db_obj.currency = obj_in.currency,
-        db_obj.category_id = category_id,
+        db_obj.price = obj_in.price
+        db_obj.currency = obj_in.currency
+        db_obj.category_id = category_id
+        db_obj.is_available = obj_in.is_available
 
         uow.add(db_obj)
         return db_obj
@@ -92,7 +94,7 @@ class ProductServices:
             conditions.append(self.model.is_active == is_active)
         if category_id is not None:
             conditions.append(self.model.category_id == category_id)
-        
+
         items = (
             db.query(self.model)
             .options(

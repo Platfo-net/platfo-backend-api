@@ -5,12 +5,12 @@
 
 * لیست محصولات سفارش:
 {% for item in items %}
-    {{ item["title"] }} {{ item["variant_title"] }}: ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] }}{{ currency }}  )
+    {{ item["title"] }}-{{ item["variant_title"] }}: ( تعداد:{{ item["count"] }} , قیمت:{{ item["price"] }}{{ currency }}  )
 {% endfor %}
 
-{% if order.shipment_cost_amount %}
+{% if shipment_cost_amount %}
 * هزینه ی ارسال:
-    {{ order.shipment_cost_amount }} {{ currency }}
+    {{ shipment_cost_amount }} {{ currency }}
 {% endif %}
 ——————————
 💵 مبلغ نهایی سفارش: {{ amount }}{{ currency }}
