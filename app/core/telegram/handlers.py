@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from telegram import Bot
 
 from app import schemas, services
+from app.constants.message_builder import MessageBuilderButton, MessageBuilderCommand
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
@@ -10,7 +11,7 @@ from app.constants.telegram_support_bot_commands import \
     TelegramSupportBotCommand
 from app.core import security, storage
 from app.core.config import settings
-from app.core.telegram import bot_handlers, helpers, support_bot_handlers
+from app.core.telegram import bot_handlers, helpers, message_builder_bot, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
 
 
@@ -243,7 +244,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 app_link = telegram_bot.app_link
                 image_url = storage.get_object_url(
                     telegram_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
-                if telegram_bot.image:
+                if image_url:
                     await bot.send_photo(
                         caption=text,
                         chat_id=update.message.chat_id,
@@ -316,3 +317,45 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
             )
             services.social.telegram_lead_message.create(db, obj_in=obj_in)
             return
+
+
+async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
+    bot = Bot(settings.MESSAGE_BUILDER_BOT_TOKEN)
+
+    if data.get("callback_query"):
+        update = telegram.Update.de_json(
+            {"update_id": data["update_id"], **data["callback_query"]}, bot
+        )
+
+        callback = data.get("callback_query").get("data")
+        command, arg = callback.split(":")
+        if command == MessageBuilderButton.CANCEL_MESSAGE.get("command"):
+            await message_builder_bot.cancel_message(db, lang, update, arg)
+        elif command == MessageBuilderButton.FINISH_MESSAGE.get("command"):
+            await message_builder_bot.finish_message(db, lang, update, arg)
+
+        return
+
+    update = telegram.Update.de_json(
+        data, bot
+    )
+    if update.inline_query:
+        if not update.inline_query.query:
+            return
+
+        message = services.message_builder.message.get_by_chat_id_and_id(
+            db, id=int(update.inline_query.query), chat_id=update.inline_query.from_user.id)
+        if message:
+            await message_builder_bot.send_inline_query_answer(update, message)
+        return
+
+    if update.message.text == MessageBuilderCommand.START["command"]:
+        message = helpers.load_message(lang, "message_builder_start")
+        await update.message.reply_text(message)
+    elif update.message.text == MessageBuilderCommand.NEW_MESSAGE["command"]:
+        await message_builder_bot.create_new_message(db, lang, update)
+
+    elif update.message.text == MessageBuilderCommand.CANCEL_MESSAGE["command"]:
+        await message_builder_bot.cancel_message_check(db, lang, update)
+    else:
+        await message_builder_bot.build(db, update)

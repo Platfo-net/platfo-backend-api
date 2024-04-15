@@ -12,7 +12,7 @@ from app.models.shop import (ShopAttribute, ShopCategory, ShopDailyReport,
 from app.models.social import TelegramLead, TelegramLeadMessage
 from app.models.telegram_bot import TelegramBot
 from app.models.user import User
-
+from app.models.message_builder import MessageBuilderMessage
 
 # LLM APP #
 from app.llms.models import ChatBot, KnowledgeBase

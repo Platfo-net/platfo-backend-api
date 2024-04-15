@@ -1,4 +1,4 @@
-from app.services import credit, shop, social
+from app.services import credit, shop, social, message_builder
 
 from .instagram_page_services import instagram_page
 from .notification_services import notification, notification_user

@@ -50,6 +50,13 @@ def generate_random_support_token(length: int) -> str:
     return "P" + token
 
 
+def generate_random_short_url(length: int) -> str:
+    token = ''.join(
+        random.choice(string.ascii_lowercase) for _ in range(length)
+    )
+    return token
+
+
 def get_today_datetime_range() -> Tuple[datetime, datetime]:
     from_datetime = datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
         hour=0, minute=0, second=0, microsecond=0

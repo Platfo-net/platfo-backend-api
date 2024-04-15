@@ -1,4 +1,4 @@
-from app.models import credit, shop, social
+from app.models import credit, shop, social, message_builder
 
 from .instagram_page import InstagramPage
 from .notification import Notification, NotificationUser

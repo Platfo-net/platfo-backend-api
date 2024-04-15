@@ -45,8 +45,9 @@ async def send_lead_order_to_bot_handler(
         amount += item.count * item.price
         items.append({
             "price": helpers.number_to_price(int(item.price)),
-            "title": item.product.title,
+            "title": item.product_title,
             "count": item.count,
+            "variant_title": item.variant_title,
         })
     amount += order.shipment_cost_amount
     currency = Currency.IRT["name"]
@@ -59,6 +60,7 @@ async def send_lead_order_to_bot_handler(
         order_status=OrderStatus.items[order.status]["title"][lang],
         payment_method=PaymentMethod.items[order.shop_payment_method.payment_method.title][lang],
         currency=currency,
+        shipment_cost_amount=helpers.number_to_price(int(order.shipment_cost_amount))
     )
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
     reply_markup = None
@@ -98,8 +100,9 @@ async def send_lead_pay_message(
         amount += item.count * item.price
         items.append({
             "price": helpers.number_to_price(int(item.price)),
-            "title": item.product.title,
+            "title": item.product_title,
             "count": item.count,
+            "variant_title": item.variant_title,
         })
     amount += order.shipment_cost_amount
 
@@ -261,8 +264,9 @@ async def order_change_status_from_dashboard_handler(
         amount += item.count * item.price
         items.append({
             "price": helpers.number_to_price(int(item.price)),
-            "title": item.product.title,
+            "title": item.product_title,
             "count": item.count,
+            "variant_title": item.variant_title,
         })
     amount += order.shipment_cost_amount
 

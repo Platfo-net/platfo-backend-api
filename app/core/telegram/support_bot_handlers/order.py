@@ -41,15 +41,16 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         amount += item.price * item.count
         items.append({
             "price": helpers.number_to_price(int(item.price)),
-            "title": item.product.title,
+            "title": item.product_title,
             "count": item.count,
+            "variant_title": item.variant_title,
         })
 
     payment_method = PaymentMethod.items[order.shop_payment_method.payment_method.title][lang]
     shipment_method = order.shipment_method
     reply_markup = telegram.InlineKeyboardMarkup([])
     order_status = ""
-    amount += shipment_method.price
+    amount += order.shipment_cost_amount
 
     if order.status == OrderStatus.PAYMENT_CHECK["value"]:
         reply_markup = helpers.get_payment_check_order_reply_markup(order, lang)
@@ -81,9 +82,9 @@ async def send_order(db: Session, update: telegram.Update, order_number: int, la
         currency=Currency.IRT["name"],
         items=items,
         shipment_method_title=shipment_method.title,
-        shipment_method_price=helpers.number_to_price(int(shipment_method.price)),
         payment_method=payment_method,
-        table_title=None if not order.table_id else order.table.title
+        table_title=None if not order.table_id else order.table.title,
+        shipment_cost_amount=helpers.number_to_price(int(order.shipment_cost_amount))
     )
 
     await update.message.reply_text(text=text, reply_markup=reply_markup, parse_mode="HTML")
@@ -145,8 +146,10 @@ async def order_change_status_handler(
         amount += item.count * item.price
         items.append({
             "price": helpers.number_to_price(int(item.price)),
-            "title": item.product.title,
+            "title": item.product_title,
             "count": item.count,
+            "variant_title": item.variant_title,
+
         })
     amount += order.shipment_cost_amount
 
@@ -207,8 +210,9 @@ async def send_lead_order_to_shop_support_bot(
         amount += item.count * item.price
         items.append({
             "price": helpers.number_to_price(int(item.price)),
-            "title": item.product.title,
+            "title": item.product_title,
             "count": item.count,
+            "variant_title": item.variant_title,
         })
     amount += order.shipment_cost_amount
 
@@ -223,7 +227,8 @@ async def send_lead_order_to_shop_support_bot(
         currency=Currency.IRT["name"],
         payment_method=payment_method,
         items=items,
-        table_title=None if not order.table_id else order.table.title
+        table_title=None if not order.table_id else order.table.title,
+        shipment_cost_amount=helpers.number_to_price(int(order.shipment_cost_amount))
     )
     bot = Bot(token=settings.SUPPORT_BOT_TOKEN)
     message: telegram.Message = await bot.send_message(

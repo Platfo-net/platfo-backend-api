@@ -49,7 +49,7 @@ def create_client():
             settings.S3_HOST,
             settings.S3_ROOT_USER,
             settings.S3_ROOT_PASSWORD,
-            secure=False  # Todo
+            secure=True  # Todo
         )
         return client
     except S3Error as exc:

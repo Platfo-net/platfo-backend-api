@@ -130,7 +130,8 @@ def create_product(
         updated_at=product.updated_at,
         category=cat,
         attributes=attributes,
-        variants=variants
+        variants=variants,
+        is_available=product.is_available,
     )
 
 
@@ -229,6 +230,7 @@ def update_product(
         category=cat,
         attributes=attributes,
         variants=variants,
+        is_available=product.is_available
     )
 
 
@@ -296,6 +298,7 @@ def get_shop_products(
                 category=category,
                 attributes=attributes,
                 variants=variants,
+                is_available=product.is_available,
             ))
 
     return schemas.shop.ProductListAPI(
@@ -403,7 +406,8 @@ def get_shop_product(
         updated_at=product.updated_at,
         category=category,
         attributes=attributes,
-        variants=variants
+        variants=variants,
+        is_available=product.is_available,
     )
 
 
@@ -482,7 +486,8 @@ def get_shop_products_for_telegram_shop(
                 updated_at=product.updated_at,
                 category=category,
                 attributes=attributes,
-                variants=variants
+                variants=variants,
+                is_available=product.is_available,
             ))
 
     return schemas.shop.ProductListAPI(

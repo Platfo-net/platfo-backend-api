@@ -90,6 +90,8 @@ def create_telegram_shop_order(
             product = services.shop.product.get_by_uuid(db, uuid=item.product_id)
             if not product or product.shop_id != shop.id:
                 raise_http_exception(Error.SHOP_PRODUCT_NOT_FOUND_ERROR)
+            if not product.is_available:
+                raise_http_exception(Error.SHOP_PRODUCT_NOT_AVAILABLE_ERROR)
 
             variant = services.shop.product_variant.get_by_uuid(db, uuid=item.variant_id)
             if variant:
@@ -109,7 +111,6 @@ def create_telegram_shop_order(
                 currency = product.currency
                 variant_title = None
                 variant_id = None
-
             order_items.append(
                 schemas.shop.OrderItem(
                     product_id=product.id,

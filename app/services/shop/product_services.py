@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import UUID4
 from sqlalchemy import desc
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models, schemas
 from app.core.unit_of_work import UnitOfWork
@@ -28,6 +28,7 @@ class ProductServices:
             currency=obj_in.currency,
             category_id=category_id,
             shop_id=shop_id,
+            is_available=obj_in.is_available
         )
         uow.add(db_obj)
         return db_obj
@@ -42,9 +43,10 @@ class ProductServices:
     ) -> models.shop.ShopProduct:
         db_obj.title = obj_in.title
         db_obj.image = obj_in.image
-        db_obj.price = obj_in.price,
-        db_obj.currency = obj_in.currency,
-        db_obj.category_id = category_id,
+        db_obj.price = obj_in.price
+        db_obj.currency = obj_in.currency
+        db_obj.category_id = category_id
+        db_obj.is_available = obj_in.is_available
 
         uow.add(db_obj)
         return db_obj
@@ -83,7 +85,7 @@ class ProductServices:
         page: int = 1,
         page_size: int = 20,
         category_id: Optional[int] = None,
-        is_active: Optional[bool] = None
+        is_active: Optional[bool] = None,
     ) -> tuple[List[models.shop.ShopProduct], schemas.Pagination]:
         conditions = [
             self.model.shop_id == shop_id, self.model.is_deleted == False  # noqa
@@ -95,10 +97,12 @@ class ProductServices:
 
         items = (
             db.query(self.model)
+            .options(
+                joinedload(self.model.attributes),
+                joinedload(self.model.category),
+                joinedload(self.model.variants),
+            )
             .filter(*conditions)
-            .join(self.model.category, isouter=True)
-            .join(self.model.attributes, isouter=True)
-            .join(self.model.variants, isouter=True)
             .order_by(desc(self.model.created_at))
             .offset(page_size * (page - 1))
             .limit(page_size)
