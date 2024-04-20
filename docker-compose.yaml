@@ -44,9 +44,9 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data/pgdata
     ports:
-    - 5432:5432
+      - 5432:5432
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -101,20 +101,20 @@ services:
       - api
       - redis
 
-   vectordb:
-     image: chromadb/chroma:0.4.25.dev85
-     volumes:
-       - chroma-data:/chroma/chroma
-     command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
-     environment:
-       - IS_PERSISTENT=TRUE
-       - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMADB_TOKEN}
-       - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
-       - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
-       - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-FALSE}
-     restart: unless-stopped
-     ports:
-       - "8005:8005"
+    vectordb:
+      image: chromadb/chroma:0.4.25.dev85
+      volumes:
+        - chroma-data:/chroma/chroma
+      command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
+      environment:
+        - IS_PERSISTENT=TRUE
+        - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMADB_TOKEN}
+        - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
+        - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
+        - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-FALSE}
+      restart: unless-stopped
+      ports:
+        - "8005:8005"
 
 
 volumes:
