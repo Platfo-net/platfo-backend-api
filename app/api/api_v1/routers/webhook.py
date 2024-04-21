@@ -114,13 +114,12 @@ async def telegram_webhook_admin_listener(request: Request):
 
 
 @router.post('/telegram/chat-bot', status_code=status.HTTP_200_OK)
-async def telegram_webhook_chatbot_listener(request: Request):
+async def telegram_webhook_chatbot_listener(request: Request, db: Session = Depends(deps.get_db)):
     try:
         data = await request.json()
         bot = telegram.Bot(settings.CHAT_BOT_TOKEN)
         update = telegram.Update.de_json(bot=bot, data=data)
-        answer = get_question_and_answer(update.message.text,
-                                         '3d8bf47b-f98c-4965-85ad-97c6e9265ea9')
+        answer = get_question_and_answer(update.message.text, 1, db)
         await update.message.reply_text(text=answer)
 
         return
