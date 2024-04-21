@@ -174,7 +174,7 @@ async def send_inline_query_answer(
         await update.inline_query.answer(
             results=[telegram.InlineQueryResultArticle(
                 id=uuid4(),
-                title=message.title,
+                title=f"{message.message_text[:20]} ...",
                 input_message_content=telegram.InputTextMessageContent(message.message_text),
                 reply_markup=telegram.InlineKeyboardMarkup(
                     [[telegram.InlineKeyboardButton(
