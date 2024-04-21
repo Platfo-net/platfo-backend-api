@@ -46,7 +46,7 @@ def get_knowledge_base(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id)
+    knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id, model=KnowledgeBase)
     knowledge_base_service.validator.validate_user_ownership(obj=knowledge_base.chatbot,
                                                              current_user=current_user)
     knowledge_base = knowledge_base_service.get_by_uuid(uuid=id)
@@ -108,7 +108,7 @@ def update_knowledge_base(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id)
+    knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id, model=KnowledgeBase)
     knowledge_base_service.validator.validate_user_ownership(obj=knowledge_base.chatbot,
                                                              current_user=current_user)
 
@@ -127,7 +127,7 @@ def delete_knowledge_base(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id)
+    knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id, model=KnowledgeBase)
     knowledge_base_service.validator.validate_user_ownership(obj=knowledge_base.chatbot,
                                                              current_user=current_user)
     return knowledge_base_service.remove_with_embeddings(knowledge_base, chroma)

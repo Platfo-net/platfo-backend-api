@@ -1,7 +1,5 @@
 from chromadb import ClientAPI
 
-from app.core import storage
-from app.core.config import settings
 from app.llms.models import ChatBot
 from app.llms.repository.knowledge_base_repository import KnowledgeBaseRepository
 from app.llms.services.base_service import BaseService
@@ -14,8 +12,7 @@ class KnowledgeBaseService(BaseService):
         super().__init__(knowledge_base_repo)
 
     def get_list_by_chatbot_id(self, chatbot_id, current_user):
-        chatbot = self.validator.validate_generic_exists(uuid=chatbot_id,
-                                                         model=ChatBot)
+        chatbot = self.validator.validate_generic_exists(uuid=chatbot_id, model=ChatBot)
         self.validator.validate_user_ownership(obj=chatbot, current_user=current_user)
 
         knowledge_bases = self.knowledge_base_repo.get_multi_by_chatbot_id(chatbot_id=chatbot.id)
@@ -26,8 +23,7 @@ class KnowledgeBaseService(BaseService):
         return modified_knowledge_bases
 
     def add(self, schema):
-        chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id,
-                                                         model=ChatBot)
+        chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id, model=ChatBot)
         if not schema.metadatas:
             schema.metadatas = {"namespace": schema.name}
 

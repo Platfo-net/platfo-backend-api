@@ -3,6 +3,7 @@ from pydantic import UUID4
 from app.core.config import settings
 from app.core.storage import download_file_from_minio
 from app.db.session import SessionLocal
+from app.llms.models import ChatBot
 from app.llms.repository.chatbot_repository import ChatBotRepository
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.utils.dependencies import get_chroma_client
@@ -29,7 +30,7 @@ def get_question_and_answer(question: str, chatbot_id: UUID4) -> str:
     from langchain_core.output_parsers import StrOutputParser
 
     chatbot_service = ChatBotService(ChatBotRepository(SessionLocal()))
-    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id)
+    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
 
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=str(chatbot.uuid))
