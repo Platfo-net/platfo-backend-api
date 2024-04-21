@@ -4,12 +4,14 @@ from typing import List
 from chromadb import ClientAPI
 from fastapi import APIRouter, Depends, File, Security, UploadFile, status
 from pydantic import UUID4
+from sqlalchemy.orm import Session
 
 from app import models
 from app.api import deps
 from app.constants.role import Role
 from app.core import storage
 from app.core.config import settings
+from app.core.storage import get_object_url
 from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseCreate, \
     KnowledgeBaseUpdate
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
@@ -51,6 +53,8 @@ def get_knowledge_base(
                                                              current_user=current_user)
     knowledge_base = knowledge_base_service.get_by_uuid(uuid=id)
     knowledge_base.chatbot_id = knowledge_base.chatbot.uuid
+    knowledge_base.file_url = get_object_url(knowledge_base.file_path,
+                                             settings.S3_KNOWLEDGE_BASE_BUCKET)
     return knowledge_base
 
 
@@ -67,6 +71,8 @@ def create_knowledge_base(
     new_knowledge_base = knowledge_base_service.add(obj_in)
     embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
                                              new_knowledge_base.metadatas)
+    new_knowledge_base.file_url = get_object_url(new_knowledge_base.file_path,
+                                                 settings.S3_KNOWLEDGE_BASE_BUCKET)
     return new_knowledge_base
 
 
@@ -74,12 +80,13 @@ def create_knowledge_base(
 def ask_question(
     question: str,
     chatbot_id: UUID4,
+    db: Session = Depends(deps.get_db),
     _: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    r = get_question_and_answer(question, chatbot_id)
+    r = get_question_and_answer(question, chatbot_id, db)
     return {"answer": r}
 
 
@@ -114,6 +121,8 @@ def update_knowledge_base(
 
     updated_knowledge_base = knowledge_base_service.update(knowledge_base, obj_in)
     updated_knowledge_base.chatbot_id = updated_knowledge_base.chatbot.uuid
+    updated_knowledge_base.file_url = get_object_url(updated_knowledge_base.file_path,
+                                                     settings.S3_KNOWLEDGE_BASE_BUCKET)
     return updated_knowledge_base
 
 

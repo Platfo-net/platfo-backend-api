@@ -1,5 +1,7 @@
 from chromadb import ClientAPI
 
+from app.core.config import settings
+from app.core.storage import get_object_url
 from app.llms.models import ChatBot
 from app.llms.repository.knowledge_base_repository import KnowledgeBaseRepository
 from app.llms.services.base_service import BaseService
@@ -19,6 +21,7 @@ class KnowledgeBaseService(BaseService):
         modified_knowledge_bases = []
         for kb in knowledge_bases:
             kb.chatbot_id = chatbot.uuid
+            kb.file_url = get_object_url(kb.file_path, settings.S3_KNOWLEDGE_BASE_BUCKET)
             modified_knowledge_bases.append(kb)
         return modified_knowledge_bases
 

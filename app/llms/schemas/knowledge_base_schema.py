@@ -1,8 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, UUID4
-from pydantic import HttpUrl
+from pydantic import UUID4, BaseModel
 
 from app.llms.schemas.base_schema import ModelBaseInfo
 
@@ -32,4 +31,4 @@ class KnowledgeBaseUpdate(BaseKnowledgeBase):
 
 
 class KnowledgeBase(ModelBaseInfo, BaseKnowledgeBase):
-    ...
+    file_url: Optional[str] = None
