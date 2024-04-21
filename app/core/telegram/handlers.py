@@ -220,14 +220,6 @@ def get_or_create_lead(db: Session, telegram_bot_id, lead_data):
     return lead
 
 
-async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int):
-    update = telegram.Update.de_json(data, bot)
-
-    answer = get_question_and_answer(db, update.message.text, chatbot_id)
-
-    await update.message.reply_text(answer)
-
-
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lang):
     telegram_bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
     if not telegram_bot:
@@ -240,7 +232,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
     chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
 
     if chatbot_telegram_bot:
-        await handle_chatbot_qa(db, bot, data, telegram_bot, chatbot_telegram_bot.chatbot_id)
+        await bot_handlers.handle_chatbot_qa(db, bot, data, telegram_bot,
+                                             chatbot_telegram_bot.chatbot_id)
         return
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
