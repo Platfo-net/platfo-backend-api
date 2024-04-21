@@ -1,8 +1,7 @@
-from pydantic import UUID4
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.storage import download_file_from_minio
-from app.db.session import SessionLocal
 from app.llms.models import ChatBot
 from app.llms.repository.chatbot_repository import ChatBotRepository
 from app.llms.services.chatbot_service import ChatBotService
@@ -26,11 +25,11 @@ def create_chain(setup_and_retrieval, output_parser, temperature):
     return chain
 
 
-def get_question_and_answer(question: str, chatbot_id: UUID4) -> str:
+def get_question_and_answer(question: str, chatbot_id: int, db: Session) -> str:
     from langchain_core.output_parsers import StrOutputParser
 
-    chatbot_service = ChatBotService(ChatBotRepository(SessionLocal()))
-    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
+    chatbot_service = ChatBotService(ChatBotRepository(db))
+    chatbot = chatbot_service.validator.validate_exists_with_id(pk=chatbot_id, model=ChatBot)
 
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=str(chatbot.uuid))
