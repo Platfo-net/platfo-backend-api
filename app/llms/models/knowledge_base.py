@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, String, BigInteger, JSON
+from sqlalchemy import JSON, BigInteger, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -14,3 +14,4 @@ class KnowledgeBase(Base, WithDates):
     file_path = Column(String(255), nullable=True)
     chatbot_id = Column(BigInteger, ForeignKey('chatbots.id'), nullable=True)
     chatbot = relationship('ChatBot', back_populates='knowledge_bases')
+    embedding_costs = relationship('EmbeddingCost', back_populates='knowledgebase')

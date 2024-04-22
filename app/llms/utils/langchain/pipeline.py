@@ -1,9 +1,6 @@
-from sqlalchemy.orm import Session
-
 from app.core.config import settings
 from app.core.storage import download_file_from_minio
 from app.llms.models import ChatBot
-from app.llms.repository.chatbot_repository import ChatBotRepository
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.utils.dependencies import get_chroma_client
 from app.llms.utils.langchain.helpers import chunk_data, clear_text, create_llm_model, \
@@ -25,10 +22,10 @@ def create_chain(setup_and_retrieval, output_parser, temperature):
     return chain
 
 
-def get_question_and_answer(question: str, chatbot_id: int, db: Session) -> str:
+def get_question_and_answer(question: str, chatbot_id: int,
+                            chatbot_service: ChatBotService) -> str:
     from langchain_core.output_parsers import StrOutputParser
 
-    chatbot_service = ChatBotService(ChatBotRepository(db))
     chatbot = chatbot_service.validator.validate_exists_with_id(pk=chatbot_id, model=ChatBot)
 
     chroma = get_chroma_client()
