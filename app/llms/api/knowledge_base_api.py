@@ -4,7 +4,6 @@ from typing import List
 from chromadb import ClientAPI
 from fastapi import APIRouter, Depends, File, Security, UploadFile, status
 from pydantic import UUID4
-from sqlalchemy.orm import Session
 
 from app import models
 from app.api import deps
@@ -14,6 +13,7 @@ from app.core.config import settings
 from app.core.storage import get_object_url
 from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseCreate, \
     KnowledgeBaseUpdate
+from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.tasks import embed_knowledge_base_document_task
 from app.llms.utils.dependencies import get_chroma_client, get_service
@@ -69,24 +69,26 @@ def create_knowledge_base(
 ):
     collection_name = str(obj_in.chatbot_id)
     new_knowledge_base = knowledge_base_service.add(obj_in)
-    embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
-                                             new_knowledge_base.metadatas)
     new_knowledge_base.file_url = get_object_url(new_knowledge_base.file_path,
                                                  settings.S3_KNOWLEDGE_BASE_BUCKET)
+
+    embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
+                                             new_knowledge_base.metadatas, new_knowledge_base.id)
+
     return new_knowledge_base
 
 
 @router.get('/question/chatbot_id/ask')
 def ask_question(
     question: str,
-    chatbot_id: UUID4,
-    db: Session = Depends(deps.get_db),
+    chatbot_id: int,
+    chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
     _: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    r = get_question_and_answer(question, chatbot_id, db)
+    r = get_question_and_answer(question, chatbot_id, chatbot_service)
     return {"answer": r}
 
 

@@ -26,14 +26,16 @@ class ChromaClient(BaseClient):
     def __init__(self, client, collection_name):
         self._collection_name = collection_name
         self._chroma: ClientAPI = client
-        self.client = Chroma(client=self._chroma,
-                             embedding_function=self.embedding,
-                             collection_name=self._collection_name,
-                             )
+        self.client = Chroma(
+            client=self._chroma,
+            embedding_function=self.embedding,
+            collection_name=self._collection_name,
+        )
 
     @property
     def embedding(self):
-        return OpenAIEmbeddings(openai_api_key=config.OPEN_API_KEY) # type: ignore
+        return OpenAIEmbeddings(openai_api_key=config.OPEN_API_KEY,
+                                model=config.EMBEDDING_MODEL)  # type: ignore
 
     def store_embeddings(self, documents, ids=None):
         return self.client.from_documents(documents, client=self._chroma, embedding=self.embedding,

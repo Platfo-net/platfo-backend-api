@@ -11,6 +11,8 @@ from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
 from app.core.telegram import tasks as telegram_tasks
+from app.llms.services.chatbot_service import ChatBotService
+from app.llms.utils.dependencies import get_service
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
@@ -114,12 +116,14 @@ async def telegram_webhook_admin_listener(request: Request):
 
 
 @router.post('/telegram/chat-bot', status_code=status.HTTP_200_OK)
-async def telegram_webhook_chatbot_listener(request: Request, db: Session = Depends(deps.get_db)):
+async def telegram_webhook_chatbot_listener(request: Request,
+                                            chatbot_service: ChatBotService = Depends(
+                                                get_service(ChatBotService))):
     try:
         data = await request.json()
         bot = telegram.Bot(settings.CHAT_BOT_TOKEN)
         update = telegram.Update.de_json(bot=bot, data=data)
-        answer = get_question_and_answer(update.message.text, 1, db)
+        answer = get_question_and_answer(update.message.text, 1, chatbot_service)
         await update.message.reply_text(text=answer)
 
         return

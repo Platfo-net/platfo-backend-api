@@ -50,11 +50,14 @@ def chunk_data(data, metadatas, chunk_size=256, chunk_overlap=100):
     return chunks
 
 
-def print_embedding_cost(texts):
+def calculate_embedding_cost(texts):
     enc = tiktoken.encoding_for_model('text-embedding-3-small')
     total_tokens = sum([len(enc.encode(page.page_content)) for page in texts])
+    cost_per_million_tokens = 0.02
+    cost_usd = total_tokens / 1_000_000 * cost_per_million_tokens
     print(f'Total Tokens: {total_tokens}')
-    print(f'Embedding Cost in USD: {total_tokens / 1000 * 0.00002:.6f}')
+    print(f'Embedding Cost in USD (per million tokens): {cost_usd:.6f}')
+    return total_tokens, cost_usd
 
 
 def clear_text(text):
