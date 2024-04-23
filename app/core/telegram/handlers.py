@@ -7,20 +7,23 @@ from app.constants.message_builder import MessageBuilderButton, MessageBuilderCo
 from app.constants.order_status import OrderStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
-from app.constants.telegram_support_bot_commands import \
-    TelegramSupportBotCommand
+from app.constants.telegram_support_bot_commands import TelegramSupportBotCommand
 from app.core import security, storage
 from app.core.config import settings
 from app.core.telegram import bot_handlers, helpers, message_builder_bot, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
+from app.llms.repository.chatbot_telegram_bot_repository import ChatBotTelegramBotRepository
+from app.llms.services.chatbot_telegram_bot_service import ChatBotTelegramBotService
+from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 
 async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
     bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
     if data.get("callback_query"):
-        update = telegram.Update.de_json(
-            {"update_id": data["update_id"], **data["callback_query"]}, bot
-        )
+        update = telegram.Update.de_json({
+            "update_id": data["update_id"],
+            **data["callback_query"]
+        }, bot)
 
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
@@ -32,13 +35,16 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
         elif command == TelegramCallbackCommand.CREDIT_PLAN.get("command"):
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
-            await support_bot_handlers.handle_credit_plan(
-                db, update, arg, lang, shop_telegram_bot.shop_id)
+            await support_bot_handlers.handle_credit_plan(db, update, arg, lang,
+                                                          shop_telegram_bot.shop_id)
             return
 
         elif command == TelegramCallbackCommand.ACCEPT_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
-                db, update, arg, lang,
+                db,
+                update,
+                arg,
+                lang,
                 OrderStatus.ACCEPTED,
                 SupportBotMessage.ACCEPT_ORDER,
                 helpers.get_accepted_order_reply_markup,
@@ -47,13 +53,19 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         elif command == TelegramCallbackCommand.ORDER_DETAIL.get("command"):
             await support_bot_handlers.send_order_detail(
-                db, update, arg, lang,
+                db,
+                update,
+                arg,
+                lang,
             )
             return
 
         elif command == TelegramCallbackCommand.DECLINE_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
-                db, update, arg, lang,
+                db,
+                update,
+                arg,
+                lang,
                 OrderStatus.DECLINED,
                 SupportBotMessage.DECLINE_ORDER,
                 helpers.get_declined_order_reply_markup,
@@ -62,7 +74,10 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         elif command == TelegramCallbackCommand.DECLINE_PAYMENT_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
-                db, update, arg, lang,
+                db,
+                update,
+                arg,
+                lang,
                 OrderStatus.PAYMENT_DECLINED,
                 SupportBotMessage.DECLINE_PAYMENT_ORDER,
                 helpers.get_empty_reply_markup,
@@ -71,7 +86,10 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         elif command == TelegramCallbackCommand.PREPARE_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
-                db, update, arg, lang,
+                db,
+                update,
+                arg,
+                lang,
                 OrderStatus.PREPARATION,
                 SupportBotMessage.PREPARE_ORDER,
                 helpers.get_prepare_order_reply_markup,
@@ -80,7 +98,10 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         elif command == TelegramCallbackCommand.SEND_ORDER.get("command"):
             await support_bot_handlers.order_change_status_handler(
-                db, update, arg, lang,
+                db,
+                update,
+                arg,
+                lang,
                 OrderStatus.SENT,
                 SupportBotMessage.SEND_ORDER,
                 helpers.get_empty_reply_markup,
@@ -108,26 +129,25 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             if not shop_telegram_bot:
                 text = helpers.get_start_support_bot_message(lang)
                 reply_markup = helpers.get_start_support_bot_reply_markup(lang)
-                await update.message.reply_text(
-                    text=text, reply_markup=reply_markup, parse_mode="HTML")
+                await update.message.reply_text(text=text, reply_markup=reply_markup,
+                                                parse_mode="HTML")
                 return
             else:
-                text = helpers.load_message(
-                    lang, "support_account_already_connected",
-                    shop_title=shop_telegram_bot.shop.title)
+                text = helpers.load_message(lang, "support_account_already_connected",
+                                            shop_title=shop_telegram_bot.shop.title)
                 await update.message.reply_text(text=text, parse_mode="HTML")
                 return
 
         elif update.message.text == TelegramSupportBotCommand.SEARCH_ORDER["command"]:
-            await update.message.reply_text(
-                SupportBotMessage.ENTER_ORDER_NUMBER[lang], parse_mode="HTML")
+            await update.message.reply_text(SupportBotMessage.ENTER_ORDER_NUMBER[lang],
+                                            parse_mode="HTML")
             return
 
         elif update.message.text == TelegramSupportBotCommand.CREDIT_VIEW["command"]:
             shop_telegram_bot = services.shop.shop_telegram_bot.get_by_chat_id(
                 db, chat_id=update.message.chat_id)
-            await support_bot_handlers.send_user_credit_information(
-                db, update, shop_telegram_bot, lang)
+            await support_bot_handlers.send_user_credit_information(db, update, shop_telegram_bot,
+                                                                    lang)
             return
 
         elif update.message.text == TelegramSupportBotCommand.CREDIT_EXTENDING["command"]:
@@ -144,7 +164,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         elif update.message.text == TelegramSupportBotCommand.PAYMENT_CHECK_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
-                db, update, OrderStatus.PAYMENT_CHECK,
+                db,
+                update,
+                OrderStatus.PAYMENT_CHECK,
                 helpers.get_order_message,
                 helpers.get_payment_check_order_reply_markup,
                 lang,
@@ -152,7 +174,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
         elif update.message.text == TelegramSupportBotCommand.ACCEPTED_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
-                db, update, OrderStatus.ACCEPTED,
+                db,
+                update,
+                OrderStatus.ACCEPTED,
                 helpers.get_order_message,
                 helpers.get_accepted_order_reply_markup,
                 lang,
@@ -161,7 +185,9 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
         elif update.message.text == TelegramSupportBotCommand.UNPAID_ORDERS["command"]:
             await support_bot_handlers.send_all_order_by_status(
-                db, update, OrderStatus.UNPAID,
+                db,
+                update,
+                OrderStatus.UNPAID,
                 helpers.get_order_message,
                 helpers.get_unpaid_order_reply_markup,
                 lang,
@@ -177,41 +203,55 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
 
 
 def get_or_create_lead(db: Session, telegram_bot_id, lead_data):
-    lead = services.social.telegram_lead.get_by_chat_id(
-        db, chat_id=lead_data.get("id"), telegram_bot_id=telegram_bot_id)
+    lead = services.social.telegram_lead.get_by_chat_id(db, chat_id=lead_data.get("id"),
+                                                        telegram_bot_id=telegram_bot_id)
     if not lead:
         lead_number = services.social.telegram_lead.get_last_lead_number(
             db, telegram_bot_id=telegram_bot_id)
         lead = services.social.telegram_lead.create(
-            db,
-            obj_in=schemas.social.TelegramLeadCreate(
+            db, obj_in=schemas.social.TelegramLeadCreate(
                 telegram_bot_id=telegram_bot_id,
                 chat_id=lead_data.get("id"),
                 first_name=lead_data.get("first_name"),
                 last_name=lead_data.get("last_name"),
                 username=lead_data.get("username"),
                 lead_number=lead_number + 1,
-            )
-        )
+            ))
     return lead
+
+
+async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int):
+    update = telegram.Update.de_json(data, bot)
+
+    answer = get_question_and_answer(db, update.message.text, chatbot_id)
+
+    await update.message.reply_text(answer)
 
 
 async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lang):
     telegram_bot = services.telegram_bot.get_by_bot_id(db, bot_id=bot_id)
     if not telegram_bot:
         return
+
+    bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
+
+    chatbot_service = ChatBotTelegramBotService(ChatBotTelegramBotRepository(db))
+
+    chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
+
+    if chatbot_telegram_bot:
+        await handle_chatbot_qa(db, bot, data, telegram_bot, chatbot_telegram_bot.chatbot_id)
+        return
+
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot.id)
-
-    bot = Bot(token=security.decrypt_telegram_token(
-        telegram_bot.bot_token))
-
     if data.get("callback_query"):
         lead_data = data["callback_query"]["from"]
         lead = get_or_create_lead(db, telegram_bot.id, lead_data)
-        update = telegram.Update.de_json(
-            {"update_id": data["update_id"], **data["callback_query"]}, bot
-        )
+        update = telegram.Update.de_json({
+            "update_id": data["update_id"],
+            **data["callback_query"]
+        }, bot)
 
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
@@ -231,47 +271,38 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 return
 
             if telegram_order:
-                await bot_handlers.handle_order_payment(
-                    db, data, telegram_order, shop_telegram_bot, bot, lang)
+                await bot_handlers.handle_order_payment(db, data, telegram_order,
+                                                        shop_telegram_bot, bot, lang)
                 return
 
         update = telegram.Update.de_json(data, bot)
         if update.message.text == TelegramBotCommand.START["command"]:
             if telegram_bot.welcome_message:
-                text = helpers.load_message(
-                    lang, "bot_overview", welcome_message=telegram_bot.welcome_message)
+                text = helpers.load_message(lang, "bot_overview",
+                                            welcome_message=telegram_bot.welcome_message)
                 button_name = telegram_bot.button_name
                 app_link = telegram_bot.app_link
-                image_url = storage.get_object_url(
-                    telegram_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+                image_url = storage.get_object_url(telegram_bot.image,
+                                                   settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
                 if image_url:
-                    await bot.send_photo(
-                        caption=text,
-                        chat_id=update.message.chat_id,
-                        photo=image_url,
-                        reply_markup=helpers.get_bot_menu(
-                            button_name, app_link),
-                        parse_mode="HTML"
-                    )
+                    await bot.send_photo(caption=text, chat_id=update.message.chat_id,
+                                         photo=image_url,
+                                         reply_markup=helpers.get_bot_menu(button_name, app_link),
+                                         parse_mode="HTML")
                 else:
                     await update.message.reply_text(
-                        text=text,
-                        reply_markup=helpers.get_bot_menu(
-                            button_name, app_link),
-                        parse_mode="HTML"
-                    )
+                        text=text, reply_markup=helpers.get_bot_menu(button_name, app_link),
+                        parse_mode="HTML")
             else:
                 if not shop_telegram_bot:
                     return
 
-                text = helpers.load_message(
-                    lang, "shop_overview", shop_title=shop_telegram_bot.shop.title)
+                text = helpers.load_message(lang, "shop_overview",
+                                            shop_title=shop_telegram_bot.shop.title)
                 await update.message.reply_text(
-                    text=text,
-                    reply_markup=helpers.get_shop_menu(
-                        shop_telegram_bot.shop.uuid, lead.uuid, lang),
-                    parse_mode="HTML"
-                )
+                    text=text, reply_markup=helpers.get_shop_menu(shop_telegram_bot.shop.uuid,
+                                                                  lead.uuid, lang),
+                    parse_mode="HTML")
 
         elif update.message.text == TelegramBotCommand.VITRIN["command"]:
 
@@ -279,19 +310,14 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 return
 
             await update.message.reply_text(
-                text="ویترین",
-                reply_markup=helpers.get_shop_menu(
-                    shop_telegram_bot.shop.uuid, lead.uuid, lang),
-                parse_mode="HTML"
-            )
+                text="ویترین", reply_markup=helpers.get_shop_menu(shop_telegram_bot.shop.uuid,
+                                                                  lead.uuid, lang),
+                parse_mode="HTML")
 
         elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
-            text = helpers.load_message(
-                lang, "lead_to_support_message_helper", lead_number=lead.lead_number)
-            await update.message.reply_text(
-                text=text,
-                parse_mode="HTML"
-            )
+            text = helpers.load_message(lang, "lead_to_support_message_helper",
+                                        lead_number=lead.lead_number)
+            await update.message.reply_text(text=text, parse_mode="HTML")
 
         else:
             message = update.message.text
@@ -323,9 +349,10 @@ async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
     bot = Bot(settings.MESSAGE_BUILDER_BOT_TOKEN)
 
     if data.get("callback_query"):
-        update = telegram.Update.de_json(
-            {"update_id": data["update_id"], **data["callback_query"]}, bot
-        )
+        update = telegram.Update.de_json({
+            "update_id": data["update_id"],
+            **data["callback_query"]
+        }, bot)
 
         callback = data.get("callback_query").get("data")
         command, arg = callback.split(":")
@@ -336,9 +363,7 @@ async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
 
         return
 
-    update = telegram.Update.de_json(
-        data, bot
-    )
+    update = telegram.Update.de_json(data, bot)
     if update.inline_query:
         if not update.inline_query.query:
             return

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, ForeignKey
+from sqlalchemy import BigInteger, Column, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -20,6 +20,4 @@ class ChatBotTelegramBot(Base):
     )
 
     telegram_bot = relationship("TelegramBot", back_populates="chatbot_telegram_bot")
-    chat_bot = relationship("ChatBot", back_populates="chatbot_telegram_bot")
-
-    
+    chatbot = relationship("ChatBot", back_populates="chatbot_telegram_bot")
