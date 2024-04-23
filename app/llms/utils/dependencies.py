@@ -1,5 +1,5 @@
 import inspect
-from typing import Type, List
+from typing import List, Type
 
 import chromadb
 from chromadb import Settings
@@ -13,15 +13,13 @@ from app.llms.utils.config import ChromaConfig
 
 
 def get_chroma_client():
-    chroma = chromadb.HttpClient(host=ChromaConfig.HOST,
-                                 port=ChromaConfig.PORT,
-                                 settings=Settings(
-                                     chroma_client_auth_provider=ChromaConfig.CHROMA_CLIENT_AUTH_PROVIDER,
-                                     chroma_client_auth_credentials=ChromaConfig.CHROMADB_TOKEN,
-                                     anonymized_telemetry=False,
-                                     allow_reset=True,
-                                     )
-                                 )
+    chroma = chromadb.HttpClient(
+        host=ChromaConfig.HOST, port=ChromaConfig.PORT, settings=Settings(
+            chroma_client_auth_provider=ChromaConfig.CHROMA_CLIENT_AUTH_PROVIDER,
+            chroma_client_auth_credentials=ChromaConfig.CHROMADB_TOKEN,
+            anonymized_telemetry=False,
+            allow_reset=True,
+        ))
     return chroma
 
 
@@ -51,7 +49,8 @@ def get_service(service_type: Type[BaseService]):
         if BaseRepository in inspect.getmro(Repo)
     ]
 
-    def _get_service(repositories: Type[List[BaseRepository]] = Depends(get_repositories(*repository_classes))):
+    def _get_service(repositories: Type[List[BaseRepository]] = Depends(
+        get_repositories(*repository_classes))):  # noqa
         return service_type(*repositories)  # type: ignore
 
     return _get_service
