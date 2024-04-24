@@ -13,7 +13,7 @@ class KnowledgeBaseService(BaseService):
         self.knowledge_base_repo = knowledge_base_repo
         super().__init__(knowledge_base_repo)
 
-    def get_list_by_chatbot_id(self, chatbot_id, current_user):
+    def get_multi_by_chatbot_id(self, chatbot_id, current_user):
         chatbot = self.validator.validate_generic_exists(uuid=chatbot_id, model=ChatBot)
         self.validator.validate_user_ownership(obj=chatbot, current_user=current_user)
 
@@ -25,12 +25,14 @@ class KnowledgeBaseService(BaseService):
             modified_knowledge_bases.append(kb)
         return modified_knowledge_bases
 
-    def add(self, schema):
+    def create(self, schema, current_user):
         chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id, model=ChatBot)
+        self.validator.validate_user_ownership(obj=chatbot, current_user=current_user)
+
         if not schema.metadatas:
             schema.metadatas = {"namespace": schema.name}
-
         schema.chatbot_id = chatbot.id
+
         new_knowledge_base = self.knowledge_base_repo.create(schema)
         new_knowledge_base.chatbot_id = chatbot.uuid
         return new_knowledge_base
