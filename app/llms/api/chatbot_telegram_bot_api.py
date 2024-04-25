@@ -15,12 +15,12 @@ from app.llms.utils.dependencies import get_service
 from app.llms.utils.exceptions import BusinessLogicError, NotFoundError
 
 router = APIRouter(
-    prefix="/chatbot-telegram-bot",
+    prefix="/telegram-bot",
     tags=["ChatBot Telegram Bot"],
 )
 
 
-@router.get('/{telegram_bot_id}', response_model=ChatBot)
+@router.get('/{telegram_bot_id}/chatbot', response_model=ChatBot)
 def get_telegram_bot_chatbot(
     telegram_bot_id: UUID4,
     chatbot_telegram_bot_service: ChatBotTelegramBotService = Depends(
@@ -42,7 +42,7 @@ def get_telegram_bot_chatbot(
     raise NotFoundError(detail="ChatBot TelegramBot not found")
 
 
-@router.post('/{telegram_bot_id}', response_model=ChatbotConnectTelegramBot)
+@router.post('/{telegram_bot_id}/chatbot', response_model=ChatbotConnectTelegramBot)
 def add_chatbot_to_telegram_bot_connection(
     telegram_bot_id: UUID4,
     obj_in: ChatbotConnectTelegramBotRequest,
@@ -65,7 +65,7 @@ def add_chatbot_to_telegram_bot_connection(
     return chatbot_telegram_bot_service.create(obj_in, telegram_bot, current_user)
 
 
-@router.delete('/{telegram_bot_id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{telegram_bot_id}/chatbot', status_code=status.HTTP_204_NO_CONTENT)
 def delete_telegram_bot_chatbot(
     telegram_bot_id: UUID4,
     chatbot_telegram_bot_service: ChatBotTelegramBotService = Depends(
