@@ -6,5 +6,5 @@ class ChatbotConnectTelegramBotRequest(BaseModel):
 
 
 class ChatbotConnectTelegramBot(BaseModel):
-    chatbot_id: UUID4
-    telegram_bot_id: UUID4
+    chatbot_id: int
+    telegram_bot_id: int

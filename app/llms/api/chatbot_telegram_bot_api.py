@@ -8,8 +8,7 @@ from app.constants.errors import Error
 from app.constants.role import Role
 from app.core.exception import raise_http_exception
 from app.llms.schemas.chatbot_schema import ChatBot
-from app.llms.schemas.chatbot_telegram_bot_schema import ChatbotConnectTelegramBot, \
-    ChatbotConnectTelegramBotRequest
+from app.llms.schemas.chatbot_telegram_bot_schema import ChatbotConnectTelegramBotRequest
 from app.llms.services.chatbot_telegram_bot_service import ChatBotTelegramBotService
 from app.llms.utils.dependencies import get_service
 from app.llms.utils.exceptions import BusinessLogicError, NotFoundError
@@ -39,10 +38,10 @@ def get_telegram_bot_chatbot(
     if chatbot_telegram_bot:
         return chatbot_telegram_bot.chatbot
 
-    raise NotFoundError(detail="ChatBot TelegramBot not found")
+    raise NotFoundError(detail="Chatbot not found")
 
 
-@router.post('/{telegram_bot_id}/chatbot', response_model=ChatbotConnectTelegramBot)
+@router.post('/{telegram_bot_id}/chatbot', status_code=status.HTTP_200_OK)
 def add_chatbot_to_telegram_bot_connection(
     telegram_bot_id: UUID4,
     obj_in: ChatbotConnectTelegramBotRequest,
@@ -62,7 +61,8 @@ def add_chatbot_to_telegram_bot_connection(
     if chatbot_telegram_bot:
         raise BusinessLogicError(detail="You already have a chatbot connected to this bot.")
 
-    return chatbot_telegram_bot_service.create(obj_in, telegram_bot, current_user)
+    chatbot_telegram_bot_service.create(obj_in, telegram_bot, current_user)
+    return
 
 
 @router.delete('/{telegram_bot_id}/chatbot', status_code=status.HTTP_204_NO_CONTENT)
