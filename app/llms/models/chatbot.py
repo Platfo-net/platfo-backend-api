@@ -24,3 +24,5 @@ class ChatBot(Base, WithDates):
     )
     user = relationship('User', back_populates='chatbots')
     knowledge_bases = relationship("KnowledgeBase", back_populates="chatbot")
+
+    chatbot_telegram_bot = relationship("ChatBotTelegramBot", back_populates="chatbot")

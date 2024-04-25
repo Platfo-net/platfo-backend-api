@@ -35,8 +35,8 @@ def get_knowledge_bases(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    return knowledge_base_service.get_list_by_chatbot_id(chatbot_id=chatbot_id,
-                                                         current_user=current_user)
+    return knowledge_base_service.get_multi_by_chatbot_id(chatbot_id=chatbot_id,
+                                                          current_user=current_user)
 
 
 @router.get('/{id}', response_model=KnowledgeBase)
@@ -62,13 +62,13 @@ def get_knowledge_base(
 def create_knowledge_base(
     obj_in: KnowledgeBaseCreate,
     knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
-    _: models.User = Security(
+    current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
     collection_name = str(obj_in.chatbot_id)
-    new_knowledge_base = knowledge_base_service.add(obj_in)
+    new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
     new_knowledge_base.file_url = get_object_url(new_knowledge_base.file_path,
                                                  settings.S3_KNOWLEDGE_BASE_BUCKET)
 
