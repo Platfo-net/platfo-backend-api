@@ -12,6 +12,7 @@ from app.llms.schemas.chatbot_telegram_bot_schema import ChatbotConnectTelegramB
 from app.llms.services.chatbot_telegram_bot_service import ChatBotTelegramBotService
 from app.llms.utils.dependencies import get_service
 from app.llms.utils.exceptions import BusinessLogicError, NotFoundError
+from app.llms.utils.response import ok_response
 
 router = APIRouter(
     prefix="/telegram-bot",
@@ -62,7 +63,7 @@ def add_chatbot_to_telegram_bot_connection(
         raise BusinessLogicError(detail="You already have a chatbot connected to this bot.")
 
     chatbot_telegram_bot_service.create(obj_in, telegram_bot, current_user)
-    return
+    return ok_response()
 
 
 @router.delete('/{telegram_bot_id}/chatbot', status_code=status.HTTP_204_NO_CONTENT)
