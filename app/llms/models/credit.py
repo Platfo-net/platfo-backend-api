@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, Float, ForeignKey, Integer, String, \
     Text
 from sqlalchemy.orm import relationship
@@ -27,7 +29,7 @@ class ChatBotPlan(Base, WithDates):
     features = relationship('ChatbotPlanFeature', back_populates='chatbot_plan')
 
 
-class ChatBotPlanFeature(Base):
+class ChatbotPlanFeature(Base):
     __tablename__ = 'chatbot_plan_features'
 
     title = Column(String(255), nullable=True)
