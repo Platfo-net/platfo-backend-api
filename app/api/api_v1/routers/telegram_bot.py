@@ -20,8 +20,13 @@ router = APIRouter(prefix='/telegram', tags=['Telegram'])
 
 async def get_me(token):
     bot = telegram.Bot(token=token)
-    user = await bot.get_me()
-    return {"first_name": user.first_name, "username": user.username, "bot_id": str(user.id)}
+    user: telegram.User = await bot.get_me()
+    return {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "username": user.username,
+        "bot_id": str(user.id)
+    }
 
 
 async def set_webhook(token, bot_id):
