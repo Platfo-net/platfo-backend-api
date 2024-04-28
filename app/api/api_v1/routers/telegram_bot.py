@@ -2,7 +2,7 @@ import asyncio
 from typing import Any, List
 
 import telegram
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -27,17 +27,31 @@ async def get_me(token):
 async def set_webhook(token, bot_id):
     bot = telegram.Bot(token=token)
     await bot.set_webhook(
-        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/bot/{bot_id}"
-    )
-    await bot.set_my_commands(
-        commands=[
-            telegram.BotCommand(
-                command["command"],
-                command["description"],
-            ) for command in TelegramBotCommand.commands
-        ]
-    )
+        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/bot/{bot_id}")
+    await bot.set_my_commands(commands=[
+        telegram.BotCommand(
+            command["command"],
+            command["description"],
+        ) for command in TelegramBotCommand.commands
+    ])
     return True
+
+
+@router.get('/me')
+async def get_telegram_bot_info(
+    *,
+    token: str,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
+) -> Any:
+
+    try:
+        data = await get_me(token)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return data
 
 
 @router.post('', response_model=schemas.TelegramBot)
@@ -47,11 +61,7 @@ def add_telegram_bot(
     obj_in: schemas.ConnectTelegramBot,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ) -> Any:
     try:
@@ -95,11 +105,7 @@ def update_bot(
     id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
     bot = services.telegram_bot.get_by_uuid(db, uuid=id)
@@ -112,8 +118,7 @@ def update_bot(
 
     new_bot = services.telegram_bot.update(db, db_obj=bot, obj_in=obj_in)
 
-    image_url = storage.get_object_url(
-        new_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+    image_url = storage.get_object_url(new_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
 
     return schemas.TelegramBot(
         id=new_bot.uuid,
@@ -133,20 +138,18 @@ def get_telegram_bots_list(
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ) -> Any:
     bots = services.telegram_bot.get_multi_by_user_id(db, user_id=current_user.id)
 
-    return [schemas.TelegramBot(
-        id=bot.uuid,
-        first_name=bot.first_name,
-        username=bot.username,
-    ) for bot in bots]
+    return [
+        schemas.TelegramBot(
+            id=bot.uuid,
+            first_name=bot.first_name,
+            username=bot.username,
+        ) for bot in bots
+    ]
 
 
 @router.get('/{id}', response_model=schemas.TelegramBot)
@@ -156,11 +159,7 @@ def get_telegram_bot(
     id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ) -> Any:
     bot = services.telegram_bot.get_by_uuid(db, uuid=id)
@@ -169,8 +168,7 @@ def get_telegram_bot(
     if bot.user_id != current_user.id:
         raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED)
 
-    image_url = storage.get_object_url(
-        bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+    image_url = storage.get_object_url(bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
 
     return schemas.TelegramBot(
         id=bot.uuid,
@@ -185,19 +183,15 @@ def get_telegram_bot(
 
 @router.get('/{shop_id}/all', response_model=schemas.social.TelegramLeadListItem)
 def get_telegram_bot_leads(
-        *,
-        db: Session = Depends(deps.get_db),
-        shop_id: UUID4,
-        page: int = 1,
-        page_size: int = 20,
-        current_user: models.User = Security(
-            deps.get_current_active_user,
-            scopes=[
-                Role.USER['name'],
-                Role.ADMIN['name'],
-                Role.DEVELOPER['name'],
-            ],
-        ),
+    *,
+    db: Session = Depends(deps.get_db),
+    shop_id: UUID4,
+    page: int = 1,
+    page_size: int = 20,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
 ) -> Any:
     shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)
     if not shop:
@@ -206,9 +200,7 @@ def get_telegram_bot_leads(
     if shop.user_id != current_user.id:
         raise_http_exception(Error.SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR)
 
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(
-        db, shop_id=shop.id
-    )
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_shop_id(db, shop_id=shop.id)
     leads, pagination = services.social.telegram_lead. \
         get_multi_by_telegram_bot_id(db,
                                      telegram_bot_id=shop_telegram_bot.telegram_bot_id,
@@ -223,11 +215,7 @@ def get_telegram_bot_leads(
             last_name=lead.last_name,
             username=lead.username,
             lead_number=lead.lead_number,
-        )
-        for lead in leads
+        ) for lead in leads
     ]
 
-    return schemas.social.TelegramLeadListItem(
-        items=lead_items,
-        pagination=pagination
-    )
+    return schemas.social.TelegramLeadListItem(items=lead_items, pagination=pagination)
