@@ -3,8 +3,13 @@ from datetime import datetime
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 
+<<<<<<< HEAD
 from app.llms.models.credit import ChatBotPlan, ChatBotPlanFeature, ChatBotTransaction, \
     PurchasedChatBotPlan
+=======
+from app.llms.models.credit import ChatbotPlan, ChatbotPlanFeature, ChatbotTransaction, \
+    PurchasedChatbotPlan
+>>>>>>> 0ff3845 (Add credit)
 from app.llms.repository.base_repository import CRUDBRepository
 
 
@@ -16,10 +21,21 @@ class ChatBotPlanRepository(CRUDBRepository):
             joinedload(self.model.features),
         ).filter(self.model.uuid == uuid).first()
 
+<<<<<<< HEAD
     def get_multi_with_features(self):
         return self.session.query(self.model).options(
             joinedload(self.model.features),
         ).all()
+=======
+    def get_multi(self):
+        return self.session.query(self.model).options(
+            joinedload(self.model.features),
+        ).all()
+
+
+class ChatbotPlanFeatureRepository(CRUDBRepository):
+    model = ChatbotPlanFeature
+>>>>>>> 0ff3845 (Add credit)
 
 
 class ChatBotPlanFeatureRepository(CRUDBRepository):
