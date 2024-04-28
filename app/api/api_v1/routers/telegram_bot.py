@@ -148,6 +148,12 @@ def get_telegram_bots_list(
             id=bot.uuid,
             first_name=bot.first_name,
             username=bot.username,
+            welcome_message=bot.welcome_message,
+            button_name=bot.button_name,
+            app_link=bot.app_link,
+            image=bot.image,
+            image_url=storage.get_object_url(bot.image,
+                                             settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET),
         ) for bot in bots
     ]
 
