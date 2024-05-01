@@ -256,7 +256,9 @@ async def order_change_status_from_dashboard_handler(
 
 async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int):
     update = telegram.Update.de_json(data, bot)
-
-    answer = get_question_and_answer(update.message.text, chatbot_id, db)
-
-    await update.message.reply_text(answer)
+    if update.message:
+        answer = get_question_and_answer(update.message.text, chatbot_id, db)
+        await update.message.reply_text(answer)
+    else:
+        answer = get_question_and_answer(update.effective_message.text, chatbot_id, db)
+        await update.effective_message.reply_text(answer)
