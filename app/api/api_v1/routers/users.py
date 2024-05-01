@@ -10,17 +10,16 @@ from app.constants.role import Role
 from app.core import storage, utils
 from app.core.config import settings
 from app.core.exception import raise_http_exception
-from app.core.telegram.tasks import \
-    send_register_user_notification_to_all_admins_task
+from app.core.telegram.tasks import send_register_user_notification_to_all_admins_task
 
 router = APIRouter(prefix='/user', tags=['User'])
 
 
 @router.post('/register-by-phone-number', status_code=status.HTTP_201_CREATED)
 def register_user_by_phone_number(
-    *,
-    db: Session = Depends(deps.get_db),
-    user_in: schemas.UserRegisterByPhoneNumber,
+        *,
+        db: Session = Depends(deps.get_db),
+        user_in: schemas.UserRegisterByPhoneNumber,
 ):
     user = services.user.get_by_phone_number(
         db,
@@ -50,9 +49,9 @@ def register_user_by_phone_number(
 
 @router.post('/register-by-email', status_code=status.HTTP_201_CREATED)
 def register_user_by_email(
-    *,
-    db: Session = Depends(deps.get_db),
-    user_in: schemas.UserRegisterByEmail,
+        *,
+        db: Session = Depends(deps.get_db),
+        user_in: schemas.UserRegisterByEmail,
 ):
     user = services.user.get_by_email(db, email=user_in.email)
 
@@ -79,11 +78,7 @@ def update_user_me(
     user_in: schemas.UserUpdate,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.ADMIN['name'],
-            Role.USER['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.ADMIN['name'], Role.USER['name'], Role.DEVELOPER['name'], ],
     ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
@@ -99,11 +94,7 @@ def change_password_me(
     user_in: schemas.UserUpdatePassword,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.ADMIN['name'],
-            Role.USER['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.ADMIN['name'], Role.USER['name'], Role.DEVELOPER['name'], ],
     ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
@@ -120,11 +111,7 @@ def get_user_me(
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.ADMIN['name'],
-            Role.USER['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.ADMIN['name'], Role.USER['name'], Role.DEVELOPER['name'], ],
     ),
 ) -> Any:
     user = services.user.get(db, id=current_user.id)
@@ -145,7 +132,5 @@ def get_user_me(
             id=role.uuid,
             persian_name=role.persian_name,
         ),
-        profile_image=storage.get_image(
-            user.profile_image, settings.S3_USER_PROFILE_BUCKET
-        ),
+        profile_image=storage.get_image(user.profile_image, settings.S3_USER_PROFILE_BUCKET),
     )
