@@ -4,13 +4,19 @@ from app.llms.models import ChatBot
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.utils.dependencies import get_chroma_client
 from app.llms.utils.langchain.helpers import chunk_data, clear_text, create_llm_model, \
-    create_setup_retriever, get_chat_prompt, get_document_loader_data
+    create_setup_retriever, get_chat_prompt, get_crawler_loader_data, get_document_loader_data
 from app.llms.vectordb.chroma_client import ChromaClient
 
 
 def load_knowledge_base_data(file_path: str, metadatas: list[dict]):
     temp_file_path = download_file_from_minio(settings.S3_KNOWLEDGE_BASE_BUCKET, file_path)
     data = get_document_loader_data(file_path=file_path, file=temp_file_path)
+    chunked_data = chunk_data(data, metadatas)
+    return chunked_data
+
+
+def load_knowledge_base_crawler_data(urls: list[str], metadatas: list[dict]):
+    data = get_crawler_loader_data(urls=urls)
     chunked_data = chunk_data(data, metadatas)
     return chunked_data
 

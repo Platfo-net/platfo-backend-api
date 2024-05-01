@@ -41,6 +41,18 @@ def get_document_loader_data(file_path, file):
     return loader_func(file)
 
 
+def get_crawler_loader_data(urls: list[str]):
+    from langchain_community.document_loaders.async_html import AsyncHtmlLoader
+    from langchain_community.document_transformers.beautiful_soup_transformer import \
+        BeautifulSoupTransformer
+
+    loader = AsyncHtmlLoader(urls)
+    docs = loader.load()
+    bs_transformer = BeautifulSoupTransformer()
+    transformed_docs = bs_transformer.transform_documents(docs)
+    return transformed_docs
+
+
 def chunk_data(data, metadatas, chunk_size=256, chunk_overlap=100):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
                                                    chunk_overlap=chunk_overlap)
