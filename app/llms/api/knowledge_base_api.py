@@ -15,7 +15,7 @@ from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseC
     KnowledgeBaseUpdate
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
-from app.llms.tasks import embed_knowledge_base_document_task
+from app.llms.tasks import embed_knowledge_base_crawler_task, embed_knowledge_base_document_task
 from app.llms.utils.dependencies import get_chroma_client, get_service
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 from app.schemas import FileUpload
@@ -76,6 +76,47 @@ def create_knowledge_base(
                                              new_knowledge_base.metadatas, new_knowledge_base.id)
 
     return new_knowledge_base
+
+
+@router.post('/crawler', response_model=KnowledgeBase)
+def create_knowledge_base_crawler(
+    obj_in: KnowledgeBaseCreate,
+    knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
+):
+    collection_name = str(obj_in.chatbot_id)
+    new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
+
+    embed_knowledge_base_crawler_task.delay(new_knowledge_base.urls, collection_name,
+                                            new_knowledge_base.metadatas, new_knowledge_base.id)
+
+    return new_knowledge_base
+
+
+@router.get('/{id}', response_model=KnowledgeBase)
+def update_knowledge_base_crawler(
+    id: UUID4,
+    obj_in: KnowledgeBaseUpdate,
+    knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
+    chroma: ClientAPI = Depends(get_chroma_client),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
+):
+    knowledge_base = knowledge_base_service.validator.validate_exists(uuid=id, model=KnowledgeBase)
+    knowledge_base_service.validator.validate_user_ownership(obj=knowledge_base.chatbot,
+                                                             current_user=current_user)
+
+    updated_knowledge_base = knowledge_base_service.update(knowledge_base, obj_in)
+    knowledge_base_service.remove_with_embeddings(knowledge_base, chroma)
+    embed_knowledge_base_crawler_task.delay(updated_knowledge_base.urls, str(obj_in.chatbot_id),
+                                            updated_knowledge_base.metadatas,
+                                            updated_knowledge_base.id)
+    return updated_knowledge_base
 
 
 @router.get('/question/chatbot_id/ask')

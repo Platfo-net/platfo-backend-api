@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
 
@@ -9,6 +9,7 @@ from app.llms.schemas.base_schema import ModelBaseInfo
 class KnowledgeBaseType(str, Enum):
     PDF = "pdf"
     TXT = "txt"
+    CRAWLER = "crawler"
 
 
 class BaseKnowledgeBase(BaseModel):
@@ -16,6 +17,7 @@ class BaseKnowledgeBase(BaseModel):
     metadatas: Optional[dict] = None
     type: Optional[KnowledgeBaseType] = KnowledgeBaseType.PDF
     file_path: Optional[str] = None
+    urls: Optional[List[str]] = None
     chatbot_id: Optional[UUID4] = None
 
     class Config:
