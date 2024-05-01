@@ -125,10 +125,13 @@ async def telegram_webhook_chatbot_listener(request: Request,
         update = telegram.Update.de_json(bot=bot, data=data)
         if not update.message:
             text = update.effective_message.text
+            answer = get_question_and_answer(text, 1, chatbot_service)
+            await update.effective_message.reply_text(text=answer)
+
         else:
             text = update.message.text
-        answer = get_question_and_answer(text, 1, chatbot_service)
-        await update.message.reply_text(text=answer)
+            answer = get_question_and_answer(text, 1, chatbot_service)
+            await update.message.reply_text(text=answer)
 
         return
     except Exception as e:
