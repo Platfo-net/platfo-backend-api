@@ -5,6 +5,10 @@ from sqlalchemy.orm import joinedload
 
 from app.llms.models.credit import ChatBotPlan, ChatBotPlanFeature, ChatBotTransaction, \
     PurchasedChatBotPlan
+from app.llms.models.credit import ChatbotPlan, ChatbotPlanFeature, ChatbotTransaction, \
+    PurchasedChatbotPlan
+from app.llms.models.credit import ChatBotPlan, ChatBotPlanFeature, ChatBotTransaction, \
+    PurchasedChatBotPlan
 from app.llms.repository.base_repository import CRUDBRepository
 
 
@@ -24,6 +28,7 @@ class ChatBotPlanRepository(CRUDBRepository):
 
 class ChatBotPlanFeatureRepository(CRUDBRepository):
     model = ChatBotPlanFeature
+
 
 
 class PurchasedChatBotPlanRepository(CRUDBRepository):

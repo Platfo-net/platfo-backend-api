@@ -1,7 +1,8 @@
+from app.llms.models.credit import ChatBotTransaction
 from datetime import datetime, timedelta
 from typing import List
 
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, status
 from fastapi.responses import RedirectResponse
 from pydantic import UUID4
 from suds.client import Client
@@ -53,8 +54,8 @@ def get_chatbot_credits(
     chatbot_service.validator.validate_user_ownership(chatbot, current_user)
 
     if is_valid:
-        return purchased_chatbot_plan_service.get_valid_chat_credits(chatbot.id)
-    return purchased_chatbot_plan_service.get_all_by_chatbot_id(chatbot.id)
+        return purchased_chatbot_plan_service.get_valid_chat_credits(chatbot.id) or []
+    return purchased_chatbot_plan_service.get_all_by_chatbot_id(chatbot.id) or []
 
 
 @router.get('/{chatbot_id}/transaction', response_model=List[ChatBotTransaction])
@@ -72,7 +73,7 @@ def get_chatbot_transactions(
     chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
     chatbot_service.validator.validate_user_ownership(chatbot, current_user)
 
-    return chatbot_transaction_service.get_all_by_chatbot_id(chatbot.id)
+    return chatbot_transaction_service.get_all_by_chatbot_id(chatbot.id) or []
 
 
 @router.get('/{chatbot_id}/plans/{plan_uuid}/buy', response_model=ChatBotTransaction)
@@ -96,7 +97,8 @@ def buy_plan(
                                                                   model=ChatBotPlan)
 
     return chatbot_transaction_service.add(
-        ChatBotTransactionCreate(chatbot_id=chatbot.id, price=chatbot_plan.price,
+        ChatBotTransactionCreate(chatbot_id=chatbot.id,
+                                 amount=chatbot_plan.price,
                                  title=chatbot_plan.title,
                                  extend_chat_count=chatbot_plan.extend_chat_count,
                                  extend_days=chatbot_plan.extend_days,
@@ -131,30 +133,27 @@ def pay_plan(
     result = zarrin_client.service.PaymentRequest(
         settings.ZARINPAL_MERCHANT_ID,
         transaction.amount,
-        "",
+        f"پرداخت بابت خرید پلن {transaction.title}",
         "",
         "",
         callback,
     )
+    print(result.Status)
 
     chatbot_transaction_service.update(transaction, {"payment_authority": result.Authority})
 
-    return RedirectResponse(url=f"{settings.ZARINPAL_BASE_URL}/{result.Authority}")
+    return {"redirect_url": f"{settings.ZARINPAL_BASE_URL}/{result.Authority}"}
+    # RedirectResponse(url=f"{settings.ZARINPAL_BASE_URL}/{result.Authority}")
 
 
-@router.get('/transaction/{transaction_id}/verify')
+@router.get('/transaction/{transaction_id}/verify', status_code=status.HTTP_200_OK)
 def verify_payment(
     transaction_id: UUID4,
     chatbot_transaction_service: ChatBotTransactionService = Depends(
         get_service(ChatBotTransactionService)),
     purchased_chatbot_plan_service: PurchasedChatbotPlanService = Depends(
-        get_service(ChatBotTransactionService)),
-    _: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
-    ),
+        get_service(PurchasedChatbotPlanService)),
 ):
-    from app.llms.models.credit import ChatBotTransaction
 
     transaction: ChatBotTransaction = chatbot_transaction_service.validator.validate_exists(
         uuid=transaction_id, model=ChatBotTransaction)
