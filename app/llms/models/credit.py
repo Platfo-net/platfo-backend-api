@@ -7,6 +7,21 @@ from app.db.base_class import Base
 from app.llms.models import WithDates
 
 
+class ChatBotPlanFeature(Base):
+    __tablename__ = 'chatbot_plan_features'
+
+    title = Column(String(255), nullable=True)
+    description = Column(Text(), nullable=True)
+
+    chatbot_plan_id = Column(
+        BigInteger,
+        ForeignKey('chatbot_plans.id'),
+        primary_key=False,
+        nullable=False,
+    )
+    chatbot_plan = relationship('ChatBotPlan', back_populates='features')
+
+
 class ChatBotPlan(Base, WithDates):
     __tablename__ = 'chatbot_plans'
 
@@ -24,22 +39,7 @@ class ChatBotPlan(Base, WithDates):
 
     currency = Column(String(10), nullable=False, default=Currency.IRT["value"])
 
-    features = relationship('ChatbotPlanFeature', back_populates='chatbot_plan')
-
-
-class ChatBotPlanFeature(Base):
-    __tablename__ = 'chatbot_plan_features'
-
-    title = Column(String(255), nullable=True)
-    description = Column(Text(), nullable=True)
-
-    chatbot_plan_id = Column(
-        BigInteger,
-        ForeignKey('chatbot_plans.id'),
-        primary_key=False,
-        nullable=False,
-    )
-    chatbot_plan = relationship('ChatBotPlan', back_populates='features')
+    features = relationship('ChatBotPlanFeature', back_populates='chatbot_plan')
 
 
 class PurchasedChatBotPlan(Base):
