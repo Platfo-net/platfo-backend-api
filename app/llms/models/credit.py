@@ -1,14 +1,13 @@
-import datetime
-
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, Float, ForeignKey, Integer, String, \
     Text
 from sqlalchemy.orm import relationship
 
 from app.constants.currency import Currency
 from app.db.base_class import Base
+from app.llms.models import WithDates
 
 
-class ChatbotPlan(Base):
+class ChatBotPlan(Base, WithDates):
     __tablename__ = 'chatbot_plans'
 
     title = Column(String(255), nullable=True)
@@ -25,27 +24,25 @@ class ChatbotPlan(Base):
 
     currency = Column(String(10), nullable=False, default=Currency.IRT["value"])
 
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-
-    features = relationship('ChatbotPlanFeature', back_populates='plan')
+    features = relationship('ChatbotPlanFeature', back_populates='chatbot_plan')
 
 
-class ChatbotPlanFeature(Base):
+class ChatBotPlanFeature(Base):
     __tablename__ = 'chatbot_plan_features'
 
     title = Column(String(255), nullable=True)
     description = Column(Text(), nullable=True)
 
-    plan_id = Column(
+    chatbot_plan_id = Column(
         BigInteger,
         ForeignKey('chatbot_plans.id'),
         primary_key=False,
         nullable=False,
     )
-    plan = relationship('Plan', back_populates='features')
+    chatbot_plan = relationship('ChatBotPlan', back_populates='features')
 
 
-class PurchasedChatbotPlan(Base):
+class PurchasedChatBotPlan(Base):
     __tablename__ = 'purchased_chatbot_plans'
 
     from_datetime = Column(DateTime)
@@ -62,10 +59,9 @@ class PurchasedChatbotPlan(Base):
     )
 
 
-class ChatbotTransaction(Base):
+class ChatBotTransaction(Base, WithDates):
     __tablename__ = 'chatbot_transaction'
     title = Column(String(255), nullable=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
     payed_at = Column(DateTime, nullable=True)
     is_paid = Column(Boolean, default=False)
     is_extra = Column(Boolean, default=False)

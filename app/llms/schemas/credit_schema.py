@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import UUID4, BaseModel
 
 
-class ChatbotCreditSchema(BaseModel):
+class ChatBotCreditSchema(BaseModel):
     from_datetime: Optional[datetime]
     to_datetime: Optional[datetime]
     is_extra: Optional[bool]
@@ -15,14 +15,14 @@ class ChatbotCreditSchema(BaseModel):
         orm_mode = True
 
 
-class PlanFeature(BaseModel):
+class ChatBotPlanFeature(BaseModel):
     title: Optional[str] = None
 
     class Config:
         orm_mode = True
 
 
-class Plan(BaseModel):
+class ChatBotPlan(BaseModel):
     uuid: Optional[UUID4]
     title: Optional[str] = None
     description: Optional[str] = None
@@ -34,13 +34,13 @@ class Plan(BaseModel):
     original_price: Optional[float] = None
     currency: Optional[str] = None
 
-    features: List[PlanFeature]
+    features: List[ChatBotPlanFeature]
 
     class Config:
         orm_mode = True
 
 
-class Transaction(BaseModel):
+class ChatBotTransaction(BaseModel):
     uuid: Optional[UUID4]
     amount: Optional[float] = None
     title: Optional[str] = None
@@ -54,7 +54,7 @@ class Transaction(BaseModel):
     extend_token_count: Optional[int] = 0
 
 
-class TransactionCreate(BaseModel):
+class ChatBotTransactionCreate(BaseModel):
     chatbot_id: int
     amount: float
     title: str
@@ -64,7 +64,7 @@ class TransactionCreate(BaseModel):
     extend_token_count: Optional[int] = 0
 
 
-class PurchasedPlanCreate(BaseModel):
+class PurchasedChatBotPlanCreate(BaseModel):
     chatbot_id: int
     from_datetime: Optional[datetime] = None
     to_datetime: Optional[datetime] = None
