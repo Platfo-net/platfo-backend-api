@@ -1,8 +1,8 @@
 """0026_knowledge_base_urls
 
-Revision ID: 6a68ec808dbc
-Revises: 5f207eeb606d
-Create Date: 2024-05-01 13:20:30.998826
+Revision ID: e610dde7d7fe
+Revises: b32388f4dbd9
+Create Date: 2024-05-01 15:03:49.655487
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6a68ec808dbc'
-down_revision = '5f207eeb606d'
+revision = 'e610dde7d7fe'
+down_revision = 'b32388f4dbd9'
 branch_labels = None
 depends_on = None
 
