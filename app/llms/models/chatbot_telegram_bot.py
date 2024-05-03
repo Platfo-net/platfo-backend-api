@@ -9,13 +9,13 @@ class ChatBotTelegramBot(Base):
 
     chatbot_id = Column(
         BigInteger,
-        ForeignKey('chatbots.id'),
+        ForeignKey('chatbots.id', ondelete="CASCADE"),
         nullable=True,
     )
 
     telegram_bot_id = Column(
         BigInteger,
-        ForeignKey('telegram_bots.id'),
+        ForeignKey('telegram_bots.id', ondelete="CASCADE"),
         nullable=True,
     )
 
