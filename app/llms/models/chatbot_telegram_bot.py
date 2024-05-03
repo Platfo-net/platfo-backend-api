@@ -19,5 +19,6 @@ class ChatBotTelegramBot(Base):
         nullable=False,
     )
 
-    telegram_bot = relationship("TelegramBot", back_populates="chatbot_telegram_bot")
-    chatbot = relationship("ChatBot", back_populates="chatbot_telegram_bot")
+    telegram_bot = relationship("TelegramBot", cascade="all,delete",
+                                back_populates="chatbot_telegram_bot")
+    chatbot = relationship("ChatBot", cascade="all,delete", back_populates="chatbot_telegram_bot")
