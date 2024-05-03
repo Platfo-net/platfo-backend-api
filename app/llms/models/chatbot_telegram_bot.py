@@ -10,13 +10,13 @@ class ChatBotTelegramBot(Base):
     chatbot_id = Column(
         BigInteger,
         ForeignKey('chatbots.id', ondelete="CASCADE"),
-        nullable=True,
+        nullable=False,
     )
 
     telegram_bot_id = Column(
         BigInteger,
         ForeignKey('telegram_bots.id', ondelete="CASCADE"),
-        nullable=True,
+        nullable=False,
     )
 
     telegram_bot = relationship("TelegramBot", back_populates="chatbot_telegram_bot")
