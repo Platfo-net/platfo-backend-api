@@ -14,7 +14,6 @@ from app.core.telegram import bot_handlers, helpers, message_builder_bot, suppor
 from app.core.telegram.messages import SupportBotMessage
 from app.llms.repository.chatbot_telegram_bot_repository import ChatBotTelegramBotRepository
 from app.llms.services.chatbot_telegram_bot_service import ChatBotTelegramBotService
-from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 
 async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
@@ -232,8 +231,8 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
     chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
 
     if chatbot_telegram_bot:
-        await bot_handlers.handle_chatbot_qa(db, bot, data, telegram_bot,
-                                             chatbot_telegram_bot.chatbot_id)
+        await bot_handlers.handle_chatbot_qa(db, bot, data, chatbot_telegram_bot.chatbot_id,
+                                             telegram_bot)
         return
 
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(

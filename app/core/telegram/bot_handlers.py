@@ -13,6 +13,8 @@ from app.core import security
 from app.core.config import settings
 from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
+from app.llms.repository.chatbot_repository import ChatBotRepository
+from app.llms.services.chatbot_service import ChatBotService
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 
@@ -254,11 +256,24 @@ async def order_change_status_from_dashboard_handler(
         pass
 
 
-async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int):
+async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
+                                      telegram_bot: models.TelegramBot):
+    if message.text == "/start":
+        text = helpers.load_message("fa", "bot_overview",
+                                    welcome_message=telegram_bot.welcome_message)
+        await message.reply_text(text)
+        return
+
+    chatbot_service = ChatBotService(ChatBotRepository(db))
+    answer = get_question_and_answer(message.text, chatbot_id, chatbot_service)
+    await message.reply_text(answer)
+
+
+async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int, telegram_bot):
     update = telegram.Update.de_json(data, bot)
+
     if update.message:
-        answer = get_question_and_answer(update.message.text, chatbot_id, db)
-        await update.message.reply_text(answer)
+        await handle_chatbot_qa_answering(db, update.message, chatbot_id, telegram_bot)
+
     else:
-        answer = get_question_and_answer(update.effective_message.text, chatbot_id, db)
-        await update.effective_message.reply_text(answer)
+        await handle_chatbot_qa_answering(db, update.effective_message, chatbot_id, telegram_bot)
