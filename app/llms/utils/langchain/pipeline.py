@@ -1,3 +1,5 @@
+import logging
+
 from app.core.config import settings
 from app.core.storage import download_file_from_minio
 from app.llms.models import ChatBot
@@ -31,6 +33,7 @@ def create_chain(setup_and_retrieval, output_parser, temperature):
 def get_question_and_answer(question: str, chatbot_id: int,
                             chatbot_service: ChatBotService) -> str:
     from langchain_core.output_parsers import StrOutputParser
+    logging.info('Started the QAAAAAAAAAAAAAAAAA')
 
     chatbot = chatbot_service.validator.validate_exists_with_id(pk=chatbot_id, model=ChatBot)
 

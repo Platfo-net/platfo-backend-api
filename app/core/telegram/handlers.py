@@ -229,6 +229,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
     chatbot_service = ChatBotTelegramBotService(ChatBotTelegramBotRepository(db))
 
     chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
+    print('111111111111111111', chatbot_telegram_bot.chatbot_id)
 
     if chatbot_telegram_bot:
         await bot_handlers.handle_chatbot_qa(db, bot, data, chatbot_telegram_bot.chatbot_id,
