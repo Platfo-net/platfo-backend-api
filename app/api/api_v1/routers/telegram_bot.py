@@ -14,7 +14,7 @@ from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core import storage
 from app.core.config import settings
 from app.core.exception import raise_http_exception
-from app.core.security import encrypt_telegram_token
+from app.core.security import decrypt_telegram_token, encrypt_telegram_token
 
 router = APIRouter(prefix='/telegram', tags=['Telegram'])
 
@@ -104,7 +104,7 @@ def add_telegram_bot(
 
 
 @router.put('/{id}', response_model=schemas.TelegramBot)
-def update_bot(
+async def update_bot(
     *,
     db: Session = Depends(deps.get_db),
     obj_in: schemas.TelegramBotUpdate,
@@ -125,6 +125,12 @@ def update_bot(
     new_bot = services.telegram_bot.update(db, db_obj=bot, obj_in=obj_in)
 
     image_url = storage.get_object_url(new_bot.image, settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+
+    telegram_bot = telegram.Bot(decrypt_telegram_token(new_bot.bot_token))
+
+    await telegram_bot.set_chat_menu_button(
+        telegram.MenuButtonWebApp(text=new_bot.button_name,
+                                  web_app=telegram.WebAppInfo(url=new_bot.app_link)))
 
     return schemas.TelegramBot(
         id=new_bot.uuid,
