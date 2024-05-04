@@ -129,8 +129,8 @@ async def update_bot(
     telegram_bot = telegram.Bot(decrypt_telegram_token(new_bot.bot_token))
 
     await telegram_bot.set_chat_menu_button(
-        telegram.MenuButtonWebApp(text=new_bot.button_name,
-                                  web_app=telegram.WebAppInfo(url=new_bot.app_link)))
+        menu_button=telegram.MenuButtonWebApp(text=new_bot.button_name,
+                                              web_app=telegram.WebAppInfo(url=new_bot.app_link)))
 
     return schemas.TelegramBot(
         id=new_bot.uuid,
