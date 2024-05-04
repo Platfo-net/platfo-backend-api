@@ -18,6 +18,7 @@ from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.tasks import embed_knowledge_base_crawler_task, embed_knowledge_base_document_task
 from app.llms.utils.dependencies import get_chroma_client, get_service
 from app.llms.utils.langchain.pipeline import get_question_and_answer
+from app.llms.utils.response import ok_response
 from app.schemas import FileUpload
 
 router = APIRouter(
@@ -37,6 +38,20 @@ def get_knowledge_bases(
 ):
     return knowledge_base_service.get_multi_by_chatbot_id(chatbot_id=chatbot_id,
                                                           current_user=current_user)
+
+
+@router.get('/reset', status_code=status.HTTP_200_OK)
+def reset_chroma(
+    chroma: ClientAPI = Depends(get_chroma_client),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
+):
+    print('11111')
+    chroma.reset()
+    print('2222')
+    return ok_response()
 
 
 @router.get('/{id}', response_model=KnowledgeBase)
