@@ -31,7 +31,7 @@ class ChatBotPlan(BaseModel):
     extend_days: Optional[int] = None
     extend_chat_count: Optional[int] = None
     extend_token_count: Optional[int] = None
-    original_price: Optional[float] = None
+    price: Optional[float] = None
     currency: Optional[str] = None
 
     features: List[ChatBotPlanFeature]
