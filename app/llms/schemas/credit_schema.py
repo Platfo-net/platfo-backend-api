@@ -57,7 +57,7 @@ class ChatBotTransactionItem(BaseModel):
     @property
     def can_pay(self) -> bool:
         d = datetime.now() - timedelta(days=2)
-        return self.created_at > d
+        return self.created_at > d and not self.is_paid
 
 
 class ChatBotTransactionCreate(BaseModel):
