@@ -9,7 +9,7 @@ from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
 from app.constants.payment_method import PaymentMethod
 from app.constants.telegram_bot_command import TelegramBotCommand
-from app.core import security
+from app.core import security, storage
 from app.core.config import settings
 from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
@@ -256,16 +256,33 @@ async def order_change_status_from_dashboard_handler(
         pass
 
 
+async def handle_start_message(telegram_bot: models.TelegramBot, message: telegram.Message, lang):
+    if telegram_bot.welcome_message:
+        text = helpers.load_message(lang, "bot_overview",
+                                    welcome_message=telegram_bot.welcome_message)
+        button_name = telegram_bot.button_name
+        app_link = telegram_bot.app_link
+        image_url = storage.get_object_url(telegram_bot.image,
+                                           settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
+        if image_url:
+            await message.reply_photo(caption=text, photo=image_url,
+                                      reply_markup=helpers.get_bot_menu(button_name, app_link),
+                                      parse_mode="HTML")
+        else:
+            await message.reply_text(text=text,
+                                     reply_markup=helpers.get_bot_menu(button_name, app_link),
+                                     parse_mode="HTML")
+    else:
+        pass
+
+
 async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
                                       telegram_bot: models.TelegramBot):
     if message.text == "/start":
-        if telegram_bot.welcome_message:
-            text = helpers.load_message("fa", "bot_overview",
-                                        welcome_message=telegram_bot.welcome_message)
-        else:
-            text = helpers.load_message("fa", "bot_overview",
-                                        welcome_message=telegram_bot.welcome_message)
-        await message.reply_text(text, parse_mode="HTML")
+        await handle_start_message(
+            telegram_bot,
+            message,
+        )
         return
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
