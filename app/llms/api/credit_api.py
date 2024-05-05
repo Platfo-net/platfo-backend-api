@@ -128,6 +128,10 @@ def pay_plan(
     if transaction.is_paid:
         raise BusinessLogicError(detail="Transaction has been already paid.")
 
+    d = datetime.now() - timedelta(days=2)
+    if transaction.created_at < d:
+        raise BusinessLogicError(detail="Old Transaction.")
+
     zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
     callback = f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/chatbot-credit/transaction/{transaction.uuid}/verify"  # noqa
     result = zarrin_client.service.PaymentRequest(

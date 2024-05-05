@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, computed_field
 
 
 class ChatBotCreditSchema(BaseModel):
@@ -52,6 +52,12 @@ class ChatBotTransactionItem(BaseModel):
     extend_days: Optional[int] = 0
     extend_chat_count: Optional[int] = 0
     extend_token_count: Optional[int] = 0
+
+    @computed_field
+    @property
+    def can_pay(self) -> bool:
+        d = datetime.now() - timedelta(days=2)
+        return self.created_at > d
 
 
 class ChatBotTransactionCreate(BaseModel):
