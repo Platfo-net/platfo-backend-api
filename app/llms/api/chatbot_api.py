@@ -94,6 +94,8 @@ def update_chatbot(
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_chatbot(
     id: UUID4,
+    chatbot_telegram_bot_service: ChatBotTelegramBotService = Depends(
+        get_service(ChatBotTelegramBotService)),
     chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -102,4 +104,8 @@ def delete_chatbot(
 ):
     chatbot = chatbot_service.validator.validate_exists(uuid=id, model=ChatBot)
     chatbot_service.validator.validate_user_ownership(chatbot, current_user)
+    if chatbot_telegram_bots := chatbot_telegram_bot_service.get_multi_by_chatbot_id(chatbot.id):
+        for c in chatbot_telegram_bots:
+            chatbot_telegram_bot_service.remove(c.id)
+
     return chatbot_service.remove(pk=chatbot.id)
