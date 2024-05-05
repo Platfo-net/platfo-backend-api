@@ -23,8 +23,6 @@ def upgrade():
     sa.Column('telegram_bot_id', sa.BigInteger(), nullable=True),
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('uuid', sa.UUID(), nullable=True),
-    sa.ForeignKeyConstraint(['chatbot_id'], ['chatbots.id'], ),
-    sa.ForeignKeyConstraint(['telegram_bot_id'], ['telegram_bots.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_chatbot_telegram_bots_id'), 'chatbot_telegram_bots', ['id'], unique=False)
