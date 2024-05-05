@@ -1,9 +1,7 @@
-from app.llms.models.credit import ChatBotTransaction
 from datetime import datetime, timedelta
 from typing import List
 
 from fastapi import APIRouter, Depends, Security, status
-from fastapi.responses import RedirectResponse
 from pydantic import UUID4
 from suds.client import Client
 
@@ -11,9 +9,11 @@ from app import models
 from app.api import deps
 from app.constants.role import Role
 from app.core.config import settings
+from app.llms.models.credit import ChatBotTransaction
 from app.llms.schemas.chatbot_schema import ChatBot
-from app.llms.schemas.credit_schema import ChatBotCreditSchema, ChatBotPlan, ChatBotTransaction, \
-    ChatBotTransactionCreate, PurchasedChatBotPlanCreate
+from app.llms.schemas.credit_schema import ChatBotCreditSchema, ChatBotPlan, \
+    ChatBotTransactionCreate, ChatBotTransactionItem, PurchasedChatBotPlanCreate, \
+    TransactionUpdate
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.credit_service import ChatBotPlanService, ChatBotTransactionService, \
     PurchasedChatbotPlanService
@@ -58,7 +58,7 @@ def get_chatbot_credits(
     return purchased_chatbot_plan_service.get_all_by_chatbot_id(chatbot.id) or []
 
 
-@router.get('/{chatbot_id}/transaction', response_model=List[ChatBotTransaction])
+@router.get('/{chatbot_id}/transaction', response_model=List[ChatBotTransactionItem])
 def get_chatbot_transactions(
     chatbot_id: UUID4,
     chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
@@ -73,10 +73,11 @@ def get_chatbot_transactions(
     chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
     chatbot_service.validator.validate_user_ownership(chatbot, current_user)
 
-    return chatbot_transaction_service.get_all_by_chatbot_id(chatbot.id) or []
+    transactions = chatbot_transaction_service.get_all_by_chatbot_id(chatbot.id)
+    return transactions
 
 
-@router.get('/{chatbot_id}/plans/{plan_uuid}/buy', response_model=ChatBotTransaction)
+@router.get('/{chatbot_id}/plans/{plan_uuid}/buy', response_model=ChatBotTransactionItem)
 def buy_plan(
     chatbot_id: UUID4,
     chatbot_plan_id: UUID4,
@@ -97,8 +98,7 @@ def buy_plan(
                                                                   model=ChatBotPlan)
 
     return chatbot_transaction_service.add(
-        ChatBotTransactionCreate(chatbot_id=chatbot.id,
-                                 amount=chatbot_plan.price,
+        ChatBotTransactionCreate(chatbot_id=chatbot.id, amount=chatbot_plan.price,
                                  title=chatbot_plan.title,
                                  extend_chat_count=chatbot_plan.extend_chat_count,
                                  extend_days=chatbot_plan.extend_days,
@@ -138,7 +138,6 @@ def pay_plan(
         "",
         callback,
     )
-    print(result.Status)
 
     chatbot_transaction_service.update(transaction, {"payment_authority": result.Authority})
 
@@ -174,7 +173,10 @@ def verify_payment(
     if result.Status == 101:
         return
     now = datetime.utcnow()
-
+    chatbot_transaction_service.update(transaction, TransactionUpdate(
+        is_paid=True,
+        payed_at=now,
+    ))
     purchased_chatbot_plan_service.add(
         PurchasedChatBotPlanCreate(
             chatbot_id=transaction.chatbot_id,

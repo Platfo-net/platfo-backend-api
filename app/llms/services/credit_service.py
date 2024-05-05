@@ -55,4 +55,4 @@ class ChatBotTransactionService(BaseService):
         super().__init__(chatbot_transaction_repo)
 
     def get_all_by_chatbot_id(self, chatbot_id):
-        self.chatbot_transaction_repo.get_all_by_chatbot_id(chatbot_id)
+        return self.chatbot_transaction_repo.get_all_by_chatbot_id(chatbot_id)

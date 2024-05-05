@@ -37,7 +37,7 @@ class PurchasedChatBotPlanRepository(CRUDBRepository):
         ).order_by(self.model.to_datetime).all()
 
     def get_all_by_chatbot_id(self, chatbot_id):
-        self.session.query(self.model).filter(
+        return self.session.query(self.model).filter(
             self.model.chatbot_id == chatbot_id,
         ).order_by(self.model.to_datetime).all()
 

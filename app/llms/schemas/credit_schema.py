@@ -40,7 +40,7 @@ class ChatBotPlan(BaseModel):
         orm_mode = True
 
 
-class ChatBotTransaction(BaseModel):
+class ChatBotTransactionItem(BaseModel):
     uuid: Optional[UUID4]
     amount: Optional[float] = None
     title: Optional[str] = None
@@ -71,3 +71,8 @@ class PurchasedChatBotPlanCreate(BaseModel):
     is_extra: Optional[bool] = False
     remaining_chat_count: Optional[int] = 0
     remaining_token_count: Optional[int] = 0
+
+
+class TransactionUpdate(BaseModel):
+    is_paid: bool
+    payed_at: datetime
