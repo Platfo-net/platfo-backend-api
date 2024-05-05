@@ -282,6 +282,7 @@ async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
         await handle_start_message(
             telegram_bot,
             message,
+            "fa",
         )
         return
 
