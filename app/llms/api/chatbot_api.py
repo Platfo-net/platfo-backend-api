@@ -8,7 +8,9 @@ from app.api import deps
 from app.constants.role import Role
 from app.llms.schemas.chatbot_schema import ChatBot, ChatBotCreate, ChatBotUpdate
 from app.llms.services.chatbot_service import ChatBotService
+from app.llms.services.chatbot_telegram_bot_service import ChatBotTelegramBotService
 from app.llms.utils.dependencies import get_service
+from app.schemas.telegram_bot import TelegramBotItem
 
 router = APIRouter(
     prefix="/chatbot",
@@ -39,6 +41,25 @@ def get_chatbot(
     chatbot = chatbot_service.validator.validate_exists(uuid=id, model=ChatBot)
     chatbot_service.validator.validate_user_ownership(chatbot, current_user)
     return chatbot_service.get_by_uuid(uuid=id)
+
+
+@router.get('/{id}/telegram-bots', response_model=List[TelegramBotItem])
+def get_chatbot_telegram_bots(
+    id: UUID4,
+    chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
+    chatbot_telegram_bot_service: ChatBotTelegramBotService = Depends(
+        get_service(ChatBotTelegramBotService)),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
+):
+    chatbot = chatbot_service.validator.validate_exists(uuid=id, model=ChatBot)
+    chatbot_service.validator.validate_user_ownership(chatbot, current_user)
+
+    chatbot_telegram_bots = chatbot_telegram_bot_service.get_multi_by_chatbot_id(chatbot.id)
+
+    return [c.telegram_bot for c in chatbot_telegram_bots]
 
 
 @router.post('', response_model=ChatBot)
