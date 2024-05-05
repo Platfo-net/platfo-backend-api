@@ -256,7 +256,14 @@ async def order_change_status_from_dashboard_handler(
         pass
 
 
-async def handle_start_message(telegram_bot: models.TelegramBot, message: telegram.Message, lang):
+async def handle_start_message(telegram_bot: models.TelegramBot, bot, data: dict, lang):
+    update = telegram.Update.de_json(data, bot)
+
+    if update.message:
+        message = update.message
+    else:
+        message = update.effective_message
+
     if telegram_bot.welcome_message:
         text = helpers.load_message(lang, "bot_overview",
                                     welcome_message=telegram_bot.welcome_message)
@@ -278,13 +285,6 @@ async def handle_start_message(telegram_bot: models.TelegramBot, message: telegr
 
 async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
                                       telegram_bot: models.TelegramBot):
-    if message.text == "/start":
-        await handle_start_message(
-            telegram_bot,
-            message,
-            "fa",
-        )
-        return
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
     answer = get_question_and_answer(message.text, chatbot_id, chatbot_service)

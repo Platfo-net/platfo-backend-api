@@ -8,7 +8,7 @@ from app.constants.order_status import OrderStatus
 from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import TelegramSupportBotCommand
-from app.core import security, storage
+from app.core import security
 from app.core.config import settings
 from app.core.telegram import bot_handlers, helpers, message_builder_bot, support_bot_handlers
 from app.core.telegram.messages import SupportBotMessage
@@ -225,7 +225,14 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         return
 
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
-
+    if helpers.is_start_message(data):
+        await bot_handlers.handle_start_message(
+            telegram_bot,
+            bot,
+            data,
+            "fa",
+        )
+        return
     chatbot_service = ChatBotTelegramBotService(ChatBotTelegramBotRepository(db))
 
     chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
@@ -268,35 +275,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 return
 
         update = telegram.Update.de_json(data, bot)
-        if update.message.text == TelegramBotCommand.START["command"]:
-            if telegram_bot.welcome_message:
-                text = helpers.load_message(lang, "bot_overview",
-                                            welcome_message=telegram_bot.welcome_message)
-                button_name = telegram_bot.button_name
-                app_link = telegram_bot.app_link
-                image_url = storage.get_object_url(telegram_bot.image,
-                                                   settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
-                if image_url:
-                    await bot.send_photo(caption=text, chat_id=update.message.chat_id,
-                                         photo=image_url,
-                                         reply_markup=helpers.get_bot_menu(button_name, app_link),
-                                         parse_mode="HTML")
-                else:
-                    await update.message.reply_text(
-                        text=text, reply_markup=helpers.get_bot_menu(button_name, app_link),
-                        parse_mode="HTML")
-            else:
-                if not shop_telegram_bot:
-                    return
-
-                text = helpers.load_message(lang, "shop_overview",
-                                            shop_title=shop_telegram_bot.shop.title)
-                await update.message.reply_text(
-                    text=text, reply_markup=helpers.get_shop_menu(shop_telegram_bot.shop.uuid,
-                                                                  lead.uuid, lang),
-                    parse_mode="HTML")
-
-        elif update.message.text == TelegramBotCommand.VITRIN["command"]:
+        if update.message.text == TelegramBotCommand.VITRIN["command"]:
 
             if not shop_telegram_bot:
                 return
