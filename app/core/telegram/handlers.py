@@ -225,7 +225,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         return
 
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
-    if helpers.is_start_message(data):
+    if helpers.is_start_message(data, bot):
         await bot_handlers.handle_start_message(
             telegram_bot,
             bot,
