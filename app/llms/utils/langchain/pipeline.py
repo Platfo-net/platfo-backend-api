@@ -33,10 +33,7 @@ def create_chain(setup_and_retrieval, output_parser, temperature):
 def get_question_and_answer(question: str, chatbot_id: int,
                             chatbot_service: ChatBotService) -> str:
     from langchain_core.output_parsers import StrOutputParser
-    logging.info('Started the QAAAAAAAAAAAAAAAAA')
-
     chatbot = chatbot_service.validator.validate_exists_with_id(pk=chatbot_id, model=ChatBot)
-
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=str(chatbot.uuid))
     retriever = vector_db.search_embeddings()
@@ -44,5 +41,6 @@ def get_question_and_answer(question: str, chatbot_id: int,
     setup_and_retrieval = create_setup_retriever(retriever, lambda _: chatbot.prompt)
     chain = create_chain(setup_and_retrieval, StrOutputParser(), chatbot.temperature)
     answer = chain.invoke(question)
-    print(f"Question: {question}, Chatbot ID: {chatbot_id}, Answer: {answer}")
+    # print(f"Question: {question}, Chatbot ID: {chatbot_id}, Answer: {answer}")
+    # print(answer)
     return clear_text(answer)
