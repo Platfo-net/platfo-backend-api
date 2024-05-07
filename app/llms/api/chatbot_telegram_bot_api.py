@@ -9,6 +9,7 @@ from app.constants.role import Role
 from app.core.exception import raise_http_exception
 from app.llms.schemas.chatbot_schema import ChatBot
 from app.llms.schemas.chatbot_telegram_bot_schema import ChatbotConnectTelegramBotRequest
+from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.chatbot_telegram_bot_service import ChatBotTelegramBotService
 from app.llms.utils.dependencies import get_service
 from app.llms.utils.exceptions import BusinessLogicError, NotFoundError
@@ -66,11 +67,13 @@ def add_chatbot_to_telegram_bot_connection(
     return ok_response()
 
 
-@router.delete('/{telegram_bot_id}/chatbot', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{telegram_bot_id}/chatbot/{chatbot_id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_telegram_bot_chatbot(
     telegram_bot_id: UUID4,
+    chatbot_id: UUID4,
     chatbot_telegram_bot_service: ChatBotTelegramBotService = Depends(
         get_service(ChatBotTelegramBotService)),
+    chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
     db: Session = Depends(deps.get_db),
     current_user: models.User = Security(
         deps.get_current_active_user,
@@ -81,7 +84,11 @@ def delete_telegram_bot_chatbot(
     telegram_bot = services.telegram_bot.get_by_uuid(db, uuid=telegram_bot_id)
     _validate_telegram_bot(telegram_bot, current_user)
 
-    chatbot_telegram_bot = chatbot_telegram_bot_service.get_by_telegram_bot_id(telegram_bot.id)
+    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
+    chatbot_service.validator.validate_user_ownership(chatbot, current_user)
+
+    chatbot_telegram_bot = chatbot_telegram_bot_service.get_by_telegram_bot_id_and_chatbot_id(
+        telegram_bot.id, chatbot.id)
 
     if chatbot_telegram_bot:
         return chatbot_telegram_bot_service.remove(chatbot_telegram_bot.id)

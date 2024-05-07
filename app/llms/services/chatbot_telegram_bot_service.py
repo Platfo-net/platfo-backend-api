@@ -16,6 +16,10 @@ class ChatBotTelegramBotService(BaseService):
     def get_by_telegram_bot_id(self, telegram_bot_id):
         return self.chatbot_telegram_bot_repo.get_telegram_bot_id(telegram_bot_id)
 
+    def get_by_telegram_bot_id_and_chatbot_id(self, telegram_bot_id, chatbot_id):
+        return self.chatbot_telegram_bot_repo.get_by_telegram_bot_id_and_chatbot_id(
+            telegram_bot_id, chatbot_id)
+
     def create(self, schema, telegram_bot, current_user):
         chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id, model=ChatBot)
         self.validator.validate_user_ownership(obj=chatbot, current_user=current_user)

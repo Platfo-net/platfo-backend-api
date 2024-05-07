@@ -14,3 +14,8 @@ class ChatBotTelegramBotRepository(CRUDBRepository):
     def get_telegram_bot_id(self, telegram_bot_id):
         return self.session.query(self.model). \
             filter(self.model.telegram_bot_id == telegram_bot_id).first()
+
+    def get_by_telegram_bot_id_and_chatbot_id(self, telegram_bot_id, chatbot_id):
+        return self.session.query(self.model). \
+            filter(self.model.telegram_bot_id == telegram_bot_id,
+                   self.model.chatbot_id == chatbot_id).first()
