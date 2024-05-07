@@ -83,6 +83,8 @@ def buy_plan(
     chatbot_plan_id: UUID4,
     chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
     chatbot_plan_service: ChatBotPlanService = Depends(get_service(ChatBotPlanService)),
+    purchased_chatbot_plan_service: PurchasedChatbotPlanService = Depends(
+        get_service(PurchasedChatbotPlanService)),
     chatbot_transaction_service: ChatBotTransactionService = Depends(
         get_service(ChatBotTransactionService)),
     current_user: models.User = Security(
@@ -94,6 +96,9 @@ def buy_plan(
     chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
     chatbot_service.validator.validate_user_ownership(chatbot, current_user)\
 
+    active_plan = purchased_chatbot_plan_service.get_active_main_plan(chatbot.id)
+    if active_plan:
+        raise BusinessLogicError("There is already a main active plan.")
     chatbot_plan = chatbot_plan_service.validator.validate_exists(uuid=chatbot_plan_id,
                                                                   model=ChatBotPlan)
 

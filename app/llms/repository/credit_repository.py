@@ -41,6 +41,12 @@ class PurchasedChatBotPlanRepository(CRUDBRepository):
             self.model.chatbot_id == chatbot_id,
         ).order_by(self.model.to_datetime).all()
 
+    def get_plan_filtered(self, chatbot_id, now, is_extra):
+        return self.session.query(self.model).filter(
+            self.model.chatbot_id == chatbot_id, self.model.from_datetime <= now,
+            self.model.to_datetime >= now,
+            self.model.is_extra == is_extra).order_by(self.model.to_datetime).all()
+
 
 class ChatBotTransactionRepository(CRUDBRepository):
     model = ChatBotTransaction

@@ -36,6 +36,10 @@ class PurchasedChatbotPlanService(BaseService):
         now = datetime.now()
         return self.purchased_chatbot_plan_repo.get_filtered_by_chatbot_id(chatbot_id, now)
 
+    def get_active_main_plan(self, chatbot_id):
+        now = datetime.now()
+        return self.purchased_chatbot_plan_repo.get_plan_filtered(chatbot_id, now, is_extra=False)
+
     def get_all_by_chatbot_id(self, chatbot_id):
         return self.purchased_chatbot_plan_repo.get_all_by_chatbot_id(chatbot_id)
 
