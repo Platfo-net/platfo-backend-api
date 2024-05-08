@@ -8,7 +8,7 @@ load_dotenv()
 
 MAX_SEARCH_RESULT_EMBEDDINGS = {'k': 4}
 OPEN_API_KEY = os.environ.get("OPEN_API_KEY", "")
-LLM_MODEL = 'gpt-3.5-turbo'
+LLM_MODEL = 'gpt-3.5-turbo-16k'
 EMBEDDING_MODEL = 'text-embedding-3-small'
 
 
