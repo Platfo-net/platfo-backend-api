@@ -99,8 +99,7 @@ def get_chat_prompt():
 
 def create_setup_retriever(retriever, prompt_callable):
     setup_and_retrieval = RunnableParallel({
-        # "context": retriever | format_docs,
-        "context": lambda _: """اقای علیرضا مجیری نام پدر احمد میباشد و آرین موسس پلتفرم دانابات است""",
+        "context": retriever | format_docs,
         "query": RunnablePassthrough(),
         "user_prompt": RunnableLambda(prompt_callable)
     })
