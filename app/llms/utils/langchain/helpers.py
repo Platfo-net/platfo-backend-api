@@ -81,11 +81,16 @@ def clear_text(text):
     return text
 
 
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+
 def get_chat_prompt():
     template = """
-    Context: {context}
     {user_prompt}
     Question: {query}
+    Context: {context}
+    Answer:
     """
 
     prompt = ChatPromptTemplate.from_template(template)
@@ -94,7 +99,7 @@ def get_chat_prompt():
 
 def create_setup_retriever(retriever, prompt_callable):
     setup_and_retrieval = RunnableParallel({
-        "context": retriever,
+        "context": retriever | format_docs,
         "query": RunnablePassthrough(),
         "user_prompt": RunnableLambda(prompt_callable)
     })
