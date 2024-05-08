@@ -53,7 +53,7 @@ def get_crawler_loader_data(urls: list[str]):
     return transformed_docs
 
 
-def chunk_data(data, metadatas, chunk_size=256, chunk_overlap=100):
+def chunk_data(data, metadatas, chunk_size=600, chunk_overlap=200):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
                                                    chunk_overlap=chunk_overlap)
     texts = [d.page_content for d in data]
