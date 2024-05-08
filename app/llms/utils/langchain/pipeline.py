@@ -38,8 +38,8 @@ def get_question_and_answer(question: str, chatbot_id: int,
     vector_db = ChromaClient(client=chroma, collection_name=str(chatbot.uuid))
     retriever = vector_db.search_embeddings()
     print("111111111", retriever)
-    print("222222222", retriever.invoke(question))
-
+    r = retriever | StrOutputParser()
+    print("777777", r.invoke(question))
     setup_and_retrieval = create_setup_retriever(retriever, lambda _: chatbot.prompt)
     print("333333333", setup_and_retrieval)
     chain = create_chain(setup_and_retrieval, StrOutputParser(), chatbot.temperature)
@@ -49,3 +49,4 @@ def get_question_and_answer(question: str, chatbot_id: int,
     # print(f"Question: {question}, Chatbot ID: {chatbot_id}, Answer: {answer}")
     # print(answer)
     return clear_text(answer)
+
