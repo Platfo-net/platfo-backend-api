@@ -28,7 +28,7 @@ async def upload_user_profile_image(
         filename, file.file.fileno(), settings.S3_USER_PROFILE_BUCKET
     )
 
-    return storage.get_image(uploaded_file_name, settings.S3_CAMPAIGN_BUCKET)
+    return storage.get_image(uploaded_file_name, settings.S3_USER_PROFILE_BUCKET)
 
 
 @router.post("/upload/shop/product", response_model=schemas.Image)
