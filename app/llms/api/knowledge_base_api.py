@@ -141,8 +141,8 @@ def ask_question(
     chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
     knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
     _: models.User = Security(
-    deps.get_current_active_user,
-    scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
     r = get_question_and_answer(question, chatbot_id, chatbot_service, knowledge_base_service)
@@ -150,7 +150,7 @@ def ask_question(
 
 
 @router.post("/upload/", response_model=FileUpload)
-def upload_knowledge_base_file(
+async def upload_knowledge_base_file(
     file: UploadFile = File(...),
     _: models.User = Security(
         deps.get_current_active_user,
@@ -158,10 +158,9 @@ def upload_knowledge_base_file(
     ),
 ):
     filename = f"{uuid.uuid4()}-{file.filename}"
-    uploaded_file_name = storage.add_file_to_s3(filename, file.file.fileno(),
-                                                settings.S3_KNOWLEDGE_BASE_BUCKET)
+    storage.add_file_to_s3(filename, file.file.fileno(), settings.S3_KNOWLEDGE_BASE_BUCKET)
 
-    return storage.get_file(uploaded_file_name, settings.S3_KNOWLEDGE_BASE_BUCKET)
+    return storage.get_file(filename, settings.S3_KNOWLEDGE_BASE_BUCKET)
 
 
 @router.put('/{id}', response_model=KnowledgeBase)
