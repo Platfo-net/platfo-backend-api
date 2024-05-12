@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.api import deps
-from app.api.api_v1.routers.telegram_bot import get_me, set_webhook
+from app.api.api_v1.routers.telegram_bot import get_me, set_commands, set_webhook
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.constants.shop_category import ShopCategory
@@ -27,11 +27,7 @@ def create_shop_for_telegram_bot(
     obj_in: schemas.shop.ShopCreate,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
     shop = services.shop.shop.get_by_title(db, title=obj_in.title.lstrip().rstrip())
@@ -44,34 +40,25 @@ def create_shop_for_telegram_bot(
 
     support_token = generate_random_support_token(length=7)
 
-    while services.shop.shop_telegram_bot.get_by_support_token(
-            db, support_token=support_token
-    ):
+    while services.shop.shop_telegram_bot.get_by_support_token(db, support_token=support_token):
         support_token = generate_random_support_token(length=7)
 
     support_bot_token = generate_random_support_token(length=7)
 
     while services.shop.shop_telegram_bot.get_by_support_bot_token(
-            db, support_bot_token=support_bot_token
-    ):
+            db, support_bot_token=support_bot_token):
         support_bot_token = generate_random_support_token(length=7)
 
     with UnitOfWork(db) as uow:
-        shop = services.shop.shop.create(
-            uow,
-            obj_in=obj_in,
-            user_id=current_user.id
-        )
+        shop = services.shop.shop.create(uow, obj_in=obj_in, user_id=current_user.id)
     with UnitOfWork(db) as uow:
 
         shop_telegram_bot = services.shop.shop_telegram_bot.create(
-            uow,
-            obj_in=schemas.shop.shop_telegram_bot.ShopTelegramBotCreate(
+            uow, obj_in=schemas.shop.shop_telegram_bot.ShopTelegramBotCreate(
                 support_token=support_token,
                 support_bot_token=support_bot_token,
                 shop_id=shop.id,
-            )
-        )
+            ))
         services.credit.shop_credit.create(uow, shop_id=shop.id, free_days=7)
 
         sample_product = schemas.shop.ProductCreate(
@@ -82,8 +69,8 @@ def create_shop_for_telegram_bot(
         )
         services.shop.product.create(uow, obj_in=sample_product, shop_id=shop.id, category_id=None)
         for payment_method in services.shop.payment_method.all(db):
-            services.shop.shop_payment_method.create(
-                uow, shop_id=shop.id, payment_method_id=payment_method.id)
+            services.shop.shop_payment_method.create(uow, shop_id=shop.id,
+                                                     payment_method_id=payment_method.id)
     telegram_tasks.send_create_shop_notification_to_all_admins_task.delay(shop.id, "fa")
 
     return schemas.shop.ShopTelegramBotRegister(
@@ -102,11 +89,7 @@ def connect_shop_to_support_account(
     obj_in: schemas.shop.ShopConnectSupport,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
     shop = services.shop.shop.get_by_uuid(db, uuid=obj_in.shop_id)
@@ -137,11 +120,7 @@ def connect_shop_to_telegram_bot(
     obj_in: schemas.shop.ShopConnectTelegramBot,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
     shop = services.shop.shop.get_by_uuid(db, uuid=obj_in.shop_id)
@@ -174,6 +153,7 @@ def connect_shop_to_telegram_bot(
 
     try:
         res = asyncio.run(set_webhook(obj_in.bot_token, bot_id))
+        res = asyncio.run(set_commands(obj_in.bot_token))
 
     except Exception:
         raise_http_exception(Error.TELEGRAM_SERVER_SET_WEBHOOK_ERROR)
@@ -188,11 +168,10 @@ def connect_shop_to_telegram_bot(
     )
     bot = services.telegram_bot.create(db, obj_in=bot_in, user_id=current_user.id)
 
-    services.shop.shop_telegram_bot.connect_telegram_bot(
-        db, db_obj=shop_telegram_bot, telegram_bot_id=bot.id)
+    services.shop.shop_telegram_bot.connect_telegram_bot(db, db_obj=shop_telegram_bot,
+                                                         telegram_bot_id=bot.id)
 
-    telegram_tasks.send_shop_bot_connection_notification_task.delay(
-        shop_telegram_bot.id, "fa")
+    telegram_tasks.send_shop_bot_connection_notification_task.delay(shop_telegram_bot.id, "fa")
     return
 
 
@@ -203,11 +182,7 @@ def check_shop_is_connected_to_support_account(
     shop_id: UUID4,
     current_user: models.User = Security(
         deps.get_current_active_user,
-        scopes=[
-            Role.USER['name'],
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
     shop = services.shop.shop.get_by_uuid(db, uuid=shop_id)

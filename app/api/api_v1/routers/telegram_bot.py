@@ -34,13 +34,25 @@ async def set_webhook(token, bot_id):
     bot = telegram.Bot(token=token)
     await bot.set_webhook(
         f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/bot/{bot_id}")
+
+    START = {"command": "/start", "description": "شروع", }
+    await bot.set_my_commands(
+        commands=[telegram.BotCommand(
+            START["command"],
+            START["description"],
+        )])
+    return True
+
+
+async def set_commands(token):
+    bot = telegram.Bot(token=token)
+
     await bot.set_my_commands(commands=[
         telegram.BotCommand(
             command["command"],
             command["description"],
         ) for command in TelegramBotCommand.commands
     ])
-    return True
 
 
 @router.get('/me')
@@ -191,6 +203,25 @@ def get_telegram_bot(
         image=bot.image,
         image_url=image_url,
     )
+
+
+@router.delete('/{id}', status_code=status.HTTP_200_OK)
+def delete_telegram_bot(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: UUID4,
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
+) -> Any:
+    bot = services.telegram_bot.get_by_uuid(db, uuid=id)
+    if not bot:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND)
+    if bot.user_id != current_user.id:
+        raise_http_exception(Error.TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED)
+
+    services.telegram_bot.delete(db, bot)
 
 
 @router.get('/{shop_id}/all', response_model=schemas.social.TelegramLeadListItem)
