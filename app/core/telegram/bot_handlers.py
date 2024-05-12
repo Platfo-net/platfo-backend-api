@@ -14,7 +14,9 @@ from app.core.config import settings
 from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
 from app.llms.repository.chatbot_repository import ChatBotRepository
+from app.llms.repository.knowledge_base_repository import KnowledgeBaseRepository
 from app.llms.services.chatbot_service import ChatBotService
+from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 
@@ -287,7 +289,8 @@ async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
                                       telegram_bot: models.TelegramBot):
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
-    answer = get_question_and_answer(message.text, chatbot_id, chatbot_service)
+    knowledge_base_service = KnowledgeBaseService(KnowledgeBaseRepository(db))
+    answer = get_question_and_answer(message.text, chatbot_id, chatbot_service, knowledge_base_service)
     await message.reply_text(answer)
 
 

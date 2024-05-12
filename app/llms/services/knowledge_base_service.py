@@ -25,6 +25,9 @@ class KnowledgeBaseService(BaseService):
             modified_knowledge_bases.append(kb)
         return modified_knowledge_bases
 
+    def get_by_metadata_values(self, chatbot_id, metadata_values):
+        return self.knowledge_base_repo.get_by_metadata_values(chatbot_id=chatbot_id, metadata_values=metadata_values)
+
     def create(self, schema, current_user):
         chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id, model=ChatBot)
         self.validator.validate_user_ownership(obj=chatbot, current_user=current_user)

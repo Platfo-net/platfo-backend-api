@@ -18,6 +18,7 @@ class BaseKnowledgeBase(BaseModel):
     type: Optional[KnowledgeBaseType] = KnowledgeBaseType.PDF
     file_path: Optional[str] = None
     urls: Optional[List[str]] = None
+    source_link: Optional[str] = None
     chatbot_id: Optional[UUID4] = None
 
     class Config:

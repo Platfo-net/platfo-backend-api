@@ -139,12 +139,13 @@ def ask_question(
     question: str,
     chatbot_id: int,
     chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
+    knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
     _: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    deps.get_current_active_user,
+    scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    r = get_question_and_answer(question, chatbot_id, chatbot_service)
+    r = get_question_and_answer(question, chatbot_id, chatbot_service, knowledge_base_service)
     return {"answer": r}
 
 

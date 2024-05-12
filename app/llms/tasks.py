@@ -16,8 +16,8 @@ def embed_knowledge_base_document_task(file_path, collection_name, metadatas, kn
     db = SessionLocal()
 
     data = load_knowledge_base_data(file_path, [metadatas])
-    total_tokens, cost_usd = calculate_embedding_cost(data)
-    create_embedding_cost(db, total_tokens, cost_usd, knowledge_base_id)
+    # total_tokens, cost_usd = calculate_embedding_cost(data)
+    # create_embedding_cost(db, total_tokens, cost_usd, knowledge_base_id)
 
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=collection_name)
