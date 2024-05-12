@@ -43,10 +43,10 @@ def get_telegram_bot_chatbot(
     raise NotFoundError(detail="Chatbot not found")
 
 
-@router.post('/{telegram_bot_id}/chatbot', status_code=status.HTTP_200_OK)
+@router.post('/{telegram_bot_id}/chatbot/{chatbot_id}/connect', status_code=status.HTTP_200_OK)
 def add_chatbot_to_telegram_bot_connection(
     telegram_bot_id: UUID4,
-    obj_in: ChatbotConnectTelegramBotRequest,
+    chatbot_id: UUID4,
     chatbot_telegram_bot_service: ChatBotTelegramBotService = Depends(
         get_service(ChatBotTelegramBotService)),
     db: Session = Depends(deps.get_db),
@@ -63,11 +63,13 @@ def add_chatbot_to_telegram_bot_connection(
     if chatbot_telegram_bot:
         raise BusinessLogicError(detail="You already have a chatbot connected to this bot.")
 
-    chatbot_telegram_bot_service.create(obj_in, telegram_bot, current_user)
+    chatbot_telegram_bot_service.create(
+        ChatbotConnectTelegramBotRequest(chatbot_id=chatbot_id), telegram_bot, current_user)
     return ok_response()
 
 
-@router.delete('/{telegram_bot_id}/chatbot/{chatbot_id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{telegram_bot_id}/chatbot/{chatbot_id}/disconnect',
+               status_code=status.HTTP_204_NO_CONTENT)
 def delete_telegram_bot_chatbot(
     telegram_bot_id: UUID4,
     chatbot_id: UUID4,
