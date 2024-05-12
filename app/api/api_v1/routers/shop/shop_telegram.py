@@ -7,17 +7,34 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas, services
 from app.api import deps
-from app.api.api_v1.routers.telegram_bot import get_me, set_commands, set_webhook
+from app.api.api_v1.routers.telegram_bot import get_me
 from app.constants.errors import Error
 from app.constants.role import Role
 from app.constants.shop_category import ShopCategory
+from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core import security
+from app.core.config import settings
 from app.core.exception import raise_http_exception
 from app.core.telegram import tasks as telegram_tasks
 from app.core.unit_of_work import UnitOfWork
 from app.core.utils import generate_random_support_token
 
 router = APIRouter(prefix='/telegram', tags=["Shop Telegram"])
+
+
+async def set_webhook(token, bot_id):
+    bot = telegram.Bot(token=token)
+    await bot.set_webhook(
+        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/bot/{bot_id}")
+
+    await bot.set_my_commands(commands=[
+        telegram.BotCommand(
+            command["command"],
+            command["description"],
+        ) for command in TelegramBotCommand.commands
+    ])
+
+    return True
 
 
 @router.post('/create-shop', response_model=schemas.shop.ShopTelegramBotRegister)
@@ -143,6 +160,7 @@ def connect_shop_to_telegram_bot(
 
     try:
         bot_information = asyncio.run(get_me(obj_in.bot_token))
+
     except telegram.error.InvalidToken:
         raise_http_exception(Error.INVALID_TELEGRAM_BOT)
 
@@ -153,8 +171,6 @@ def connect_shop_to_telegram_bot(
 
     try:
         res = asyncio.run(set_webhook(obj_in.bot_token, bot_id))
-        res = asyncio.run(set_commands(obj_in.bot_token))
-
     except Exception:
         raise_http_exception(Error.TELEGRAM_SERVER_SET_WEBHOOK_ERROR)
 
