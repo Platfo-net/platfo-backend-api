@@ -37,13 +37,12 @@ def get_question_and_answer(question: str, chatbot_id: int,
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=str(chatbot.uuid))
     retriever = vector_db.search_embeddings()
-    r = retriever.invoke(question)
-    m = [doc.metadata for doc in r]
-    print(m)
     # knowledge_base_service.get_by_metadatas(chatbot_id)
+    metadata_values = [doc.metadata['namespace'] for doc in retriever.invoke(question)]
+    knowledge_bases = knowledge_base_service.get_by_metadata_values(chatbot_id, metadata_values)
     setup_and_retrieval = create_setup_retriever(retriever, lambda _: chatbot.prompt)
     chain = create_chain(setup_and_retrieval, StrOutputParser(), chatbot.temperature)
     answer = chain.invoke(question)
     print(f"Question: {question}, Chatbot ID: {chatbot_id}, Answer: {answer}")
-    return clear_text(answer)
+    return clear_text(answer), knowledge_bases
 

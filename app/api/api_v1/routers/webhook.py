@@ -12,6 +12,7 @@ from app.core import support_bot
 from app.core.config import settings
 from app.core.telegram import tasks as telegram_tasks
 from app.llms.services.chatbot_service import ChatBotService
+from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.dependencies import get_service
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 
@@ -118,19 +119,22 @@ async def telegram_webhook_admin_listener(request: Request):
 @router.post('/telegram/chat-bot', status_code=status.HTTP_200_OK)
 async def telegram_webhook_chatbot_listener(request: Request,
                                             chatbot_service: ChatBotService = Depends(
-                                                get_service(ChatBotService))):
+                                                get_service(ChatBotService)),
+                                            knowledge_base_service: KnowledgeBaseService = Depends(
+                                                get_service(KnowledgeBaseService)),
+                                            ):
     try:
         data = await request.json()
         bot = telegram.Bot(settings.CHAT_BOT_TOKEN)
         update = telegram.Update.de_json(bot=bot, data=data)
         if not update.message:
             text = update.effective_message.text
-            answer = get_question_and_answer(text, 1, chatbot_service)
+            answer = get_question_and_answer(text, 1, chatbot_service, knowledge_base_service)
             await update.effective_message.reply_text(text=answer)
 
         else:
             text = update.message.text
-            answer = get_question_and_answer(text, 1, chatbot_service)
+            answer = get_question_and_answer(text, 1, chatbot_service, knowledge_base_service)
             await update.message.reply_text(text=answer)
 
         return
