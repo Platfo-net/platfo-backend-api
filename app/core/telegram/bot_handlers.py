@@ -282,7 +282,12 @@ async def handle_start_message(telegram_bot: models.TelegramBot, bot, data: dict
                                      reply_markup=helpers.get_bot_menu(button_name, app_link),
                                      parse_mode="HTML")
     else:
-        pass
+        text = helpers.load_message(lang, "default_message")
+        app_link = "https://platfo.net"
+        button_name = "پلتفو"
+        await message.reply_text(text=text,
+                                 reply_markup=helpers.get_bot_menu(button_name,
+                                                                   app_link), parse_mode="HTML")
 
 
 async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
@@ -290,7 +295,8 @@ async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
     knowledge_base_service = KnowledgeBaseService(KnowledgeBaseRepository(db))
-    answer = get_question_and_answer(message.text, chatbot_id, chatbot_service, knowledge_base_service)
+    answer = get_question_and_answer(message.text, chatbot_id, chatbot_service,
+                                     knowledge_base_service)
     await message.reply_text(answer)
 
 
