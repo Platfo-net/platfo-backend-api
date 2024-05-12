@@ -15,7 +15,7 @@ class ChatBot(Base, WithDates):
     temperature = Column(
         Float,
         nullable=True,
-        default=0,
+        default=0.7,
     )
     user_id = Column(
         BigInteger,

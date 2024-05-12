@@ -24,6 +24,8 @@ class KnowledgeBaseService(BaseService):
             kb.file_url = get_object_url(kb.file_path, settings.S3_KNOWLEDGE_BASE_BUCKET)
             modified_knowledge_bases.append(kb)
         return modified_knowledge_bases
+    def get_by_metadatas(self, chatbot_id, metadatas):
+        return self.knowledge_base_repo.get_by_metadatas(chatbot_id=chatbot_id, metadatas=metadatas)
 
     def create(self, schema, current_user):
         chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id, model=ChatBot)

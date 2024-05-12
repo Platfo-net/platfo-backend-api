@@ -1,9 +1,8 @@
-import logging
-
 from app.core.config import settings
 from app.core.storage import download_file_from_minio
 from app.llms.models import ChatBot
 from app.llms.services.chatbot_service import ChatBotService
+from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.dependencies import get_chroma_client
 from app.llms.utils.langchain.helpers import chunk_data, clear_text, create_llm_model, \
     create_setup_retriever, get_chat_prompt, get_crawler_loader_data, get_document_loader_data
@@ -31,12 +30,17 @@ def create_chain(setup_and_retrieval, output_parser, temperature):
 
 
 def get_question_and_answer(question: str, chatbot_id: int,
-                            chatbot_service: ChatBotService) -> str:
+                            chatbot_service: ChatBotService,
+                            knowledge_base_service: KnowledgeBaseService):
     from langchain_core.output_parsers import StrOutputParser
     chatbot = chatbot_service.validator.validate_exists_with_id(pk=chatbot_id, model=ChatBot)
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=str(chatbot.uuid))
     retriever = vector_db.search_embeddings()
+    r = retriever.invoke(question)
+    m = [doc.metadata for doc in r]
+    print(m)
+    # knowledge_base_service.get_by_metadatas(chatbot_id)
     setup_and_retrieval = create_setup_retriever(retriever, lambda _: chatbot.prompt)
     chain = create_chain(setup_and_retrieval, StrOutputParser(), chatbot.temperature)
     answer = chain.invoke(question)
