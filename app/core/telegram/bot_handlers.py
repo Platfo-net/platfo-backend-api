@@ -295,8 +295,20 @@ async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
     knowledge_base_service = KnowledgeBaseService(KnowledgeBaseRepository(db))
-    answer = get_question_and_answer(message.text, chatbot_id, chatbot_service,
-                                     knowledge_base_service)
+    answer, knowledge_bases = get_question_and_answer(message.text, chatbot_id, chatbot_service,
+                                                      knowledge_base_service)
+
+    if knowledge_bases:
+        button_name = knowledge_bases[0].name
+        source_link = knowledge_bases[0].source_link
+
+        keyboard = [[
+            telegram.MenuButtonWebApp(text=button_name, web_app=telegram.WebAppInfo(source_link))
+        ], ]
+
+        await message.reply_text(text=answer, reply_markup=keyboard)
+        return
+
     await message.reply_text(answer)
 
 
