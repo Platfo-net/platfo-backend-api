@@ -299,17 +299,23 @@ async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
                                                       knowledge_base_service)
 
     if knowledge_bases:
-        button_name = knowledge_bases[0].name
-        source_link = knowledge_bases[0].source_link
+        try:
+            button_name = knowledge_bases[0].name
+            source_link = knowledge_bases[0].source_link
 
-        keyboard = [[
-            telegram.MenuButtonWebApp(text=button_name, web_app=telegram.WebAppInfo(source_link))
-        ], ]
+            keyboard = [[
+                telegram.MenuButtonWebApp(text=button_name,
+                                          web_app=telegram.WebAppInfo(source_link))
+            ]]
 
-        await message.reply_text(text=answer, reply_markup=keyboard)
-        return
+            reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
+            await message.reply_text(text=answer, reply_markup=reply_markup)
+            return
+        except Exception:
+            pass
     await message.reply_text(answer)
+    return
 
 
 async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int, telegram_bot):
