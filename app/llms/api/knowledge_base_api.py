@@ -15,7 +15,8 @@ from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseC
     KnowledgeBaseUpdate
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
-from app.llms.tasks import embed_knowledge_base_crawler_task, embed_knowledge_base_document_task
+from app.llms.tasks import embed_knowledge_base_crawler_task, embed_knowledge_base_document_task, \
+    embed_knowledge_base_manual_input_task
 from app.llms.utils.dependencies import get_chroma_client, get_service
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 from app.llms.utils.response import ok_response
@@ -48,9 +49,9 @@ def reset_chroma(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    print('11111')
+    print('Started resetting the database')
     chroma.reset()
-    print('2222')
+    print('Finished resetting the database')
     return ok_response()
 
 
@@ -111,6 +112,25 @@ def create_knowledge_base_crawler(
     return new_knowledge_base
 
 
+@router.post('/manual', response_model=KnowledgeBase)
+def create_knowledge_base_manual_input(
+    obj_in: KnowledgeBaseCreate,
+    knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
+    current_user: models.User = Security(
+        deps.get_current_active_user,
+        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+    ),
+):
+    collection_name = str(obj_in.chatbot_id)
+    new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
+
+    embed_knowledge_base_manual_input_task.delay(new_knowledge_base.manual_input, collection_name,
+                                                 new_knowledge_base.metadatas,
+                                                 new_knowledge_base.id)
+
+    return new_knowledge_base
+
+
 @router.get('/{id}', response_model=KnowledgeBase)
 def update_knowledge_base_crawler(
     id: UUID4,
@@ -145,8 +165,9 @@ def ask_question(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    r = get_question_and_answer(question, chatbot_id, chatbot_service, knowledge_base_service)
-    return {"answer": r}
+    answer, _ = get_question_and_answer(question, chatbot_id, chatbot_service,
+                                        knowledge_base_service)
+    return {"answer": answer}
 
 
 @router.post("/upload/", response_model=FileUpload)

@@ -10,11 +10,13 @@ class KnowledgeBaseType(str, Enum):
     PDF = "pdf"
     TXT = "txt"
     CRAWLER = "crawler"
+    MANUAL_INPUT = "manual_input"
 
 
 class BaseKnowledgeBase(BaseModel):
     name: str
     metadatas: Optional[dict] = None
+    manual_input: Optional[str] = None
     type: Optional[KnowledgeBaseType] = KnowledgeBaseType.PDF
     file_path: Optional[str] = None
     urls: Optional[List[str]] = None

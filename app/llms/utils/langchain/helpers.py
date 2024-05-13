@@ -5,8 +5,8 @@ import tiktoken
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.pdf import PyPDFLoader
 from langchain_community.document_loaders.text import TextLoader
+from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough
 from langchain_openai.chat_models import ChatOpenAI
 
 from app.llms.utils import config
@@ -53,6 +53,14 @@ def get_crawler_loader_data(urls: list[str]):
     return transformed_docs
 
 
+def get_manual_input_loader_data(texts, metadatas, chunk_size=600, chunk_overlap=200):
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
+                                                   chunk_overlap=chunk_overlap)
+    metadatas = metadatas * len(texts)
+    chunks = text_splitter.create_documents(texts=texts, metadatas=metadatas)
+    return chunks
+
+
 def chunk_data(data, metadatas, chunk_size=600, chunk_overlap=200):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
                                                    chunk_overlap=chunk_overlap)
@@ -85,6 +93,13 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
+def extract_metadata(context: list[Document]):
+    metadata_values = []
+    for doc in context:
+        metadata_values.extend(doc.metadata.values())
+    return metadata_values
+
+
 def get_chat_prompt():
     template = """
     {user_prompt}
@@ -95,15 +110,6 @@ def get_chat_prompt():
 
     prompt = ChatPromptTemplate.from_template(template)
     return prompt
-
-
-def create_setup_retriever(retriever, prompt_callable):
-    setup_and_retrieval = RunnableParallel({
-        "context": retriever | format_docs,
-        "query": RunnablePassthrough(),
-        "user_prompt": RunnableLambda(prompt_callable)
-    })
-    return setup_and_retrieval
 
 
 def create_llm_model(temperature: float):

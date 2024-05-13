@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SEARCH_RESULT_EMBEDDINGS_LOOKUPS = {'k': 3, 'score_threshold': 0.7}
+SEARCH_RESULT_EMBEDDINGS_LOOKUPS = {'k': 3}
 OPEN_API_KEY = os.environ.get("OPEN_API_KEY", "")
 LLM_MODEL = 'gpt-3.5-turbo-16k'
 EMBEDDING_MODEL = 'text-embedding-3-small'
