@@ -35,8 +35,6 @@ class KnowledgeBaseService(BaseService):
         chatbot = self.validator.validate_generic_exists(uuid=schema.chatbot_id, model=ChatBot)
         self.validator.validate_user_ownership(obj=chatbot, current_user=current_user)
 
-        if not schema.metadatas:
-            schema.metadatas = {"namespace": schema.name}
         schema.chatbot_id = chatbot.id
 
         new_knowledge_base = self.knowledge_base_repo.create(schema)

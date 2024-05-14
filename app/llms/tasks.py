@@ -15,7 +15,7 @@ def embed_knowledge_base_document_task(file_path, collection_name, metadatas, kn
     logging.info('Started the embedding knowledge base document task')
     db = SessionLocal()
 
-    data = load_knowledge_base_data(file_path, [metadatas])
+    data = load_knowledge_base_data(file_path, [{"unique_identifier": metadatas}])
     total_tokens, cost_usd = calculate_embedding_cost(data)
     create_embedding_cost(db, total_tokens, cost_usd, knowledge_base_id)
 

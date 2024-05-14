@@ -89,7 +89,7 @@ def create_knowledge_base(
                                                  settings.S3_KNOWLEDGE_BASE_BUCKET)
 
     embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
-                                             new_knowledge_base.metadatas, new_knowledge_base.id)
+                                             str(new_knowledge_base.uuid), new_knowledge_base.id)
 
     return new_knowledge_base
 

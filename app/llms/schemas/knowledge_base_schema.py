@@ -15,7 +15,6 @@ class KnowledgeBaseType(str, Enum):
 
 class BaseKnowledgeBase(BaseModel):
     name: str
-    metadatas: Optional[dict] = None
     manual_input: Optional[str] = None
     type: Optional[KnowledgeBaseType] = KnowledgeBaseType.PDF
     file_path: Optional[str] = None
