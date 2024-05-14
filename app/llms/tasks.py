@@ -11,11 +11,12 @@ from app.llms.vectordb.chroma_client import ChromaClient
 
 
 @celery.task()
-def embed_knowledge_base_document_task(file_path, collection_name, metadatas, knowledge_base_id):
+def embed_knowledge_base_document_task(file_path, collection_name, unique_identifier,
+                                       knowledge_base_id):
     logging.info('Started the embedding knowledge base document task')
     db = SessionLocal()
 
-    data = load_knowledge_base_data(file_path, [{"unique_identifier": metadatas}])
+    data = load_knowledge_base_data(file_path, [unique_identifier])
     total_tokens, cost_usd = calculate_embedding_cost(data)
     create_embedding_cost(db, total_tokens, cost_usd, knowledge_base_id)
 
@@ -28,11 +29,11 @@ def embed_knowledge_base_document_task(file_path, collection_name, metadatas, kn
 
 
 @celery.task()
-def embed_knowledge_base_crawler_task(urls, collection_name, metadatas, knowledge_base_id):
+def embed_knowledge_base_crawler_task(urls, collection_name, unique_identifier, knowledge_base_id):
     logging.info('Started the embedding knowledge base crawler task')
     db = SessionLocal()
 
-    data = load_knowledge_base_crawler_data(urls, [metadatas])
+    data = load_knowledge_base_crawler_data(urls, [unique_identifier])
     total_tokens, cost_usd = calculate_embedding_cost(data)
     create_embedding_cost(db, total_tokens, cost_usd, knowledge_base_id)
 
@@ -45,12 +46,12 @@ def embed_knowledge_base_crawler_task(urls, collection_name, metadatas, knowledg
 
 
 @celery.task()
-def embed_knowledge_base_manual_input_task(manual_input, collection_name, metadatas,
+def embed_knowledge_base_manual_input_task(manual_input, collection_name, unique_identifier,
                                            knowledge_base_id):
     logging.info('Started the embedding knowledge base manual input task')
     db = SessionLocal()
 
-    data = load_knowledge_base_manual_input_data(manual_input, [metadatas])
+    data = load_knowledge_base_manual_input_data(manual_input, [unique_identifier])
     total_tokens, cost_usd = calculate_embedding_cost(data)
     create_embedding_cost(db, total_tokens, cost_usd, knowledge_base_id)
 

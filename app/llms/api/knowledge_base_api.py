@@ -12,7 +12,7 @@ from app.core import storage
 from app.core.config import settings
 from app.core.storage import get_object_url
 from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseCreate, \
-    KnowledgeBaseUpdate
+    KnowledgeBaseType, KnowledgeBaseUpdate
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.tasks import embed_knowledge_base_crawler_task, embed_knowledge_base_document_task, \
@@ -44,7 +44,7 @@ def get_knowledge_bases(
 @router.get('/reset', status_code=status.HTTP_200_OK)
 def reset_chroma(
     chroma: ClientAPI = Depends(get_chroma_client),
-    current_user: models.User = Security(
+    _: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
@@ -83,51 +83,22 @@ def create_knowledge_base(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    collection_name = str(obj_in.chatbot_id)
     new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
-    new_knowledge_base.file_url = get_object_url(new_knowledge_base.file_path,
-                                                 settings.S3_KNOWLEDGE_BASE_BUCKET)
-
-    embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
-                                             str(new_knowledge_base.uuid), new_knowledge_base.id)
-
-    return new_knowledge_base
-
-
-@router.post('/crawler', response_model=KnowledgeBase)
-def create_knowledge_base_crawler(
-    obj_in: KnowledgeBaseCreate,
-    knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
-    ),
-):
     collection_name = str(obj_in.chatbot_id)
-    new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
+    unique_identifier = {"unique_identifier": str(new_knowledge_base.uuid)}
 
-    embed_knowledge_base_crawler_task.delay(new_knowledge_base.urls, collection_name,
-                                            new_knowledge_base.metadatas, new_knowledge_base.id)
-
-    return new_knowledge_base
-
-
-@router.post('/manual', response_model=KnowledgeBase)
-def create_knowledge_base_manual_input(
-    obj_in: KnowledgeBaseCreate,
-    knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
-    current_user: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
-    ),
-):
-    collection_name = str(obj_in.chatbot_id)
-    new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
-
-    embed_knowledge_base_manual_input_task.delay(new_knowledge_base.manual_input, collection_name,
-                                                 new_knowledge_base.metadatas,
-                                                 new_knowledge_base.id)
-
+    if obj_in.type in (KnowledgeBaseType.PDF, KnowledgeBaseType.TXT):
+        new_knowledge_base.file_url = get_object_url(new_knowledge_base.file_path,
+                                                     settings.S3_KNOWLEDGE_BASE_BUCKET)
+        embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
+                                                 unique_identifier, new_knowledge_base.id)
+    elif obj_in.type == KnowledgeBaseType.CRAWLER:
+        embed_knowledge_base_crawler_task.delay(new_knowledge_base.urls, collection_name,
+                                                unique_identifier, new_knowledge_base.id)
+    elif obj_in.type == KnowledgeBaseType.MANUAL_INPUT:
+        embed_knowledge_base_manual_input_task.delay(new_knowledge_base.manual_input,
+                                                     collection_name, unique_identifier,
+                                                     new_knowledge_base.id)
     return new_knowledge_base
 
 
