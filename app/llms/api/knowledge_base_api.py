@@ -150,7 +150,7 @@ async def upload_knowledge_base_file(
     ),
 ):
     filename = f"{uuid.uuid4()}-{file.filename}"
-    storage.add_file_to_s3(filename, file.file.fileno(), settings.S3_KNOWLEDGE_BASE_BUCKET)
+    storage.add_file_to_s3(filename, file.file, settings.S3_KNOWLEDGE_BASE_BUCKET)
 
     return storage.get_file(filename, settings.S3_KNOWLEDGE_BASE_BUCKET)
 
