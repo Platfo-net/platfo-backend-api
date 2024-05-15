@@ -16,12 +16,8 @@ def add_file_to_s3(object_name, file_path, bucket_name):
         found = client.bucket_exists(bucket_name)
         if not found:
             client.make_bucket(bucket_name)
-        client.fput_object(
-            bucket_name=bucket_name,
-            object_name=object_name,
-            file_path=file_path,
-        )
-
+        client.put_object(bucket_name=bucket_name, object_name=object_name, data=file_path,
+                          length=-1, part_size=10 * 1024 * 1024)
         return object_name
     except S3Error as exc:
         raise Exception(f'Error happen on uploading object: {exc}')
@@ -44,7 +40,7 @@ def get_object_url(object_name, bucket_name):
 def create_client():
     try:
         client = Minio(settings.S3_HOST, settings.S3_ROOT_USER, settings.S3_ROOT_PASSWORD,
-                       secure=True  # Todo
+                       secure=False  # Todo
                        )
         return client
     except S3Error as exc:
