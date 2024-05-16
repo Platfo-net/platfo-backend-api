@@ -7,16 +7,13 @@ from suds.client import Client
 
 from app import models
 from app.api import deps
+from app.constants.currency import Currency
 from app.constants.role import Role
 from app.core.config import settings
 from app.llms.models.credit import ChatBotTransaction
-from app.llms.schemas.chatbot_schema import ChatBot
-from app.llms.schemas.credit_schema import ChatBotCreditSchema, ChatBotPlan, \
-    ChatBotTransactionCreate, ChatBotTransactionItem, PurchasedChatBotPlanCreate, \
-    TransactionUpdate
-from app.llms.services.chatbot_service import ChatBotService
-from app.llms.services.credit_service import ChatBotPlanService, ChatBotTransactionService, \
-    PurchasedChatbotPlanService
+from app.llms.schemas.credit_schema import ChatBotCreditCreate, ChatBotCreditSchema, \
+    ChatBotTransactionCreate, ChatBotTransactionItem, TransactionUpdate
+from app.llms.services.credit_service import ChatBotTransactionService, UserChatBotCreditService
 from app.llms.utils.dependencies import get_service
 from app.llms.utils.exceptions import BusinessLogicError
 
@@ -26,42 +23,30 @@ router = APIRouter(
 )
 
 
-@router.get('/plans', response_model=List[ChatBotPlan])
-def get_plans(
-    chatbot_plan_service: ChatBotPlanService = Depends(get_service(ChatBotPlanService)),
-    _: models.User = Security(
-        deps.get_current_active_user,
-        scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
-    ),
-):
-    return chatbot_plan_service.get_list()
-
-
-@router.get('/{chatbot_id}/credits', response_model=List[ChatBotCreditSchema])
-def get_chatbot_credits(
-    chatbot_id: UUID4,
-    is_valid: bool = False,
-    chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
-    purchased_chatbot_plan_service: PurchasedChatbotPlanService = Depends(
-        get_service(PurchasedChatbotPlanService)),
+@router.get('/credit', response_model=ChatBotCreditSchema)
+def get_chatbot_credit(
+    chatbot_credit_service: UserChatBotCreditService = Depends(
+        get_service(UserChatBotCreditService)),
     current_user: models.User = Security(
         deps.get_current_active_user,
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
 
-    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
-    chatbot_service.validator.validate_user_ownership(chatbot, current_user)
+    user_credit = chatbot_credit_service.get_by_user_id(current_user.id)
+    if not user_credit:
+        user_credit = chatbot_credit_service.add(
+            ChatBotCreditCreate(
+                amount=20000,
+                currency=Currency.IRT["value"],
+                user_id=current_user.id,
+            ))
 
-    if is_valid:
-        return purchased_chatbot_plan_service.get_valid_chat_credits(chatbot.id) or []
-    return purchased_chatbot_plan_service.get_all_by_chatbot_id(chatbot.id) or []
+    return user_credit
 
 
-@router.get('/{chatbot_id}/transaction', response_model=List[ChatBotTransactionItem])
-def get_chatbot_transactions(
-    chatbot_id: UUID4,
-    chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
+@router.get('/transactions', response_model=List[ChatBotTransactionItem])
+def get_transactions(
     chatbot_transaction_service: ChatBotTransactionService = Depends(
         get_service(ChatBotTransactionService)),
     current_user: models.User = Security(
@@ -70,21 +55,14 @@ def get_chatbot_transactions(
     ),
 ):
 
-    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
-    chatbot_service.validator.validate_user_ownership(chatbot, current_user)
-
-    transactions = chatbot_transaction_service.get_all_by_chatbot_id(chatbot.id)
+    transactions = chatbot_transaction_service.get_all_by_user_id(current_user.id)
     return transactions
 
 
-@router.get('/{chatbot_id}/plans/{plan_uuid}/buy', response_model=ChatBotTransactionItem)
-def buy_plan(
-    chatbot_id: UUID4,
-    chatbot_plan_id: UUID4,
-    chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
-    chatbot_plan_service: ChatBotPlanService = Depends(get_service(ChatBotPlanService)),
-    purchased_chatbot_plan_service: PurchasedChatbotPlanService = Depends(
-        get_service(PurchasedChatbotPlanService)),
+@router.get('/buy', response_model=ChatBotTransactionItem)
+def buy_credit(
+    amount: int,
+    currency: str,
     chatbot_transaction_service: ChatBotTransactionService = Depends(
         get_service(ChatBotTransactionService)),
     current_user: models.User = Security(
@@ -92,30 +70,16 @@ def buy_plan(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-
-    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
-    chatbot_service.validator.validate_user_ownership(chatbot, current_user)\
-
-    active_plan = purchased_chatbot_plan_service.get_active_main_plan(chatbot.id)
-    if active_plan:
-        raise BusinessLogicError("There is already a main active plan.")
-    chatbot_plan = chatbot_plan_service.validator.validate_exists(uuid=chatbot_plan_id,
-                                                                  model=ChatBotPlan)
+    if currency not in Currency.items.keys():
+        raise BusinessLogicError("Invalid currency")
 
     return chatbot_transaction_service.add(
-        ChatBotTransactionCreate(chatbot_id=chatbot.id, amount=chatbot_plan.price,
-                                 title=chatbot_plan.title,
-                                 extend_chat_count=chatbot_plan.extend_chat_count,
-                                 extend_days=chatbot_plan.extend_days,
-                                 extend_token_count=chatbot_plan.extend_token_count,
-                                 is_extra=chatbot_plan.is_extra))
+        ChatBotTransactionCreate(amount=amount, currency=currency, user_id=current_user.id))
 
 
-@router.get('/{chatbot_id}/transaction/{transaction_id}/pay')
-def pay_plan(
-    chatbot_id: UUID4,
+@router.get('/{transaction_id}/pay')
+def pay_transaction(
     transaction_id: UUID4,
-    chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
     chatbot_transaction_service: ChatBotTransactionService = Depends(
         get_service(ChatBotTransactionService)),
     current_user: models.User = Security(
@@ -124,10 +88,7 @@ def pay_plan(
     ),
 ):
 
-    chatbot = chatbot_service.validator.validate_exists(uuid=chatbot_id, model=ChatBot)
-    chatbot_service.validator.validate_user_ownership(chatbot, current_user)
-
-    transaction = chatbot_transaction_service.validator.validate_exists(
+    transaction: ChatBotTransaction = chatbot_transaction_service.validator.validate_exists(
         uuid=transaction_id, model=ChatBotTransaction)
 
     if transaction.is_paid:
@@ -142,7 +103,7 @@ def pay_plan(
     result = zarrin_client.service.PaymentRequest(
         settings.ZARINPAL_MERCHANT_ID,
         transaction.amount,
-        f"پرداخت بابت خرید پلن {transaction.title}",
+        "پرداخت بابت خرید اعتبار چت بات",
         "",
         "",
         callback,
@@ -157,10 +118,10 @@ def pay_plan(
 @router.get('/transaction/{transaction_id}/verify', status_code=status.HTTP_200_OK)
 def verify_payment(
     transaction_id: UUID4,
+    chatbot_credit_service: UserChatBotCreditService = Depends(
+        get_service(UserChatBotCreditService)),
     chatbot_transaction_service: ChatBotTransactionService = Depends(
         get_service(ChatBotTransactionService)),
-    purchased_chatbot_plan_service: PurchasedChatbotPlanService = Depends(
-        get_service(PurchasedChatbotPlanService)),
 ):
 
     transaction: ChatBotTransaction = chatbot_transaction_service.validator.validate_exists(
@@ -184,14 +145,7 @@ def verify_payment(
     now = datetime.utcnow()
     chatbot_transaction_service.update(transaction, TransactionUpdate(
         is_paid=True,
-        payed_at=now,
+        paid_at=now,
     ))
-    purchased_chatbot_plan_service.add(
-        PurchasedChatBotPlanCreate(
-            chatbot_id=transaction.chatbot_id,
-            from_datetime=now,
-            to_datetime=now + timedelta(days=transaction.extend_days),
-            is_extra=transaction.is_extra,
-            remaining_chat_count=transaction.extend_chat_count,
-            remaining_token_count=transaction.extend_token_count,
-        ))
+
+    chatbot_credit_service.add_credit(transaction.user_id, transaction.amount)
