@@ -42,8 +42,6 @@ class KnowledgeBaseService(BaseService):
         return new_knowledge_base
 
     def remove_with_embeddings(self, db_obj, chroma: ClientAPI):
-        try:
-            chroma.get_collection(name=str(db_obj.chatbot.uuid)).delete(where=db_obj.metadatas)
-        except Exception:
-            pass
+        chroma.get_collection(name=str(db_obj.chatbot.uuid)).delete(
+            where={"unique_identifier": str(db_obj.uuid)})
         return self.knowledge_base_repo.delete(db_obj.id)
