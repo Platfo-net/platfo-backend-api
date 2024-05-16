@@ -60,7 +60,8 @@ def get_question_and_answer(question: str, chatbot_id: int, chatbot_service: Cha
     context = answer_with_source.get("context")
     answer = answer_with_source.get("answer")
 
-    metadata_values = extract_metadata(context)
+    metadata_values = [extract_metadata(context)[0]]
+
     print(f"Extracted metadata values are: {metadata_values}")
     knowledge_bases = knowledge_base_service.get_by_metadata_values(chatbot_id, metadata_values)
     print(f"Knowledge bases objects are: {knowledge_bases}")
