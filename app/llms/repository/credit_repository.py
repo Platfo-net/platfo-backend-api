@@ -8,7 +8,7 @@ class UserChatBotCreditRepository(CRUDBRepository):
     model = UserChatBotCredit
 
     def get_by_user_id(self, user_id):
-        return self.session.query(self.model).filte(self.model.user_id == user_id).first()
+        return self.session.query(self.model).filter(self.model.user_id == user_id).first()
 
 
 class ChatBotTransactionRepository(CRUDBRepository):

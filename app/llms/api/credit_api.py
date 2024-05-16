@@ -37,7 +37,7 @@ def get_chatbot_credit(
     if not user_credit:
         user_credit = chatbot_credit_service.add(
             ChatBotCreditCreate(
-                amount=0,
+                amount=20000,
                 currency=Currency.IRT["value"],
                 user_id=current_user.id,
             ))
@@ -103,7 +103,7 @@ def pay_transaction(
     result = zarrin_client.service.PaymentRequest(
         settings.ZARINPAL_MERCHANT_ID,
         transaction.amount,
-        f"پرداخت بابت خرید پلن {transaction.title}",
+        "پرداخت بابت خرید اعتبار چت بات",
         "",
         "",
         callback,
@@ -145,7 +145,7 @@ def verify_payment(
     now = datetime.utcnow()
     chatbot_transaction_service.update(transaction, TransactionUpdate(
         is_paid=True,
-        payed_at=now,
+        paid_at=now,
     ))
 
     chatbot_credit_service.add_credit(transaction.user_id, transaction.amount)
