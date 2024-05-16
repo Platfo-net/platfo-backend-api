@@ -54,7 +54,6 @@ def get_question_and_answer(question: str, chatbot_id: int, chatbot_service: Cha
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=str(chatbot.uuid))
     retriever = vector_db.search_embeddings()
-
     setup_and_retrieval = setup_rag_chain_from_docs(StrOutputParser(), chatbot.temperature)
     chain = rag_chain_with_source(retriever, lambda _: chatbot.prompt, setup_and_retrieval)
     answer_with_source = chain.invoke(question)

@@ -42,5 +42,7 @@ class KnowledgeBaseService(BaseService):
         return new_knowledge_base
 
     def remove_with_embeddings(self, db_obj, chroma: ClientAPI):
-        chroma.get_collection(name=str(db_obj.chatbot.uuid)).delete(where=db_obj.metadatas)
+        collection = chroma.get_collection(name=str(db_obj.chatbot.uuid))
+        if collection:
+            collection.delete(where=db_obj.metadatas)
         return self.knowledge_base_repo.delete(db_obj.id)
