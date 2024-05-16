@@ -83,8 +83,8 @@ def create_knowledge_base(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
     collection_name = str(obj_in.chatbot_id)
+    new_knowledge_base = knowledge_base_service.create(obj_in, current_user)
     unique_identifier = {"unique_identifier": str(new_knowledge_base.uuid)}
 
     if obj_in.type in (KnowledgeBaseType.PDF, KnowledgeBaseType.TXT):
