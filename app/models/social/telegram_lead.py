@@ -1,4 +1,6 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, String
+import datetime
+
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -20,3 +22,4 @@ class TelegramLead(Base):
     telegram_bot = relationship('TelegramBot', back_populates='leads')
     orders = relationship('ShopOrder', back_populates='lead')
     messages = relationship('TelegramLeadMessage', back_populates='lead')
+    created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=True)
