@@ -1,10 +1,11 @@
 import os
+from typing import Optional
 
 import telegram
 from sqlalchemy.orm import Session
 from telegram import Bot
 
-from app import models, services
+from app import models, schemas, services
 from app.constants.currency import Currency
 from app.constants.order_status import OrderStatus
 from app.constants.payment_method import PaymentMethod
@@ -64,12 +65,8 @@ async def send_lead_order_to_bot_handler(db: Session, telegram_bot_id: int, lead
         currency=currency,
         shipment_cost_amount=helpers.number_to_price(int(order.shipment_cost_amount)))
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
-    reply_markup = None
-    if order.shop_payment_method.payment_method.title == PaymentMethod.CARD_TRANSFER["title"]:
-        reply_markup = helpers.get_pay_order_reply_markup(order_id, lang)
 
     order_message: telegram.Message = await bot.send_message(chat_id=lead.chat_id, text=text,
-                                                             reply_markup=reply_markup,
                                                              parse_mode="HTML")
 
     return order_message.message_id
@@ -129,19 +126,18 @@ async def send_lead_pay_message(db: Session, telegram_bot: models.TelegramBot,
         return
 
 
-async def handle_order_payment(db: Session, data: dict,
+async def handle_order_payment(db: Session, update: telegram.Update,
                                telegram_order: models.shop.ShopTelegramOrder,
                                shop_telegram_bot: models.shop.ShopShopTelegramBot,
                                bot: telegram.Bot, lang: str):
     support_bot = Bot(settings.SUPPORT_BOT_TOKEN)
 
-    update = telegram.Message.de_json(data["message"], bot)
-    if update.photo:
+    if update.message.photo:
         photo_unique_id = update.photo[-1].file_id
         url, file_name = await helpers.download_and_upload_telegram_image(
             bot, photo_unique_id, settings.S3_TELEGRAM_BOT_IMAGES_BUCKET)
         if not url:
-            await update.reply_text(text="Error in processing image")
+            await update.message.reply_text(text="Error in processing image")
 
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(db, order=order,
@@ -157,7 +153,7 @@ async def handle_order_payment(db: Session, data: dict,
 
         os.remove(file_name)
 
-    elif update.text:
+    elif update.message.text:
         order = services.shop.order.get(db, id=telegram_order.order_id)
         order = services.shop.order.change_status(db, order=order,
                                                   status=OrderStatus.PAYMENT_CHECK["value"])
@@ -168,7 +164,7 @@ async def handle_order_payment(db: Session, data: dict,
             "payment_image_caption",
             order_number=order.order_number,
             lead_number=order.lead.lead_number,
-            text=update.text,
+            text=update.message.text,
         )
 
         await support_bot.send_message(
@@ -177,10 +173,10 @@ async def handle_order_payment(db: Session, data: dict,
             chat_id=shop_telegram_bot.support_account_chat_id,
         )
     else:
-        await update.reply_text(text=SupportBotMessage.INVALID_INPUT[lang])
+        await update.message.reply_text(text=SupportBotMessage.INVALID_INPUT[lang])
         return
 
-    await update.reply_text(
+    await update.message.reply_text(
         text=SupportBotMessage.PAYMENT_INFORMATION_SENT[lang],
     )
 
@@ -258,8 +254,8 @@ async def order_change_status_from_dashboard_handler(
         pass
 
 
-async def handle_start_message(telegram_bot: models.TelegramBot, bot, data: dict, lang):
-    update = telegram.Update.de_json(data, bot)
+async def handle_start_message(telegram_bot: models.TelegramBot, update: telegram.Update,
+                               lang) -> telegram.Message:
 
     if update.message:
         message = update.message
@@ -274,24 +270,24 @@ async def handle_start_message(telegram_bot: models.TelegramBot, bot, data: dict
         image_url = storage.get_object_url(telegram_bot.image,
                                            settings.S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET)
         if image_url:
-            await message.reply_photo(caption=text, photo=image_url,
-                                      reply_markup=helpers.get_bot_menu(button_name, app_link),
-                                      parse_mode="HTML")
+            sent_message = await message.reply_photo(
+                caption=text, photo=image_url,
+                reply_markup=helpers.get_bot_menu(button_name, app_link), parse_mode="HTML")
         else:
-            await message.reply_text(text=text,
-                                     reply_markup=helpers.get_bot_menu(button_name, app_link),
-                                     parse_mode="HTML")
+            sent_message = await message.reply_text(
+                text=text, reply_markup=helpers.get_bot_menu(button_name, app_link),
+                parse_mode="HTML")
     else:
         text = helpers.load_message(lang, "default_message")
         app_link = "https://platfo.net"
         button_name = "پلتفو"
-        await message.reply_text(text=text,
-                                 reply_markup=helpers.get_bot_menu(button_name,
-                                                                   app_link), parse_mode="HTML")
+        sent_message = await message.reply_text(
+            text=text, reply_markup=helpers.get_bot_menu(button_name, app_link), parse_mode="HTML")
+
+    return sent_message
 
 
-async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
-                                      telegram_bot: models.TelegramBot):
+async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, chatbot_id: int):
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
     knowledge_base_service = KnowledgeBaseService(KnowledgeBaseRepository(db))
@@ -310,19 +306,108 @@ async def handle_chatbot_qa_answering(db: Session, message, chatbot_id: int,
 
             reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 
-            await message.reply_text(text=answer, reply_markup=reply_markup)
-            return
+            sent_message = await message.reply_text(text=answer, reply_markup=reply_markup)
+            return sent_message
         except Exception:
             pass
-    await message.reply_text(answer)
+    sent_message = await message.reply_text(answer)
+    return sent_message
+
+
+def get_message(update: telegram.Update):
+    if update.message:
+        return update.message
+    elif update.effective_message:
+        return update.effective_message
     return
 
 
-async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int, telegram_bot):
+async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int,
+                            telegram_bot) -> telegram.Message:
     update = telegram.Update.de_json(data, bot)
+    message = get_message(update)
 
-    if update.message:
-        await handle_chatbot_qa_answering(db, update.message, chatbot_id, telegram_bot)
+    return await handle_chatbot_qa_answering(db, message, chatbot_id, telegram_bot)
+
+
+def get_update(data: dict, bot) -> telegram.Update:
+    if data.get("callback_query"):
+        update = telegram.Update.de_json({
+            "update_id": data["update_id"],
+            **data["callback_query"]
+        }, bot)
+    else:
+        update = telegram.Update.de_json(data, bot)
+
+    return update
+
+
+def save_lead_message(
+    db: Session,
+    update: telegram.Update,
+    lead: models.social.TelegramLead,
+    mirror_message: telegram.Message,
+) -> Optional[models.social.TelegramLeadMessage]:
+    message = get_message(update)
+    if not message:
+        return
+
+    db_message = services.social.telegram_lead_message.create(
+        db, obj_in=schemas.social.TelegramLeadMessageCreate(
+            lead_id=lead.id,
+            is_lead_to_bot=True,
+            message=message.text,
+            message_id=message.message_id,
+            mirror_message_id=None if not mirror_message else mirror_message.id,
+            reply_to_id=None
+            if not message.reply_to_message else message.reply_to_message.message_id,
+        ))
+    return db_message
+
+
+def save_bot_message(
+    db: Session,
+    message: telegram.Message,
+    lead: models.social.TelegramLead,
+) -> Optional[models.social.TelegramLeadMessage]:
+    db_message = services.social.telegram_lead_message.create(
+        db, obj_in=schemas.social.TelegramLeadMessageCreate(
+            lead_id=lead.id,
+            is_lead_to_bot=False,
+            message=message.text,
+            message_id=message.message_id,
+            mirror_message_id=None,
+            reply_to_id=None
+            if not message.reply_to_message else message.reply_to_message.message_id,
+        ))
+    return db_message
+
+
+async def send_vitrin(update: telegram.Update, shop_uuid, lead_uuid, lang):
+    return await update.message.reply_text(
+        text="ویترین", reply_markup=helpers.get_shop_menu(shop_uuid, lead_uuid, lang),
+        parse_mode="HTML")
+
+
+async def handle_shop_message(db: Session, telegram_bot_id, update: telegram.Update,
+                              lead: models.social.TelegramLead, lang):
+    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
+        db, telegram_bot_id=telegram_bot_id)
+    if not shop_telegram_bot:
+        return None, None
+    bot = update.get_bot()
+    if update.message.text == TelegramBotCommand.VITRIN["command"]:
+        return await send_vitrin(update, shop_telegram_bot.shop.uuid, lead.uuid, lang), None
+
+    elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
+        text = helpers.load_message(lang, "lead_to_support_message_helper",
+                                    lead_number=lead.lead_number)
+        return await update.message.reply_text(text=text, parse_mode="HTML"), None
 
     else:
-        await handle_chatbot_qa_answering(db, update.effective_message, chatbot_id, telegram_bot)
+        message = update.message.text
+        text = helpers.load_message(lang, "lead_to_support_message", lead_number=lead.lead_number,
+                                    message=message)
+        mirror_message = await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id,
+                                                text=text, parse_mode="HTML")
+        return None, mirror_message

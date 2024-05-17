@@ -5,7 +5,6 @@ from telegram import Bot
 from app import schemas, services
 from app.constants.message_builder import MessageBuilderButton, MessageBuilderCommand
 from app.constants.order_status import OrderStatus
-from app.constants.telegram_bot_command import TelegramBotCommand
 from app.constants.telegram_callback_command import TelegramCallbackCommand
 from app.constants.telegram_support_bot_commands import TelegramSupportBotCommand
 from app.core import security
@@ -225,95 +224,29 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         return
 
     bot = Bot(token=security.decrypt_telegram_token(telegram_bot.bot_token))
+    update = bot_handlers.get_update(data, bot)
+    lead = get_or_create_lead(db, telegram_bot.id, update.message.from_user)
+    mirror_message = None
     if helpers.is_start_message(data, bot):
-        await bot_handlers.handle_start_message(
+        sent_message = await bot_handlers.handle_start_message(
             telegram_bot,
-            bot,
-            data,
-            "fa",
+            update,
+            lang,
         )
-        return
-    chatbot_service = ChatBotTelegramBotService(ChatBotTelegramBotRepository(db))
+    else:
+        chatbot_service = ChatBotTelegramBotService(ChatBotTelegramBotRepository(db))
+        chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
 
-    chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
-
-    if chatbot_telegram_bot:
-        await bot_handlers.handle_chatbot_qa(db, bot, data, chatbot_telegram_bot.chatbot_id,
-                                             telegram_bot)
-        return
-
-    shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
-        db, telegram_bot_id=telegram_bot.id)
-    if data.get("callback_query"):
-        lead_data = data["callback_query"]["from"]
-        lead = get_or_create_lead(db, telegram_bot.id, lead_data)
-        update = telegram.Update.de_json({
-            "update_id": data["update_id"],
-            **data["callback_query"]
-        }, bot)
-
-        callback = data.get("callback_query").get("data")
-        command, arg = callback.split(":")
-        if command == TelegramCallbackCommand.PAY_ORDER.get("command"):
-            await bot_handlers.send_lead_pay_message(db, telegram_bot, lead, arg, lang)
-
-    elif data.get("message"):
-        lead_data = data["message"]["from"]
-        lead = get_or_create_lead(db, telegram_bot.id, lead_data)
-
-        reply_to_message = data["message"].get("reply_to_message")
-        if reply_to_message:
-            telegram_order = services.shop.telegram_order.get_by_reply_to_id_and_lead_id(
-                db, lead_id=lead.id, reply_to_id=reply_to_message["message_id"])
-
-            if not shop_telegram_bot:
-                return
-
-            if telegram_order:
-                await bot_handlers.handle_order_payment(db, data, telegram_order,
-                                                        shop_telegram_bot, bot, lang)
-                return
-
-        update = telegram.Update.de_json(data, bot)
-        if update.message.text == TelegramBotCommand.VITRIN["command"]:
-
-            if not shop_telegram_bot:
-                return
-
-            await update.message.reply_text(
-                text="ویترین", reply_markup=helpers.get_shop_menu(shop_telegram_bot.shop.uuid,
-                                                                  lead.uuid, lang),
-                parse_mode="HTML")
-
-        elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
-            text = helpers.load_message(lang, "lead_to_support_message_helper",
-                                        lead_number=lead.lead_number)
-            await update.message.reply_text(text=text, parse_mode="HTML")
-
+        if chatbot_telegram_bot:
+            sent_message = await bot_handlers.handle_chatbot_qa(db, bot, data,
+                                                                chatbot_telegram_bot.chatbot_id,
+                                                                telegram_bot)
         else:
-            message = update.message.text
-            bot = Bot(settings.SUPPORT_BOT_TOKEN)
+            sent_message, mirror_message = bot_handlers.handle_shop_message(
+                db, telegram_bot.id, update, lead, lang)
 
-            if not shop_telegram_bot:
-                return
-
-            text = helpers.load_message(lang, "lead_to_support_message",
-                                        lead_number=lead.lead_number, message=message)
-            res: telegram.Message = await bot.send_message(
-                chat_id=shop_telegram_bot.support_account_chat_id, text=text, parse_mode="HTML")
-            reply_to_id = None
-            if update.message.reply_to_message:
-                reply_to_id = update.message.reply_to_message.message_id
-            obj_in = schemas.social.TelegramLeadMessageCreate(
-                lead_id=lead.id,
-                is_lead_to_bot=True,
-                message=message,
-                message_id=update.message.message_id,
-                mirror_message_id=res.message_id,
-                reply_to_id=reply_to_id,
-            )
-            services.social.telegram_lead_message.create(db, obj_in=obj_in)
-            return
+    bot_handlers.save_lead_message(db, update, lead, mirror_message)
+    bot_handlers.save_bot_message(db, sent_message)
 
 
 async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
