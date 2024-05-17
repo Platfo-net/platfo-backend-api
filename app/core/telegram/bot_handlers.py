@@ -322,12 +322,11 @@ def get_message(update: telegram.Update):
     return
 
 
-async def handle_chatbot_qa(db: Session, bot: Bot, data: dict, chatbot_id: int,
+async def handle_chatbot_qa(db: Session, update: telegram.Update, chatbot_id: int,
                             telegram_bot) -> telegram.Message:
-    update = telegram.Update.de_json(data, bot)
     message = get_message(update)
 
-    return await handle_chatbot_qa_answering(db, message, chatbot_id, telegram_bot)
+    return await handle_chatbot_qa_answering(db, message, chatbot_id)
 
 
 def get_update(data: dict, bot) -> telegram.Update:

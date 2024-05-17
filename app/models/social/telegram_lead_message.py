@@ -1,4 +1,6 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Text
+import datetime
+
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
@@ -21,3 +23,4 @@ class TelegramLeadMessage(Base):
     reply_to_id = Column(BigInteger, nullable=True, index=True)
 
     lead = relationship('TelegramLead', back_populates='messages')
+    created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=True)

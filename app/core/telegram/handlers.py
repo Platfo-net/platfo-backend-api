@@ -200,8 +200,8 @@ async def telegram_support_bot_handler(db: Session, data: dict, lang: str):
             return
 
 
-def get_or_create_lead(db: Session, telegram_bot_id, lead_data):
-    lead = services.social.telegram_lead.get_by_chat_id(db, chat_id=lead_data.get("id"),
+def get_or_create_lead(db: Session, telegram_bot_id, lead_data: telegram.User):
+    lead = services.social.telegram_lead.get_by_chat_id(db, chat_id=lead_data.id,
                                                         telegram_bot_id=telegram_bot_id)
     if not lead:
         lead_number = services.social.telegram_lead.get_last_lead_number(
@@ -209,10 +209,10 @@ def get_or_create_lead(db: Session, telegram_bot_id, lead_data):
         lead = services.social.telegram_lead.create(
             db, obj_in=schemas.social.TelegramLeadCreate(
                 telegram_bot_id=telegram_bot_id,
-                chat_id=lead_data.get("id"),
-                first_name=lead_data.get("first_name"),
-                last_name=lead_data.get("last_name"),
-                username=lead_data.get("username"),
+                chat_id=lead_data.id,
+                first_name=lead_data.first_name,
+                last_name=lead_data.last_name,
+                username=lead_data.username,
                 lead_number=lead_number + 1,
             ))
     return lead
@@ -238,7 +238,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         chatbot_telegram_bot = chatbot_service.get_by_telegram_bot_id(telegram_bot.id)
 
         if chatbot_telegram_bot:
-            sent_message = await bot_handlers.handle_chatbot_qa(db, bot, data,
+            sent_message = await bot_handlers.handle_chatbot_qa(db, update,
                                                                 chatbot_telegram_bot.chatbot_id,
                                                                 telegram_bot)
         else:
@@ -246,7 +246,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                 db, telegram_bot.id, update, lead, lang)
 
     bot_handlers.save_lead_message(db, update, lead, mirror_message)
-    bot_handlers.save_bot_message(db, sent_message)
+    bot_handlers.save_bot_message(db, sent_message, lead)
 
 
 async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
