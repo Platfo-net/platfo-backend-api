@@ -14,7 +14,7 @@ class KnowledgeBaseRepository(CRUDBRepository):
             filter(self.model.chatbot_id == chatbot_id).all()
 
     def get_by_metadata_values(self, chatbot_id, metadata_values):
-        uuid_objects = [uuid.UUID(u) for u in metadata_values if metadata_values]
+        uuid_objects = [uuid.UUID(u) for u in metadata_values]
         query = self.session.query(self.model).filter(self.model.chatbot_id == chatbot_id).filter(
             or_(self.model.uuid.in_(uuid_objects)))
         knowledge_base_objects = query.all()
