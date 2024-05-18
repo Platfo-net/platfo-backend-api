@@ -6,9 +6,9 @@ from app.llms.models import ChatBot
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.dependencies import get_chroma_client
-from app.llms.utils.langchain.helpers import chunk_data, clear_text, create_llm_model, \
-    extract_metadata, format_docs, get_chat_prompt, get_crawler_loader_data, \
-    get_document_loader_data, get_manual_input_loader_data
+from app.llms.utils.langchain.helpers import chunk_data, create_llm_model, extract_metadata, \
+    format_docs, get_chat_prompt, get_crawler_loader_data, get_document_loader_data, \
+    get_manual_input_loader_data
 from app.llms.vectordb.chroma_client import ChromaClient
 
 
@@ -60,10 +60,10 @@ def get_question_and_answer(question: str, chatbot_id: int, chatbot_service: Cha
     context = answer_with_source.get("context")
     answer = answer_with_source.get("answer")
 
-    metadata_values = [extract_metadata(context)[0]]
-
-    print(f"Extracted metadata values are: {metadata_values}")
-    knowledge_bases = knowledge_base_service.get_by_metadata_values(chatbot_id, metadata_values)
+    extracted_metadata = extract_metadata(context)
+    metadata_value = extracted_metadata[0] if extracted_metadata else []
+    print(f"Extracted metadata values are: {extracted_metadata}")
+    knowledge_bases = knowledge_base_service.get_by_metadata_values(chatbot_id, [metadata_value])
     print(f"Knowledge bases objects are: {knowledge_bases}")
     print(f"Question: {question}, Chatbot ID: {chatbot_id}, Answer: {answer}, Context: {context}")
-    return clear_text(answer), knowledge_bases
+    return answer, knowledge_bases
