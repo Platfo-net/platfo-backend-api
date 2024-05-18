@@ -14,3 +14,4 @@ class TelegramBotCommand:
     VITRIN = {"command": "/vitrin", "description": "ویترین"}
 
     commands = [START, VITRIN, SEND_DIRECT_MESSAGE, CONNECT_TO_ASSISTANT]
+    commands_text = [command["command"] for command in commands]
