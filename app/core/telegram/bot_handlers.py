@@ -206,7 +206,8 @@ async def send_lead_pay_notification_to_bot_handler(db: Session, order_id: int, 
 
 
 async def set_all_bot_commands_task_handler(db: Session, lang):
-    telegram_bots = services.telegram_bot.all(db)
+    telegram_bots = db.query(
+        models.TelegramBot).filter(models.TelegramBot.username == "platfo_shop_dev_bot").all()
     for telegram_bot in telegram_bots:
         bot = Bot(security.decrypt_telegram_token(telegram_bot.bot_token))
         await bot.set_my_commands(commands=[
@@ -399,8 +400,13 @@ async def handle_shop_message(db: Session, telegram_bot_id, update: telegram.Upd
         return await send_vitrin(update, shop_telegram_bot.shop.uuid, lead.uuid, lang), None
 
     elif update.message.text == TelegramBotCommand.SEND_DIRECT_MESSAGE["command"]:
-        text = helpers.load_message(lang, "lead_to_support_message_helper",
-                                    lead_number=lead.lead_number)
+        text = helpers.load_message(lang, "lead_to_support_message_helper")
+        services.social.telegram_lead.change_is_ai_answer(db, db_obj=lead, is_ai_answer=False)
+        return await update.message.reply_text(text=text, parse_mode="HTML"), None
+
+    elif update.message.text == TelegramBotCommand.CONNECT_TO_ASSISTANT["command"]:
+        text = helpers.load_message(lang, "connected_to_assistant")
+        services.social.telegram_lead.change_is_ai_answer(db, db_obj=lead, is_ai_answer=True)
         return await update.message.reply_text(text=text, parse_mode="HTML"), None
 
     else:
