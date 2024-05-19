@@ -18,7 +18,8 @@ from app.llms.repository.chatbot_repository import ChatBotRepository
 from app.llms.repository.knowledge_base_repository import KnowledgeBaseRepository
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
-from app.llms.utils.langchain.pipeline import get_question_and_answer
+from app.llms.utils.langchain.pipeline import get_question_and_answer, \
+    get_question_and_answer_multi_vector
 
 
 async def send_lead_order_to_bot_handler(db: Session, telegram_bot_id: int, lead_id: int,
@@ -291,8 +292,9 @@ async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, ch
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
     knowledge_base_service = KnowledgeBaseService(KnowledgeBaseRepository(db))
-    answer, knowledge_bases = get_question_and_answer(message.text, chatbot_id, chatbot_service,
-                                                      knowledge_base_service)
+    answer, knowledge_bases = get_question_and_answer_multi_vector(message.text, chatbot_id,
+                                                                   chatbot_service,
+                                                                   knowledge_base_service)
 
     if knowledge_bases:
         try:
