@@ -74,7 +74,7 @@ class TelegramLeadServices:
         db_obj.is_ai_answer = is_ai_answer
         db.add(db_obj)
         db.commit()
-        db.refresh()
+        db.refresh(db_obj)
 
 
 telegram_lead = TelegramLeadServices(models.social.TelegramLead)

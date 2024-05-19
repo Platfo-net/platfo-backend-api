@@ -244,11 +244,13 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                                                                 chatbot_telegram_bot.chatbot_id,
                                                                 telegram_bot)
         else:
-            sent_message, mirror_message = bot_handlers.handle_shop_message(
+            print("herre1")
+            sent_message, mirror_message = await bot_handlers.handle_shop_message(
                 db, telegram_bot.id, update, lead, lang)
 
     bot_handlers.save_lead_message(db, update, lead, mirror_message)
-    bot_handlers.save_bot_message(db, sent_message, lead)
+    if sent_message:
+        bot_handlers.save_bot_message(db, sent_message, lead)
 
 
 async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):

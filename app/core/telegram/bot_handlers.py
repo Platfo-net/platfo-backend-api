@@ -206,8 +206,7 @@ async def send_lead_pay_notification_to_bot_handler(db: Session, order_id: int, 
 
 
 async def set_all_bot_commands_task_handler(db: Session, lang):
-    telegram_bots = db.query(
-        models.TelegramBot).filter(models.TelegramBot.username == "platfo_shop_dev_bot").all()
+    telegram_bots = db.query(models.TelegramBot).all()
     for telegram_bot in telegram_bots:
         bot = Bot(security.decrypt_telegram_token(telegram_bot.bot_token))
         await bot.set_my_commands(commands=[
@@ -394,8 +393,9 @@ async def handle_shop_message(db: Session, telegram_bot_id, update: telegram.Upd
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot_id)
     if not shop_telegram_bot:
+        print("here 3")
+
         return None, None
-    bot = update.get_bot()
     if update.message.text == TelegramBotCommand.VITRIN["command"]:
         return await send_vitrin(update, shop_telegram_bot.shop.uuid, lead.uuid, lang), None
 
@@ -411,8 +411,9 @@ async def handle_shop_message(db: Session, telegram_bot_id, update: telegram.Upd
 
     else:
         message = update.message.text
+        support_bot = telegram.Bot(settings.SUPPORT_BOT_TOKEN)
         text = helpers.load_message(lang, "lead_to_support_message", lead_number=lead.lead_number,
                                     message=message)
-        mirror_message = await bot.send_message(chat_id=shop_telegram_bot.support_account_chat_id,
-                                                text=text, parse_mode="HTML")
+        mirror_message = await support_bot.send_message(
+            chat_id=shop_telegram_bot.support_account_chat_id, text=text, parse_mode="HTML")
         return None, mirror_message
