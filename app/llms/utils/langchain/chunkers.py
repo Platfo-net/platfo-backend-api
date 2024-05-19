@@ -45,7 +45,7 @@ class ManualInputChunkingStrategy(ChunkingStrategy):
 
     def chunk(self, texts, metadatas, doc_ids):
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.chunk_size,
-                                                       overlap=self.overlap)
+                                                       chunk_overlap=self.overlap)
         metadatas = metadatas * len(texts)
         return text_splitter.create_documents(texts=texts, metadatas=metadatas)
 
