@@ -8,7 +8,7 @@ from app.llms.models.base import WithDates
 class KnowledgeBase(Base, WithDates):
     __tablename__ = 'knowledgebase'
 
-    name = Column(String(255), unique=True, nullable=False)
+    name = Column(String(255), nullable=False)
     metadatas = Column(JSON(), nullable=True)
     manual_input = Column(Text(), nullable=True)
     type = Column(String(40), nullable=True)

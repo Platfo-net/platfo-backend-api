@@ -16,7 +16,9 @@ from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseC
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.tasks import embed_knowledge_base_crawler_task, embed_knowledge_base_document_task, \
-    embed_knowledge_base_manual_input_task, embed_knowledge_base_multi_vector_document_task
+    embed_knowledge_base_manual_input_task, embed_knowledge_base_multi_vector_crawler_task, \
+    embed_knowledge_base_multi_vector_document_task, \
+    embed_knowledge_base_multi_vector_manual_input_task
 from app.llms.utils.dependencies import get_chroma_client, get_service
 from app.llms.utils.langchain.pipeline import get_question_and_answer, \
     get_question_and_answer_multi_vector
@@ -95,12 +97,14 @@ def create_knowledge_base(
                                                               collection_name, unique_identifier,
                                                               new_knowledge_base.id)
     elif obj_in.type == KnowledgeBaseType.CRAWLER:
-        embed_knowledge_base_crawler_task.delay(new_knowledge_base.urls, collection_name,
-                                                unique_identifier, new_knowledge_base.id)
+        embed_knowledge_base_multi_vector_crawler_task.delay(new_knowledge_base.urls,
+                                                             collection_name, unique_identifier,
+                                                             new_knowledge_base.id)
     elif obj_in.type == KnowledgeBaseType.MANUAL_INPUT:
-        embed_knowledge_base_manual_input_task.delay(new_knowledge_base.manual_input,
-                                                     collection_name, unique_identifier,
-                                                     new_knowledge_base.id)
+        embed_knowledge_base_multi_vector_manual_input_task.delay(new_knowledge_base.manual_input,
+                                                                  collection_name,
+                                                                  unique_identifier,
+                                                                  new_knowledge_base.id)
     return new_knowledge_base
 
 
@@ -121,9 +125,10 @@ def update_knowledge_base_crawler(
 
     updated_knowledge_base = knowledge_base_service.update(knowledge_base, obj_in)
     knowledge_base_service.remove_with_embeddings(knowledge_base, chroma)
-    embed_knowledge_base_crawler_task.delay(updated_knowledge_base.urls, str(obj_in.chatbot_id),
-                                            updated_knowledge_base.metadatas,
-                                            updated_knowledge_base.id)
+    embed_knowledge_base_multi_vector_crawler_task.delay(updated_knowledge_base.urls,
+                                                         str(obj_in.chatbot_id),
+                                                         updated_knowledge_base.metadatas,
+                                                         updated_knowledge_base.id)
     return updated_knowledge_base
 
 

@@ -44,11 +44,34 @@ def load_knowledge_base_crawler_data(urls: list[str], metadatas: list[dict]):
     return docs
 
 
+def load_knowledge_base_crawler_data_multi_vector(urls: list[str], metadatas: list[dict]):
+    data = get_crawler_loader_data(urls=urls)
+    parent_multi_vector_strategy = ParentMultiVectorChunkingStrategy()
+    child_multi_vector_strategy = ChildMultiVectorChunkingStrategy()
+    chunker = Chunker(parent_multi_vector_strategy)
+    docs = chunker.chunk(data, metadatas=metadatas)
+    doc_ids = generate_doc_ids(docs)
+    chunker.set_dynamic_chunking_strategy(child_multi_vector_strategy)
+    sub_docs = chunker.chunk(docs, doc_ids=doc_ids)
+    return docs, sub_docs, doc_ids
+
+
 def load_knowledge_base_manual_input_data(manual_input: str, metadatas: list[dict]):
     manual_input_strategy = ManualInputChunkingStrategy()
     chunker = Chunker(manual_input_strategy)
     docs = chunker.chunk([manual_input], metadatas=metadatas)
     return docs
+
+
+def load_knowledge_base_manual_input_data_multi_vector(manual_input: str, metadatas: list[dict]):
+    parent_multi_vector_strategy = ParentMultiVectorChunkingStrategy()
+    child_multi_vector_strategy = ChildMultiVectorChunkingStrategy()
+    chunker = Chunker(parent_multi_vector_strategy)
+    docs = chunker.chunk([manual_input], metadatas=metadatas)
+    doc_ids = generate_doc_ids(docs)
+    chunker.set_dynamic_chunking_strategy(child_multi_vector_strategy)
+    sub_docs = chunker.chunk(docs, doc_ids=doc_ids)
+    return docs, sub_docs, doc_ids
 
 
 def rag_chain_with_source(retriever, prompt_callable, rag_chain_from_docs):
