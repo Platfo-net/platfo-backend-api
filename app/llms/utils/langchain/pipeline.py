@@ -64,7 +64,7 @@ def load_knowledge_base_manual_input_data(manual_input: str, metadatas: list[dic
 
 
 def load_knowledge_base_manual_input_data_multi_vector(manual_input: str, metadatas: list[dict]):
-    parent_multi_vector_strategy = ParentMultiVectorChunkingStrategy()
+    parent_multi_vector_strategy = ManualInputChunkingStrategy()
     child_multi_vector_strategy = ChildMultiVectorChunkingStrategy()
     chunker = Chunker(parent_multi_vector_strategy)
     docs = chunker.chunk([manual_input], metadatas=metadatas)

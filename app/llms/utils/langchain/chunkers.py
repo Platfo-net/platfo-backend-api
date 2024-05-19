@@ -39,7 +39,7 @@ class ManualInputChunkingStrategy(ChunkingStrategy):
     Concrete chunking strategy for manual input data with specific chunk_size and overlap.
     """
 
-    def __init__(self, chunk_size=600, overlap=200):
+    def __init__(self, chunk_size=1000, overlap=200):
         self.chunk_size = chunk_size
         self.overlap = overlap
 
