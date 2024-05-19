@@ -17,7 +17,7 @@ class UserChatBotCredit(Base):
 
 class ChatBotTransaction(Base, WithDates):
     __tablename__ = 'chatbot_transaction'
-    payed_at = Column(DateTime, nullable=True)
+    payed_at = Column(DateTime, nullable=True)  # TODO fix this please
     is_paid = Column(Boolean, default=False)
 
     amount = Column(Float(), nullable=False, default=0.0)

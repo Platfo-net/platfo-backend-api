@@ -145,7 +145,7 @@ def verify_payment(
     now = datetime.utcnow()
     chatbot_transaction_service.update(transaction, TransactionUpdate(
         is_paid=True,
-        paid_at=now,
+        payed_at=now,
     ))
 
     chatbot_credit_service.add_credit(transaction.user_id, transaction.amount)
