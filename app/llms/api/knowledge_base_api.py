@@ -16,9 +16,10 @@ from app.llms.schemas.knowledge_base_schema import KnowledgeBase, KnowledgeBaseC
 from app.llms.services.chatbot_service import ChatBotService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.tasks import embed_knowledge_base_crawler_task, embed_knowledge_base_document_task, \
-    embed_knowledge_base_manual_input_task
+    embed_knowledge_base_manual_input_task, embed_knowledge_base_multi_vector_document_task
 from app.llms.utils.dependencies import get_chroma_client, get_service
-from app.llms.utils.langchain.pipeline import get_question_and_answer
+from app.llms.utils.langchain.pipeline import get_question_and_answer, \
+    get_question_and_answer_multi_vector
 from app.llms.utils.response import ok_response
 from app.schemas import FileUpload
 
@@ -90,8 +91,9 @@ def create_knowledge_base(
     if obj_in.type in (KnowledgeBaseType.PDF, KnowledgeBaseType.TXT):
         new_knowledge_base.file_url = get_object_url(new_knowledge_base.file_path,
                                                      settings.S3_KNOWLEDGE_BASE_BUCKET)
-        embed_knowledge_base_document_task.delay(new_knowledge_base.file_path, collection_name,
-                                                 unique_identifier, new_knowledge_base.id)
+        embed_knowledge_base_multi_vector_document_task.delay(new_knowledge_base.file_path,
+                                                              collection_name, unique_identifier,
+                                                              new_knowledge_base.id)
     elif obj_in.type == KnowledgeBaseType.CRAWLER:
         embed_knowledge_base_crawler_task.delay(new_knowledge_base.urls, collection_name,
                                                 unique_identifier, new_knowledge_base.id)
@@ -136,8 +138,10 @@ def ask_question(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    answer, _ = get_question_and_answer(question, chatbot_id, chatbot_service,
-                                        knowledge_base_service)
+    # answer, _ = get_question_and_answer(question, chatbot_id, chatbot_service,
+    #                                     knowledge_base_service)
+    answer, _ = get_question_and_answer_multi_vector(question, chatbot_id, chatbot_service,
+                                                     knowledge_base_service)
     return {"answer": answer}
 
 
