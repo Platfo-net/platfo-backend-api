@@ -108,8 +108,8 @@ async def telegram_webhook_admin_listener(request: Request):
             if not (ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
                     or ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')):
                 return
-        data = await request.json()
-        telegram_tasks.telegram_admin_bot_task.delay(data, "fa")
+        # data = await request.json()
+        # telegram_tasks.telegram_admin_bot_task.delay(data, "fa")
         return
     except Exception as e:
         print(e)
@@ -117,12 +117,11 @@ async def telegram_webhook_admin_listener(request: Request):
 
 
 @router.post('/telegram/chat-bot', status_code=status.HTTP_200_OK)
-async def telegram_webhook_chatbot_listener(request: Request,
-                                            chatbot_service: ChatBotService = Depends(
-                                                get_service(ChatBotService)),
-                                            knowledge_base_service: KnowledgeBaseService = Depends(
-                                                get_service(KnowledgeBaseService)),
-                                            ):
+async def telegram_webhook_chatbot_listener(
+        request: Request,
+        chatbot_service: ChatBotService = Depends(get_service(ChatBotService)),
+        knowledge_base_service: KnowledgeBaseService = Depends(get_service(KnowledgeBaseService)),
+):
     try:
         data = await request.json()
         bot = telegram.Bot(settings.CHAT_BOT_TOKEN)

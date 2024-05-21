@@ -15,7 +15,7 @@ from app.core.config import settings
 from app.core.telegram import helpers
 from app.core.telegram.helpers.helpers import has_credit_by_shop_id
 from app.core.telegram.messages import SupportBotMessage
-from app.core.utils import decrease_cost_from_credit
+from app.core.utils import decrease_cost_from_credit, has_chatbot_credit
 from app.llms.repository.chatbot_repository import ChatBotRepository
 from app.llms.repository.credit_repository import UserChatBotCreditRepository
 from app.llms.repository.knowledge_base_repository import KnowledgeBaseRepository
@@ -294,10 +294,15 @@ async def handle_start_message(telegram_bot: models.TelegramBot, update: telegra
 async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, chatbot_id: int):
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
+    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
+    chatbot = chatbot_service.get(chatbot_id)
+    credit = has_chatbot_credit(credit_service, chatbot.user_id)
+    if not credit:
+        return
+
     knowledge_base_service = KnowledgeBaseService(KnowledgeBaseRepository(db))
-    answer, knowledge_bases, chatbot = get_question_and_answer(message.text, chatbot_id,
-                                                               chatbot_service,
-                                                               knowledge_base_service)
+    answer, knowledge_bases = get_question_and_answer(message.text, chatbot_id, chatbot_service,
+                                                      knowledge_base_service)
 
     if knowledge_bases:
         try:
@@ -316,7 +321,6 @@ async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, ch
         except Exception:
             pass
     sent_message = await message.reply_text(answer)
-    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
 
     decrease_cost_from_credit(credit_service, chatbot.user_id, settings.CHATBOT_CHAT_COST)
     return sent_message
@@ -330,8 +334,8 @@ def get_message(update: telegram.Update):
     return
 
 
-async def handle_chatbot_qa(db: Session, update: telegram.Update, chatbot_id: int,
-                            telegram_bot) -> telegram.Message:
+async def handle_chatbot_qa(db: Session, update: telegram.Update,
+                            chatbot_id: int) -> telegram.Message:
     message = get_message(update)
 
     return await handle_chatbot_qa_answering(db, message, chatbot_id)

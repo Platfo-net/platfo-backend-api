@@ -59,6 +59,11 @@ def get_today_datetime_range() -> Tuple[datetime, datetime]:
     return from_datetime, to_datetime
 
 
-def decrease_cost_from_credit(credit_service, user_id, amount):
+def has_chatbot_credit(credit_service, user_id, amount):
     credit = credit_service.get_or_create_by_user_id(user_id)
+    if credit.amount - amount > -10000:
+        return credit
+
+
+def decrease_cost_from_credit(credit_service, credit, amount):
     credit_service.decrease_credit(credit, amount)

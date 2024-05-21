@@ -241,8 +241,7 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
         if (chatbot_telegram_bot and lead.is_ai_answer
                 and update.message.text not in TelegramBotCommand.commands_text):
             sent_message = await bot_handlers.handle_chatbot_qa(db, update,
-                                                                chatbot_telegram_bot.chatbot_id,
-                                                                telegram_bot)
+                                                                chatbot_telegram_bot.chatbot_id)
         else:
             sent_message, mirror_message = await bot_handlers.handle_shop_message(
                 db, telegram_bot.id, update, lead, lang)

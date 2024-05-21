@@ -110,7 +110,7 @@ def get_question_and_answer(question: str, chatbot_id: int, chatbot_service: Cha
     knowledge_bases = knowledge_base_service.get_by_metadata_values(chatbot_id, metadata_value)
     print(f"Knowledge bases objects are: {knowledge_bases}")
     print(f"Question: {question}, Chatbot ID: {chatbot_id}, Answer: {answer}, Context: {context}")
-    return answer, knowledge_bases, chatbot
+    return answer, knowledge_bases
 
 
 def get_question_and_answer_multi_vector(question: str, chatbot_id: int,
