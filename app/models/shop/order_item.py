@@ -28,4 +28,3 @@ class ShopOrderItem(Base):
 
     order = relationship('ShopOrder', back_populates='items')
     product = relationship('ShopProduct', back_populates='order_items')
-    variant = relationship('ShopProductVariant', back_populates='order_items')
