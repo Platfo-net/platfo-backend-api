@@ -16,8 +16,10 @@ from app.core.telegram import helpers
 from app.core.telegram.messages import SupportBotMessage
 from app.core.utils import decrease_cost_from_credit
 from app.llms.repository.chatbot_repository import ChatBotRepository
+from app.llms.repository.credit_repository import UserChatBotCreditRepository
 from app.llms.repository.knowledge_base_repository import KnowledgeBaseRepository
 from app.llms.services.chatbot_service import ChatBotService
+from app.llms.services.credit_service import UserChatBotCreditService
 from app.llms.services.knowledge_base_service import KnowledgeBaseService
 from app.llms.utils.langchain.pipeline import get_question_and_answer
 
@@ -313,8 +315,9 @@ async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, ch
         except Exception:
             pass
     sent_message = await message.reply_text(answer)
+    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
 
-    decrease_cost_from_credit(db, chatbot.user_id, settings.CHATBOT_CHAT_COST)
+    decrease_cost_from_credit(credit_service, chatbot.user_id, settings.CHATBOT_CHAT_COST)
     return sent_message
 
 

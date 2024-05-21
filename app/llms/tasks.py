@@ -4,6 +4,8 @@ from app.core.celery import celery
 from app.core.config import settings
 from app.core.utils import decrease_cost_from_credit
 from app.db.session import SessionLocal
+from app.llms.repository.credit_repository import UserChatBotCreditRepository
+from app.llms.services.credit_service import UserChatBotCreditService
 from app.llms.utils.dependencies import get_chroma_client
 from app.llms.utils.langchain.helpers import calculate_embedding_cost
 from app.llms.utils.langchain.pipeline import load_knowledge_base_crawler_data, \
@@ -26,8 +28,9 @@ def embed_knowledge_base_document_task(file_path, collection_name, unique_identi
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=collection_name)
     vector_db.store_embeddings(data)
-
-    decrease_cost_from_credit(db, user_id, int(settings.CHATBOT_TOKEN_COST * total_tokens))
+    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
+    decrease_cost_from_credit(credit_service, user_id,
+                              int(settings.CHATBOT_TOKEN_COST * total_tokens))
 
     db.close()
     (logging.info('Finished the embedding knowledge base document task'))
@@ -52,7 +55,8 @@ def embed_knowledge_base_multi_vector_document_task(file_path, collection_name, 
 
 
 @celery.task()
-def embed_knowledge_base_crawler_task(urls, collection_name, unique_identifier, knowledge_base_id):
+def embed_knowledge_base_crawler_task(urls, collection_name, unique_identifier, knowledge_base_id,
+                                      user_id):
     logging.info('Started the embedding knowledge base crawler task')
     db = SessionLocal()
 
@@ -64,13 +68,17 @@ def embed_knowledge_base_crawler_task(urls, collection_name, unique_identifier, 
     vector_db = ChromaClient(client=chroma, collection_name=collection_name)
     vector_db.store_embeddings(data)
 
+    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
+    decrease_cost_from_credit(credit_service, user_id,
+                              int(settings.CHATBOT_TOKEN_COST * total_tokens))
+
     db.close()
     logging.info('Finished the embedding knowledge base crawler task')
 
 
 @celery.task()
 def embed_knowledge_base_multi_vector_crawler_task(urls, collection_name, unique_identifier,
-                                                   knowledge_base_id):
+                                                   knowledge_base_id, user_id):
     logging.info('Started the embedding knowledge base multi vector crawler task')
     db = SessionLocal()
 
@@ -83,13 +91,17 @@ def embed_knowledge_base_multi_vector_crawler_task(urls, collection_name, unique
     vector_db = ChromaClient(client=chroma, collection_name=collection_name)
     vector_db.store_multi_embeddings(documents=documents, sub_documents=sub_documents, ids=doc_ids)
 
+    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
+    decrease_cost_from_credit(credit_service, user_id,
+                              int(settings.CHATBOT_TOKEN_COST * total_tokens))
+
     db.close()
     logging.info('Finished the embedding knowledge base multi vector crawler task')
 
 
 @celery.task()
 def embed_knowledge_base_manual_input_task(manual_input, collection_name, unique_identifier,
-                                           knowledge_base_id):
+                                           knowledge_base_id, user_id):
     logging.info('Started the embedding knowledge base manual input task')
     db = SessionLocal()
 
@@ -100,6 +112,9 @@ def embed_knowledge_base_manual_input_task(manual_input, collection_name, unique
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=collection_name)
     vector_db.store_embeddings(data)
+    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
+    decrease_cost_from_credit(credit_service, user_id,
+                              int(settings.CHATBOT_TOKEN_COST * total_tokens))
 
     db.close()
     logging.info('Finished the embedding knowledge base manual input task')

@@ -6,11 +6,8 @@ from datetime import datetime, timedelta
 from typing import Tuple
 
 import pytz
-from sqlalchemy.orm import Session
 
 from app import schemas
-from app.llms.repository.credit_repository import UserChatBotCreditRepository
-from app.llms.services.credit_service import UserChatBotCreditService
 
 
 def validate_password(password) -> bool:
@@ -62,7 +59,6 @@ def get_today_datetime_range() -> Tuple[datetime, datetime]:
     return from_datetime, to_datetime
 
 
-def decrease_cost_from_credit(db: Session, user_id, amount):
-    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
+def decrease_cost_from_credit(credit_service, user_id, amount):
     credit = credit_service.get_or_create_by_user_id(user_id)
     credit_service.decrease_credit(credit, amount)

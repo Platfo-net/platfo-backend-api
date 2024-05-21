@@ -95,11 +95,12 @@ def create_knowledge_base(
                                                  current_user.id)
     elif obj_in.type == KnowledgeBaseType.CRAWLER:
         embed_knowledge_base_crawler_task.delay(new_knowledge_base.urls, collection_name,
-                                                unique_identifier, new_knowledge_base.id)
+                                                unique_identifier, new_knowledge_base.id,
+                                                current_user.id)
     elif obj_in.type == KnowledgeBaseType.MANUAL_INPUT:
         embed_knowledge_base_manual_input_task.delay(new_knowledge_base.manual_input,
                                                      collection_name, unique_identifier,
-                                                     new_knowledge_base.id)
+                                                     new_knowledge_base.id, current_user.id)
     return new_knowledge_base
 
 
