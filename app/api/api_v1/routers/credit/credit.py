@@ -97,11 +97,13 @@ def verify_telegram_shop_payment_record(
         db, id=telegram_shop_payment_record_id)
     if not shop_telegram_payment_record:
         return RedirectResponse(
-            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list")
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list&tid={shop_telegram_payment_record.id}"  # noqa
+        )
 
     if shop_telegram_payment_record.status == ShopTelegramPaymentRecordStatus.APPLIED:
         return RedirectResponse(
-            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list")
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list&tid={shop_telegram_payment_record.id}"  # noqa
+        )
 
     zarrin_client = Client(settings.ZARINPAL_WEBSERVICE)
     result = zarrin_client.service.PaymentVerification(
@@ -112,18 +114,21 @@ def verify_telegram_shop_payment_record(
 
     if result.Status not in [100, 101]:
         return RedirectResponse(
-            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list")
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list&tid={shop_telegram_payment_record.id}"  # noqa
+        )
 
     shop_credit = services.credit.shop_credit.get_by_shop_id(
         db, shop_id=shop_telegram_payment_record.shop_id)
 
     if not shop_credit:
         return RedirectResponse(
-            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list")
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list&tid={shop_telegram_payment_record.id}"  # noqa
+        )
 
     if result.Status == 101:
         return RedirectResponse(
-            f"{settings.PLATFO_BASE_DOMAIN}/payment/success?backUrl=/dashboard/store/list")
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/success?backUrl=/dashboard/store/list&tid={shop_telegram_payment_record.id}"  # noqa
+        )
 
     with UnitOfWork(db) as uow:
         services.credit.shop_credit.add_shop_credit(
@@ -141,4 +146,5 @@ def verify_telegram_shop_payment_record(
         shop_telegram_payment_record_id=shop_telegram_payment_record.id)
 
     return RedirectResponse(
-        f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list")
+        f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/dashboard/store/list&tid={shop_telegram_payment_record.id}"  # noqa
+    )

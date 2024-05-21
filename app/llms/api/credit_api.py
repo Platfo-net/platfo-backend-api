@@ -122,7 +122,8 @@ def verify_payment(
 
     if transaction.is_paid:
         return RedirectResponse(
-            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/chatbot/list")
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/chatbot/list&tid={transaction.id}"  # noqa
+        )
 
     zarin_client = Client(settings.ZARINPAL_WEBSERVICE)
     result = zarin_client.service.PaymentVerification(
@@ -133,7 +134,8 @@ def verify_payment(
 
     if result.Status not in [100, 101]:
         return RedirectResponse(
-            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/chatbot/list")
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/chatbot/list&tid={transaction.id}"  # noqa
+        )
 
     if result.Status == 101:
         return
@@ -145,4 +147,6 @@ def verify_payment(
 
     chatbot_credit_service.add_credit(transaction.user_id, transaction.amount)
 
-    return RedirectResponse(f"{settings.PLATFO_BASE_DOMAIN}/payment/success?backUrl=/chatbot/list")
+    return RedirectResponse(
+        f"{settings.PLATFO_BASE_DOMAIN}/payment/success?backUrl=/chatbot/list&tid={transaction.id}"
+    )
