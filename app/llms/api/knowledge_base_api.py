@@ -93,15 +93,15 @@ def create_knowledge_base(
     if obj_in.type in (KnowledgeBaseType.PDF, KnowledgeBaseType.TXT):
         new_knowledge_base.file_url = get_object_url(new_knowledge_base.file_path,
                                                      settings.S3_KNOWLEDGE_BASE_BUCKET)
-        embed_knowledge_base_multi_vector_document_task.delay(new_knowledge_base.file_path,
+        embed_knowledge_base_document_task.delay(new_knowledge_base.file_path,
                                                               collection_name, unique_identifier,
                                                               new_knowledge_base.id)
     elif obj_in.type == KnowledgeBaseType.CRAWLER:
-        embed_knowledge_base_multi_vector_crawler_task.delay(new_knowledge_base.urls,
+        embed_knowledge_base_crawler_task.delay(new_knowledge_base.urls,
                                                              collection_name, unique_identifier,
                                                              new_knowledge_base.id)
     elif obj_in.type == KnowledgeBaseType.MANUAL_INPUT:
-        embed_knowledge_base_multi_vector_manual_input_task.delay(new_knowledge_base.manual_input,
+        embed_knowledge_base_manual_input_task.delay(new_knowledge_base.manual_input,
                                                                   collection_name,
                                                                   unique_identifier,
                                                                   new_knowledge_base.id)
@@ -125,7 +125,7 @@ def update_knowledge_base_crawler(
 
     updated_knowledge_base = knowledge_base_service.update(knowledge_base, obj_in)
     knowledge_base_service.remove_with_embeddings(knowledge_base, chroma)
-    embed_knowledge_base_multi_vector_crawler_task.delay(updated_knowledge_base.urls,
+    embed_knowledge_base_crawler_task.delay(updated_knowledge_base.urls,
                                                          str(obj_in.chatbot_id),
                                                          updated_knowledge_base.metadatas,
                                                          updated_knowledge_base.id)
@@ -143,10 +143,10 @@ def ask_question(
         scopes=[Role.USER['name'], Role.ADMIN['name'], Role.DEVELOPER['name'], ],
     ),
 ):
-    # answer, _ = get_question_and_answer(question, chatbot_id, chatbot_service,
-    #                                     knowledge_base_service)
-    answer, _ = get_question_and_answer_multi_vector(question, chatbot_id, chatbot_service,
-                                                     knowledge_base_service)
+    answer, _ = get_question_and_answer(question, chatbot_id, chatbot_service,
+                                        knowledge_base_service)
+    # answer, _ = get_question_and_answer_multi_vector(question, chatbot_id, chatbot_service,
+    #                                                  knowledge_base_service)
     return {"answer": answer}
 
 

@@ -292,7 +292,7 @@ async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, ch
 
     chatbot_service = ChatBotService(ChatBotRepository(db))
     knowledge_base_service = KnowledgeBaseService(KnowledgeBaseRepository(db))
-    answer, knowledge_bases = get_question_and_answer_multi_vector(message.text, chatbot_id,
+    answer, knowledge_bases = get_question_and_answer(message.text, chatbot_id,
                                                                    chatbot_service,
                                                                    knowledge_base_service)
 
