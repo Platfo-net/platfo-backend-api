@@ -18,11 +18,6 @@ class ShopOrderItem(Base):
         ForeignKey('shop_products.id', ondelete="SET NULL"),
         nullable=True,
     )
-    variant_id = Column(
-        BigInteger,
-        ForeignKey('shop_product_variants.id', ondelete="SET NULL"),
-        nullable=True,
-    )
 
     variant_title = Column(String(255), nullable=True)
     product_title = Column(String(255), nullable=True)
