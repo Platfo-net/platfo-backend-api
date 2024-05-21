@@ -17,6 +17,7 @@ class ProductBase(BaseModel):
     image: Optional[str] = None
     price: float
     currency: str
+    is_available: Optional[bool] = False
 
 
 class ProductCreate(ProductBase):

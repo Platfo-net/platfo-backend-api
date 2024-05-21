@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.routers.shop import (category, order, payment,
+from app.api.api_v1.routers.shop import (category, dashboard, order, payment,
                                          payment_method, product,
                                          shipment_method, shop, shop_telegram,
                                          table)
@@ -15,5 +15,6 @@ router.include_router(payment_method.router)
 router.include_router(shipment_method.router)
 router.include_router(payment.router)
 router.include_router(table.router)
+router.include_router(dashboard.router)
 
 router.include_router(shop_telegram.router)

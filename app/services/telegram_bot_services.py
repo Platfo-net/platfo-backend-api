@@ -7,6 +7,7 @@ from app import models, schemas
 
 
 class TelegramBotServices:
+
     def __init__(self, model):
         self.model: models.TelegramBot = model
 
@@ -22,13 +23,8 @@ class TelegramBotServices:
     def get_multi_by_user_id(self, db: Session, *, user_id: str) -> List[models.TelegramBot]:
         return db.query(self.model).filter(self.model.user_id == user_id).all()
 
-    def create(
-            self,
-            db: Session,
-            *,
-            obj_in: schemas.TelegramBotCreate,
-            user_id: int
-    ) -> models.TelegramBot:
+    def create(self, db: Session, *, obj_in: schemas.TelegramBotCreate,
+               user_id: int) -> models.TelegramBot:
         db_obj = self.model(
             bot_id=obj_in.bot_id,
             username=obj_in.username,
@@ -57,19 +53,18 @@ class TelegramBotServices:
         db.refresh(db_obj)
         return db_obj
 
-    def get(
-            self,
-            db: Session,
-            *,
-            id: int
-    ) -> models.TelegramBot:
+    def get(self, db: Session, *, id: int) -> models.TelegramBot:
         return db.query(self.model).filter(self.model.id == id).first()
 
     def all(
-            self,
-            db: Session,
+        self,
+        db: Session,
     ) -> List[models.TelegramBot]:
         return db.query(self.model).all()
+
+    def delete(self, db: Session, db_obj: models.TelegramBot):
+        db.delete(db_obj)
+        db.commit()
 
 
 telegram_bot = TelegramBotServices(models.TelegramBot)

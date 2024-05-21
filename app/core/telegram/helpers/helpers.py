@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import os
+from datetime import date, datetime, timedelta
 from typing import Union
 from uuid import uuid4
 
@@ -23,8 +24,6 @@ def load_message(lang: str, template_name: str, **kwargs) -> str:
 
 
 def has_credit_by_shop_id(db: Session, shop_id: int) -> bool:
-    if settings.ENVIRONMENT != "prod":
-        return True
 
     credit = services.credit.shop_credit.get_by_shop_id(db, shop_id=shop_id)
     if not credit:
@@ -88,19 +87,38 @@ async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
     with open(file_name, "wb") as f:
         f.write(res.content)
 
-    storage.add_file_to_s3(
-        file_name, file_name, bucket)
+    storage.add_file_to_s3(file_name, file_name, bucket)
     url = storage.get_object_url(file_name, bucket)
-    print(url)
+    try:
+        os.remove(file_name)
+    except Exception:
+        pass
     return url, file_name
 
 
 def get_credit_str(expires_at):
     iran_tz = pytz.timezone("Asia/Tehran")
     expires_at_datetime = expires_at.astimezone(iran_tz)
-    jalali_date = jdatetime.GregorianToJalali(
-        expires_at_datetime.year, expires_at_datetime.month, expires_at_datetime.day)
+    jalali_date = jdatetime.GregorianToJalali(expires_at_datetime.year, expires_at_datetime.month,
+                                              expires_at_datetime.day)
     date_str = f"{jalali_date.jyear}/{jalali_date.jmonth}/{jalali_date.jday}"
     time_str = f"{expires_at_datetime.hour}:{expires_at_datetime.minute}"
 
     return date_str, time_str
+
+
+def get_jalali_date_str(date: date):
+    jalali_date = jdatetime.GregorianToJalali(date.year, date.month, date.day)
+    return f"{jalali_date.jyear}/{jalali_date.jmonth}/{jalali_date.jday}"
+
+
+def is_start_message(data, bot):
+    update = telegram.Update.de_json(data, bot)
+
+    if update.message and update.message.text == "/start":
+        return True
+
+    if update.effective_message and update.effective_message.text == "/start":
+        return True
+
+    return False

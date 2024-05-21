@@ -1,19 +1,4 @@
 services:
-  # admin:
-  #   build: ./admin-panel
-  #   image: platfo-admin
-  #   container_name: platfo-admin 
-  #   command: sh -c "python manage.py wait_for_db &&
-  #                   python manage.py migrate && 
-  #                   python manage.py firstuser && 
-  #                   python manage.py runserver 0.0.0.0:8002"
-  #   ports:
-  #     - 8002:8002
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ./admin-panel:/app
-  #   env_file:
-  #     - .env
   api:
     container_name: "${APP_NAME}-api"
     build:
@@ -44,7 +29,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data/pgdata
     ports:
-      - 5432:5432
+    - 5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 10s
@@ -63,18 +48,6 @@ services:
     env_file:
       - .env
 
-  # minio:
-  #   restart: always
-  #   image: docker.io/bitnami/minio:2023
-  #   ports:
-  #     - '9000:9000'
-  #     - '9001:9001'
-  #   environment:
-  #     MINIO_ROOT_USER: "${S3_ROOT_USER}"
-  #     MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
-  #   volumes:
-  #     - 'minio-data:/bitnami/minio/data'
-
   celery-worker:
     image: "platfo-backend-app"
     build: .
@@ -87,33 +60,63 @@ services:
       - api
       - redis
 
-  # celery-beat:
-  #   image: "platfo-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-beat"
-  #   command: celery -A app.core.celery.celery beat
-  #   volumes:
-  #     - .:/app
-  #   depends_on:
-  #     - db
-  #     - api
-  #     - redis
+  celery-beat:
+    image: "platfo-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-beat"
+    command: celery -A app.core.celery.celery beat
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - api
+      - redis
 
-  # celery-flower:
-  #   image: "platfo-backend-app"
-  #   build: .
-  #   container_name: "${APP_NAME}-celery-flower"
-  #   command: celery -A app.core.celery.celery flower --port=5566
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "5566:5566"
-  #   depends_on:
-  #     - db
-  #     - api
-  #     - redis
+  celery-flower:
+    image: "platfo-backend-app"
+    build: .
+    container_name: "${APP_NAME}-celery-flower"
+    command: celery -A app.core.celery.celery flower --port=5566
+    volumes:
+      - .:/app
+    ports:
+      - "5566:5566"
+    depends_on:
+      - db
+      - api
+      - redis
+
+  vectordb:
+     image: chromadb/chroma:0.4.25.dev85
+     volumes:
+       - chroma-data:/chroma/chroma
+     command: "--workers 1 --host ${CHROMADB_HOST} --port ${CHROMADB_PORT} --proxy-headers --log-config chromadb/log_config.yml --timeout-keep-alive 30"
+     environment:
+       - IS_PERSISTENT=TRUE
+       - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMADB_TOKEN}
+       - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
+       - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
+       - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-FALSE}
+       - ALLOW_RESET=TRUE
+     restart: unless-stopped
+     ports:
+       - "8005:8005"
+
+#  minio:
+#     restart: always
+#     image: docker.io/bitnami/minio:2023
+#     ports:
+#       - '9000:9000'
+#       - '9001:9001'
+#     environment:
+#       MINIO_ROOT_USER: "${S3_ROOT_USER}"
+#       MINIO_ROOT_PASSWORD: "${S3_ROOT_PASSWORD}"
+#     volumes:
+#       - 'minio-data:/bitnami/minio/data'
+
 
 volumes:
   postgres-data:
   redis-data:
+  chroma-data:
   minio-data:

@@ -28,3 +28,4 @@ class TelegramBot(Base):
 
     telegram_bot_shop = relationship("ShopShopTelegramBot", back_populates="telegram_bot")
     leads = relationship("TelegramLead", back_populates="telegram_bot")
+    chatbot_telegram_bot = relationship("ChatBotTelegramBot", back_populates="telegram_bot")

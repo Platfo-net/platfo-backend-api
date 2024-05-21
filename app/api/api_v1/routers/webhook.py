@@ -1,8 +1,7 @@
 import ipaddress
 
 import telegram
-from fastapi import (APIRouter, Depends, HTTPException, Request, Security,
-                     status)
+from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
 from sqlalchemy.orm import Session
 
 from app import models, services
@@ -11,14 +10,17 @@ from app.api.api_v1.routers.telegram_bot import set_webhook
 from app.constants.role import Role
 from app.core import support_bot
 from app.core.config import settings
-from app.core.instagram import tasks
 from app.core.telegram import tasks as telegram_tasks
+from app.llms.services.chatbot_service import ChatBotService
+from app.llms.services.knowledge_base_service import KnowledgeBaseService
+from app.llms.utils.dependencies import get_service
+from app.llms.utils.langchain.pipeline import get_question_and_answer
 
 router = APIRouter(prefix='/webhook', tags=['Webhook'],
                    include_in_schema=True if settings.ENVIRONMENT == "dev" else False)
 
 
-@router.get('/instagram')
+@router.get('/instagram', include_in_schema=False)
 def instagram_subscription_webhook(request: Request):
     try:
         _ = request.query_params['hub.mode']
@@ -33,9 +35,9 @@ def instagram_subscription_webhook(request: Request):
     return int(challenge)
 
 
-@router.post('/instagram', status_code=status.HTTP_200_OK)
+@router.post('/instagram', status_code=status.HTTP_200_OK, include_in_schema=False)
 def instagram_webhook_listener(*, facebook_webhook_body: dict):
-    tasks.webhook_processor.delay(facebook_webhook_body)
+    # tasks.webhook_processor.delay(facebook_webhook_body)
     return
 
 
@@ -45,12 +47,9 @@ async def telegram_webhook_listener(*, bot_id: int, request: Request):
         if settings.ENVIRONMENT == "prod":
 
             real_ip = request.headers.get("x-real-ip")
-        # forward_for = request.headers.get("x-forwarded-for")
-            if not (
-                ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
-                or
-                ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
-            ):
+            # forward_for = request.headers.get("x-forwarded-for")
+            if not (ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                    or ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')):
                 return
 
         data = await request.json()
@@ -61,34 +60,22 @@ async def telegram_webhook_listener(*, bot_id: int, request: Request):
 
 
 @router.post('/telegram/support-bot/set-webhook', status_code=status.HTTP_200_OK)
-async def telegram_set_webhook(
-    *,
-    current_user: models.User = Security(
-        deps.get_current_user,
-        scopes=[
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
-    )
-):
+async def telegram_set_webhook(*, current_user: models.User = Security(
+    deps.get_current_user,
+    scopes=[Role.ADMIN['name'], Role.DEVELOPER['name'], ],
+)):
     try:
         return await support_bot.set_support_bot_webhook()
-    except:
+    except Exception as e:
+        print(e)
         return
 
 
 @router.post('/telegram/telegram-bot/set-webhook', status_code=status.HTTP_200_OK)
-async def telegram_bot_set_webhook(
-    *,
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Security(
-        deps.get_current_user,
-        scopes=[
-            Role.ADMIN['name'],
-            Role.DEVELOPER['name'],
-        ],
-    )
-):
+async def telegram_bot_set_webhook(*, db: Session = Depends(deps.get_db),
+                                   current_user: models.User = Security(
+                                       deps.get_current_user,
+                                       scopes=[Role.ADMIN['name'], Role.DEVELOPER['name']])):
     bots = services.telegram_bot.all(db)
     for bot in bots:
         await set_webhook(bot.bot_token, bot.bot_id)
@@ -100,11 +87,8 @@ async def telegram_webhook_support_listener(request: Request):
         if settings.ENVIRONMENT == "prod":
             real_ip = request.headers.get("x-real-ip")
             # forward_for = request.headers.get("x-forwarded-for")
-            if not (
-                ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
-                or
-                ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
-            ):
+            if not (ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                    or ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')):
                 return
         data = await request.json()
         telegram_tasks.telegram_support_bot_task.delay(data, "fa")
@@ -120,12 +104,9 @@ async def telegram_webhook_admin_listener(request: Request):
         if settings.ENVIRONMENT == "prod":
 
             real_ip = request.headers.get("x-real-ip")
-        # forward_for = request.headers.get("x-forwarded-for")
-            if not (
-                ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
-                or
-                ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')
-            ):
+            # forward_for = request.headers.get("x-forwarded-for")
+            if not (ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                    or ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')):
                 return
         data = await request.json()
         telegram_tasks.telegram_admin_bot_task.delay(data, "fa")
@@ -133,3 +114,71 @@ async def telegram_webhook_admin_listener(request: Request):
     except Exception as e:
         print(e)
     return
+
+
+@router.post('/telegram/chat-bot', status_code=status.HTTP_200_OK)
+async def telegram_webhook_chatbot_listener(request: Request,
+                                            chatbot_service: ChatBotService = Depends(
+                                                get_service(ChatBotService)),
+                                            knowledge_base_service: KnowledgeBaseService = Depends(
+                                                get_service(KnowledgeBaseService)),
+                                            ):
+    try:
+        data = await request.json()
+        bot = telegram.Bot(settings.CHAT_BOT_TOKEN)
+        update = telegram.Update.de_json(bot=bot, data=data)
+        if not update.message:
+            text = update.effective_message.text
+            answer = get_question_and_answer(text, 1, chatbot_service, knowledge_base_service)
+            await update.effective_message.reply_text(text=answer)
+
+        else:
+            text = update.message.text
+            answer = get_question_and_answer(text, 1, chatbot_service, knowledge_base_service)
+            await update.message.reply_text(text=answer)
+
+        return
+    except Exception as e:
+        print(e)
+    return
+
+
+@router.post('/telegram/message-builder-bot', status_code=status.HTTP_200_OK)
+async def telegram_webhook_message_builder_bot_listener(request: Request):
+    try:
+        if settings.ENVIRONMENT == "prod":
+
+            real_ip = request.headers.get("x-real-ip")
+            if not (ipaddress.ip_address(real_ip) in ipaddress.ip_network('91.108.4.0/22')
+                    or ipaddress.ip_address(real_ip) in ipaddress.ip_network('149.154.160.0/20')):
+                return
+        data = await request.json()
+        telegram_tasks.telegram_message_builder_bot_task.delay(data, "fa")
+        return
+    except Exception as e:
+        print(e)
+    return
+
+
+@router.post('/telegram/message-builder-bot/set-webhook', status_code=status.HTTP_200_OK)
+async def telegram_webhook_message_builder_bot_set_webhook(request: Request):
+    bot = telegram.Bot(token=settings.MESSAGE_BUILDER_BOT_TOKEN)
+
+    await bot.set_webhook(
+        f"{settings.SERVER_ADDRESS_NAME}{settings.API_V1_STR}/webhook/telegram/message-builder-bot"
+    )
+
+    await bot.set_my_commands(commands=[
+        telegram.BotCommand(
+            "/start",
+            "شروع",
+        ),
+        telegram.BotCommand(
+            "/new_message",
+            "پیام جدید",
+        ),
+        telegram.BotCommand(
+            "/cancel_message",
+            "لغو پیام",
+        ),
+    ])

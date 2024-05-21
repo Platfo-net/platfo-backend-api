@@ -67,9 +67,6 @@ class Settings(BaseSettings):
     S3_ROOT_PASSWORD: Optional[str] = None
     S3_HOST: Optional[str] = None
 
-    S3_ACADEMY_ATTACHMENT_BUCKET: str = "academy-attachment-bucket"
-    S3_CHATFLOW_MEDIA_BUCKET: str = "chatflow-media-bucket"
-    S3_CAMPAIGN_BUCKET: str = "notifier-campaign-bucket"
     S3_USER_PROFILE_BUCKET: str = 'user-profile-bucket'
     S3_SHOP_PRODUCT_IMAGE_BUCKET: str = 'shop-product-image-bucket'
     S3_SHOP_CATEGORY_IMAGE_BUCKET: str = 'shop-category-image-bucket'
@@ -77,9 +74,8 @@ class Settings(BaseSettings):
     S3_TELEGRAM_BOT_MENU_IMAGES_BUCKET: str = 'telegram-bot-menu-image-bucket'
     S3_PAYMENT_RECEIPT_IMAGE: str = 'payment-receipt-image-bucket'
     S3_SHOP_TELEGRAM_CREDIT_EXTENDING: str = 'shop-telegram-credit-extending'
-
-    CAMPAIGN_INTERVAL_SEND_LEAD_COUNT: Optional[int] = None
-    CAMPAIGN_PERIOD_INTERVAL_MINUTES: Optional[int] = None
+    S3_KNOWLEDGE_BASE_BUCKET: str = 'knowledge-base-bucket'
+    S3_MESSAGE_BUILDER_IMAGE_BUCKET: str = 'message-builder-bucket'
 
     SAMPLE_FACEBOOK_PAGE_ID: Optional[int] = None
     SAMPLE_LEAD_IGS_ID: Optional[int] = None
@@ -96,18 +92,24 @@ class Settings(BaseSettings):
 
     LOKI_LOG_PUSH_URL: Optional[str] = None
 
-    OTEL_EXPORTER_OTLP_ENDPOINT: Optional[str] = None
-
-    OTEL_SERVICE_NAME: Optional[str] = None
-    OTEL_EXPORTER_OTLP_INSECURE: Optional[str] = None
-
     SUPPORT_BOT_TOKEN: Optional[str] = None
+    CHAT_BOT_TOKEN: Optional[str] = None
     TELEGRAM_ADMIN_BOT_TOKEN: Optional[str] = None
     PLATFO_SHOPS_BASE_URL: Optional[str] = None
 
     TELEGRAM_TOKEN_ENCRYPTION_KEY: Optional[str] = None
 
     SENTRY_DSN: Optional[str] = None
+
+    MESSAGE_BUILDER_BOT_TOKEN: Optional[str] = None
+
+    MESSAGE_BUILDER_WEBAPP_BASE_URL: str
+
+    CHATBOT_TOKEN_COST: Optional[int] = 10
+    CHATBOT_CHAT_COST: Optional[int] = 50
+    INITIAL_CHATBOT_CREDIT_AMOUNT: Optional[int] = 20000
+
+    PLATFO_BASE_DOMAIN: str = "https://dev-app.platfo.net"
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
@@ -124,9 +126,7 @@ class Settings(BaseSettings):
         )
 
     @validator('CELERY_URI', pre=True)
-    def assemble_celery_connection(
-        cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Any:
+    def assemble_celery_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
         return RedisDsn.build(

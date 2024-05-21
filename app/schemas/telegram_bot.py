@@ -1,5 +1,3 @@
-
-
 from typing import Optional
 
 from pydantic import UUID4, BaseModel
@@ -35,3 +33,11 @@ class TelegramBot(BaseModel):
     app_link: Optional[str] = None
     image: Optional[str] = None
     image_url: Optional[str] = None
+
+
+class TelegramBotItem(BaseModel):
+    uuid: UUID4
+    username: Optional[str] = None
+
+    class Config:
+        orm_mode = True

@@ -11,4 +11,5 @@ from .order import (order_change_status_handler, send_all_order_by_status,
 from .plain_message import (plain_message_handler, send_direct_message,
                             send_direct_message_helper,
                             verify_shop_support_account_message)
+from .report import send_shop_order_report
 from .verify import verify_support_account

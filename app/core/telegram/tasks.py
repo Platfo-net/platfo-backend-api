@@ -29,6 +29,14 @@ def send_register_user_notification_to_all_admins_task(user_id, lang: str):
 
 
 @celery.task
+def telegram_message_builder_bot_task(data, lang: str):
+    db = SessionLocal()
+    asyncio.run(handlers.telegram_message_builder_bot_handler(db, data, lang))
+
+    db.close()
+
+
+@celery.task
 def telegram_admin_bot_task(data, lang: str):
     db = SessionLocal()
     asyncio.run(handlers.telegram_admin_bot_handler(db, data, lang))
@@ -152,5 +160,15 @@ def order_change_status_from_dashboard_task(order_id, lang):
     db = SessionLocal()
     asyncio.run(
         bot_handlers.order_change_status_from_dashboard_handler(db, order_id, lang)
+    )
+    db.close()
+
+
+@celery.task
+def send_shop_order_report_task(lang, shop_id, amount, currency, count, date):
+    db = SessionLocal()
+    asyncio.run(
+        support_bot_handlers.send_shop_order_report(
+            db, lang, shop_id, amount, currency, count, date)
     )
     db.close()

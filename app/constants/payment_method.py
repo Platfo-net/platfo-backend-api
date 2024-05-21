@@ -72,13 +72,9 @@ class PaymentMethod:
         "payment_fields": {
             "ref_id": True,
         },
-        "validation_schema": None,
+        "validation_schema": ZarrinPalValidationSchema,
     }
 
-    items = {
-        "Card Transfer": CARD_TRANSFER,
-        "On Spot": ON_SPOT,
-        "Zarrin Pal": ZARRIN_PAL,
-    }
+    items = {"Card Transfer": CARD_TRANSFER, "On Spot": ON_SPOT, "Zarrin Pal": ZARRIN_PAL, }
 
     payment_gateway_items = [ZARRIN_PAL["title"]]

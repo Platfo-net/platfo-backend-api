@@ -1,5 +1,6 @@
 from .attribute import ShopAttribute
 from .category import ShopCategory
+from .daily_report import ShopDailyReport
 from .order import ShopOrder
 from .order_item import ShopOrderItem
 from .payment_method import ShopPaymentMethod

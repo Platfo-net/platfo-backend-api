@@ -10,14 +10,16 @@ def get_payment_check_order_reply_markup(order: models.shop.ShopOrder, lang):
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ACCEPT_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"),
-        ], [
+        ],
+        [
             telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}")  # noqa
-        ], [
+                TelegramCallbackCommand.DECLINE_PAYMENT_ORDER["title"][lang], callback_data=f"{TelegramCallbackCommand.DECLINE_PAYMENT_ORDER['command']}:{order.uuid}")  # noqa
+        ],
+        [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ORDER_DETAIL["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}"
+            )  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -29,16 +31,20 @@ def get_accepted_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.PREPARE_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.PREPARE_ORDER['command']}:{order.uuid}"),  # noqa
+                callback_data=f"{TelegramCallbackCommand.PREPARE_ORDER['command']}:{order.uuid}"
+            ),  # noqa
         ],
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"),  # noqa
-        ], [
+                callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"
+            ),  # noqa
+        ],
+        [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ORDER_DETAIL["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}"
+            )  # noqa
         ]
     ]
 
@@ -51,13 +57,13 @@ def get_unpaid_order_reply_markup(order: models.shop.ShopOrder, lang):
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ACCEPT_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"
-            ),
+                callback_data=f"{TelegramCallbackCommand.ACCEPT_ORDER['command']}:{order.uuid}"),
         ],
         [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ORDER_DETAIL["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}"
+            )  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -71,10 +77,12 @@ def get_prepare_order_reply_markup(order: models.shop.ShopOrder, lang):
                 TelegramCallbackCommand.SEND_ORDER["title"][lang],
                 callback_data=f"{TelegramCallbackCommand.SEND_ORDER['command']}:{order.uuid}"
             ),  # noqa
-        ], [
+        ],
+        [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ORDER_DETAIL["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}"
+            )  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -85,13 +93,14 @@ def get_declined_order_reply_markup(order: models.shop.ShopOrder, lang):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
+                TelegramCallbackCommand.SEND_DIRECT_MESSAGE["title"][lang], callback_data=f"{TelegramCallbackCommand.SEND_DIRECT_MESSAGE['command']}:{order.lead_id}"  # noqa
             ),  # noqa
-        ], [
+        ],
+        [
             telegram.InlineKeyboardButton(
                 TelegramCallbackCommand.ORDER_DETAIL["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}")  # noqa
+                callback_data=f"{TelegramCallbackCommand.ORDER_DETAIL['command']}:{order.uuid}"
+            )  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
@@ -99,14 +108,12 @@ def get_declined_order_reply_markup(order: models.shop.ShopOrder, lang):
 
 
 def get_start_support_bot_reply_markup(lang):
-    keyboard = [
-        [
-            telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.NEW_CONNECTION["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.NEW_CONNECTION['command']}:#"  # noqa
-            ),  # noqa
-        ],
-    ]
+    keyboard = [[
+        telegram.InlineKeyboardButton(
+            TelegramCallbackCommand.NEW_CONNECTION["title"][lang],
+            callback_data=f"{TelegramCallbackCommand.NEW_CONNECTION['command']}:#"  # noqa
+        ),  # noqa
+    ], ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
     return reply_markup
 
@@ -116,30 +123,17 @@ def get_empty_reply_markup(*args, **kwargs):
 
 
 def get_admin_credit_charge_reply_markup(
-        shop_telegram_payment_record: models.credit.CreditShopTelegramPaymentRecord
-):
+        shop_telegram_payment_record: models.credit.CreditShopTelegramPaymentRecord):
     keyboard = [
         [
             telegram.InlineKeyboardButton(
-                "آره بابا. بدبخته",
-                callback_data=f"{TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}")  # noqa
-        ], [
-            telegram.InlineKeyboardButton(
-                "نوچ",
-                callback_data=f"{TelegramCallbackCommand.DECLINE_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}")  # noqa
-        ]
-    ]
-    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-
-    return reply_markup
-
-
-def get_pay_order_reply_markup(order_id, lang: str):
-    keyboard = [
+                "آره بابا. بدبخته", callback_data=f"{TelegramCallbackCommand.ACCEPT_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}"  # noqa
+            )  # noqa
+        ],
         [
             telegram.InlineKeyboardButton(
-                TelegramCallbackCommand.PAY_ORDER["title"][lang],
-                callback_data=f"{TelegramCallbackCommand.PAY_ORDER['command']}:{order_id}")  # noqa
+                "نوچ", callback_data=f"{TelegramCallbackCommand.DECLINE_CREDIT_EXTENDING['command']}:{shop_telegram_payment_record.id}"  # noqa
+            )  # noqa
         ]
     ]
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
