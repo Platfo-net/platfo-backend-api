@@ -13,6 +13,7 @@ from app.constants.telegram_bot_command import TelegramBotCommand
 from app.core import security, storage
 from app.core.config import settings
 from app.core.telegram import helpers
+from app.core.telegram.helpers.helpers import has_credit_by_shop_id
 from app.core.telegram.messages import SupportBotMessage
 from app.core.utils import decrease_cost_from_credit
 from app.llms.repository.chatbot_repository import ChatBotRepository
@@ -400,9 +401,10 @@ async def handle_shop_message(db: Session, telegram_bot_id, update: telegram.Upd
     shop_telegram_bot = services.shop.shop_telegram_bot.get_by_telegram_bot_id(
         db, telegram_bot_id=telegram_bot_id)
     if not shop_telegram_bot:
-        print("here 3")
-
         return None, None
+
+    has_credit_by_shop_id(db, shop_telegram_bot.shop_id)
+
     if update.message.text == TelegramBotCommand.VITRIN["command"]:
         return await send_vitrin(update, shop_telegram_bot.shop.uuid, lead.uuid, lang), None
 
