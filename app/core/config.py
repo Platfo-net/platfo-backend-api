@@ -105,6 +105,10 @@ class Settings(BaseSettings):
 
     MESSAGE_BUILDER_WEBAPP_BASE_URL: str
 
+    CHATBOT_TOKEN_COST: Optional[int] = 10
+    CHATBOT_CHAT_COST: Optional[int] = 50
+    INITIAL_CHATBOT_CREDIT_AMOUNT: Optional[int] = 20000
+
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
@@ -120,9 +124,7 @@ class Settings(BaseSettings):
         )
 
     @validator('CELERY_URI', pre=True)
-    def assemble_celery_connection(
-        cls, v: Optional[str], values: Dict[str, Any]
-    ) -> Any:
+    def assemble_celery_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
         return RedisDsn.build(

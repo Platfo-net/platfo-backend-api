@@ -11,8 +11,8 @@ from app.constants.currency import Currency
 from app.constants.role import Role
 from app.core.config import settings
 from app.llms.models.credit import ChatBotTransaction
-from app.llms.schemas.credit_schema import ChatBotCreditCreate, ChatBotCreditSchema, \
-    ChatBotTransactionCreate, ChatBotTransactionItem, TransactionUpdate
+from app.llms.schemas.credit_schema import ChatBotCreditSchema, ChatBotTransactionCreate, \
+    ChatBotTransactionItem, TransactionUpdate
 from app.llms.services.credit_service import ChatBotTransactionService, UserChatBotCreditService
 from app.llms.utils.dependencies import get_service
 from app.llms.utils.exceptions import BusinessLogicError
@@ -33,15 +33,7 @@ def get_chatbot_credit(
     ),
 ):
 
-    user_credit = chatbot_credit_service.get_by_user_id(current_user.id)
-    if not user_credit:
-        user_credit = chatbot_credit_service.add(
-            ChatBotCreditCreate(
-                amount=20000,
-                currency=Currency.IRT["value"],
-                user_id=current_user.id,
-            ))
-
+    user_credit = chatbot_credit_service.get_or_create_by_user_id(current_user.id)
     return user_credit
 
 

@@ -6,8 +6,11 @@ from datetime import datetime, timedelta
 from typing import Tuple
 
 import pytz
+from sqlalchemy.orm import Session
 
 from app import schemas
+from app.llms.repository.credit_repository import UserChatBotCreditRepository
+from app.llms.services.credit_service import UserChatBotCreditService
 
 
 def validate_password(password) -> bool:
@@ -23,13 +26,11 @@ def validate_password(password) -> bool:
 
 
 def generate_random_token(length: int) -> str:
-    return ''.join(
-        random.choice(f'{string.ascii_letters}0123456789') for _ in range(length)
-    )
+    return ''.join(random.choice(f'{string.ascii_letters}0123456789') for _ in range(length))
 
 
 def generate_random_code(length: int) -> int:
-    return random.randint(10**length, (10 ** (length + 1)) - 1)
+    return random.randint(10 ** length, (10 ** (length + 1)) - 1)
 
 
 def paginate(total_count, page, page_size) -> schemas.Pagination:
@@ -44,23 +45,24 @@ def paginate(total_count, page, page_size) -> schemas.Pagination:
 
 
 def generate_random_support_token(length: int) -> str:
-    token = ''.join(
-        random.choice(string.digits) for _ in range(length)
-    )
+    token = ''.join(random.choice(string.digits) for _ in range(length))
     return "P" + token
 
 
 def generate_random_short_url(length: int) -> str:
-    token = ''.join(
-        random.choice(string.ascii_lowercase) for _ in range(length)
-    )
+    token = ''.join(random.choice(string.ascii_lowercase) for _ in range(length))
     return token
 
 
 def get_today_datetime_range() -> Tuple[datetime, datetime]:
     from_datetime = datetime.now().astimezone(pytz.timezone("Asia/Tehran")).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+        hour=0, minute=0, second=0, microsecond=0)
 
     to_datetime = from_datetime + timedelta(days=1)
     return from_datetime, to_datetime
+
+
+def decrease_cost_from_credit(db: Session, user_id, amount):
+    credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
+    credit = credit_service.get_or_create_by_user_id(user_id)
+    credit_service.decrease_credit(credit, amount)

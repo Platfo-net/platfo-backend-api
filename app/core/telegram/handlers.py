@@ -244,7 +244,6 @@ async def telegram_bot_webhook_handler(db: Session, data: dict, bot_id: int, lan
                                                                 chatbot_telegram_bot.chatbot_id,
                                                                 telegram_bot)
         else:
-            print("herre1")
             sent_message, mirror_message = await bot_handlers.handle_shop_message(
                 db, telegram_bot.id, update, lead, lang)
 

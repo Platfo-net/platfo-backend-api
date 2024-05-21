@@ -1,6 +1,8 @@
 import logging
 
 from app.core.celery import celery
+from app.core.config import settings
+from app.core.utils import decrease_cost_from_credit
 from app.db.session import SessionLocal
 from app.llms.utils.dependencies import get_chroma_client
 from app.llms.utils.langchain.helpers import calculate_embedding_cost
@@ -14,17 +16,18 @@ from app.llms.vectordb.chroma_client import ChromaClient
 
 @celery.task()
 def embed_knowledge_base_document_task(file_path, collection_name, unique_identifier,
-                                       knowledge_base_id):
+                                       knowledge_base_id, user_id):
     logging.info('Started the embedding knowledge base document task')
     db = SessionLocal()
 
     data = load_knowledge_base_data_file(file_path, [unique_identifier])
     total_tokens, cost_usd = calculate_embedding_cost(data)
     create_embedding_cost(db, total_tokens, cost_usd, knowledge_base_id)
-
     chroma = get_chroma_client()
     vector_db = ChromaClient(client=chroma, collection_name=collection_name)
     vector_db.store_embeddings(data)
+
+    decrease_cost_from_credit(db, user_id, int(settings.CHATBOT_TOKEN_COST * total_tokens))
 
     db.close()
     (logging.info('Finished the embedding knowledge base document task'))
