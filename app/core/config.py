@@ -109,6 +109,8 @@ class Settings(BaseSettings):
     CHATBOT_CHAT_COST: Optional[int] = 50
     INITIAL_CHATBOT_CREDIT_AMOUNT: Optional[int] = 20000
 
+    PLATFO_BASE_DOMAIN: str = "https://dev-app.platfo.net"
+
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):

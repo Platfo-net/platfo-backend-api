@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import List
 
 from fastapi import APIRouter, Depends, Security, status
+from fastapi.responses import RedirectResponse
 from pydantic import UUID4
 from suds.client import Client
 
@@ -120,7 +121,8 @@ def verify_payment(
         uuid=transaction_id, model=ChatBotTransaction)
 
     if transaction.is_paid:
-        raise BusinessLogicError(detail="Transaction has been already paid.")
+        return RedirectResponse(
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/chatbot/list")
 
     zarin_client = Client(settings.ZARINPAL_WEBSERVICE)
     result = zarin_client.service.PaymentVerification(
@@ -130,7 +132,8 @@ def verify_payment(
     )
 
     if result.Status not in [100, 101]:
-        raise BusinessLogicError("Invalid payment")
+        return RedirectResponse(
+            f"{settings.PLATFO_BASE_DOMAIN}/payment/failed?backUrl=/chatbot/list")
 
     if result.Status == 101:
         return
@@ -141,3 +144,5 @@ def verify_payment(
     ))
 
     chatbot_credit_service.add_credit(transaction.user_id, transaction.amount)
+
+    return RedirectResponse(f"{settings.PLATFO_BASE_DOMAIN}/payment/success?backUrl=/chatbot/list")
