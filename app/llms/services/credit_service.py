@@ -30,7 +30,7 @@ class UserChatBotCreditService(BaseService):
         if not db_obj:
             db_obj = self.add(
                 ChatBotCreditCreate(amount=settings.INITIAL_CHATBOT_CREDIT_AMOUNT,
-                                    currency=Currency.IRT["value"]))
+                                    currency=Currency.IRT["value"], user_id=user_id))
         return db_obj
 
     def add_credit(self, user_id, amount):
