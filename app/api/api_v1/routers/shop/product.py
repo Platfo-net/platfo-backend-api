@@ -405,7 +405,8 @@ def get_shop_products_for_telegram_shop(
     for product in items:
         product_image_url = None
         if product.image:
-            product_image_url = f"https://s3.platfo.net/{settings.S3_SHOP_PRODUCT_IMAGE_BUCKET}/{product.image}"  # noqa
+            product_image_url = storage.get_object_url(
+                product.image, settings.S3_SHOP_PRODUCT_IMAGE_BUCKET)  # noqa
 
         category = None
         if product.category_id:
