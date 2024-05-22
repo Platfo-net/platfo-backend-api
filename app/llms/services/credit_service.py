@@ -34,7 +34,7 @@ class UserChatBotCreditService(BaseService):
         return db_obj
 
     def add_credit(self, user_id, amount):
-        credit = self.get_by_user_id(user_id)
+        credit = self.get_or_create_by_user_id(user_id)
         return self.update(credit, {"amount": credit.amount + amount})
 
     def decrease_credit(self, db_obj, amount):
