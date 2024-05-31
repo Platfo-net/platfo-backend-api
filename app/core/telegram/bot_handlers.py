@@ -296,7 +296,7 @@ async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, ch
     chatbot_service = ChatBotService(ChatBotRepository(db))
     credit_service = UserChatBotCreditService(UserChatBotCreditRepository(db))
     chatbot = chatbot_service.get(chatbot_id)
-    credit = has_chatbot_credit(credit_service, chatbot.user_id)
+    credit = has_chatbot_credit(credit_service, chatbot.user_id, settings.CHATBOT_CHAT_COST)
     if not credit:
         return
 
