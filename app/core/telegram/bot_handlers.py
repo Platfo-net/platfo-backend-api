@@ -322,7 +322,7 @@ async def handle_chatbot_qa_answering(db: Session, message: telegram.Message, ch
             pass
     sent_message = await message.reply_text(answer)
 
-    decrease_cost_from_credit(credit_service, chatbot.user_id, settings.CHATBOT_CHAT_COST)
+    decrease_cost_from_credit(credit_service, credit, settings.CHATBOT_CHAT_COST)
     return sent_message
 
 
