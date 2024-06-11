@@ -23,6 +23,19 @@ def add_file_to_s3(object_name, file_path, bucket_name):
         raise Exception(f'Error happen on uploading object: {exc}')
 
 
+def put_file_to_s3(object_name, file_path, bucket_name):
+    try:
+        client = create_client()
+
+        found = client.bucket_exists(bucket_name)
+        if not found:
+            client.make_bucket(bucket_name)
+        client.fput_object(bucket_name=bucket_name, object_name=object_name, file_path=file_path)
+        return object_name
+    except S3Error as exc:
+        raise Exception(f'Error happen on uploading object: {exc}')
+
+
 def get_object_url(object_name, bucket_name):
     try:
         client = create_client()
