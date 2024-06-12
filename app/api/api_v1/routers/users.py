@@ -21,6 +21,9 @@ def register_user_by_phone_number(
         db: Session = Depends(deps.get_db),
         user_in: schemas.UserRegisterByPhoneNumber,
 ):
+
+    if not user_in.phone_number.isnumeric():
+        raise_http_exception(Error.INVALID_PHONE_NUMBER)
     user = services.user.get_by_phone_number(
         db,
         phone_number=user_in.phone_number,

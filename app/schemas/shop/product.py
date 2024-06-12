@@ -1,5 +1,3 @@
-
-
 from datetime import datetime
 from typing import List, Optional
 
@@ -17,7 +15,7 @@ class ProductBase(BaseModel):
     image: Optional[str] = None
     price: float
     currency: str
-    is_available: Optional[bool] = False
+    is_available: Optional[bool] = True
 
 
 class ProductCreate(ProductBase):
