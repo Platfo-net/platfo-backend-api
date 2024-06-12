@@ -16,16 +16,8 @@ class Error:
         'description': "",
     }
 
-    PERMISSION_DENIED_ERROR = {
-        'text': 'Permission denied',
-        'status_code': 401,
-        'code': 2,
-    }
-    USER_NOT_FOUND = {
-        'text': 'There is no user with this email',
-        'status_code': 404,
-        'code': 3,
-    }
+    PERMISSION_DENIED_ERROR = {'text': 'Permission denied', 'status_code': 401, 'code': 2, }
+    USER_NOT_FOUND = {'text': 'There is no user with this email', 'status_code': 404, 'code': 3, }
     USER_NOT_FOUND_BY_PHONE = {
         'text': 'There is no user with this phone',
         'status_code': 404,
@@ -36,17 +28,14 @@ class Error:
         'status_code': 404,
         'code': 4,
     }
-    USER_PASS_WRONG_ERROR = {
-        'text': 'Wrong username or password',
-        'status_code': 401,
-        'code': 5,
-    }
+    USER_PASS_WRONG_ERROR = {'text': 'Wrong username or password', 'status_code': 401, 'code': 5, }
     TOKEN_NOT_EXIST_OR_EXPIRATION_ERROR = {
         'text': 'Invalid token',
         'status_code': 403,
         'code': 6,
     }
     INACTIVE_USER = {'text': 'Inactive user', 'status_code': 400, 'code': 7}
+    INVALID_PHONE_NUMBER = {'text': 'Inactive phone number', 'status_code': 400, 'code': 8}
     INVALID_TRANSACTION_STATUS = {
         'text': 'invalid transaction status.',
         'status_code': 400,
@@ -62,11 +51,7 @@ class Error:
         'status_code': 404,
         'code': 13,
     }
-    INVALID_CODE_OR_TOKEN = {
-        'text': 'Invalid code or token',
-        'status_code': 400,
-        'code': 14,
-    }
+    INVALID_CODE_OR_TOKEN = {'text': 'Invalid code or token', 'status_code': 400, 'code': 14, }
 
     ACTIVATION_CODE_HAVE_BEEN_ALREADY_SENT = {
         'text': 'Activation code has been already sent to you.',
@@ -83,16 +68,8 @@ class Error:
         'status_code': 400,
         'code': 17,
     }
-    USER_IS_ACTIVE = {
-        'text': 'User is active',
-        'status_code': 400,
-        'code': 18,
-    }
-    EMAIL_NOT_VERIFIED = {
-        'text': 'Email not verified',
-        'status_code': 400,
-        'code': 19,
-    }
+    USER_IS_ACTIVE = {'text': 'User is active', 'status_code': 400, 'code': 18, }
+    EMAIL_NOT_VERIFIED = {'text': 'Email not verified', 'status_code': 400, 'code': 19, }
 
     NOT_AUTHENTICATED = {'text': 'not authenticated.', 'status_code': 401, 'code': 35}
     NOT_AUTHORIZED = {'text': 'not authorized.', 'status_code': 401, 'code': 36}
@@ -104,11 +81,7 @@ class Error:
 
     # Notification errors
 
-    NOTIFICATON_NOT_FOUND = {
-        'text': 'Notification not found',
-        'status_code': 404,
-        'code': 50,
-    }
+    NOTIFICATON_NOT_FOUND = {'text': 'Notification not found', 'status_code': 404, 'code': 50, }
     NOTIFICATION_ALREADY_READED = {
         'text': 'Notification already readed',
         'status_code': 400,
@@ -121,22 +94,10 @@ class Error:
         'code': 90,
     }
 
-    PLAN_NOT_FOUND = {
-        'text': 'Plan not found!',
-        'status_code': 404,
-        'code': 120,
-    }
-    PLAN_NOT_ACTIVE = {
-        'text': 'Plan not active!',
-        'status_code': 404,
-        'code': 120,
-    }
+    PLAN_NOT_FOUND = {'text': 'Plan not found!', 'status_code': 404, 'code': 120, }
+    PLAN_NOT_ACTIVE = {'text': 'Plan not active!', 'status_code': 404, 'code': 120, }
 
-    INVOICE_NOT_FOUND = {
-        'text': 'Invoice not found!',
-        'status_code': 404,
-        'code': 130,
-    }
+    INVOICE_NOT_FOUND = {'text': 'Invoice not found!', 'status_code': 404, 'code': 130, }
 
     INVOICE_CANNOT_DELETE_STATUS_FAILED = {
         'text': 'Failed invoices cannot be deleted!',
@@ -150,11 +111,7 @@ class Error:
         'code': 132,
     }
 
-    INVALID_TIMEFRAME = {
-        'text': 'Invalid Timeframe',
-        'status_code': 400,
-        'code': 140,
-    }
+    INVALID_TIMEFRAME = {'text': 'Invalid Timeframe', 'status_code': 400, 'code': 140, }
 
     SHOP_CREDIT_NOT_FOUND = {
         'text': 'There is no credit for this shop.',
@@ -164,11 +121,7 @@ class Error:
 
     # telegram bot errors
 
-    INVALID_TELEGRAM_BOT = {
-        "text": "Invalid telegram bot",
-        "status_code": 400,
-        "code": 150,
-    }
+    INVALID_TELEGRAM_BOT = {"text": "Invalid telegram bot", "status_code": 400, "code": 150, }
 
     TELEGRAM_BOT_EXIST_IN_SYSTEM = {
         "text": "This bot has been already added to this system",
@@ -181,11 +134,7 @@ class Error:
         "status_code": 400,
         "code": 152,
     }
-    TELEGRAM_BOT_NOT_FOUND = {
-        "text": "Bot not found.",
-        "status_code": 404,
-        "code": 153,
-    }
+    TELEGRAM_BOT_NOT_FOUND = {"text": "Bot not found.", "status_code": 404, "code": 153, }
     TELEGRAM_BOT_NOT_FOUND_ACCESS_DENIED = {
         "text": "Bot not found.",
         "status_code": 404,
@@ -202,17 +151,9 @@ class Error:
         "code": 160,
     }
 
-    SHOP_PRODUCT_NOT_FOUND_ERROR = {
-        "text": "Product not found",
-        "status_code": 404,
-        "code": 161,
-    }
+    SHOP_PRODUCT_NOT_FOUND_ERROR = {"text": "Product not found", "status_code": 404, "code": 161, }
 
-    SHOP_SHOP_NOT_FOUND_ERROR = {
-        "text": "Shop not found",
-        "status_code": 404,
-        "code": 162,
-    }
+    SHOP_SHOP_NOT_FOUND_ERROR = {"text": "Shop not found", "status_code": 404, "code": 162, }
 
     SHOP_SHOP_NOT_FOUND_ACCESS_DENIED_ERROR = {
         "text": "Shop not found",
@@ -267,11 +208,7 @@ class Error:
         "code": 171,
     }
 
-    SHOP_ORDER_NOT_FOUND = {
-        "text": "Order not found.",
-        "status_code": 404,
-        "code": 172,
-    }
+    SHOP_ORDER_NOT_FOUND = {"text": "Order not found.", "status_code": 404, "code": 172, }
 
     SHOP_SHIPMENT_METHOD_NOT_FOUND_ERROR = {
         "text": "Shipment method not found",
@@ -306,11 +243,7 @@ class Error:
         "status_code": 404,
         "code": 178,
     }
-    SHOP_SHOP_NOT_AVAILABLE = {
-        "text": "Shop doesn't available",
-        "status_code": 400,
-        "code": 179,
-    }
+    SHOP_SHOP_NOT_AVAILABLE = {"text": "Shop doesn't available", "status_code": 400, "code": 179, }
     SHOP_ORDER_NOT_FOUND_ACCESS_DENIED = {
         "text": "Order not found.",
         "status_code": 404,
@@ -351,11 +284,7 @@ class Error:
     }
 
     # lead
-    LEAD_TELEGRAM_LEAD_NOT_FOUND = {
-        "text": "Lead not found",
-        "status_code": 404,
-        "code": 190,
-    }
+    LEAD_TELEGRAM_LEAD_NOT_FOUND = {"text": "Lead not found", "status_code": 404, "code": 190, }
     LEAD_TELEGRAM_LEAD_NOT_FOUND_ACCESS_DENIED = {
         "text": "Lead not found",
         "status_code": 404,
@@ -368,11 +297,7 @@ class Error:
         "code": 192,
     }
 
-    SHOP_TABLE_NOT_FOUND_ERROR = {
-        "text": "Table not found",
-        "status_code": 404,
-        "code": 193,
-    }
+    SHOP_TABLE_NOT_FOUND_ERROR = {"text": "Table not found", "status_code": 404, "code": 193, }
 
     SHOP_TABLE_NOT_FOUND_ACCESS_DENIED_ERROR = {
         "text": "Table not found",

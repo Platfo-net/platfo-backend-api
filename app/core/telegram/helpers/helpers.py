@@ -87,7 +87,7 @@ async def download_and_upload_telegram_image(bot, photo_unique_id, bucket):
     with open(file_name, "wb") as f:
         f.write(res.content)
 
-    storage.add_file_to_s3(file_name, file_name, bucket)
+    storage.put_file_to_s3(file_name, file_name, bucket)
     url = storage.get_object_url(file_name, bucket)
     try:
         os.remove(file_name)

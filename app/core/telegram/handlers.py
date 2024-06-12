@@ -276,6 +276,7 @@ async def telegram_message_builder_bot_handler(db: Session, data: dict, lang):
 
         message = services.message_builder.message.get_by_chat_id_and_id(
             db, id=int(update.inline_query.query), chat_id=update.inline_query.from_user.id)
+        print(message)
         if message:
             await message_builder_bot.send_inline_query_answer(update, message)
         return
